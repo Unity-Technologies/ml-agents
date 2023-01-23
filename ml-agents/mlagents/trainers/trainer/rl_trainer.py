@@ -29,6 +29,7 @@ from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 from mlagents.trainers.cli_utils import _defaultdict_factory
+from mlagents.torch_utils import mp
 
 logger = get_logger(__name__)
 
@@ -59,6 +60,7 @@ class RLTrainer(Trainer):
             self.trainer_settings, self.artifact_path, self.load
         )
         self._has_warned_group_rewards = False
+        self.ready_to_update_queue = mp.Queue()
 
     def end_episode(self) -> None:
         """
@@ -251,6 +253,10 @@ class RLTrainer(Trainer):
             agentbuffer_trajectory.resequence_and_append(
                 self.update_buffer, training_length=seq_len
             )
+            if self._is_ready_update():
+                # print(f"self._is_ready_update() {self._is_ready_update()}")
+                # self.ready_to_update_queue.put(True)
+                self._update_policy()
 
     def _maybe_save_model(self, step_after_process: int) -> None:
         """
@@ -277,6 +283,14 @@ class RLTrainer(Trainer):
                 )
                 self._has_warned_group_rewards = True
 
+    def advance(self) -> None:
+        """
+        Steps the trainer, taking in trajectories and updates if ready.
+        Will block and wait briefly if there are no trajectories.
+        """
+        self.advance_process()
+        self.advance_update()
+
     def advance_process(self) -> None:
         """
         Steps the trainer, taking in trajectories and updates if ready.
@@ -296,16 +310,15 @@ class RLTrainer(Trainer):
                         self._process_trajectory(t)
                     except AgentManagerQueue.Empty:
                         break
-                if self.threaded and not _queried:# TODO: do I need this for multiProc?
+                if (
+                    self.threaded and not _queried
+                ):  # TODO: do I need this for multiProc?
                     # Yield thread to avoid busy-waiting
                     time.sleep(0.0001)
-    def advance_update(self) -> None:
-        # TODO: some variables not compatible with single process
 
+    def advance_update(self) -> None:
         if self.should_still_train:
             if self._is_ready_update():
-                print("maryam is ready to update!", flush=True)
-                print(self.get_step)
                 with hierarchical_timer("_update_policy"):
                     if self._update_policy():
                         for q in self.policy_queues:

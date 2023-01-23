@@ -192,14 +192,6 @@ class POCATrainer(OnPolicyTrainer):
             )
             self.collected_group_rewards.pop(agent_id)
 
-    def _is_ready_update(self):
-        """
-        Returns whether or not the trainer has enough elements to run update model
-        :return: A boolean corresponding to whether or not update_model() can be run
-        """
-        size_of_buffer = self.update_buffer.num_experiences
-        return size_of_buffer > self.hyperparameters.buffer_size
-
     def end_episode(self) -> None:
         """
         A signal that the Episode has ended. The buffer must be reset.

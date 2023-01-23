@@ -3,9 +3,7 @@ import platform
 from distutils.version import LooseVersion
 import pkg_resources
 from mlagents.torch_utils import cpu_utils
-from mlagents.trainers.settings import TorchSettings
 from mlagents_envs.logging_util import get_logger
-
 
 logger = get_logger(__name__)
 
@@ -32,27 +30,28 @@ assert_torch_installed()
 # This should be the only place that we import torch directly.
 # Everywhere else is caught by the banned-modules setting for flake8
 import torch  # noqa I201
-import torch.multiprocessing as mp # noqa I201
+import torch.multiprocessing as mp  # noqa I201
 
 # torch.set_num_threads(cpu_utils.get_num_threads_to_use()) # TODO
 if platform == "linux" or platform == "linux2" or "darwin":
-    mp.set_start_method('forkserver', force=True)  # critical for make multiprocessing work
+    mp.set_start_method(
+        "forkserver", force=True
+    )  # critical for make multiprocessing work
 if platform == "win32":
-    mp.set_start_method('spawn', force=True)  # critical for make multiprocessing work
+    mp.set_start_method("spawn", force=True)  # critical for make multiprocessing work
 
 os.environ["KMP_BLOCKTIME"] = "0"
-
 
 _device = torch.device("cpu")
 
 
-def set_torch_config(torch_settings: TorchSettings) -> None:
+def set_torch_config(settings_device: str = None) -> None:
     global _device
 
-    if torch_settings.device is None:
+    if settings_device is None:
         device_str = "cuda" if torch.cuda.is_available() else "cpu"
     else:
-        device_str = torch_settings.device
+        device_str = settings_device
 
     _device = torch.device(device_str)
 
@@ -64,7 +63,7 @@ def set_torch_config(torch_settings: TorchSettings) -> None:
 
 
 # Initialize to default settings
-set_torch_config(TorchSettings(device=None))
+set_torch_config(settings_device=None)
 
 nn = torch.nn
 

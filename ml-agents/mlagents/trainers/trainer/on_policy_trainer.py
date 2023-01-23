@@ -16,6 +16,7 @@ from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings, OnPolicyHyperparamSettings
 from mlagents.trainers.cli_utils import _defaultdict_factory
+
 logger = get_logger(__name__)
 
 
@@ -136,7 +137,9 @@ class OnPolicyTrainer(RLTrainer):
         self.optimizer = self.create_optimizer()
         for _reward_signal in self.optimizer.reward_signals.keys():
             # self.collected_rewards[_reward_signal] = defaultdict(lambda: 0)
-            self.collected_rewards[_reward_signal] = defaultdict(partial(_defaultdict_factory, 0))
+            self.collected_rewards[_reward_signal] = defaultdict(
+                partial(_defaultdict_factory, 0)
+            )
 
         self.model_saver.register(self.policy)
         self.model_saver.register(self.optimizer)

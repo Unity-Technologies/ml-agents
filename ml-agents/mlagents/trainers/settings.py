@@ -21,6 +21,8 @@ import abc
 import numpy as np
 import math
 import copy
+from mlagents.torch_utils.cpu_utils import Counter, TrafficLight
+
 
 from mlagents.trainers.cli_utils import StoreConfigFile, DetectDefault, parser
 from mlagents.trainers.cli_utils import load_config
@@ -639,6 +641,13 @@ class TrainerSettings(ExportableSettings):
         lambda t: t == Dict[RewardSignalType, RewardSignalSettings],
         RewardSignalSettings.structure,
     )
+    # Multi-processing attributes
+    # TODO: preset now but to be filled from setting file
+    trainer_wcounter = Counter()
+    sync_update_switch = TrafficLight()
+    num_trainer_worker = 1  # how many enve managers we have
+    policy_grad_buffer = None
+    critic_grad_buffer = None
 
     @network_settings.validator
     def _check_batch_size_seq_length(self, attribute, value):

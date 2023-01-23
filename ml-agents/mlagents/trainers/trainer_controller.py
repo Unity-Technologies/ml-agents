@@ -32,6 +32,10 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.policy import Policy
 from mlagents import torch_utils
 from mlagents.torch_utils.globals import get_rank
+from mlagents.torch_utils.cpu_utils import TrafficLight, Counter
+from mlagents.trainers.settings import TrainerSettings
+from mlagents.torch_utils.cpu_utils import SharedGradBuffers
+from mlagents.torch_utils import torch
 
 
 class TrainerController:
@@ -67,9 +71,9 @@ class TrainerController:
 
         # self.trainer_threads: List[threading.Thread] = []
         self.trainer_processes: List[mp.Process] = []
-        self.kill_trainers = multiprocessing.Value('b', False)
+        self.kill_trainers = TrafficLight()  # multiprocessing.Value('b', False)
         np.random.seed(training_seed)
-        torch_utils.torch.manual_seed(training_seed)
+        torch.manual_seed(training_seed)
         self.rank = get_rank()
 
     @timed
@@ -128,19 +132,7 @@ class TrainerController:
         else:
             trainer = self.trainer_factory.generate(brain_name)
             self.trainers[brain_name] = trainer
-            if trainer.threaded:
-                # trainerprocess = mp.Process(target=self.trainer_update_func, args=(trainer,), daemon=True)
-                trainerprocess = mp.Process(target=self.trainer_update_func,
-                                            args=(trainer,
-                                                  [tajectory_queue for tajectory_queue in trainer.trajectory_queues],
-                                                  [policy_queue for policy_queue in trainer.policy_queues],), daemon=True)
-                self.trainer_processes.append(trainerprocess)
-                print("maryam made process")
-                # Only create trainer thread for new trainers
-                # trainerthread = threading.Thread(
-                #     target=self.trainer_update_func, args=(trainer,), daemon=True
-                # )
-                # self.trainer_threads.append(trainerthread)
+
             env_manager.on_training_started(
                 brain_name, self.trainer_factory.trainer_config[brain_name]
             )
@@ -150,7 +142,6 @@ class TrainerController:
             env_manager.training_behaviors[name_behavior_id],
         )
         trainer.add_policy(parsed_behavior_id, policy)
-
         agent_manager = AgentManager(
             policy,
             name_behavior_id,
@@ -165,11 +156,30 @@ class TrainerController:
         trainer.publish_policy_queue(agent_manager.policy_queue)
         trainer.subscribe_trajectory_queue(agent_manager.trajectory_queue)
         self.shareParameters(trainer)
+        if trainer.threaded:
+            from mlagents.torch_utils.cpu_utils import Counter
+
+            trainerprocess = mp.Process(
+                target=self.trainer_update_func,
+                args=(
+                    trainer,
+                    [tajectory_queue for tajectory_queue in trainer.trajectory_queues],
+                    [policy_queue for policy_queue in trainer.policy_queues],
+                    trainer.trainer_settings.trainer_wcounter,
+                    trainer.trainer_settings.sync_update_switch,
+                    trainer.trainer_settings.hyperparameters.shared_critic,
+                    trainer.optimizer.optimizer,
+                    trainer.policy.actor,
+                    trainer.optimizer.critic,
+                    trainer.trainer_settings.policy_grad_buffer,
+                    trainer.trainer_settings.critic_grad_buffer,
+                ),
+                daemon=True,
+            )
+            self.trainer_processes.append(trainerprocess)
         # Only start new trainers
         if trainerprocess is not None:
-            print("maryam in process start")
             trainerprocess.start()
-            # trainerthread.start()
 
     def _create_trainers_and_managers(
         self, env_manager: EnvManager, behavior_ids: Set[str]
@@ -188,6 +198,7 @@ class TrainerController:
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
                     self.reset_env_if_ready(env_manager)
+            print("joining threads")
             # Stop advancing trainers
             self.join_threads()
         except (
@@ -280,34 +291,31 @@ class TrainerController:
         self._create_trainers_and_managers(env_manager, new_behavior_ids)
         self.registered_behavior_ids |= step_behavior_ids
 
-    def shareParameters(self, trainer:Trainer):
+    def shareParameters(self, trainer: Trainer):
         # TODO: This specific to PPO and Adam optimizer
         trainer.policy.actor.share_memory()
         trainer.optimizer.critic.share_memory()
+        trainer.trainer_settings.policy_grad_buffer = SharedGradBuffers(
+            trainer.policy.actor
+        )
+        if not trainer.trainer_settings.hyperparameters.shared_critic:
+            trainer.trainer_settings.critic_grad_buffer = SharedGradBuffers(
+                trainer.optimizer.critic
+            )
+
         self._shareOptimizer(trainer.optimizer.optimizer)
 
-        # trainer.optimizer.
-        # self.policy_optimizer = torch.optim.Adam(
-        #     policy_params, lr=hyperparameters.learning_rate
-        # )
-        # self.value_optimizer = torch.optim.Adam(
-        #     value_params, lr=hyperparameters.learning_rate
-        # )
-        # self.entropy_optimizer
-
     def _shareOptimizer(self, optimizerTensor):
-        print(f"maryam in swhere")
         for group in optimizerTensor.param_groups:
-            for p in group['params']:
+            for p in group["params"]:
                 state = optimizerTensor.state[p]
                 # initialize: have to initialize here, or else cannot find
-                state['step'] = 0
-                state['exp_avg'] = torch.zeros_like(p.data)
-                state['exp_avg_sq'] = torch.zeros_like(p.data)
-
+                state["step"] = 0
+                state["exp_avg"] = torch.zeros_like(p.data)
+                state["exp_avg_sq"] = torch.zeros_like(p.data)
                 # share in memory
-                state['exp_avg'].share_memory_()
-                state['exp_avg_sq'].share_memory_()
+                state["exp_avg"].share_memory_()
+                state["exp_avg_sq"].share_memory_()
 
     def join_threads(self, timeout_seconds: float = 1.0) -> None:
         """
@@ -315,16 +323,13 @@ class TrainerController:
         :param timeout_seconds:
         :return:
         """
-        self.kill_trainers.value = True
-
+        self.kill_trainers.switch()
 
         for p in self.trainer_processes:
             try:
                 p.join(timeout_seconds)
             except Exception:
                 pass
-
-            # sigkill child
 
         # with hierarchical_timer("trainer_threads") as main_timer_node:
         #     for trainer_thread in self.trainer_processes:
@@ -354,17 +359,32 @@ class TrainerController:
         #             )
         #             merge_gauges(thread_timer_stack.gauges)
 
-    # def trainer_update_func(self, trainer: Trainer) -> None:
-
-    def trainer_update_func(self, trainer:Trainer, trajectory_list:List[AgentManagerQueue[Trajectory]],
-                       policy_list:List[AgentManagerQueue[Policy]]) -> None:
+    def trainer_update_func(
+        self,
+        trainer: Trainer,
+        trajectory_list: List[AgentManagerQueue[Trajectory]],
+        policy_list: List[AgentManagerQueue[Policy]],
+        trainer_wcounter: Counter,
+        sync_update_switch: TrafficLight,
+        is_shared_critic,
+        optimizer,
+        actor,
+        critic,
+        policy_grad_buffer,
+        critic_grad_buffer,
+    ) -> None:
         trainer.trajectory_queues = trajectory_list
         trainer.policy_queues = policy_list
-        print("maryam is in child process!", flush=True)
-        import time
+        while not self.kill_trainers.get():
+            if trainer_wcounter.get() >= trainer.trainer_settings.num_trainer_worker:
 
-        with open("./maryamFile.txt", 'w') as file:
-            file.write(f" Maryam time: {time.ctime(time.time())}")
-        while not self.kill_trainers.value:
-            with hierarchical_timer("trainer_advance"):
-                trainer.advance_update()
+                for n, p in critic.named_parameters():
+                    p.grad = torch.autograd.Variable(
+                        critic_grad_buffer.grads[n + "_grad"]
+                    )
+                with hierarchical_timer("trainer_advance"):
+                    if trainer.should_still_train:  # TODO: share
+                        optimizer.step()  # TODO check this is correct or pass direct value
+                        trainer_wcounter.reset()
+                        sync_update_switch.switch()
+        print(f"child process has been killed")

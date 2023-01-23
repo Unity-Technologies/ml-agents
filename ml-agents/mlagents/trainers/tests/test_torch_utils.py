@@ -26,7 +26,7 @@ def test_set_torch_device(
 ):
     try:
         torch_settings = TorchSettings(device=device_str)
-        set_torch_config(torch_settings)
+        set_torch_config(torch_settings.device)
         assert default_device().type == expected_type
         if expected_index is None:
             assert default_device().index is None
@@ -38,4 +38,4 @@ def test_set_torch_device(
     finally:
         # restore the defaults
         torch_settings = TorchSettings(device=None)
-        set_torch_config(torch_settings)
+        set_torch_config(torch_settings.device)

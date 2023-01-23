@@ -19,6 +19,7 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
 
+
 from mlagents.trainers.torch_entities.networks import SimpleActor, SharedActorCritic
 
 logger = get_logger(__name__)
@@ -64,7 +65,6 @@ class PPOTrainer(OnPolicyTrainer):
         self.seed = seed
         self.shared_critic = self.hyperparameters.shared_critic
         self.policy: TorchPolicy = None  # type: ignore
-
     def _process_trajectory(self, trajectory: Trajectory) -> None:
         """
         Takes a trajectory and processes it, putting it into the update buffer.

@@ -11,7 +11,7 @@ from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
-from mlagents.torch_utils import  mp
+
 
 logger = get_logger(__name__)
 
@@ -152,17 +152,7 @@ class Trainer(abc.ABC):
         return self.policies[name_behavior_id]
 
     @abc.abstractmethod
-    def advance_process(self) -> None:
-        """
-        Advances the trainer. Typically, this means grabbing trajectories
-        from all subscribed trajectory queues (self.trajectory_queues), and updating
-        a policy using the steps in them, and if needed pushing a new policy onto the right
-        policy queues (self.policy_queues).
-        """
-        pass
-
-    @abc.abstractmethod
-    def advance_update(self) -> None:
+    def advance(self) -> None:
         """
         Advances the trainer. Typically, this means grabbing trajectories
         from all subscribed trajectory queues (self.trajectory_queues), and updating

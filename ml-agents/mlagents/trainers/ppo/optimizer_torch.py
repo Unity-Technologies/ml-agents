@@ -104,6 +104,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         :param num_sequences: Number of sequences to process.
         :return: Results of update.
         """
+        update_signal = self.trainer_settings.sync_update_switch.get()
         # Get decayed parameters
         decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step())
         decay_eps = self.decay_epsilon.get_value(self.policy.get_current_step())
@@ -117,7 +118,6 @@ class TorchPPOOptimizer(TorchOptimizer):
             returns[name] = ModelUtils.list_to_tensor(
                 batch[RewardSignalUtil.returns_key(name)]
             )
-
         n_obs = len(self.policy.behavior_spec.observation_specs)
         current_obs = ObsUtil.from_buffer(batch, n_obs)
         # Convert to tensors
@@ -182,7 +182,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)
         self.optimizer.zero_grad()
         loss.backward()
-
+        self.trainer_settings.critic_grad_buffer.add_gradient(self.critic)
+        self.trainer_settings.trainer_wcounter.increment()
+        while update_signal == self.trainer_settings.sync_update_switch.get():
+            pass
         self.optimizer.step()
         update_stats = {
             # NOTE: abs() is not technically correct, but matches the behavior in TensorFlow.
