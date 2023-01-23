@@ -10,11 +10,8 @@ class TorchASEOptimizer(TorchPPOOptimizer):
     def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
         super().__init__(policy, trainer_settings)
 
-    def update_reward_signals(self, batch: AgentBuffer) -> Dict[str, float]:
-        update_stats: Dict[str, float] = {}
-        for name, reward_provider in self.reward_signals.items():
-            if name == 'ase':
-                update_stats.update(reward_provider.update(self.policy, batch))
-            else:
-                update_stats.update(reward_provider.update(batch))
-        return update_stats
+    def update(self, batch: AgentBuffer, num_sequences: int) -> Dict[str, float]:
+        diversity_loss, diversity_stats = self.reward_signals['ase'].compute_diversity_loss(self.policy, batch)
+        self.loss = self.reward_signals['ase'].diversity_objective_weight * diversity_loss
+        update_stats = super().update(batch, num_sequences)
+        return {**update_stats, **diversity_stats}

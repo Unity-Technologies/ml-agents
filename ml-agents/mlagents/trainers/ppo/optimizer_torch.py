@@ -92,6 +92,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
 
+        self.loss = None
+
     @property
     def critic(self):
         return self._critic
@@ -172,7 +174,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             loss_masks,
             decay_eps,
         )
-        loss = (
+        self.loss = (
             policy_loss
             + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
@@ -181,7 +183,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)
         self.optimizer.zero_grad()
-        loss.backward()
+        self.loss.backward()
 
         self.optimizer.step()
         update_stats = {
