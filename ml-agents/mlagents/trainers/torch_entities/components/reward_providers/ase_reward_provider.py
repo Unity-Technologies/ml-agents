@@ -28,6 +28,7 @@ class ASERewardProvider(BaseRewardProvider):
         self._settings = settings
         params = list(self._discriminator_encoder.parameters())
         self.optimizer = torch.optim.Adam(params, lr=settings.learning_rate)
+        self.diversity_objective_weight = settings.omega_do
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
@@ -36,17 +37,15 @@ class ASERewardProvider(BaseRewardProvider):
         return ModelUtils.to_numpy(
             disc_reward.squeeze(dim=1) + encoder_reward.squeeze(dim=1) * self._settings.beta_sdo)
 
-    def update(self, policy: TorchPolicy, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
+    def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         expert_batch = self._demo_buffer.sample_mini_batch(
             mini_batch.num_experiences, 1
         )
-        self._discriminator_encoder.update_latents(expert_batch, mini_batch)
+        # self._discriminator_encoder.update_latents(expert_batch, mini_batch)
 
         self._discriminator_encoder.discriminator_network_body.update_normalization(expert_batch)
 
-        disc_loss, disc_stats_dict = self._discriminator_encoder.compute_discriminator_loss(
-            policy, mini_batch, expert_batch
-        )
+        disc_loss, disc_stats_dict = self._discriminator_encoder.compute_discriminator_loss(mini_batch, expert_batch)
         enc_loss, enc_stats_dict = self._discriminator_encoder.compute_encoder_loss(mini_batch)
         loss = disc_loss + self._settings.encoder_scaling * enc_loss
         self.optimizer.zero_grad()
@@ -54,6 +53,10 @@ class ASERewardProvider(BaseRewardProvider):
         self.optimizer.step()
         stats_dict = {**disc_stats_dict, **enc_stats_dict}
         return stats_dict
+
+    def compute_diversity_loss(self, policy: TorchPolicy, policy_batch: AgentBuffer) -> Tuple[
+        torch.Tensor, Dict[str, np.ndarray]]:
+        return self._discriminator_encoder.compute_diversity_loss(policy, policy_batch)
 
 
 class DiscriminatorEncoder(nn.Module):
@@ -65,7 +68,11 @@ class DiscriminatorEncoder(nn.Module):
         ase_settings: ASESettings,
     ):
         super().__init__()
-        observation_specs = behavior_spec.observation_specs
+        # need to modify obs specs to separate sending the latents into the disc/encoder -
+        # observation_specs = behavior_spec.observation_specs
+        observation_specs = copy.deepcopy(behavior_spec.observation_specs)
+        self.latent_key = self.get_latent_key(observation_specs)
+        del observation_specs[self.latent_key]
         network_settings = ase_settings.network_settings
         self.discriminator_network_body = NetworkBody(
             observation_specs, network_settings
@@ -80,12 +87,10 @@ class DiscriminatorEncoder(nn.Module):
         # self.discriminator_output_layer = nn.Sequential(linear_layer(network_settings.hidden_units, 1, kernel_gain=0.2))
 
         self.encoder_output_layer = nn.Linear(self.encoding_size, ase_settings.latent_dim)
-        self.latent_key = self.get_latent_key(observation_specs)
         self.latent_dim = ase_settings.latent_dim
         self.encoder_reward_scale = ase_settings.encoder_scaling
         self.discriminator_reward_scale = 1
         self.gradient_penalty_weight = ase_settings.omega_gp
-        self.diversity_objective_weight = ase_settings.omega_do
         self._action_flattener = ActionFlattener(behavior_spec.action_spec)
 
     @staticmethod
@@ -121,11 +126,39 @@ class DiscriminatorEncoder(nn.Module):
         new_mini_batch[ObsUtil.get_name_at(self.latent_key)] = new_latents
         return new_mini_batch
 
-    def get_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
+    def remove_latents(self, mini_batch: AgentBuffer):
+        new_mini_batch = copy.deepcopy(mini_batch)
+        del new_mini_batch[ObsUtil.get_name_at(self.latent_key)]
+        del new_mini_batch[ObsUtil.get_name_at_next(self.latent_key)]
+
+        return new_mini_batch
+
+    def get_state_inputs(self, mini_batch: AgentBuffer, ignore_latent: bool = True) -> List[torch.Tensor]:
+        n_obs = len(self.discriminator_network_body.processors) + 1
+        np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
+        # Convert to tensors
+        # tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+        tensor_obs = []
+        for index, obs in enumerate(np_obs):
+            if ignore_latent and index == self.latent_key:
+                continue
+            tensor_obs.append(ModelUtils.list_to_tensor(obs))
+
+        return tensor_obs
+
+    def get_state_inputs_expert(self, mini_batch: AgentBuffer):
         n_obs = len(self.discriminator_network_body.processors)
         np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
         # Convert to tensors
         tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
+        return tensor_obs
+
+    def get_next_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
+        n_obs = len(self.discriminator_network_body.processors)
+        np_obs_next = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs_next]
         return tensor_obs
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -133,14 +166,13 @@ class DiscriminatorEncoder(nn.Module):
 
     def get_actions(self, policy: TorchPolicy, mini_batch: AgentBuffer) -> torch.Tensor:
         with torch.no_grad():
-            obs = self.get_state_inputs(mini_batch)
-            _, _, actions, _, mu = policy.actor(obs)
-
-        return mu
-
+            obs = self.get_state_inputs(mini_batch, False)
+            action, _, _ = policy.actor.get_action_and_stats(obs)
+            mu = action.continuous_tensor
+            return mu
 
     def get_ase_latents(self, mini_batch: AgentBuffer) -> torch.Tensor:
-        inputs = self.get_state_inputs(mini_batch)
+        inputs = self.get_state_inputs(mini_batch, False)
         ase_latents = inputs[self.latent_key]
         return ase_latents
 
@@ -152,18 +184,34 @@ class DiscriminatorEncoder(nn.Module):
         disc_reward = self._calc_disc_reward(disc_output)
         return disc_reward, enc_reward
 
-    def compute_estimates(self, mini_batch: AgentBuffer) -> Tuple[torch.Tensor, torch.Tensor]:
+    def compute_estimates(self, mini_batch: AgentBuffer, ignore_latents: bool = True) -> Tuple[
+        torch.Tensor, torch.Tensor]:
         inputs = self.get_state_inputs(mini_batch)
         disc_output, enc_output = self.forward(inputs)
         return disc_output, enc_output
 
-    def compute_discriminator_loss(self, policy: TorchPolicy, policy_batch: AgentBuffer, expert_batch: AgentBuffer) -> \
-    Tuple[
-        torch.Tensor, Dict[str, np.ndarray]]:
+    def compute_estimates_expert(self, mini_batch: AgentBuffer) -> Tuple[torch.Tensor, torch.Tensor]:
+        inputs = self.get_state_inputs_expert(mini_batch)
+        disc_output, enc_output = self.forward(inputs)
+        return disc_output, enc_output
+
+    def compute_cat_estimates(self, mini_batch: AgentBuffer) -> Tuple[torch.Tensor, torch.Tensor]:
+        inputs = self.get_state_inputs(mini_batch)
+        next_inputs = self.get_next_state_inputs(mini_batch)
+        inputs_cat = [torch.cat([inp, next_inp], dim=0) for inp, next_inp in zip(inputs, next_inputs)]
+        disc_output, enc_output = self.forward(inputs_cat)
+        return disc_output, enc_output
+
+    def compute_discriminator_loss(self, policy_batch: AgentBuffer, expert_batch: AgentBuffer) -> \
+        Tuple[
+            torch.Tensor, Dict[str, np.ndarray]]:
+        # needs to compute the loss like ase:amp_agent.py:470, includes samples from a replay buffer???
+        # uses torch.nn.bcewithlogitloss, so need to remove sigmoid at the output of the disc
+        # also need to change gradient mag computation
         total_loss = torch.zeros(1)
         stats_dict: Dict[str, np.ndarray] = {}
         policy_estimate, _ = self.compute_estimates(policy_batch)
-        expert_estimate, _ = self.compute_estimates(expert_batch)
+        expert_estimate, _ = self.compute_estimates_expert(expert_batch)
         stats_dict["Policy/ASE Discriminator Policy Estimate"] = policy_estimate.mean().item()
         stats_dict["Policy/ASE Discriminator Expert Estimate"] = expert_estimate.mean().item()
         discriminator_loss = -(
@@ -175,15 +223,13 @@ class DiscriminatorEncoder(nn.Module):
             stats_dict["Policy/ASE Grad Mag Loss"] = gradient_magnitude_loss.item()
             total_loss += gradient_magnitude_loss
 
-        diversity_loss, diversity_stats_dict = self.compute_diversity_loss(policy, policy_batch)
+        stats_dict["Losses/ASE Discriminator Loss"] = total_loss.item()
 
-        total_loss += self.diversity_objective_weight * diversity_loss
-
-        return total_loss, {**stats_dict, **diversity_stats_dict}
+        return total_loss, stats_dict
 
     def compute_gradient_magnitude(self, policy_batch: AgentBuffer, expert_batch: AgentBuffer) -> torch.Tensor:
         policy_inputs = self.get_state_inputs(policy_batch)
-        expert_inputs = self.get_state_inputs(expert_batch)
+        expert_inputs = self.get_state_inputs_expert(expert_batch)
         interp_inputs = []
         for policy_input, expert_input in zip(policy_inputs, expert_inputs):
             obs_epsilon = torch.rand(policy_input.shape)
@@ -219,8 +265,9 @@ class DiscriminatorEncoder(nn.Module):
         new_latents = self.sample_latents(batch_size)
         new_policy_batch = self.replace_latents(policy_batch, new_latents)
         new_policy_actions = self.get_actions(policy, new_policy_batch)
-        clipped_policy_actions = torch.clamp(policy_actions, -1.0, 1.0)
-        clipped_new_policy_actions = torch.clamp(new_policy_actions, -1.0, 1.0)
+        # clipping here  just like we do when stepping the environment
+        clipped_policy_actions = torch.clamp(policy_actions, -3.0, 3.0) / 3.0
+        clipped_new_policy_actions = torch.clamp(new_policy_actions, -3.0, 3.0) / 3.0
         a_diff = clipped_policy_actions - clipped_new_policy_actions
         a_diff = torch.mean(torch.square(a_diff), dim=-1)
         new_latents = torch.as_tensor(new_latents, dtype=torch.float)
@@ -228,7 +275,7 @@ class DiscriminatorEncoder(nn.Module):
         z_diff = torch.sum(z_diff, dim=-1)
         z_diff = 0.5 - 0.5 * z_diff
         diversity_bonus = a_diff / (z_diff + 1e-5)
-        total_loss += torch.square(1.0 - diversity_bonus).mean()
+        total_loss += torch.mean(torch.square(1.0 - diversity_bonus))
         stats_dict["Losses/ASE Diversity Loss"] = total_loss.item()
         return total_loss, stats_dict
 
@@ -248,7 +295,6 @@ class DiscriminatorEncoder(nn.Module):
         return enc_reward
 
     def _calc_disc_reward(self, discriminator_prediction: torch.Tensor) -> torch.Tensor:
-        # prob = 1 / (1 + torch.exp(-discriminator_prediction))
         disc_reward = -torch.log(
             torch.maximum(1 - discriminator_prediction, torch.tensor(0.0001, device=default_device())))
         disc_reward *= self.discriminator_reward_scale

@@ -17,13 +17,14 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       ase:
-        latent_dim: 8
+        latent_dim: 2
         latent_steps_min: 1
-        latent_steps_max: 150
+        latent_steps_max: 100
         batch_size: 1024
         demo_path: /home/miguelalonsojr/Projects/rle/Demos/A1
-        learning_rate: 2e-5
+        learning_rate: 0.0003
         network_settings:
+          normalize: true
           hidden_units: 512
           num_layers: 3
           vis_encode_type: simple

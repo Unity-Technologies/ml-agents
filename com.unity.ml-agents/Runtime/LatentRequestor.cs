@@ -62,12 +62,12 @@ namespace Unity.MLAgents
             }
         }
 
-        void ResetLatents()
+        public void ResetLatents()
         {
             SampleLatents(out m_Latents, m_LatentSize);
         }
 
-        void ResetLatentStepCounts()
+        public void ResetLatentStepCounts()
         {
             m_LatentStepCount = Random.Range(LatentStepsMin, LatentStepsMax);
         }
