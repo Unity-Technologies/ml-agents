@@ -17,10 +17,10 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       ase:
-        latent_dim: 2
+        latent_dim: 3
         latent_steps_min: 1
         latent_steps_max: 100
-        batch_size: 1024
+        batch_size: 256
         demo_path: /home/miguelalonsojr/Projects/rle/Demos/A1
         learning_rate: 0.0003
         network_settings:
