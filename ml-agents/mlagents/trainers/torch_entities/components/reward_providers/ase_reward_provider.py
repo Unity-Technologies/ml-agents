@@ -6,7 +6,7 @@ import numpy as np
 from mlagents.torch_utils import nn, torch, default_device
 from mlagents.trainers.buffer import AgentBuffer, AgentBufferField
 from mlagents.trainers.demo_loader import demo_to_buffer
-from mlagents.trainers.exception import TrainerConfigError
+from mlagents.trainers.exception import TrainerConfigError, TrainerError
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import ASESettings, NetworkSettings
 from mlagents.trainers.torch_entities.action_flattener import ActionFlattener
@@ -29,6 +29,7 @@ class ASERewardProvider(BaseRewardProvider):
         params = list(self._discriminator_encoder.parameters())
         self.optimizer = torch.optim.Adam(params, lr=settings.learning_rate)
         self.diversity_objective_weight = settings.omega_do
+        self.update_batch_size = settings.batch_size
 
     def evaluate(self, mini_batch: AgentBuffer) -> np.ndarray:
         with torch.no_grad():
@@ -39,9 +40,14 @@ class ASERewardProvider(BaseRewardProvider):
 
     def update(self, mini_batch: AgentBuffer) -> Dict[str, np.ndarray]:
         expert_batch = self._demo_buffer.sample_mini_batch(
-            mini_batch.num_experiences, 1
+            self.update_batch_size, 1
         )
-        # self._discriminator_encoder.update_latents(expert_batch, mini_batch)
+
+        if self.update_batch_size > mini_batch.num_experiences:
+            raise TrainerError('Discriminator batch size should be less than Policy batch size.')
+
+        if self.update_batch_size < mini_batch.num_experiences:
+            mini_batch = mini_batch.sample_mini_batch(self.update_batch_size)
 
         self._discriminator_encoder.discriminator_network_body.update_normalization(expert_batch)
 
