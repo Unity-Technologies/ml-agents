@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
@@ -45,7 +46,8 @@ namespace Unity.MLAgents.Extensions.Sensors
             else
             {
                 rbs = rootGameObject.GetComponentsInChildren<Rigidbody>();
-                joints = rootGameObject.GetComponentsInChildren<Joint>();
+                // joints = rootGameObject.GetComponentsInChildren<Joint>();
+                joints = PopulateJoints(rootBody);
             }
 
             if (rbs == null || rbs.Length == 0)
@@ -119,6 +121,16 @@ namespace Unity.MLAgents.Extensions.Sensors
                     }
                 }
             }
+        }
+
+        protected internal Joint[] PopulateJoints(Rigidbody rootBody)
+        {
+            var jointHash = new HashSet<Joint>(rootBody.GetComponentsInChildren<Joint>());
+            var rootJoint = rootBody.GetComponent<Joint>();
+            if (jointHash.Contains(rootJoint))
+                jointHash.Remove(rootJoint);
+            var joints = jointHash.ToArray();
+            return joints;
         }
 
         /// <inheritdoc/>
