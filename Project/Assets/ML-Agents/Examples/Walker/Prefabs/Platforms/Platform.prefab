@@ -110,7 +110,7 @@ PrefabInstance:
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Name
-      value: Platform
+      value: PlatformDynamicTarget
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f0d7741d9e06247f6843b921a206b978, type: 3}
@@ -132,6 +132,12 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 71fe1fe4f177841a1b4b85987277495c,
+        type: 3}
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: target
