@@ -30,6 +30,10 @@ TagManager:
   - purpleAgent
   - purpleGoal
   - tile
+  - key
+  - portal
+  - dragon
+  - lock
   layers:
   - Default
   - TransparentFX
@@ -40,7 +44,7 @@ TagManager:
   - 
   - 
   - invisible
-  - 
+  - ground
   - 
   - 
   - 
