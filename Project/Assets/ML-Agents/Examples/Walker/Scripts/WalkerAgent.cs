@@ -286,6 +286,14 @@ public class WalkerAgent : Agent
     }
 
     /// <summary>
+    /// Penalize for touching ground
+    /// </summary>
+    public void TouchedGroundPenalty()
+    {
+        AddReward(1f);
+    }
+
+    /// <summary>
     /// Agent touched the target
     /// </summary>
     public void TouchedTarget()
