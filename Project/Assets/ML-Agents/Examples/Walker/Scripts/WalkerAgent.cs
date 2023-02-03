@@ -302,6 +302,6 @@ public class WalkerAgent : Agent
 
     public void SetResetParameters()
     {
-        SetTorsoMass();
+        // SetTorsoMass();
     }
 }

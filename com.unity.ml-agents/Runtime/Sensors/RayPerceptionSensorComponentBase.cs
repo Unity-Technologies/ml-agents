@@ -259,6 +259,11 @@ namespace Unity.MLAgents.Sensors
             // Example:
             // { 90 - 3*delta, 90 - 2*delta, ..., 90, 90 + delta, ..., 90 + 3*delta }
             var anglesOut = new float[2 * raysPerDirection + 1];
+            if (raysPerDirection == 0)
+            {
+                anglesOut[0] = 90f;
+                return anglesOut;
+            }
             var delta = maxRayDegrees / raysPerDirection;
 
             for (var i = 0; i < 2 * raysPerDirection + 1; i++)
