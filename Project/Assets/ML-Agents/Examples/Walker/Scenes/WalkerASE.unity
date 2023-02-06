@@ -228,7 +228,7 @@ MonoBehaviour:
   baseArea: {fileID: 8696566603089734643}
   numAreas: 1
   separation: 30
-  buildOnly: 1
+  buildOnly: 0
 --- !u!850595691 &579492083
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -866,12 +866,22 @@ PrefabInstance:
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: MaxStep
-      value: 0
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: recordingMode
-      value: 1
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_BehaviorName
+      value: WalkerASE
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_BehaviorType
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -881,7 +891,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.137
+      value: 0.207
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -891,7 +901,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: Record
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -902,6 +912,81 @@ PrefabInstance:
         type: 3}
       propertyPath: DemonstrationDirectory
       value: /Users/miguel.alonso/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: kinematicRoot
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].originalPosition.y
+      value: 0.952
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].originalPosition.y
+      value: 1.2703899
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].originalPosition.y
+      value: 1.67704
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[3].originalPosition.y
+      value: 0.85899997
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].originalPosition.y
+      value: 0.49000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].originalPosition.y
+      value: 0.18100008
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[6].originalPosition.y
+      value: 0.85899997
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].originalPosition.y
+      value: 0.49000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].originalPosition.y
+      value: 0.18100008
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[9].originalPosition.y
+      value: 1.44304
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[10].originalPosition.y
+      value: 1.44304
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].originalPosition.y
+      value: 1.44304
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[12].originalPosition.y
+      value: 1.44304
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[13].originalPosition.y
+      value: 1.44304
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256298651735, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

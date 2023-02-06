@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using RootMotion.Dynamics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -51,7 +53,7 @@ public class WalkerASEAgent : Agent
     {
         root.position = m_OriginalPosition;
         root.rotation = m_OriginalRotation;
-        // StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
+        StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
     }
 
     public override void CollectObservations(VectorSensor sensor)

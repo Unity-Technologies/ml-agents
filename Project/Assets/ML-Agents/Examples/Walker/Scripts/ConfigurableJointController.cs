@@ -196,8 +196,8 @@ public class ConfigurableJointController : MonoBehaviour
                     -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
                     m_ConfigurableJointChain[i + 1].angularZLimit.limit
                 );
-                cjControlSettings[i].originalPosition = m_ConfigurableJointChain[i].transform.position;
-                cjControlSettings[i].originalRotation = m_ConfigurableJointChain[i].transform.rotation;
+                cjControlSettings[i].originalPosition = m_ConfigurableJointChain[i].transform.localPosition;
+                cjControlSettings[i].originalRotation = m_ConfigurableJointChain[i].transform.localRotation;
             }
         }
         if (totalMass == 0)
