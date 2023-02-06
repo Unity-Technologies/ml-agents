@@ -51,6 +51,7 @@ public class WalkerASEAgent : Agent
     {
         root.position = m_OriginalPosition;
         root.rotation = m_OriginalRotation;
+        // StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
     }
 
     public override void CollectObservations(VectorSensor sensor)

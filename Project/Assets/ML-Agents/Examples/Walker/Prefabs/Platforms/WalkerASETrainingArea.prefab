@@ -4173,7 +4173,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256198295374}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.323, z: 0}
+  m_LocalPosition: {x: 0, y: 0.124, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4424,7 +4424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    EmbeddingSize: 0
+    EmbeddingSize: 4
     VectorObservationSize: 14
     NumStackedVectorObservations: 1
     m_ActionSpec:
@@ -4437,7 +4437,7 @@ MonoBehaviour:
   m_Model: {fileID: 0}
   m_InferenceDevice: 0
   m_BehaviorType: 0
-  m_BehaviorName: Walker
+  m_BehaviorName: WalkerASE
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
@@ -4458,7 +4458,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 0
+  MaxStep: 500
   recordingMode: 0
   root: {fileID: 5695505378220711187}
   rootRB: {fileID: 6103056255504246154}

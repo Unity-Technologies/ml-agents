@@ -119,7 +119,6 @@ public class ConfigurableJointController : MonoBehaviour
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
         m_RootOriginalPosition = hips.position;
         m_RootOriginalRotation = hips.rotation;
-        StartCoroutine(ResetCJointTargetsAndPositions());
     }
 
     // Update is called once per frame
