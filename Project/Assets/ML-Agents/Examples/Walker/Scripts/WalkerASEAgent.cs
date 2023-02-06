@@ -17,11 +17,13 @@ public class WalkerASEAgent : Agent
     Quaternion m_OriginalRotation;
 
     ConfigurableJointController m_Controller;
+    LatentRequestor m_LatentRequestor;
 
     public override void Initialize()
     {
         m_OriginalPosition = root.position;
         m_OriginalRotation = root.rotation;
+        m_LatentRequestor = GetComponent<LatentRequestor>();
         m_Controller = GetComponent<ConfigurableJointController>();
         if (!recordingMode)
         {
@@ -63,7 +65,14 @@ public class WalkerASEAgent : Agent
 
     public override void CollectEmbedding(VectorSensor embedding)
     {
-
+        // TODO Move this into the base agent script to avoid having to have the dervied agent script do it.
+        if (embedding != null && embedding.ObservationSize() > 0)
+        {
+            if (Academy.Instance.IsCommunicatorOn || !recordingMode)
+            {
+                embedding.AddObservation(m_LatentRequestor.Latents);
+            }
+        }
     }
 
     public override void OnActionReceived(ActionBuffers actionBuffers)

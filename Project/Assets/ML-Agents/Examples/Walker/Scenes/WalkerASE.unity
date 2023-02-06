@@ -693,6 +693,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: MaxStep
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_BrainParameters.EmbeddingSize
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.124
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2434e2e6b8355407fb42b513cedf5ac7, type: 3}
 --- !u!1 &8696566603089734643 stripped
