@@ -149,6 +149,7 @@ class UnityEnvironment(BaseEnv):
         base_port: Optional[int] = None,
         seed: int = 0,
         no_graphics: bool = False,
+        no_graphics_monitor: bool = False,
         timeout_wait: int = 60,
         additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
@@ -172,7 +173,7 @@ class UnityEnvironment(BaseEnv):
         """
         atexit.register(self._close)
         self._additional_args = additional_args or []
-        self._no_graphics = no_graphics
+        self._no_graphics = no_graphics or (no_graphics_monitor and worker_id != 0)
         # If base port is not specified, use BASE_ENVIRONMENT_PORT if we have
         # an environment, otherwise DEFAULT_EDITOR_PORT
         if base_port is None:

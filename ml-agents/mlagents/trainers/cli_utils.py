@@ -287,7 +287,16 @@ def _create_parser() -> argparse.ArgumentParser:
         default=False,
         action=DetectDefaultStoreTrue,
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
-        "the graphics driver. Use this only if your agents don't use visual observations.",
+        "the graphics driver). Use this only if your agents don't use visual observations.",
+    )
+
+    eng_conf.add_argument(
+        "--no-graphics-monitor",
+        default=False,
+        action=DetectDefaultStoreTrue,
+        help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
+        "the graphics driver). Use this only if your agents don't use visual observations.  Like"
+        "no-graphics but excludes the first executable from using no-graphics mode.",
     )
 
     torch_conf = argparser.add_argument_group(title="Torch Configuration")
