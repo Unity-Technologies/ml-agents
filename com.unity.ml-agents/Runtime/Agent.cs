@@ -1031,8 +1031,12 @@ namespace Unity.MLAgents
 
             if (param.EmbeddingSize > 0)
             {
-                embeddingSensor = new VectorSensor(param.EmbeddingSize, "EmbeddingSensor");
-                sensors.Add(embeddingSensor);
+                var demoRecorder = GetComponent<DemonstrationRecorder>();
+                if (demoRecorder == null || !demoRecorder.Record)
+                {
+                    embeddingSensor = new VectorSensor(param.EmbeddingSize, "EmbeddingSensor");
+                    sensors.Add(embeddingSensor);
+                }
             }
 
             // Sort the Sensors by name to ensure determinism
