@@ -133,7 +133,7 @@ public class ConfigurableJointController : MonoBehaviour
 #if UNITY_EDITOR
     void OnValidate()
     {
-        PopulateParameters(true);
+        PopulateParameters();
     }
 #endif
     void PopulateParameters(bool force = false)
