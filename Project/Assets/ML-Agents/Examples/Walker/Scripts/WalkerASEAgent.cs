@@ -23,8 +23,8 @@ public class WalkerASEAgent : Agent
 
     public override void Initialize()
     {
-        m_OriginalPosition = root.position;
-        m_OriginalRotation = root.rotation;
+        m_OriginalPosition = root.localPosition;
+        m_OriginalRotation = root.localRotation;
         m_LatentRequestor = GetComponent<LatentRequestor>();
         m_Controller = GetComponent<ConfigurableJointController>();
         if (!recordingMode)
@@ -51,8 +51,8 @@ public class WalkerASEAgent : Agent
 
     void ResetAgent()
     {
-        root.position = m_OriginalPosition;
-        root.rotation = m_OriginalRotation;
+        root.localPosition = m_OriginalPosition;
+        root.localRotation = m_OriginalRotation;
         StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
     }
 

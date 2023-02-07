@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6103056254933284733}
   - component: {fileID: 6103056254933284735}
   - component: {fileID: 6103056254933284734}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: upper_arm_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 6103056256180735027}
   - component: {fileID: 6103056256180735037}
   - component: {fileID: 6103056256180735036}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: lower_arm_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -336,7 +336,7 @@ GameObject:
   - component: {fileID: 6103056255752583305}
   - component: {fileID: 6103056255752583307}
   - component: {fileID: 6103056255752583306}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: upper_arm_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -498,7 +498,7 @@ GameObject:
   - component: {fileID: 6103056255888712981}
   - component: {fileID: 6103056255888712983}
   - component: {fileID: 6103056255888712982}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: spine1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -513,7 +513,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2516039415519973548}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.31838995, z: 0}
+  m_LocalPosition: {x: 0, y: 0.3183899, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -661,7 +661,7 @@ GameObject:
   - component: {fileID: 6103056256204109726}
   - component: {fileID: 6103056256204109720}
   - component: {fileID: 6103056256204109727}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: thighL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -676,7 +676,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2714333739688006260}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0.13199802, y: -0.092999935, z: 0}
+  m_LocalPosition: {x: -0.13199802, y: -0.093000054, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1377,7 +1377,7 @@ GameObject:
   - component: {fileID: 6103056255951391323}
   - component: {fileID: 6103056255951391322}
   - component: {fileID: 6103056255951391321}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: head
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1541,7 +1541,7 @@ GameObject:
   - component: {fileID: 6103056255013271630}
   - component: {fileID: 6103056255013271629}
   - component: {fileID: 6103056255013271628}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: shinR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1556,7 +1556,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4437022868084351901}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.36900002, z: 0}
+  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1702,7 +1702,7 @@ GameObject:
   - component: {fileID: 5895615088805150558}
   - component: {fileID: 6103056256353094211}
   - component: {fileID: 6103056256353094210}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: footL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1850,7 +1850,7 @@ GameObject:
   - component: {fileID: 6103056256128813069}
   - component: {fileID: 6103056256128813068}
   - component: {fileID: 6103056256128813059}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: thighR
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1865,7 +1865,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5199116627788585722}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.13199802, y: -0.092999935, z: 0}
+  m_LocalPosition: {x: 0.13199802, y: -0.093000054, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2012,7 +2012,7 @@ GameObject:
   - component: {fileID: 6103056255532436971}
   - component: {fileID: 6103056255532436981}
   - component: {fileID: 6103056255532436980}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: shinL
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2027,7 +2027,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574458696170048728}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.36900002, z: 0}
+  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2173,7 +2173,7 @@ GameObject:
   - component: {fileID: 6103056254593598220}
   - component: {fileID: 6103056254593598222}
   - component: {fileID: 6103056254593598221}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: lower_arm_RMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2287,7 +2287,7 @@ GameObject:
   - component: {fileID: 6103056254682721875}
   - component: {fileID: 6103056254682721885}
   - component: {fileID: 6103056254682721884}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shinRMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2435,7 +2435,7 @@ GameObject:
   - component: {fileID: 6103056254741763404}
   - component: {fileID: 6103056254741763406}
   - component: {fileID: 6103056254741763405}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: footRMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2582,7 +2582,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6103056254974914573}
   - component: {fileID: 6103056254974914572}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Foot Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2660,7 +2660,7 @@ GameObject:
   - component: {fileID: 6103056255083879368}
   - component: {fileID: 6103056255083879370}
   - component: {fileID: 6103056255083879369}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: shinLMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2743,7 +2743,7 @@ GameObject:
   - component: {fileID: 6103056255126589556}
   - component: {fileID: 6103056255126589558}
   - component: {fileID: 6103056255126589557}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: headMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2826,7 +2826,7 @@ GameObject:
   - component: {fileID: 6103056255143388312}
   - component: {fileID: 6103056255143388314}
   - component: {fileID: 6103056255143388313}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: upper_arm_LMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2941,7 +2941,7 @@ GameObject:
   - component: {fileID: 6103056255206904861}
   - component: {fileID: 6103056255206904863}
   - component: {fileID: 6103056255206904862}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: thighLMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3056,7 +3056,7 @@ GameObject:
   - component: {fileID: 6103056255259300608}
   - component: {fileID: 6103056255259300610}
   - component: {fileID: 6103056255259300609}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: thighRMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3139,7 +3139,7 @@ GameObject:
   - component: {fileID: 6103056255301904744}
   - component: {fileID: 6103056255301904746}
   - component: {fileID: 6103056255301904745}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: chestsMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3286,7 +3286,7 @@ GameObject:
   - component: {fileID: 6103056255356067569}
   - component: {fileID: 6103056255356067571}
   - component: {fileID: 6103056255356067570}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: upper_arm_RMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3369,7 +3369,7 @@ GameObject:
   - component: {fileID: 6103056255483399484}
   - component: {fileID: 6103056255483399486}
   - component: {fileID: 6103056255483399485}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: pupil
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3516,7 +3516,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6103056255648522174}
   - component: {fileID: 6103056255648522175}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: Foot Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3627,7 +3627,7 @@ GameObject:
   - component: {fileID: 6103056255799613329}
   - component: {fileID: 6103056255799613331}
   - component: {fileID: 6103056255799613330}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: footLMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3805,7 +3805,7 @@ GameObject:
   - component: {fileID: 6103056255853632615}
   - component: {fileID: 6103056255853632609}
   - component: {fileID: 6103056255853632608}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: hand_LMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3953,7 +3953,7 @@ GameObject:
   - component: {fileID: 6103056255997702176}
   - component: {fileID: 6103056255997702178}
   - component: {fileID: 6103056255997702177}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: spineMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4100,7 +4100,7 @@ Animator:
   m_GameObject: {fileID: 6103056256137765976}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 50266c2fce82a40ecab960553f05bf25, type: 3}
-  m_Controller: {fileID: 9100000, guid: a3b2662b56ec9481e9e0327a30d7c02d, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -4173,7 +4173,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256198295374}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.124, z: 0}
+  m_LocalPosition: {x: 0, y: 0.207, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4201,7 +4201,7 @@ MonoBehaviour:
   totalMass: 62.300007
   cjControlSettings:
   - name: spine1
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -30
@@ -4212,10 +4212,10 @@ MonoBehaviour:
       zRange:
         low: -30
         high: 10
-    originalPosition: {x: 0, y: 1.217, z: 0}
+    originalPosition: {x: 0, y: 0.81500006, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: head
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -30
@@ -4226,10 +4226,10 @@ MonoBehaviour:
       zRange:
         low: -30
         high: 30
-    originalPosition: {x: 0, y: 1.5353899, z: 0}
+    originalPosition: {x: 0, y: 0.3183899, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: thighL
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -120
@@ -4240,10 +4240,10 @@ MonoBehaviour:
       zRange:
         low: -120
         high: 35
-    originalPosition: {x: 0, y: 1.94204, z: 0}
+    originalPosition: {x: 0, y: 0.40665007, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: shinL
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
@@ -4254,10 +4254,10 @@ MonoBehaviour:
       zRange:
         low: 0
         high: 140
-    originalPosition: {x: -0.13199802, y: 1.1240001, z: 0}
+    originalPosition: {x: -0.13199802, y: -0.093000054, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: footL
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -50
@@ -4268,10 +4268,10 @@ MonoBehaviour:
       zRange:
         low: -50
         high: 50
-    originalPosition: {x: -0.13199802, y: 0.75500005, z: 0}
+    originalPosition: {x: 0, y: -0.36899996, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: thighR
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -120
@@ -4282,10 +4282,10 @@ MonoBehaviour:
       zRange:
         low: -120
         high: 35
-    originalPosition: {x: -0.13199802, y: 0.4460001, z: 0}
-    originalRotation: {x: -0, y: -0, z: -0, w: 1}
+    originalPosition: {x: 0, y: -0.30899996, z: 0}
+    originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: shinR
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
@@ -4296,10 +4296,10 @@ MonoBehaviour:
       zRange:
         low: 0
         high: 140
-    originalPosition: {x: 0.13199802, y: 1.1240001, z: 0}
+    originalPosition: {x: 0.13199802, y: -0.093000054, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: footR
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -50
@@ -4310,10 +4310,10 @@ MonoBehaviour:
       zRange:
         low: -50
         high: 50
-    originalPosition: {x: 0.13199802, y: 0.75500005, z: 0}
+    originalPosition: {x: 0, y: -0.36899996, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_L
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -35
@@ -4324,10 +4324,10 @@ MonoBehaviour:
       zRange:
         low: -35
         high: 120
-    originalPosition: {x: 0.13199802, y: 0.4460001, z: 0}
-    originalRotation: {x: -0, y: -0, z: -0, w: 1}
+    originalPosition: {x: 0, y: -0.30899996, z: 0}
+    originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: lower_arm_L
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
@@ -4338,10 +4338,10 @@ MonoBehaviour:
       zRange:
         low: 0
         high: 140
-    originalPosition: {x: -0.22999997, y: 1.70804, z: 0}
+    originalPosition: {x: -0.22999997, y: 0.1726501, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: hand_L
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -50
@@ -4352,10 +4352,10 @@ MonoBehaviour:
       zRange:
         low: -50
         high: 50
-    originalPosition: {x: -0.594, y: 1.70804, z: 0}
+    originalPosition: {x: -0.36400002, y: 0, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_R
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -35
@@ -4366,10 +4366,10 @@ MonoBehaviour:
       zRange:
         low: -35
         high: 120
-    originalPosition: {x: -0.906, y: 1.70804, z: 0}
-    originalRotation: {x: -0, y: -0, z: -0, w: 1}
+    originalPosition: {x: -0.31200004, y: 0, z: 0}
+    originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: lower_arm_R
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
@@ -4380,10 +4380,10 @@ MonoBehaviour:
       zRange:
         low: 0
         high: 140
-    originalPosition: {x: 0.22999997, y: 1.70804, z: 0}
+    originalPosition: {x: 0.22999997, y: 0.1726501, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: hand_R
-    target: {x: 0, y: 0, z: 0}
+    target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: -50
@@ -4394,7 +4394,7 @@ MonoBehaviour:
       zRange:
         low: -50
         high: 50
-    originalPosition: {x: 0.594, y: 1.70804, z: 0}
+    originalPosition: {x: 0.36400002, y: 0, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   hips: {fileID: 5695505378220711187}
   spine: {fileID: 8391173942996693157}
@@ -4528,8 +4528,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Record: 0
   NumStepsToRecord: 100
-  DemonstrationName: 
-  DemonstrationDirectory: 
+  DemonstrationName: WalkerSoccerKick
+  DemonstrationDirectory: /Users/miguel.alonso/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
 --- !u!1 &6103056256298651735
 GameObject:
   m_ObjectHideFlags: 0
@@ -4541,7 +4541,7 @@ GameObject:
   - component: {fileID: 6103056256298651728}
   - component: {fileID: 6103056256298651730}
   - component: {fileID: 6103056256298651729}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: lower_arm_LMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4656,7 +4656,7 @@ GameObject:
   - component: {fileID: 6103056256390253572}
   - component: {fileID: 6103056256390253574}
   - component: {fileID: 6103056256390253573}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: hipsMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4801,7 +4801,7 @@ GameObject:
   - component: {fileID: 6103056256512020753}
   - component: {fileID: 6103056256512020755}
   - component: {fileID: 6103056256512020754}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: pupil_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4915,7 +4915,7 @@ GameObject:
   - component: {fileID: 6103056256609361570}
   - component: {fileID: 6103056256609361580}
   - component: {fileID: 6103056256609361571}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: headband
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -4998,7 +4998,7 @@ GameObject:
   - component: {fileID: 6103056256677718038}
   - component: {fileID: 6103056256677718032}
   - component: {fileID: 6103056256677718039}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: hand_RMesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5656,7 +5656,7 @@ GameObject:
   - component: {fileID: 6103056255251560455}
   - component: {fileID: 6103056255251560449}
   - component: {fileID: 6103056255251560448}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: lower_arm_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5818,7 +5818,7 @@ GameObject:
   - component: {fileID: 6103056256207473221}
   - component: {fileID: 6103056256207473220}
   - component: {fileID: 6103056256207473211}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: hand_R
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5979,7 +5979,7 @@ GameObject:
   - component: {fileID: 6103056255504246154}
   - component: {fileID: 6103056255504246153}
   - component: {fileID: 6103056255504246152}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: hips
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5994,7 +5994,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7932528797331101767}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.815, z: 0}
+  m_LocalPosition: {x: 0, y: 0.81500006, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6143,7 +6143,7 @@ GameObject:
   - component: {fileID: 6103056254605252002}
   - component: {fileID: 6103056254605252001}
   - component: {fileID: 6103056254605252000}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: hand_L
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -6303,7 +6303,7 @@ GameObject:
   - component: {fileID: 1034208674109153868}
   - component: {fileID: 6103056254663104004}
   - component: {fileID: 6103056254663104251}
-  m_Layer: 9
+  m_Layer: 3
   m_Name: footR
   m_TagString: Untagged
   m_Icon: {fileID: 0}

@@ -117,8 +117,8 @@ public class ConfigurableJointController : MonoBehaviour
         m_IsAgentNull = m_Agent == null;
         PopulateParameters();
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
-        m_RootOriginalPosition = hips.position;
-        m_RootOriginalRotation = hips.rotation;
+        m_RootOriginalPosition = hips.localPosition;
+        m_RootOriginalRotation = hips.localRotation;
     }
 
     // Update is called once per frame
@@ -133,7 +133,7 @@ public class ConfigurableJointController : MonoBehaviour
 #if UNITY_EDITOR
     void OnValidate()
     {
-        PopulateParameters();
+        PopulateParameters(true);
     }
 #endif
     void PopulateParameters(bool force = false)
@@ -238,18 +238,18 @@ public class ConfigurableJointController : MonoBehaviour
     {
         for (int i = 0; i < cjControlSettings.Length; i++)
         {
-            m_RigidbodyChain[i + 1].transform.position = cjControlSettings[i].originalPosition;
-            m_RigidbodyChain[i + 1].transform.rotation = cjControlSettings[i].originalRotation;
+            m_RigidbodyChain[i + 1].transform.localPosition = cjControlSettings[i].originalPosition;
+            m_RigidbodyChain[i + 1].transform.localRotation = cjControlSettings[i].originalRotation;
         }
     }
 
     public IEnumerator ResetCJointTargetsAndPositions()
     {
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = true;
-        ZeroCJointPhysics();
         ZeroCJointPhysicsSettings();
-        // yield return new WaitForSeconds(1.0f / 50);
         SetCJointPositionsAndRotations();
+        ZeroCJointPhysics();
+        yield return new WaitForSeconds(1.0f / 50);
         SetCJointTargets();
         SetCJointPhysicsSettings();
         yield return new WaitForSeconds(1.0f / 50);
