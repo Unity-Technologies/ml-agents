@@ -183,7 +183,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)
         self.optimizer.zero_grad()
-        self.loss.backward()
+        self.loss.backward()  # type: ignore
 
         self.optimizer.step()
         update_stats = {

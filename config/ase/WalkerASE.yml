@@ -44,5 +44,5 @@ behaviors:
 #      strength: 1.0
 #      samples_per_update: 0
 env_settings:
-#   num_envs: 8
+   num_envs: 8
    num_areas: 8

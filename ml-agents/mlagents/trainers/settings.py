@@ -190,7 +190,7 @@ class RewardSignalType(Enum):
             RewardSignalType.GAIL: GAILSettings,
             RewardSignalType.CURIOSITY: CuriositySettings,
             RewardSignalType.RND: RNDSettings,
-            RewardSignalType.ASE: ASESettings
+            RewardSignalType.ASE: ASESettings,
         }
         return _mapping[self]
 
@@ -861,6 +861,7 @@ class EngineSettings:
     target_frame_rate: int = parser.get_default("target_frame_rate")
     capture_frame_rate: int = parser.get_default("capture_frame_rate")
     no_graphics: bool = parser.get_default("no_graphics")
+    no_graphics_monitor: bool = parser.get_default("no_graphics_monitor")
 
 
 @attr.s(auto_attribs=True)
