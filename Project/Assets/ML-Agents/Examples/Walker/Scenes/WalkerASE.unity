@@ -430,7 +430,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 290a56593a2654fb88d314b6b7d94b9b, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: recordingMode
@@ -441,10 +441,30 @@ PrefabInstance:
       propertyPath: m_BrainParameters.EmbeddingSize
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: Record
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: DemonstrationName
+      value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: DemonstrationDirectory
+      value: 
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2434e2e6b8355407fb42b513cedf5ac7, type: 3}
