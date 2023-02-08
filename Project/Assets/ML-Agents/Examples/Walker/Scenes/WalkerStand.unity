@@ -417,6 +417,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1034208674109153868, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3089999
+      objectReference: {fileID: 0}
     - target: {fileID: 3171097550958330743, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_Name
@@ -485,7 +490,32 @@ PrefabInstance:
     - target: {fileID: 5695505378220711187, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.81500006
+      value: 0.815
+      objectReference: {fileID: 0}
+    - target: {fileID: 5895615088805150558, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: -0.3089999
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_Axis.x
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_SecondaryAxis.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_SecondaryAxis.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_SecondaryAxis.z
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256137765978, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -507,6 +537,11 @@ PrefabInstance:
       propertyPath: randomDropProbability
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: randomStandProbability
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_Model
@@ -525,7 +560,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 20
+      value: 21
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -535,7 +570,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.142
+      value: 0.135
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -557,45 +592,20 @@ PrefabInstance:
       propertyPath: DemonstrationDirectory
       value: 
       objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
-      propertyPath: spring
-      value: 2500
-      objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
-        type: 3}
-      propertyPath: damping
-      value: 250
-      objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
-        type: 3}
-      propertyPath: forceLimit
-      value: 1000
-      objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
-        type: 3}
-      propertyPath: kinematicRoot
+      propertyPath: m_SecondaryAxis.x
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
-      propertyPath: cjControlSettings.Array.data[0].originalPosition.y
-      value: 0.81499994
+      propertyPath: m_SecondaryAxis.y
+      value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
-      propertyPath: cjControlSettings.Array.data[1].originalPosition.y
-      value: 0.31839
-      objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
-        type: 3}
-      propertyPath: cjControlSettings.Array.data[3].originalPosition.y
-      value: -0.092999935
-      objectReference: {fileID: 0}
-    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
-        type: 3}
-      propertyPath: cjControlSettings.Array.data[6].originalPosition.y
-      value: -0.092999935
+      propertyPath: m_SecondaryAxis.z
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8154599202656643336, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -605,7 +615,7 @@ PrefabInstance:
     - target: {fileID: 8391173942996693157, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.3183899
+      value: 0.31838995
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2434e2e6b8355407fb42b513cedf5ac7, type: 3}

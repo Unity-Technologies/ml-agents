@@ -27,8 +27,8 @@ public class Range3D
     public Range3D(float xLow, float xHigh, float yLow, float yHigh, float zLow, float zHigh)
     {
         xRange = new Range(xLow, xHigh);
-        yRange = new Range(xLow, xHigh);
-        zRange = new Range(xLow, xHigh);
+        yRange = new Range(yLow, yHigh);
+        zRange = new Range(zLow, zHigh);
     }
 }
 
