@@ -292,4 +292,9 @@ public class ConfigurableJointController : MonoBehaviour
         }
     }
 
+    public void SetPosRot(Vector3 position, Quaternion rotation)
+    {
+        m_ConfigurableJointChain[0].transform.localPosition = position;
+        m_ConfigurableJointChain[0].transform.localRotation = rotation;
+    }
 }

@@ -11,6 +11,17 @@ public class WalkerASEAgent : Agent
     public Transform root;
     public Transform chest;
     public Rigidbody rootRB;
+    [Range(0f, 1f)]
+    public float randomDropProbability;
+
+    [Range(0f, 1f)]
+    public float randomStandProbability;
+
+    [Range(0f, 5f)]
+    public float minSpawnHeight = 2f;
+
+    [Range(0f, 5f)]
+    public float maxSpawnHeight = 4f;
 
     public float StartHeight => m_StartingHeight;
     public int DecisionPeriod => m_DecisionPeriod;
@@ -61,9 +72,44 @@ public class WalkerASEAgent : Agent
 
     void ResetAgent()
     {
-        root.localPosition = m_OriginalPosition;
-        root.localRotation = m_OriginalRotation;
-        StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
+        float[] angles = new float[m_Controller.cjControlSettings.Length * 3];
+        for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
+        {
+            angles[i] = Random.Range(-1f, 1f);
+        }
+
+        var rand = Random.Range(0f, 1f);
+
+        if (rand <= randomDropProbability)
+        {
+            var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
+            var rot = GetRandomRotation();
+            m_Controller.SetPosRot(pos, rot);
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
+        }
+        else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)
+        {
+
+            m_Controller.SetPosRot(m_OriginalPosition, m_OriginalRotation);
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
+        }
+        else
+        {
+            // TODO reset to original position with randomized joint angles
+        }
+
+    }
+
+    private Quaternion GetRandomRotation()
+    {
+        return Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
+    }
+
+    private Vector3 GetRandomSpawnPosition(float yMin, float yMax)
+    {
+        var randomPosY = Random.Range(yMin, yMax);
+        var randomSpawnPos = new Vector3(m_OriginalPosition.x, randomPosY, m_OriginalPosition.y);
+        return randomSpawnPos;
     }
 
     public override void CollectObservations(VectorSensor sensor)
