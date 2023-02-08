@@ -14,7 +14,7 @@ behaviors:
       epsilon_schedule: constant
     network_settings:
       normalize: true
-      hidden_units: 256
+      hidden_units: 512
       num_layers: 3
       vis_encode_type: simple
     reward_signals:
@@ -26,11 +26,11 @@ behaviors:
         omega_do: 0.01
         encoder_scaling: 1.0
         batch_size: 1024
-        demo_path: /Users/miguel.alonso/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
+        demo_path: /home/miguelalonsojr/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
         learning_rate: 0.000025
         network_settings:
           normalize: true
-          hidden_units: 256
+          hidden_units: 512
           num_layers: 3
           vis_encode_type: simple
     keep_checkpoints: 100

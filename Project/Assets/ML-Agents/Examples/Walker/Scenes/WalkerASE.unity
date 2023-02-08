@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971174, g: 0.4997772, b: 0.57563627, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -480,6 +480,21 @@ PrefabInstance:
         type: 3}
       propertyPath: DemonstrationDirectory
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: spring
+      value: 10000
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: damping
+      value: 250
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: forceLimit
+      value: 1000
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

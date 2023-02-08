@@ -39,6 +39,11 @@ public class WalkerASEAgent : Agent
     public override void OnEpisodeBegin()
     {
         ResetAgent();
+        if (m_LatentRequestor != null)
+        {
+            m_LatentRequestor.ResetLatents();
+            m_LatentRequestor.ResetLatentStepCounts();
+        }
         if (recordingMode)
         {
             ResetAnimation();
