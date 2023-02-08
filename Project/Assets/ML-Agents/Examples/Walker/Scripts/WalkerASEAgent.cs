@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using RootMotion.Dynamics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -13,13 +9,19 @@ public class WalkerASEAgent : Agent
     public bool recordingMode;
 
     public Transform root;
+    public Transform chest;
     public Rigidbody rootRB;
+
+    public float StartHeight => m_StartingHeight;
+    public int DecisionPeriod => m_DecisionPeriod;
 
     Vector3 m_OriginalPosition;
     Quaternion m_OriginalRotation;
 
     ConfigurableJointController m_Controller;
     LatentRequestor m_LatentRequestor;
+    private float m_StartingHeight;
+    private int m_DecisionPeriod;
 
     public override void Initialize()
     {
@@ -34,6 +36,9 @@ public class WalkerASEAgent : Agent
             Destroy(puppetMaster);
             Destroy(animator.gameObject);
         }
+
+        m_StartingHeight = GetRootHeightFromGround();
+        m_DecisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
     }
 
     public override void OnEpisodeBegin()
@@ -64,6 +69,7 @@ public class WalkerASEAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(GetRootHeightFromGround());
+        sensor.AddObservation(GetChestBalance());
         sensor.AddObservation(GetRootBalance());
         sensor.AddObservation(root.up);
         sensor.AddObservation(root.forward);
@@ -93,7 +99,6 @@ public class WalkerASEAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
-        // add control from editor component
         for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
         {
             var target = m_Controller.cjControlSettings[i].target;
@@ -105,7 +110,7 @@ public class WalkerASEAgent : Agent
 
     }
 
-    float GetRootHeightFromGround()
+    public float GetRootHeightFromGround()
     {
         int layerMask = 1 << 3;
         layerMask = ~layerMask;
@@ -113,9 +118,15 @@ public class WalkerASEAgent : Agent
         return raycastHit.distance;
     }
 
-    float GetRootBalance()
+    public float GetRootBalance()
     {
         var agentUp = root.transform.TransformDirection(Vector3.up);
+        return Vector3.Dot(agentUp, Vector3.up);
+    }
+
+    public float GetChestBalance()
+    {
+        var agentUp = chest.transform.TransformDirection(Vector3.up);
         return Vector3.Dot(agentUp, Vector3.up);
     }
 
