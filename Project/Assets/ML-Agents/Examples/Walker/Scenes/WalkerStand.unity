@@ -509,8 +509,24 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
+      propertyPath: m_Model
+      value: 
+      objectReference: {fileID: 5022602860645237092, guid: 87d5e95ca751790fd8e13a2b3e53cf2c,
+        type: 3}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_DeterministicInference
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
       propertyPath: m_BrainParameters.EmbeddingSize
       value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_BrainParameters.VectorObservationSize
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -545,7 +561,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: spring
-      value: 10000
+      value: 2500
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295383, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

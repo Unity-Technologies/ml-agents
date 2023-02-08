@@ -1,6 +1,7 @@
 using RootMotion.Dynamics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
+using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
 
@@ -44,8 +45,10 @@ public class WalkerASEAgent : Agent
         {
             var puppetMaster = GetComponentInChildren<PuppetMaster>();
             var animator = GetComponentInChildren<Animator>();
+            var demoRecorder = GetComponent<DemonstrationRecorder>();
             Destroy(puppetMaster);
             Destroy(animator.gameObject);
+            Destroy(demoRecorder);
         }
 
         m_StartingHeight = GetRootHeightFromGround();
@@ -119,6 +122,8 @@ public class WalkerASEAgent : Agent
         sensor.AddObservation(GetRootBalance());
         sensor.AddObservation(root.up);
         sensor.AddObservation(root.forward);
+        sensor.AddObservation(chest.up);
+        sensor.AddObservation(chest.forward);
         sensor.AddObservation(root.InverseTransformVector(GetVelocity()));
         sensor.AddObservation(root.InverseTransformVector(GetAngularVelocity()));
     }
