@@ -88,7 +88,7 @@ public class WalkerASEAgent : Agent
             var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
             var rot = GetRandomRotation();
             m_Controller.SetPosRot(pos, rot);
-            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions());
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositionsSettle());
         }
         else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)
         {

@@ -255,6 +255,19 @@ public class ConfigurableJointController : MonoBehaviour
         yield return new WaitForSeconds(1.0f / 50);
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
     }
+
+    public IEnumerator ResetCJointTargetsAndPositionsSettle()
+    {
+        Academy.Instance.AutomaticSteppingEnabled = false;
+        ZeroCJointPhysicsSettings();
+        SetCJointPositionsAndRotations();
+        ZeroCJointPhysics();
+        yield return new WaitForSeconds(1.5f);
+        SetCJointTargets();
+        SetCJointPhysicsSettings();
+        yield return new WaitForSeconds(1.0f / 50);
+        Academy.Instance.AutomaticSteppingEnabled = true;
+    }
     void SetCJointPhysicsSettings()
     {
         for (int i = 1; i < m_ConfigurableJointChain.Length; i++)
