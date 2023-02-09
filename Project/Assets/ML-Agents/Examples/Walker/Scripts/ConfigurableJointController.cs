@@ -262,11 +262,11 @@ public class ConfigurableJointController : MonoBehaviour
         ZeroCJointPhysicsSettings();
         SetCJointPositionsAndRotations();
         ZeroCJointPhysics();
-        yield return new WaitForSeconds(1.5f);
-        SetCJointTargets();
-        SetCJointPhysicsSettings();
-        yield return new WaitForSeconds(1.0f / 50);
+        yield return new WaitForSeconds(1.0f);
         Academy.Instance.AutomaticSteppingEnabled = true;
+        yield return new WaitForSeconds(1.0f / 50);
+        SetCJointPhysicsSettings();
+
     }
     void SetCJointPhysicsSettings()
     {
