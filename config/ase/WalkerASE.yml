@@ -45,4 +45,4 @@ behaviors:
 #      samples_per_update: 0
 env_settings:
    num_envs: 8
-   num_areas: 8
+   num_areas: 4
