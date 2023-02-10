@@ -265,7 +265,7 @@ class ASESettings(RewardSignalSettings):
     batch_size: int = 1024
     shared_discriminator: bool = True
     demo_path: str = attr.ib(kw_only=True)
-
+    timestep: int = 1
 
 # SAMPLERS #############################################################################
 class ParameterRandomizationType(Enum):

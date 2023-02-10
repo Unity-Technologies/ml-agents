@@ -125,6 +125,7 @@ class TorchPPOOptimizer(TorchOptimizer):
         # Convert to tensors
         current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
 
+
         act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
         actions = AgentAction.from_buffer(batch)
 
@@ -174,7 +175,7 @@ class TorchPPOOptimizer(TorchOptimizer):
             loss_masks,
             decay_eps,
         )
-        self.loss = (
+        self.loss += (
             policy_loss
             + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)

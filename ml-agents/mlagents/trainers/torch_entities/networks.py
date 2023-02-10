@@ -82,6 +82,11 @@ class ObservationEncoder(nn.Module):
         """
         return self._total_goal_enc_size
 
+    def update_normalization_input(self, inputs: List[torch.Tensor]) -> None:
+        for vec_input, enc in zip(inputs, self.processors):
+            if isinstance(enc, VectorInput):
+                enc.update_normalization(vec_input)
+
     def update_normalization(self, buffer: AgentBuffer) -> None:
         obs = ObsUtil.from_buffer(buffer, len(self.processors))
         for vec_input, enc in zip(obs, self.processors):
@@ -215,6 +220,9 @@ class NetworkBody(nn.Module):
             self.lstm = LSTM(self.h_size, self.m_size)
         else:
             self.lstm = None  # type: ignore
+
+    def update_normalization_input(self, inputs: List[torch.Tensor]) -> None:
+        self.observation_encoder.update_normalization_input(inputs)
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
         self.observation_encoder.update_normalization(buffer)
@@ -764,3 +772,4 @@ class LearningRate(nn.Module):
         # Todo: add learning rate decay
         super().__init__()
         self.learning_rate = torch.Tensor([lr])
+
