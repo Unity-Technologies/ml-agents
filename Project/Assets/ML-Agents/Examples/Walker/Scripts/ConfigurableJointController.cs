@@ -188,13 +188,21 @@ public class ConfigurableJointController : MonoBehaviour
             {
                 cjControlSettings[i].name = m_ConfigurableJointChain[i + 1].name;
                 cjControlSettings[i].target = m_ConfigurableJointChain[i + 1].targetRotation.eulerAngles;
+                // cjControlSettings[i].range = new Range3D(
+                //     m_ConfigurableJointChain[i + 1].lowAngularXLimit.limit,
+                //     m_ConfigurableJointChain[i + 1].highAngularXLimit.limit,
+                //     -m_ConfigurableJointChain[i + 1].angularYLimit.limit,
+                //     m_ConfigurableJointChain[i + 1].angularYLimit.limit,
+                //     -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
+                //     m_ConfigurableJointChain[i + 1].angularZLimit.limit
+                // );
                 cjControlSettings[i].range = new Range3D(
-                    m_ConfigurableJointChain[i + 1].lowAngularXLimit.limit,
-                    m_ConfigurableJointChain[i + 1].highAngularXLimit.limit,
-                    -m_ConfigurableJointChain[i + 1].angularYLimit.limit,
-                    m_ConfigurableJointChain[i + 1].angularYLimit.limit,
-                    -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
-                    m_ConfigurableJointChain[i + 1].angularZLimit.limit
+                    -180f,
+                    180f,
+                    -180f,
+                    180f,
+                    -180f,
+                    180f
                 );
                 cjControlSettings[i].originalPosition = m_ConfigurableJointChain[i].transform.localPosition;
                 cjControlSettings[i].originalRotation = m_ConfigurableJointChain[i].transform.localRotation;
@@ -273,6 +281,9 @@ public class ConfigurableJointController : MonoBehaviour
         for (int i = 1; i < m_ConfigurableJointChain.Length; i++)
         {
             m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
+            m_ConfigurableJointChain[i].angularXMotion = ConfigurableJointMotion.Free;
+            m_ConfigurableJointChain[i].angularYMotion = ConfigurableJointMotion.Free;
+            m_ConfigurableJointChain[i].angularZMotion = ConfigurableJointMotion.Free;
             var drive = m_ConfigurableJointChain[i].slerpDrive;
             drive.positionSpring = spring;
             drive.positionDamper = damping;

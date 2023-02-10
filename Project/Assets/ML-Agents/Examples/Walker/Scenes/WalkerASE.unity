@@ -386,6 +386,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: WalkerASETrainingArea
       objectReference: {fileID: 0}
+    - target: {fileID: 3171606434031399897, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3176743355427625743, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_RootOrder
@@ -441,10 +446,75 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3177007177678293565, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3177007177678293565, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 25
+      objectReference: {fileID: 0}
+    - target: {fileID: 3177007177678293565, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_ConstrainProportionsScale
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: damping
       value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: forceLimit
+      value: 2500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: kinematicRoot
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].target.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].target.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].target.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].originalPosition.y
+      value: 0.81500006
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].originalPosition.y
+      value: -0.36899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].originalPosition.y
+      value: -0.30899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].originalPosition.y
+      value: -0.36899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].originalPosition.y
+      value: -0.30899996
       objectReference: {fileID: 0}
     - target: {fileID: 4687753837281380797, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -484,12 +554,12 @@ PrefabInstance:
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: MaxStep
-      value: 575
+      value: 600
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: recordingMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -555,6 +625,21 @@ PrefabInstance:
         type: 3}
       propertyPath: DemonstrationDirectory
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295382, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: LatentStepsMax
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6373438472146985904, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: muscleDamper
+      value: 125
+      objectReference: {fileID: 0}
+    - target: {fileID: 6373438472146985904, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: muscleSpring
+      value: 250
       objectReference: {fileID: 0}
     - target: {fileID: 7111199798254436122, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
