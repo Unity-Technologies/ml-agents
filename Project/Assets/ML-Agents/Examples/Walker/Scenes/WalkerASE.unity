@@ -464,7 +464,12 @@ PrefabInstance:
     - target: {fileID: 5431422410697648854, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.10100001
+      value: -0.093000054
+      objectReference: {fileID: 0}
+    - target: {fileID: 5695505378220711187, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.81500006
       objectReference: {fileID: 0}
     - target: {fileID: 5895615088805150558, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -475,7 +480,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: a3b2662b56ec9481e9e0327a30d7c02d, type: 2}
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: MaxStep
@@ -489,18 +494,23 @@ PrefabInstance:
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: randomDropProbability
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: randomStandProbability
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295371, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: VirtualRoot
       value: 
       objectReference: {fileID: 2117444760}
+    - target: {fileID: 6103056256198295371, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: Settings.UseJointForces
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295371, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: Settings.UseLocalSpaceRotations
@@ -569,12 +579,12 @@ PrefabInstance:
     - target: {fileID: 8154599202656643336, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.10100001
+      value: -0.093000054
       objectReference: {fileID: 0}
     - target: {fileID: 8391173942996693157, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.31038994
+      value: 0.3183899
       objectReference: {fileID: 0}
     - target: {fileID: 9079224006259569339, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
