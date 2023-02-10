@@ -50,9 +50,11 @@ public class WalkerASEAgent : Agent
             var puppetMaster = GetComponentInChildren<PuppetMaster>();
             var animator = GetComponentInChildren<Animator>();
             var demoRecorder = GetComponent<DemonstrationRecorder>();
+            var demoNamer = GetComponent<SetDemoNameToAnimationName>();
             Destroy(puppetMaster);
             Destroy(animator.gameObject);
             Destroy(demoRecorder);
+            Destroy(demoNamer);
         }
 
         m_StartingHeight = GetRootHeightFromGround();
