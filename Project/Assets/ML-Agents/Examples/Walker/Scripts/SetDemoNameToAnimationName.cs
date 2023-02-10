@@ -11,6 +11,9 @@ public class SetDemoNameToAnimationName : MonoBehaviour
         var animator = GetComponentInChildren<Animator>();
         var runtimeController = animator.runtimeAnimatorController;
         var demoRecorder = GetComponentInChildren<DemonstrationRecorder>();
-        demoRecorder.DemonstrationName = runtimeController.name;
+        if (runtimeController != null)
+        {
+            demoRecorder.DemonstrationName = runtimeController.name;
+        }
     }
 }
