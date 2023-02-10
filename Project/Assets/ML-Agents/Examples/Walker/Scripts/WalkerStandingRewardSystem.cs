@@ -21,9 +21,9 @@ public class WalkerStandingRewardSystem : MonoBehaviour
 
             var balance = Mathf.Clamp(agent.GetChestBalance(), 0f, 1.0f);
 
-            var height = ZeroClamp(agent.GetRootHeightFromGround(),0f, agent.StartHeight) / agent.StartHeight;
+            var height = ZeroClamp(agent.GetRootHeightFromGround(), 0f, agent.StartHeight) / agent.StartHeight;
 
-            agent.AddReward( balance * height * rewardScalingFactor);
+            agent.AddReward(balance * height * rewardScalingFactor);
         }
     }
 

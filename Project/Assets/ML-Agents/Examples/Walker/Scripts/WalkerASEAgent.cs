@@ -1,9 +1,11 @@
+using System;
 using RootMotion.Dynamics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class WalkerASEAgent : Agent
 {
@@ -34,6 +36,8 @@ public class WalkerASEAgent : Agent
     LatentRequestor m_LatentRequestor;
     private float m_StartingHeight;
     private int m_DecisionPeriod;
+    LocalFrameController m_FrameController;
+
 
     public override void Initialize()
     {
@@ -53,6 +57,7 @@ public class WalkerASEAgent : Agent
 
         m_StartingHeight = GetRootHeightFromGround();
         m_DecisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
+        m_FrameController = GetComponentInChildren<LocalFrameController>();
     }
 
     public override void OnEpisodeBegin()
@@ -67,6 +72,13 @@ public class WalkerASEAgent : Agent
         {
             ResetAnimation();
         }
+
+        m_FrameController.UpdateLocalFrame(root);
+    }
+
+    void FixedUpdate()
+    {
+        m_FrameController.UpdateLocalFrame(root);
     }
     void ResetAnimation()
     {
