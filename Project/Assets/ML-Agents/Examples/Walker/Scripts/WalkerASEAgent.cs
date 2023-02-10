@@ -132,12 +132,12 @@ public class WalkerASEAgent : Agent
         sensor.AddObservation(GetRootHeightFromGround());
         sensor.AddObservation(GetChestBalance());
         sensor.AddObservation(GetRootBalance());
-        sensor.AddObservation(root.up);
-        sensor.AddObservation(root.forward);
-        sensor.AddObservation(chest.up);
-        sensor.AddObservation(chest.forward);
-        sensor.AddObservation(root.InverseTransformVector(GetVelocity()));
-        sensor.AddObservation(root.InverseTransformVector(GetAngularVelocity()));
+        // sensor.AddObservation(root.up);
+        // sensor.AddObservation(root.forward);
+        // sensor.AddObservation(chest.up);
+        // sensor.AddObservation(chest.forward);
+        sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetVelocity()));
+        sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetAngularVelocity()));
     }
 
     public override void CollectEmbedding(VectorSensor embedding)
