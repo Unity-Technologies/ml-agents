@@ -2,8 +2,8 @@ behaviors:
   WalkerASE:
     trainer_type: ase
     hyperparameters:
-      batch_size: 4096
-      buffer_size: 32768
+      batch_size: 16384
+      buffer_size: 131072
       learning_rate: 0.000025
       beta: 0.0025
       epsilon: 0.2
@@ -25,7 +25,7 @@ behaviors:
         beta_sdo: 0.5
         omega_do: 0.01
         encoder_scaling: 1.0
-        batch_size: 1024
+        batch_size: 4096
         demo_path: /home/miguelalonsojr/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
         learning_rate: 0.000025
         network_settings:
@@ -33,16 +33,11 @@ behaviors:
           hidden_units: 1024
           num_layers: 3
           vis_encode_type: simple
-    keep_checkpoints: 100
+    keep_checkpoints: 500
     even_checkpoints: true
-    max_steps: 100000000
-    time_horizon: 1000
+    max_steps: 500000000
+    time_horizon: 500
     summary_freq: 50000
-#    behavioral_cloning:
-#      demo_path: /Users/miguel.alonso/Projects/ML-Agents Atlas Soccer/Demos/Standing.demo
-#      steps: 1000000
-#      strength: 1.0
-#      samples_per_update: 0
 env_settings:
    num_envs: 8
-   num_areas: 4
+   num_areas: 8
