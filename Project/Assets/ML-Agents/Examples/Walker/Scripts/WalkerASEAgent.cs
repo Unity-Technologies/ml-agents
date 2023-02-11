@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using RootMotion.Dynamics;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -13,6 +14,10 @@ public class WalkerASEAgent : Agent
 
     public Transform root;
     public Transform chest;
+    public Transform leftHand;
+    public Transform rightHand;
+    public Transform leftFoot;
+    public Transform rightFoot;
     public Rigidbody rootRB;
     [Range(0f, 1f)]
     public float randomDropProbability;
@@ -37,6 +42,8 @@ public class WalkerASEAgent : Agent
     private float m_StartingHeight;
     private int m_DecisionPeriod;
     LocalFrameController m_FrameController;
+    string[] m_SingleAxis = new[] { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
+    string[] m_DualAxis = new[] { "hand_L", "hand_R" };
 
 
     public override void Initialize()
@@ -132,19 +139,18 @@ public class WalkerASEAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(GetRootHeightFromGround());
-        sensor.AddObservation(GetChestBalance());
-        sensor.AddObservation(GetRootBalance());
-        // sensor.AddObservation(root.up);
-        // sensor.AddObservation(root.forward);
-        // sensor.AddObservation(chest.up);
-        // sensor.AddObservation(chest.forward);
+        sensor.AddObservation(GetRootRotation());
         sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetVelocity()));
         sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetAngularVelocity()));
+        sensor.AddObservation(GetRelativePosition(leftHand));
+        sensor.AddObservation(GetRelativePosition(rightHand));
+        sensor.AddObservation(GetRelativePosition(leftFoot));
+        sensor.AddObservation(GetRelativePosition(rightFoot));
     }
 
     public override void CollectEmbedding(VectorSensor embedding)
     {
-        // TODO Move this into the base agent script to avoid having to have the dervied agent script do it.
+        // TODO Move this into the base agent script to avoid having to have the derived agent script do it.
         if (embedding != null && embedding.ObservationSize() > 0)
         {
             if (Academy.Instance.IsCommunicatorOn || !recordingMode)
@@ -164,15 +170,27 @@ public class WalkerASEAgent : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var continuousActionsOut = actionsOut.ContinuousActions;
+        var offset = 0;
         for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
         {
             var target = m_Controller.cjControlSettings[i].target;
-            var subIndex = 3 * i;
-            continuousActionsOut[subIndex] = m_Controller.cjControlSettings[i].range.xRange.InverseScale(target.x);
-            continuousActionsOut[++subIndex] = m_Controller.cjControlSettings[i].range.yRange.InverseScale(target.y);
-            continuousActionsOut[++subIndex] = m_Controller.cjControlSettings[i].range.zRange.InverseScale(target.z);
+            var name = m_Controller.cjControlSettings[i].name;
+            if (m_SingleAxis.Contains(name))
+            {
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.xRange.InverseScale(target.x);
+            }
+            else if (m_DualAxis.Contains(name))
+            {
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.xRange.InverseScale(target.x);
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.zRange.InverseScale(target.z);
+            }
+            else
+            {
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.xRange.InverseScale(target.x);
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.yRange.InverseScale(target.y);
+                continuousActionsOut[offset++] = m_Controller.cjControlSettings[i].range.zRange.InverseScale(target.z);
+            }
         }
-
     }
 
     public float GetRootHeightFromGround()
@@ -203,5 +221,15 @@ public class WalkerASEAgent : Agent
     Vector3 GetAngularVelocity()
     {
         return rootRB.angularVelocity;
+    }
+
+    Quaternion GetRootRotation()
+    {
+        return Quaternion.FromToRotation(m_FrameController.transform.forward, root.forward);
+    }
+
+    Vector3 GetRelativePosition(Transform joint)
+    {
+        return m_Controller.transform.InverseTransformPoint(joint.transform.position);
     }
 }

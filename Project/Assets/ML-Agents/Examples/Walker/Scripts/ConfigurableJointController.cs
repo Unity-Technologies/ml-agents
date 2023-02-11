@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
@@ -109,6 +110,8 @@ public class ConfigurableJointController : MonoBehaviour
     bool m_IsAgentNull;
     Vector3 m_RootOriginalPosition;
     Quaternion m_RootOriginalRotation;
+    string[] m_SingleAxis = new[] { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
+    string[] m_DualAxis = new[] { "hand_L", "hand_R" };
 
     // Start is called before the first frame update
     void Start()
@@ -210,12 +213,30 @@ public class ConfigurableJointController : MonoBehaviour
     }
     public void SetCJointTargets(ActionSegment<float> angles)
     {
+        var offset = 0;
         for (int i = 0; i < cjControlSettings.Length; i++)
         {
-            var subindex = 3 * i;
-            var xAngle = cjControlSettings[i].range.xRange.Scale(angles[subindex]);
-            var yAngle = cjControlSettings[i].range.yRange.Scale(angles[++subindex]);
-            var zAngle = cjControlSettings[i].range.zRange.Scale(angles[++subindex]);
+            var name = cjControlSettings[i].name;
+            float xAngle = 0f, yAngle = 0f, zAngle = 0f;
+            if (m_SingleAxis.Contains(name))
+            {
+                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
+                yAngle = cjControlSettings[i].range.yRange.Scale(0f);
+                zAngle = cjControlSettings[i].range.zRange.Scale(0f);
+            }
+            else if (m_DualAxis.Contains(name))
+            {
+                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
+                yAngle = cjControlSettings[i].range.yRange.Scale(0f);
+                zAngle = cjControlSettings[i].range.zRange.Scale(angles[offset++]);
+            }
+            else
+            {
+                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
+                yAngle = cjControlSettings[i].range.yRange.Scale(angles[offset++]);
+                zAngle = cjControlSettings[i].range.zRange.Scale(angles[offset++]);
+            }
+
             var targetRotation = new Vector3(xAngle, yAngle, zAngle);
             SetCJointTarget(m_ConfigurableJointChain[i + 1], targetRotation);
         }

@@ -1,5 +1,101 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2117444760
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2117444761}
+  - component: {fileID: 2117444763}
+  - component: {fileID: 2117444762}
+  - component: {fileID: 2117444764}
+  m_Layer: 9
+  m_Name: localFrame
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2117444761
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117444760}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.823, z: 0}
+  m_LocalScale: {x: 0.5, y: 0.1, z: 0.5}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5996771779841980685}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!33 &2117444763
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117444760}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!23 &2117444762
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117444760}
+  m_Enabled: 0
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RayTracingMode: 2
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_AdditionalVertexStreams: {fileID: 0}
+--- !u!114 &2117444764
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2117444760}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fdcd9e5d0f9ad4e6bb4492ec2197f192, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &788091829997730332
 GameObject:
   m_ObjectHideFlags: 0
@@ -247,8 +343,8 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
-  m_AngularZMotion: 1
+  m_AngularYMotion: 0
+  m_AngularZMotion: 0
   m_LinearLimitSpring:
     spring: 0
     damper: 0
@@ -1164,8 +1260,8 @@ Transform:
   m_GameObject: {fileID: 3171446398170871701}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 25.000002, y: 0.25, z: 25.000002}
-  m_ConstrainProportionsScale: 1
+  m_LocalScale: {x: 25, y: 0.25, z: 25}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176743355427625743}
   m_RootOrder: 1
@@ -1556,7 +1652,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4437022868084351901}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
+  m_LocalPosition: {x: 0, y: -0.369, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1614,8 +1710,8 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
-  m_AngularZMotion: 1
+  m_AngularYMotion: 0
+  m_AngularZMotion: 0
   m_LinearLimitSpring:
     spring: 0
     damper: 0
@@ -1717,7 +1813,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5052284145116520654}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.30899996, z: 0}
+  m_LocalPosition: {x: 0, y: -0.30899993, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2027,7 +2123,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574458696170048728}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
+  m_LocalPosition: {x: 0, y: -0.369, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2085,8 +2181,8 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
-  m_AngularZMotion: 1
+  m_AngularYMotion: 0
+  m_AngularZMotion: 0
   m_LinearLimitSpring:
     spring: 0
     damper: 0
@@ -4100,7 +4196,7 @@ Animator:
   m_GameObject: {fileID: 6103056256137765976}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 50266c2fce82a40ecab960553f05bf25, type: 3}
-  m_Controller: {fileID: 9100000, guid: a3b2662b56ec9481e9e0327a30d7c02d, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -4174,7 +4270,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256198295374}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.142, z: 0}
+  m_LocalPosition: {x: 0, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4196,8 +4292,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   spring: 2500
-  damping: 250
-  forceLimit: 1000
+  damping: 125
+  forceLimit: 2500
   kinematicRoot: 0
   totalMass: 62.300007
   cjControlSettings:
@@ -4213,7 +4309,7 @@ MonoBehaviour:
       zRange:
         low: -25
         high: 25
-    originalPosition: {x: 0, y: 0.815, z: 0}
+    originalPosition: {x: 0, y: 0.81500006, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: head
     target: {x: -0, y: 0, z: 0}
@@ -4269,7 +4365,7 @@ MonoBehaviour:
       zRange:
         low: -25
         high: 25
-    originalPosition: {x: 0, y: -0.36899996, z: 0}
+    originalPosition: {x: 0, y: -0.369, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: thighR
     target: {x: -0, y: 0, z: 0}
@@ -4283,7 +4379,7 @@ MonoBehaviour:
       zRange:
         low: -45
         high: 45
-    originalPosition: {x: 0, y: -0.3089999, z: 0}
+    originalPosition: {x: 0, y: -0.30899993, z: 0}
     originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: shinR
     target: {x: -0, y: 0, z: 0}
@@ -4311,7 +4407,7 @@ MonoBehaviour:
       zRange:
         low: -25
         high: 25
-    originalPosition: {x: 0, y: -0.36899996, z: 0}
+    originalPosition: {x: 0, y: -0.369, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_L
     target: {x: -0, y: 0, z: 0}
@@ -4325,7 +4421,7 @@ MonoBehaviour:
       zRange:
         low: -45
         high: 45
-    originalPosition: {x: 0, y: -0.3089999, z: 0}
+    originalPosition: {x: 0, y: -0.30899993, z: 0}
     originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: lower_arm_L
     target: {x: -0, y: 0, z: 0}
@@ -4426,12 +4522,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_BrainParameters:
     EmbeddingSize: 4
-    VectorObservationSize: 21
+    VectorObservationSize: 23
     NumStackedVectorObservations: 1
     m_ActionSpec:
-      m_NumContinuousActions: 42
+      m_NumContinuousActions: 32
       BranchSizes: 
-    VectorActionSize: 2a000000
+    VectorActionSize: 20000000
     VectorActionDescriptions: []
     VectorActionSpaceType: 1
     hasUpgradedBrainParametersWithActionSpec: 1
@@ -4459,10 +4555,14 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 500
+  MaxStep: 600
   recordingMode: 0
   root: {fileID: 5695505378220711187}
   chest: {fileID: 6103056255301904744}
+  leftHand: {fileID: 4687753837281380797}
+  rightHand: {fileID: 9079224006259569339}
+  leftFoot: {fileID: 5895615088805150558}
+  rightFoot: {fileID: 1034208674109153868}
   rootRB: {fileID: 6103056255504246154}
   randomDropProbability: 0.1
   randomStandProbability: 0.9
@@ -4495,7 +4595,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LatentStepsMin: 1
-  LatentStepsMax: 50
+  LatentStepsMax: 60
 --- !u!114 &6103056256198295371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4509,15 +4609,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RootBody: {fileID: 6103056255504246154}
-  VirtualRoot: {fileID: 0}
+  VirtualRoot: {fileID: 2117444760}
   Settings:
-    UseModelSpaceTranslations: 1
-    UseModelSpaceRotations: 1
+    UseModelSpaceTranslations: 0
+    UseModelSpaceRotations: 0
     UseLocalSpaceTranslations: 0
-    UseLocalSpaceRotations: 0
+    UseLocalSpaceRotations: 1
     UseModelSpaceLinearVelocity: 0
-    UseLocalSpaceLinearVelocity: 0
-    UseJointPositionsAndAngles: 1
+    UseLocalSpaceLinearVelocity: 1
+    UseJointPositionsAndAngles: 0
     UseJointForces: 0
   sensorName: RigidBodySensor
 --- !u!114 &6103056256198295380
@@ -5119,6 +5219,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5695505378220711187}
+  - {fileID: 2117444761}
   m_Father: {fileID: 6103056256198295375}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -5153,14 +5254,14 @@ MonoBehaviour:
   mappingWeight: 1
   pinWeight: 1
   muscleWeight: 1
-  muscleSpring: 100
-  muscleDamper: 0
+  muscleSpring: 250
+  muscleDamper: 125
   pinPow: 4
   pinDistanceFalloff: 5
   angularPinning: 0
   updateJointAnchors: 1
   supportTranslationAnimation: 0
-  angularLimits: 0
+  angularLimits: 1
   internalCollisions: 0
   muscles:
   - name: hips
@@ -5747,8 +5848,8 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
-  m_AngularZMotion: 1
+  m_AngularYMotion: 0
+  m_AngularZMotion: 0
   m_LinearLimitSpring:
     spring: 0
     damper: 0
@@ -5908,7 +6009,7 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
+  m_AngularYMotion: 0
   m_AngularZMotion: 1
   m_LinearLimitSpring:
     spring: 0
@@ -6013,7 +6114,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7932528797331101767}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.823, z: 0}
+  m_LocalPosition: {x: 0, y: 0.81500006, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6248,7 +6349,7 @@ ConfigurableJoint:
   m_YMotion: 0
   m_ZMotion: 0
   m_AngularXMotion: 1
-  m_AngularYMotion: 1
+  m_AngularYMotion: 0
   m_AngularZMotion: 1
   m_LinearLimitSpring:
     spring: 0
@@ -6351,7 +6452,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8601457487075615947}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.30899996, z: 0}
+  m_LocalPosition: {x: 0, y: -0.30899993, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
