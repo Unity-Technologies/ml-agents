@@ -230,6 +230,6 @@ public class WalkerASEAgent : Agent
 
     Vector3 GetRelativePosition(Transform joint)
     {
-        return m_Controller.transform.InverseTransformPoint(joint.transform.position);
+        return m_FrameController.transform.InverseTransformPoint(joint.transform.position);
     }
 }
