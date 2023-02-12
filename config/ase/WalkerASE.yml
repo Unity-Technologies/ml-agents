@@ -19,7 +19,7 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       ase:
-        latent_dim: 4
+        latent_dim: 3
         latent_steps_min: 1
         latent_steps_max: 60
         beta_sdo: 0.5
@@ -36,7 +36,7 @@ behaviors:
     keep_checkpoints: 500
     even_checkpoints: true
     max_steps: 500000000
-    time_horizon: 500
+    time_horizon: 1000
     summary_freq: 50000
 env_settings:
    num_envs: 8
