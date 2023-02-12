@@ -34,6 +34,9 @@ public class WalkerASEAgent : Agent
     public float StartHeight => m_StartingHeight;
     public int DecisionPeriod => m_DecisionPeriod;
 
+    public float HeadTerminationHeight = 0.3f;
+    public float BodyPartTerminationHeight = 0.15f;
+
     Vector3 m_OriginalPosition;
     Quaternion m_OriginalRotation;
 
@@ -44,6 +47,7 @@ public class WalkerASEAgent : Agent
     LocalFrameController m_FrameController;
     string[] m_SingleAxis = new[] { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
     string[] m_DualAxis = new[] { "hand_L", "hand_R" };
+    bool m_IsRecoveryEpisode = false;
 
 
     public override void Initialize()
@@ -88,6 +92,45 @@ public class WalkerASEAgent : Agent
     void FixedUpdate()
     {
         m_FrameController.UpdateLocalFrame(root);
+        if (CheckEpisodeTermination())
+        {
+            EndEpisode();
+        }
+    }
+    bool CheckEpisodeTermination()
+    {
+        if (!m_IsRecoveryEpisode)
+        {
+            // check root
+            var position = m_Controller.ConfigurableJointChain[0].transform.position;
+
+            if (position.y < BodyPartTerminationHeight)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
+            {
+                var name = m_Controller.cjControlSettings[i].name;
+                position = m_Controller.ConfigurableJointChain[i + 1].transform.position;
+                if (name == "head")
+                {
+                    if (position.y < HeadTerminationHeight)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (position.y < BodyPartTerminationHeight && !(name == "footR" || name == "footL"))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
     }
     void ResetAnimation()
     {
@@ -104,10 +147,13 @@ public class WalkerASEAgent : Agent
 
         var rand = Random.Range(0f, 1f);
 
+        m_IsRecoveryEpisode = false;
+
         if (rand <= randomDropProbability)
         {
             var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
             var rot = GetRandomRotation();
+            m_IsRecoveryEpisode = true;
             StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(pos, rot, true));
         }
         else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)

@@ -104,6 +104,8 @@ public class ConfigurableJointController : MonoBehaviour
     public Transform forearmR;
     public Transform handR;
 
+    public ConfigurableJoint[] ConfigurableJointChain => m_ConfigurableJointChain;
+
     ConfigurableJoint[] m_ConfigurableJointChain;
     Rigidbody[] m_RigidbodyChain;
     Agent m_Agent;
