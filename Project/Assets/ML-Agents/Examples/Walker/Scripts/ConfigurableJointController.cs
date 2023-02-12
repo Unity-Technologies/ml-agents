@@ -255,39 +255,29 @@ public class ConfigurableJointController : MonoBehaviour
         joint.targetRotation = Quaternion.Euler(target);
     }
 
-    public void SetCJointPositionsAndRotations()
-    {
-        for (int i = 0; i < cjControlSettings.Length; i++)
-        {
-            m_RigidbodyChain[i + 1].transform.localPosition = cjControlSettings[i].originalPosition;
-            m_RigidbodyChain[i + 1].transform.localRotation = cjControlSettings[i].originalRotation;
-        }
-    }
-
-    public IEnumerator ResetCJointTargetsAndPositions()
-    {
-        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = true;
-        ZeroCJointPhysicsSettings();
-        SetCJointPositionsAndRotations();
-        ZeroCJointPhysics();
-        yield return new WaitForSeconds(1.0f / 50);
-        SetCJointTargets();
-        SetCJointPhysicsSettings();
-        yield return new WaitForSeconds(1.0f / 50);
-        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
-    }
-
-    public IEnumerator ResetCJointTargetsAndPositionsSettle()
+    public IEnumerator ResetCJointTargetsAndPositions(Vector3 position, Quaternion rotation, bool settle)
     {
         Academy.Instance.AutomaticSteppingEnabled = false;
+        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = true;
         ZeroCJointPhysicsSettings();
-        SetCJointPositionsAndRotations();
         ZeroCJointPhysics();
-        yield return new WaitForSeconds(1.0f);
-        Academy.Instance.AutomaticSteppingEnabled = true;
-        yield return new WaitForSeconds(1.0f / 50);
+        SetPosRot(position, rotation);
+        yield return new WaitForSeconds(1.0f / 120f);
+        if (settle)
+        {
+            yield return new WaitForSeconds(0.25f);
+            m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
+            yield return new WaitForSeconds(1.25f);
+        }
+        else
+        {
+            yield return new WaitForSeconds(1.0f / 120f);
+        }
         SetCJointPhysicsSettings();
-
+        SetCJointTargets();
+        yield return new WaitForSeconds(1.0f / 120f);
+        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
+        Academy.Instance.AutomaticSteppingEnabled = true;
     }
     void SetCJointPhysicsSettings()
     {
