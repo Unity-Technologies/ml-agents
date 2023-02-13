@@ -26,8 +26,12 @@ public class WalkerASEAgent : Agent
     [Range(0f, 5f)]
     public float maxSpawnHeight = 4f;
 
+    public float HeadTerminationHeight = 0.3f;
+    public float BodyPartTerminationHeight = 0.15f;
+
     public float StartHeight => m_StartingHeight;
     public int DecisionPeriod => m_DecisionPeriod;
+    bool m_IsRecoveryEpisode = false;
 
     Vector3 m_OriginalPosition;
     Quaternion m_OriginalRotation;
@@ -79,7 +83,48 @@ public class WalkerASEAgent : Agent
     void FixedUpdate()
     {
         m_FrameController.UpdateLocalFrame(root);
+        if (CheckEpisodeTermination())
+        {
+            EndEpisode();
+        }
     }
+
+    bool CheckEpisodeTermination()
+    {
+        if (!m_IsRecoveryEpisode)
+        {
+            // check root
+            var position = m_Controller.ConfigurableJointChain[0].transform.position;
+
+            if (position.y < BodyPartTerminationHeight)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
+            {
+                var name = m_Controller.cjControlSettings[i].name;
+                position = m_Controller.ConfigurableJointChain[i + 1].transform.position;
+                if (name == "head")
+                {
+                    if (position.y < HeadTerminationHeight)
+                    {
+                        return true;
+                    }
+                }
+                else
+                {
+                    if (position.y < BodyPartTerminationHeight && !(name == "footR" || name == "footL"))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     void ResetAnimation()
     {
         // TODO reset animation on an episode reset (nice to have)

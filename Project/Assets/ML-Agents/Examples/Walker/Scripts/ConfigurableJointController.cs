@@ -103,6 +103,7 @@ public class ConfigurableJointController : MonoBehaviour
     public Transform forearmR;
     public Transform handR;
 
+    public ConfigurableJoint[] ConfigurableJointChain => m_ConfigurableJointChain;
     ConfigurableJoint[] m_ConfigurableJointChain;
     Rigidbody[] m_RigidbodyChain;
     Agent m_Agent;
@@ -188,22 +189,22 @@ public class ConfigurableJointController : MonoBehaviour
             {
                 cjControlSettings[i].name = m_ConfigurableJointChain[i + 1].name;
                 cjControlSettings[i].target = m_ConfigurableJointChain[i + 1].targetRotation.eulerAngles;
-                // cjControlSettings[i].range = new Range3D(
-                //     m_ConfigurableJointChain[i + 1].lowAngularXLimit.limit,
-                //     m_ConfigurableJointChain[i + 1].highAngularXLimit.limit,
-                //     -m_ConfigurableJointChain[i + 1].angularYLimit.limit,
-                //     m_ConfigurableJointChain[i + 1].angularYLimit.limit,
-                //     -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
-                //     m_ConfigurableJointChain[i + 1].angularZLimit.limit
-                // );
-                cjControlSettings[i].range = new Range3D(
-                    -180f,
-                    180f,
-                    -180f,
-                    180f,
-                    -180f,
-                    180f
-                );
+                 cjControlSettings[i].range = new Range3D(
+                     m_ConfigurableJointChain[i + 1].lowAngularXLimit.limit,
+                     m_ConfigurableJointChain[i + 1].highAngularXLimit.limit,
+                     -m_ConfigurableJointChain[i + 1].angularYLimit.limit,
+                     m_ConfigurableJointChain[i + 1].angularYLimit.limit,
+                     -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
+                     m_ConfigurableJointChain[i + 1].angularZLimit.limit
+                 );
+                //cjControlSettings[i].range = new Range3D(
+                //    -180f,
+                //    180f,
+                //    -180f,
+                //    180f,
+                //    -180f,
+                //    180f
+                //);
                 cjControlSettings[i].originalPosition = m_ConfigurableJointChain[i].transform.localPosition;
                 cjControlSettings[i].originalRotation = m_ConfigurableJointChain[i].transform.localRotation;
             }
