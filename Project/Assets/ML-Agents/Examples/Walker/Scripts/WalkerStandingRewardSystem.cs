@@ -7,6 +7,7 @@ using UnityEngine;
 public class WalkerStandingRewardSystem : MonoBehaviour
 {
     public WalkerASEAgent agent;
+    public float RewardScale = 1.0f;
 
     void OnEnable()
     {
@@ -23,7 +24,7 @@ public class WalkerStandingRewardSystem : MonoBehaviour
 
             var height = ZeroClamp(agent.GetRootHeightFromGround(), 0f, agent.StartHeight) / agent.StartHeight;
 
-            agent.AddReward(balance * height * rewardScalingFactor);
+            agent.AddReward(balance * height * rewardScalingFactor * RewardScale);
         }
     }
 

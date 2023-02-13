@@ -36,6 +36,7 @@ public class WalkerASEAgent : Agent
 
     public float HeadTerminationHeight = 0.3f;
     public float BodyPartTerminationHeight = 0.15f;
+    public bool EnableEarlyTermination = true;
 
     Vector3 m_OriginalPosition;
     Quaternion m_OriginalRotation;
@@ -92,7 +93,7 @@ public class WalkerASEAgent : Agent
     void FixedUpdate()
     {
         m_FrameController.UpdateLocalFrame(root);
-        if (CheckEpisodeTermination())
+        if (CheckEpisodeTermination() && EnableEarlyTermination)
         {
             EndEpisode();
         }
