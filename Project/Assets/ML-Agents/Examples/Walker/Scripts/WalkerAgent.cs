@@ -10,10 +10,10 @@ using Random = UnityEngine.Random;
 public class WalkerAgent : Agent
 {
     [Header("Walk Speed")]
-    [Range(0.1f, 10)]
+    [Range(0.1f, 5)]
     [SerializeField]
     //The walking speed to try and achieve
-    private float m_TargetWalkingSpeed = 10;
+    private float m_TargetWalkingSpeed = 5;
 
     public float MTargetWalkingSpeed // property
     {
@@ -21,7 +21,7 @@ public class WalkerAgent : Agent
         set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
     }
 
-    const float m_maxWalkingSpeed = 10; //The max walking speed
+    const float m_maxWalkingSpeed = 5; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
@@ -93,14 +93,18 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void OnEpisodeBegin()
     {
+        var bpDict = m_JdController.bodyPartsDict;
         //Reset all of the body parts
-        foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
+        foreach (var bodyPart in bpDict.Values)
         {
             bodyPart.Reset(bodyPart);
         }
 
+
         //Random start rotation to help generalize
         hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+        bpDict[armL].SetJointTargetRotationDirect(new Vector3(0, 100, 0));
+        bpDict[armR].SetJointTargetRotationDirect(new Vector3(0, 100, 0));
 
         UpdateOrientationObjects();
 
@@ -119,6 +123,8 @@ public class WalkerAgent : Agent
         //GROUND CHECK
         sensor.AddObservation(bp.groundContact.touchingGround); // Is this bp touching the ground
 
+        // //sin wave
+        // sensor.AddObservation();
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));

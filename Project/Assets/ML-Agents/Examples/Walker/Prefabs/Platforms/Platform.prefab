@@ -132,17 +132,52 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3599283675594846472, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: m_SecondaryAxis.z
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088288, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: jointDampen
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088288, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: maxJointSpring
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088288, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: MaxJointMoveSpeed
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088288, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: maxJointForceLimit
+      value: 1000
+      objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 71fe1fe4f177841a1b4b85987277495c,
+      objectReference: {fileID: 5022602860645237092, guid: 76be4296518874c26819f0310f62c198,
         type: 3}
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 140846861312608762}
+    - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: m_TargetWalkingSpeed
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675835168081, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: m_SecondaryAxis.z
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3925309372585159072, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_RootOrder

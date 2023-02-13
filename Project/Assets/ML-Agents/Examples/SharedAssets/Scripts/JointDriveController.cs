@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 using Unity.MLAgents;
+using UnityEngine.Rendering;
 
 namespace Unity.MLAgentsExamples
 {
@@ -11,7 +12,7 @@ namespace Unity.MLAgentsExamples
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
@@ -53,6 +54,16 @@ namespace Unity.MLAgentsExamples
             bp.rb.transform.rotation = bp.startingRot;
             bp.rb.velocity = Vector3.zero;
             bp.rb.angularVelocity = Vector3.zero;
+
+            if (bp.joint)
+            {
+                bp.joint.targetRotation = Quaternion.identity;
+                bp.currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, 0);
+                bp.currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, 0);
+                bp.currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, 0);
+                bp.SetJointStrength(bp.thisJdController.maxJointForceLimit);
+            }
+
             if (bp.groundContact)
             {
                 bp.groundContact.touchingGround = false;
@@ -64,21 +75,56 @@ namespace Unity.MLAgentsExamples
             }
         }
 
+        // /// <summary>
+        // /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
+        // /// </summary>
+        // public void SetJointTargetRotation(float x, float y, float z)
+        // {
+        //     x = (x + 1f) * 0.5f;
+        //     y = (y + 1f) * 0.5f;
+        //     z = (z + 1f) * 0.5f;
+        //
+        //     var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
+        //     var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
+        //     var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+        //
+        //     currentXNormalizedRot =
+        //         Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
+        //     currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
+        //     currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
+        //
+        //     joint.targetRotation = Quaternion.Euler(xRot, yRot, zRot);
+        //     currentEularJointRotation = new Vector3(xRot, yRot, zRot);
+        // }
+
+        public void SetJointTargetRotationDirect(Vector3 val)
+        {
+            joint.targetRotation = Quaternion.Euler(val);
+            currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, val.x);
+            currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, val.y);
+            currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, val.z);
+        }
+
+
         /// <summary>
         /// Apply torque according to defined goal `x, y, z` angle and force `strength`.
         /// </summary>
         public void SetJointTargetRotation(float x, float y, float z)
         {
-            x = (x + 1f) * 0.5f;
-            y = (y + 1f) * 0.5f;
-            z = (z + 1f) * 0.5f;
+            // x = (x + 1f) * 0.5f;
+            // y = (y + 1f) * 0.5f;
+            // z = (z + 1f) * 0.5f;
 
-            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, x);
-            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, y);
-            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, z);
+            var moveSpeed = thisJdController.MaxJointMoveSpeed;
+            var newXRot = Mathf.Clamp01(currentXNormalizedRot + (x * moveSpeed * Time.fixedDeltaTime));
+            var newYRot = Mathf.Clamp01(currentYNormalizedRot + (y * moveSpeed * Time.fixedDeltaTime));
+            var newZRot = Mathf.Clamp01(currentZNormalizedRot + (z * moveSpeed * Time.fixedDeltaTime));
 
-            currentXNormalizedRot =
-                Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
+            var xRot = Mathf.Lerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, newXRot);
+            var yRot = Mathf.Lerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, newYRot);
+            var zRot = Mathf.Lerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, newZRot);
+
+            currentXNormalizedRot = Mathf.InverseLerp(joint.lowAngularXLimit.limit, joint.highAngularXLimit.limit, xRot);
             currentYNormalizedRot = Mathf.InverseLerp(-joint.angularYLimit.limit, joint.angularYLimit.limit, yRot);
             currentZNormalizedRot = Mathf.InverseLerp(-joint.angularZLimit.limit, joint.angularZLimit.limit, zRot);
 
@@ -102,6 +148,7 @@ namespace Unity.MLAgentsExamples
 
     public class JointDriveController : MonoBehaviour
     {
+        public float MaxJointMoveSpeed = 15f;
         [Header("Joint Drive Settings")]
         [Space(10)]
         public float maxJointSpring;
