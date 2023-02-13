@@ -50,6 +50,8 @@ public class WalkerASEAgent : Agent
     string[] m_DualAxis = new[] { "hand_L", "hand_R" };
     bool m_IsRecoveryEpisode = false;
 
+    int m_FixedUpdateCount = 0;
+
 
     public override void Initialize()
     {
@@ -76,6 +78,9 @@ public class WalkerASEAgent : Agent
 
     public override void OnEpisodeBegin()
     {
+        Debug.Log(Time.time);
+        Debug.Log(Academy.Instance.TotalStepCount);
+        Debug.Log(m_FixedUpdateCount);
         ResetAgent();
         if (m_LatentRequestor != null)
         {
@@ -92,6 +97,7 @@ public class WalkerASEAgent : Agent
 
     void FixedUpdate()
     {
+        m_FixedUpdateCount++;
         m_FrameController.UpdateLocalFrame(root);
         if (CheckEpisodeTermination() && EnableEarlyTermination)
         {
