@@ -20,7 +20,7 @@ EditorSettings:
   m_ProjectGenerationRootNamespace: 
   m_EnableTextureStreamingInEditMode: 1
   m_EnableTextureStreamingInPlayMode: 1
-  m_AsyncShaderCompilation: 1
+  m_AsyncShaderCompilation: 0
   m_CachingShaderPreprocessor: 1
   m_PrefabModeAllowAutoSave: 1
   m_EnterPlayModeOptionsEnabled: 0
