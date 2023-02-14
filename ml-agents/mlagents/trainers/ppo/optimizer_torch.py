@@ -92,7 +92,7 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
 
-        self.loss = None
+        self.loss = torch.zeros(1, device=default_device())
 
     @property
     def critic(self):
@@ -195,6 +195,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             "Policy/Epsilon": decay_eps,
             "Policy/Beta": decay_bet,
         }
+
+        self.loss = torch.zeros(1, device=default_device())
 
         return update_stats
 

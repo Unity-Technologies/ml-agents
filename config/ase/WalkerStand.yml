@@ -14,6 +14,7 @@ behaviors:
       normalize: true
       hidden_units: 512
       num_layers: 3
+      bottleneck: true
       vis_encode_type: simple
     reward_signals:
       extrinsic:
@@ -22,7 +23,7 @@ behaviors:
     keep_checkpoints: 50
     even_checkpoints: true
     max_steps: 50000000
-    time_horizon: 1000
+    time_horizon: 300
     summary_freq: 10000
 env_settings:
    num_envs: 4

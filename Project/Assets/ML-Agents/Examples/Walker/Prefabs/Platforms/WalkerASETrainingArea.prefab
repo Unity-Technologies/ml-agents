@@ -4196,7 +4196,7 @@ Animator:
   m_GameObject: {fileID: 6103056256137765976}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 50266c2fce82a40ecab960553f05bf25, type: 3}
-  m_Controller: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c747e6ae519de4c708474baf95c8bf93, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -4269,7 +4269,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256198295374}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.15, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -4410,7 +4410,7 @@ MonoBehaviour:
     originalPosition: {x: 0, y: -0.369, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_L
-    target: {x: -0, y: 0, z: 0}
+    target: {x: -0, y: 75, z: 0}
     range:
       xRange:
         low: -35
@@ -4452,7 +4452,7 @@ MonoBehaviour:
     originalPosition: {x: -0.36400002, y: 0, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_R
-    target: {x: -0, y: 0, z: 0}
+    target: {x: -0, y: 75, z: 0}
     range:
       xRange:
         low: -35
@@ -4521,7 +4521,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    EmbeddingSize: 4
+    EmbeddingSize: 3
     VectorObservationSize: 23
     NumStackedVectorObservations: 1
     m_ActionSpec:
@@ -4555,7 +4555,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 600
+  MaxStep: 750
   recordingMode: 0
   root: {fileID: 5695505378220711187}
   chest: {fileID: 6103056255301904744}
@@ -4568,6 +4568,9 @@ MonoBehaviour:
   randomStandProbability: 0.9
   minSpawnHeight: 2
   maxSpawnHeight: 4
+  HeadTerminationHeight: 0.476
+  BodyPartTerminationHeight: 0.276
+  EnableEarlyTermination: 1
 --- !u!114 &6103056256198295370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4595,7 +4598,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   LatentStepsMin: 1
-  LatentStepsMax: 60
+  LatentStepsMax: 75
 --- !u!114 &6103056256198295371
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4633,7 +4636,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 100
+  NumStepsToRecord: 150
   DemonstrationName: 
   DemonstrationDirectory: 
 --- !u!114 &6731448381779622356
