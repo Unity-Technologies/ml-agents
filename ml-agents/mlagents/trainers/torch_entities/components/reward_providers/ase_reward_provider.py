@@ -55,7 +55,7 @@ class ASERewardProvider(BaseRewardProvider):
         if self.update_batch_size <= mini_batch.num_experiences:
             mini_batch = mini_batch.sample_mini_batch(self.update_batch_size)
 
-        self._discriminator_encoder.discriminator_network_body.update_normalization(
+        self._discriminator_encoder.discriminator_network_body.update_normalization_with_next(
             expert_batch
         )
 
@@ -95,6 +95,10 @@ class DiscriminatorEncoder(nn.Module):
         observation_specs = copy.deepcopy(behavior_spec.observation_specs)
         self.latent_key = self.get_latent_key(observation_specs)
         del observation_specs[self.latent_key]
+        for idx in range(len(observation_specs)):
+            observation_specs[idx] = observation_specs[idx]._replace(
+                shape=(2 * observation_specs[idx].shape[0],)
+            )
         network_settings = ase_settings.network_settings
         self.discriminator_network_body = NetworkBody(
             observation_specs, network_settings
@@ -182,6 +186,20 @@ class DiscriminatorEncoder(nn.Module):
 
         return tensor_obs
 
+    def get_next_state_inputs(
+        self, mini_batch: AgentBuffer, ignore_latent: bool = True
+    ) -> List[torch.Tensor]:
+        n_obs = len(self.discriminator_network_body.processors) + 1
+        np_obs_next = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        # Convert to tensors
+        tensor_obs = []
+        for index, obs in enumerate(np_obs_next):
+            if ignore_latent and index == self.latent_key:
+                continue
+            tensor_obs.append(ModelUtils.list_to_tensor(obs))
+
+        return tensor_obs
+
     def get_state_inputs_expert(self, mini_batch: AgentBuffer):  # type: ignore
         n_obs = len(self.discriminator_network_body.processors)
         np_obs = ObsUtil.from_buffer(mini_batch, n_obs)
@@ -190,11 +208,12 @@ class DiscriminatorEncoder(nn.Module):
 
         return tensor_obs
 
-    def get_next_state_inputs(self, mini_batch: AgentBuffer) -> List[torch.Tensor]:
+    def get_next_state_inputs_expert(self, mini_batch: AgentBuffer):  # type: ignore
         n_obs = len(self.discriminator_network_body.processors)
-        np_obs_next = ObsUtil.from_buffer_next(mini_batch, n_obs)
+        np_obs = ObsUtil.from_buffer_next(mini_batch, n_obs)
         # Convert to tensors
-        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs_next]
+        tensor_obs = [ModelUtils.list_to_tensor(obs) for obs in np_obs]
+
         return tensor_obs
 
     def get_action_input(self, mini_batch: AgentBuffer) -> torch.Tensor:
@@ -226,7 +245,12 @@ class DiscriminatorEncoder(nn.Module):
         self, mini_batch: AgentBuffer, ignore_latents: bool = True
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         inputs = self.get_state_inputs(mini_batch)
-        disc_output, enc_output = self.forward(inputs)
+        next_inputs = self.get_next_state_inputs(mini_batch)
+        inputs_cat = [
+            torch.cat([inp, next_inp], dim=1)
+            for inp, next_inp in zip(inputs, next_inputs)
+        ]
+        disc_output, enc_output = self.forward(inputs_cat)
 
         return disc_output, enc_output
 
@@ -234,7 +258,12 @@ class DiscriminatorEncoder(nn.Module):
         self, mini_batch: AgentBuffer
     ) -> Tuple[torch.Tensor, torch.Tensor]:
         inputs = self.get_state_inputs_expert(mini_batch)
-        disc_output, enc_output = self.forward(inputs)
+        next_inputs = self.get_next_state_inputs_expert(mini_batch)
+        inputs_cat = [
+            torch.cat([inp, next_inp], dim=1)
+            for inp, next_inp in zip(inputs, next_inputs)
+        ]
+        disc_output, enc_output = self.forward(inputs_cat)
         return disc_output, enc_output
 
     def compute_cat_estimates(
@@ -298,9 +327,20 @@ class DiscriminatorEncoder(nn.Module):
         self, policy_batch: AgentBuffer, expert_batch: AgentBuffer
     ) -> torch.Tensor:
         policy_inputs = self.get_state_inputs(policy_batch)
+        next_policy_inputs = self.get_next_state_inputs(policy_batch)
         expert_inputs = self.get_state_inputs_expert(expert_batch)
+        next_expert_inputs = self.get_next_state_inputs_expert(expert_batch)
+
+        cat_policy_inputs = [
+            torch.cat([inp, next_inp], dim=1)
+            for inp, next_inp in zip(policy_inputs, next_policy_inputs)
+        ]
+        cat_expert_inputs = [
+            torch.cat([inp, next_inp], dim=1)
+            for inp, next_inp in zip(expert_inputs, next_expert_inputs)
+        ]
         interp_inputs = []
-        for policy_input, expert_input in zip(policy_inputs, expert_inputs):
+        for policy_input, expert_input in zip(cat_policy_inputs, cat_expert_inputs):
             obs_epsilon = torch.rand(policy_input.shape)
             interp_input = obs_epsilon * policy_input + (1 - obs_epsilon) * expert_input
             interp_input.requires_grad = True  # For gradient calculation

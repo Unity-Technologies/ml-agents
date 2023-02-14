@@ -64,10 +64,21 @@ def make_demo_buffer(
         else:
             current_obs = list(current_decision_step.values())[0].obs
 
+        next_obs = None
+        if len(next_terminal_step) == 1:
+            next_obs = list(next_terminal_step.values())[0].obs
+        else:
+            next_obs = list(next_decision_step.values())[0].obs
+
         demo_raw_buffer[BufferKey.DONE].append(next_done)
         demo_raw_buffer[BufferKey.ENVIRONMENT_REWARDS].append(next_reward)
+
         for i, obs in enumerate(current_obs):
             demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
+
+        for i, obs in enumerate(next_obs):
+            demo_raw_buffer[ObsUtil.get_name_at_next(i)].append(obs)
+
         if (
             len(current_pair_info.action_info.continuous_actions) == 0
             and len(current_pair_info.action_info.discrete_actions) == 0
@@ -103,7 +114,10 @@ def make_demo_buffer(
 
 @timed
 def demo_to_buffer(
-    file_path: str, sequence_length: int, expected_behavior_spec: BehaviorSpec = None, skip_obs_check: bool = False
+    file_path: str,
+    sequence_length: int,
+    expected_behavior_spec: BehaviorSpec = None,
+    skip_obs_check: bool = False,
 ) -> Tuple[BehaviorSpec, AgentBuffer]:
     """
     Loads demonstration file and uses it to fill training buffer.
@@ -122,9 +136,11 @@ def demo_to_buffer(
                 )
             )
         # check observations match
-        if len(behavior_spec.observation_specs) != len(
-            expected_behavior_spec.observation_specs
-        ) and not skip_obs_check:
+        if (
+            len(behavior_spec.observation_specs)
+            != len(expected_behavior_spec.observation_specs)
+            and not skip_obs_check
+        ):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
             )

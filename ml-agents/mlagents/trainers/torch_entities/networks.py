@@ -88,6 +88,17 @@ class ObservationEncoder(nn.Module):
             if isinstance(enc, VectorInput):
                 enc.update_normalization(torch.as_tensor(vec_input.to_ndarray()))
 
+    def update_normalization_with_next(self, buffer: AgentBuffer) -> None:
+        obs = ObsUtil.from_buffer(buffer, len(self.processors))
+        next_obs = ObsUtil.from_buffer_next(buffer, len(self.processors))
+        for vec_input, next_vec_input, enc in zip(obs, next_obs, self.processors):
+            if isinstance(enc, VectorInput):
+                obs_tensor = torch.as_tensor(vec_input.to_ndarray())
+                next_obs_tensor = torch.as_tensor(next_vec_input.to_ndarray())
+                # cat_obs = [torch.cat([inp, next_inp]) for inp, next_inp in zip(obs_tensor, next_obs_tensor)]
+                cat_obs = torch.cat([obs_tensor, next_obs_tensor], dim=1)
+                enc.update_normalization(cat_obs)
+
     def copy_normalization(self, other_encoder: "ObservationEncoder") -> None:
         if self.normalize:
             for n1, n2 in zip(self.processors, other_encoder.processors):
@@ -221,6 +232,9 @@ class NetworkBody(nn.Module):
 
     def update_normalization(self, buffer: AgentBuffer) -> None:
         self.observation_encoder.update_normalization(buffer)
+
+    def update_normalization_with_next(self, buffer: AgentBuffer) -> None:
+        self.observation_encoder.update_normalization_with_next(buffer)
 
     def copy_normalization(self, other_network: "NetworkBody") -> None:
         self.observation_encoder.copy_normalization(other_network.observation_encoder)
