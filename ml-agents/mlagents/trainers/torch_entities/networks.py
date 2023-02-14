@@ -208,7 +208,10 @@ class NetworkBody(nn.Module):
             )
         else:
             self._body_endoder = LinearEncoder(
-                total_enc_size, network_settings.num_layers, self.h_size
+                total_enc_size,
+                network_settings.num_layers,
+                self.h_size,
+                network_settings.bottleneck,
             )
 
         if self.use_lstm:
@@ -466,6 +469,8 @@ class ValueNetwork(nn.Module, Critic):
         )
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
+        elif network_settings.bottleneck:
+            encoding_size = network_settings.hidden_units // 2
         else:
             encoding_size = network_settings.hidden_units
         self.value_heads = ValueHeads(stream_names, encoding_size, outputs_per_stream)
@@ -604,6 +609,8 @@ class SimpleActor(nn.Module, Actor):
         self.network_body = NetworkBody(observation_specs, network_settings)
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
+        elif network_settings.bottleneck:
+            self.encoding_size = network_settings.hidden_units // 2
         else:
             self.encoding_size = network_settings.hidden_units
         self.memory_size_vector = torch.nn.Parameter(

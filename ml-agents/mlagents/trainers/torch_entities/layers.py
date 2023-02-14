@@ -140,6 +140,7 @@ class LinearEncoder(torch.nn.Module):
         input_size: int,
         num_layers: int,
         hidden_size: int,
+        bottleneck: bool = False,
         kernel_init: Initialization = Initialization.KaimingHeNormal,
         kernel_gain: float = 1.0,
     ):
@@ -153,7 +154,27 @@ class LinearEncoder(torch.nn.Module):
             )
         ]
         self.layers.append(Swish())
-        for _ in range(num_layers - 1):
+        for _ in range(num_layers - 2):
+            self.layers.append(
+                linear_layer(
+                    hidden_size,
+                    hidden_size,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
+                )
+            )
+            self.layers.append(Swish())
+        if bottleneck:
+            self.layers.append(
+                linear_layer(
+                    hidden_size,
+                    hidden_size // 2,
+                    kernel_init=kernel_init,
+                    kernel_gain=kernel_gain,
+                )
+            )
+            self.layers.append(Swish())
+        else:
             self.layers.append(
                 linear_layer(
                     hidden_size,

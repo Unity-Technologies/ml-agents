@@ -103,9 +103,13 @@ class DiscriminatorEncoder(nn.Module):
             self.encoder_network_body = self.discriminator_network_body
         else:
             self.encoder_network_body = NetworkBody(observation_specs, network_settings)
-        self.encoding_size = network_settings.hidden_units
+        if network_settings.bottleneck:
+            self.encoding_size = network_settings.hidden_units // 2
+        else:
+            self.encoding_size = network_settings.hidden_units
+
         self.discriminator_output_layer = nn.Sequential(
-            linear_layer(network_settings.hidden_units, 1, kernel_gain=0.2),
+            linear_layer(self.encoding_size, 1, kernel_gain=0.2),
             nn.Sigmoid(),
         )
         # self.discriminator_output_layer = nn.Sequential(

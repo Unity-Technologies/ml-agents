@@ -135,6 +135,7 @@ class NetworkSettings:
     normalize: bool = False
     hidden_units: int = 128
     num_layers: int = 2
+    bottleneck: bool = False
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
     goal_conditioning_type: ConditioningType = ConditioningType.HYPER
