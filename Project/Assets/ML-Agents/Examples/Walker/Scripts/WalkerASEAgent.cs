@@ -191,9 +191,9 @@ public class WalkerASEAgent : Agent
     public override void CollectObservations(VectorSensor sensor)
     {
         sensor.AddObservation(GetRootHeightFromGround());
-        sensor.AddObservation(GetRootRotation());
-        sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetVelocity()));
-        sensor.AddObservation(m_FrameController.transform.InverseTransformVector(GetAngularVelocity()));
+        sensor.AddObservation(GetRelativeRootRotation());
+        sensor.AddObservation(GetRelativeVelocity());
+        sensor.AddObservation(GetRelativeAngularVelocity());
         sensor.AddObservation(GetRelativePosition(leftHand));
         sensor.AddObservation(GetRelativePosition(rightHand));
         sensor.AddObservation(GetRelativePosition(leftFoot));
@@ -275,7 +275,7 @@ public class WalkerASEAgent : Agent
         return rootRB.angularVelocity;
     }
 
-    Quaternion GetRootRotation()
+    Quaternion GetRelativeRootRotation()
     {
         return Quaternion.FromToRotation(m_FrameController.transform.forward, root.forward);
     }
@@ -283,5 +283,15 @@ public class WalkerASEAgent : Agent
     Vector3 GetRelativePosition(Transform joint)
     {
         return m_FrameController.transform.InverseTransformPoint(joint.transform.position);
+    }
+
+    Vector3 GetRelativeVelocity()
+    {
+        return m_FrameController.transform.InverseTransformDirection(GetVelocity());
+    }
+
+    Vector3 GetRelativeAngularVelocity()
+    {
+        return m_FrameController.transform.InverseTransformDirection(GetAngularVelocity());
     }
 }

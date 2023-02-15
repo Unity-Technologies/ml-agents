@@ -460,7 +460,7 @@ ModelImporter:
       scale: {x: 0.13621072, y: 0.7, z: 0.39850593}
     - name: toeL
       parentName: footL
-      position: {x: -0, y: -0.022, z: 0.099999994}
+      position: {x: -0, y: -0.043, z: 0.043}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: shinLMesh
@@ -495,7 +495,7 @@ ModelImporter:
       scale: {x: 0.13621072, y: 0.7, z: 0.39850593}
     - name: toeR
       parentName: footR
-      position: {x: -0, y: -0.022, z: 0.099999994}
+      position: {x: -0, y: -0.043, z: 0.043}
       rotation: {x: 0, y: -0, z: -0, w: 1}
       scale: {x: 1, y: 1, z: 1}
     - name: shinRMesh
