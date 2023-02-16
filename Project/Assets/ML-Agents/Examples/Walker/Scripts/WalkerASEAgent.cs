@@ -158,13 +158,13 @@ public class WalkerASEAgent : Agent
             var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
             var rot = GetRandomRotation();
             m_IsRecoveryEpisode = true;
-            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(pos, rot, true));
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(pos, Vector3.zero, rot, true));
         }
         else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)
         {
 
-            // m_Controller.SetPosRot(m_OriginalPosition, m_OriginalRotation);
-            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, m_OriginalRotation, false));
+            var verticalOffset = new Vector3(0f, 0.05f, 0f);
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, verticalOffset, m_OriginalRotation, false));
         }
         else
         {

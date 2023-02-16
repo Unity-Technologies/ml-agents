@@ -257,13 +257,13 @@ public class ConfigurableJointController : MonoBehaviour
         joint.targetRotation = Quaternion.Euler(target);
     }
 
-    public IEnumerator ResetCJointTargetsAndPositions(Vector3 position, Quaternion rotation, bool settle)
+    public IEnumerator ResetCJointTargetsAndPositions(Vector3 position, Vector3 verticalOffset, Quaternion rotation, bool settle)
     {
         Academy.Instance.AutomaticSteppingEnabled = false;
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = true;
         ZeroCJointPhysicsSettings();
         ZeroCJointPhysics();
-        SetPosRot(position, rotation);
+        SetPosRot(position + verticalOffset, rotation);
         yield return new WaitForSeconds(1.0f / 120f);
         if (settle)
         {
@@ -279,7 +279,8 @@ public class ConfigurableJointController : MonoBehaviour
         SetCJointTargets();
         if (!settle)
         {
-            yield return new WaitForSeconds(1.25f);
+            yield return new WaitForSeconds(0.75f);
+            SetPosRot(position, rotation);
         }
         else
         {
