@@ -2,8 +2,8 @@ behaviors:
   WalkerASE:
     trainer_type: ase
     hyperparameters:
-      batch_size: 4096
-      buffer_size: 32768
+      batch_size: 16384
+      buffer_size: 131072
       learning_rate: 0.000025
       beta: 0.0025
       epsilon: 0.2
@@ -14,24 +14,24 @@ behaviors:
       epsilon_schedule: constant
     network_settings:
       normalize: true
-      hidden_units: 512
+      hidden_units: 1024
       num_layers: 3
       bottleneck: true
       vis_encode_type: simple
     reward_signals:
       ase:
-        latent_dim: 3
+        latent_dim: 64
         latent_steps_min: 1
         latent_steps_max: 75
         beta_sdo: 0.5
         omega_do: 0.01
         encoder_scaling: 1.0
-        batch_size: 1024
+        batch_size: 4096
         demo_path: /home/miguelalonsojr/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
         learning_rate: 0.000025
         network_settings:
           normalize: true
-          hidden_units: 512
+          hidden_units: 1024
           num_layers: 3
           bottleneck: true
           vis_encode_type: simple
@@ -39,7 +39,7 @@ behaviors:
     even_checkpoints: true
     max_steps: 500000000
     time_horizon: 150
-    summary_freq: 20000
+    summary_freq: 100000
 env_settings:
-   num_envs: 8
-   num_areas: 8
+   num_envs: 12
+   num_areas: 6
