@@ -78,9 +78,6 @@ public class WalkerASEAgent : Agent
 
     public override void OnEpisodeBegin()
     {
-        Debug.Log(Time.time);
-        Debug.Log(Academy.Instance.TotalStepCount);
-        Debug.Log(m_FixedUpdateCount);
         ResetAgent();
         if (m_LatentRequestor != null)
         {
