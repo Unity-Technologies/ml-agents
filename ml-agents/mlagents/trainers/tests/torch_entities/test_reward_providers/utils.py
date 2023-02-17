@@ -5,7 +5,7 @@ from mlagents.trainers.trajectory import ObsUtil
 
 
 def create_agent_buffer(
-    behavior_spec: BehaviorSpec, number: int, reward: float = 0.0
+    behavior_spec: BehaviorSpec, number: int, reward: float = 0.0, ignore_latent: bool = True
 ) -> AgentBuffer:
     buffer = AgentBuffer()
     curr_obs = [

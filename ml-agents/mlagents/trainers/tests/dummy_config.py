@@ -6,6 +6,7 @@ import os
 from mlagents.trainers.settings import (
     TrainerSettings,
     GAILSettings,
+    ASESettings,
     CuriositySettings,
     RewardSignalSettings,
     NetworkSettings,
@@ -82,6 +83,9 @@ def poca_dummy_config():
 def gail_dummy_config():
     return {RewardSignalType.GAIL: GAILSettings(demo_path=CONTINUOUS_DEMO_PATH)}
 
+@pytest.fixture
+def ase_dummy_config():
+    return {RewardSignalType.ASE: ASESettings(demo_path=CONTINUOUS_DEMO_PATH)}
 
 @pytest.fixture
 def curiosity_dummy_config():

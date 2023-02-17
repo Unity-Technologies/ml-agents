@@ -196,6 +196,57 @@ def test_ppo_optimizer_update_gail(gail_dummy_config, dummy_config):  # noqa: F8
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
     )
 
+# We need to test this separately from test_reward_signals.py to ensure no interactions
+def test_ppo_optimizer_update_ase(ase_dummy_config, dummy_config):  # noqa: F811
+    dummy_config.reward_signals = ase_dummy_config
+    config = ppo_dummy_config()
+    optimizer = create_test_ppo_optimizer(
+        config, use_rnn=False, use_discrete=False, use_visual=False
+    )
+    # Test update
+    update_buffer = mb.simulate_rollout(
+        BUFFER_INIT_SAMPLES, optimizer.policy.behavior_spec
+    )
+    # Mock out reward signal eval
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("ase"),
+            RewardSignalUtil.value_estimates_key("ase"),
+        ],
+    )
+
+    update_buffer[BufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
+        update_buffer[BufferKey.CONTINUOUS_ACTION]
+    )
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
+    )
+
+    # Check if buffer size is too big
+    update_buffer = mb.simulate_rollout(3000, optimizer.policy.behavior_spec)
+    # Mock out reward signal eval
+    copy_buffer_fields(
+        update_buffer,
+        src_key=BufferKey.ENVIRONMENT_REWARDS,
+        dst_keys=[
+            BufferKey.ADVANTAGES,
+            RewardSignalUtil.returns_key("extrinsic"),
+            RewardSignalUtil.value_estimates_key("extrinsic"),
+            RewardSignalUtil.returns_key("gail"),
+            RewardSignalUtil.value_estimates_key("gail"),
+        ],
+    )
+    optimizer.update(
+        update_buffer,
+        num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
+    )
+
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
 @pytest.mark.parametrize("visual", [True, False], ids=["visual", "vector"])
