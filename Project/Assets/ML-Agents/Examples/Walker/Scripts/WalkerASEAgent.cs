@@ -43,15 +43,12 @@ public class WalkerASEAgent : Agent
 
     ConfigurableJointController m_Controller;
     LatentRequestor m_LatentRequestor;
-    private float m_StartingHeight;
-    private int m_DecisionPeriod;
-    LocalFrameController m_FrameController;
-    string[] m_SingleAxis = new[] { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
-    string[] m_DualAxis = new[] { "hand_L", "hand_R" };
-    bool m_IsRecoveryEpisode = false;
-
-    int m_FixedUpdateCount = 0;
-
+    float m_StartingHeight;
+    int m_DecisionPeriod;
+    LocalFrameController m_AgentLocalFrameController;
+    string[] m_SingleAxis = { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
+    string[] m_DualAxis = { "hand_L", "hand_R" };
+    bool m_IsRecoveryEpisode;
 
     public override void Initialize()
     {
@@ -73,29 +70,29 @@ public class WalkerASEAgent : Agent
 
         m_StartingHeight = GetRootHeightFromGround();
         m_DecisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
-        m_FrameController = GetComponentInChildren<LocalFrameController>();
+        m_AgentLocalFrameController = GetComponentInChildren<LocalFrameController>();
     }
 
     public override void OnEpisodeBegin()
     {
+        // Reset walker state
         ResetAgent();
+
+        // Reset latents if latent requestor present
+        // TODO Do this automatically if latent requestor present and embedding size > 0
         if (m_LatentRequestor != null)
         {
+            // reset latents and latent step count
             m_LatentRequestor.ResetLatents();
             m_LatentRequestor.ResetLatentStepCounts();
         }
-        if (recordingMode)
-        {
-            ResetAnimation();
-        }
-
-        m_FrameController.UpdateLocalFrame(root);
+        m_AgentLocalFrameController.UpdateLocalFrame(root);
     }
 
     void FixedUpdate()
     {
-        m_FixedUpdateCount++;
-        m_FrameController.UpdateLocalFrame(root);
+        m_AgentLocalFrameController.UpdateLocalFrame(root);
+
         if (CheckEpisodeTermination() && EnableEarlyTermination)
         {
             EndEpisode();
@@ -105,7 +102,7 @@ public class WalkerASEAgent : Agent
     {
         if (!m_IsRecoveryEpisode)
         {
-            // check root
+            // check root for early termination
             var position = m_Controller.ConfigurableJointChain[0].transform.position;
 
             if (position.y < BodyPartTerminationHeight)
@@ -113,6 +110,7 @@ public class WalkerASEAgent : Agent
                 return true;
             }
 
+            // check joints for early termination
             for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
             {
                 var name = m_Controller.cjControlSettings[i].name;
@@ -136,22 +134,17 @@ public class WalkerASEAgent : Agent
 
         return false;
     }
-    void ResetAnimation()
-    {
-        // TODO reset animation on an episode reset (nice to have)
-    }
 
     void ResetAgent()
     {
-        float[] angles = new float[m_Controller.cjControlSettings.Length * 3];
-        for (int i = 0; i < m_Controller.cjControlSettings.Length; i++)
-        {
-            angles[i] = Random.Range(-1f, 1f);
-        }
-
         var rand = Random.Range(0f, 1f);
 
         m_IsRecoveryEpisode = false;
+
+        if (randomDropProbability + randomStandProbability > 1.0f)
+        {
+            throw new ArgumentException("Stand and drop probabilities must sum to 1.0.");
+        }
 
         if (rand <= randomDropProbability)
         {
@@ -166,19 +159,14 @@ public class WalkerASEAgent : Agent
             var verticalOffset = new Vector3(0f, 0.05f, 0f);
             StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, verticalOffset, m_OriginalRotation, false));
         }
-        else
-        {
-            // TODO reset to original position with randomized joint angles
-        }
-
     }
 
-    private Quaternion GetRandomRotation()
+    Quaternion GetRandomRotation()
     {
         return Quaternion.Euler(Random.Range(0f, 360f), Random.Range(0f, 360f), Random.Range(0f, 360f));
     }
 
-    private Vector3 GetRandomSpawnPosition(float yMin, float yMax)
+    Vector3 GetRandomSpawnPosition(float yMin, float yMax)
     {
         var randomPosY = Random.Range(yMin, yMax);
         var randomSpawnPos = new Vector3(m_OriginalPosition.x, randomPosY, m_OriginalPosition.y);
@@ -187,14 +175,14 @@ public class WalkerASEAgent : Agent
 
     public override void CollectObservations(VectorSensor sensor)
     {
-        sensor.AddObservation(GetRootHeightFromGround());
-        sensor.AddObservation(GetRelativeRootRotation());
-        sensor.AddObservation(GetRelativeVelocity());
-        sensor.AddObservation(GetRelativeAngularVelocity());
-        sensor.AddObservation(GetRelativePosition(leftHand));
-        sensor.AddObservation(GetRelativePosition(rightHand));
-        sensor.AddObservation(GetRelativePosition(leftFoot));
-        sensor.AddObservation(GetRelativePosition(rightFoot));
+        sensor.AddObservation(GetRootHeightFromGround()); // 1
+        sensor.AddObservation(GetRelativeRootRotation()); // 4
+        sensor.AddObservation(GetRelativeVelocity()); // 3
+        sensor.AddObservation(GetRelativeAngularVelocity()); // 3
+        sensor.AddObservation(GetRelativePosition(leftHand)); // 3
+        sensor.AddObservation(GetRelativePosition(rightHand)); // 3
+        sensor.AddObservation(GetRelativePosition(leftFoot)); // 3
+        sensor.AddObservation(GetRelativePosition(rightFoot)); // 3
     }
 
     public override void CollectEmbedding(VectorSensor embedding)
@@ -250,12 +238,6 @@ public class WalkerASEAgent : Agent
         return raycastHit.distance;
     }
 
-    public float GetRootBalance()
-    {
-        var agentUp = root.transform.TransformDirection(Vector3.up);
-        return Vector3.Dot(agentUp, Vector3.up);
-    }
-
     public float GetChestBalance()
     {
         var agentUp = chest.transform.TransformDirection(Vector3.up);
@@ -274,21 +256,21 @@ public class WalkerASEAgent : Agent
 
     Quaternion GetRelativeRootRotation()
     {
-        return Quaternion.FromToRotation(m_FrameController.transform.forward, root.forward);
+        return Quaternion.FromToRotation(m_AgentLocalFrameController.transform.forward, root.forward);
     }
 
     Vector3 GetRelativePosition(Transform joint)
     {
-        return m_FrameController.transform.InverseTransformPoint(joint.transform.position);
+        return m_AgentLocalFrameController.transform.InverseTransformPoint(joint.transform.position);
     }
 
     Vector3 GetRelativeVelocity()
     {
-        return m_FrameController.transform.InverseTransformDirection(GetVelocity());
+        return m_AgentLocalFrameController.transform.InverseTransformDirection(GetVelocity());
     }
 
     Vector3 GetRelativeAngularVelocity()
     {
-        return m_FrameController.transform.InverseTransformDirection(GetAngularVelocity());
+        return m_AgentLocalFrameController.transform.InverseTransformDirection(GetAngularVelocity());
     }
 }

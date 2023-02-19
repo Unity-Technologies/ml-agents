@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971174, g: 0.4997772, b: 0.57563627, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -620,7 +620,12 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 1ee614e41b59c4641b3357c3cdb36141, type: 2}
+      objectReference: {fileID: 9100000, guid: abd33dcd0f43a4e95bda457d13dcf741, type: 2}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: MaxStep
+      value: 1200
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: recordingMode
@@ -651,6 +656,11 @@ PrefabInstance:
       propertyPath: m_BrainParameters.EmbeddingSize
       value: 4
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295370, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: DecisionPeriod
+      value: 4
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -660,6 +670,11 @@ PrefabInstance:
         type: 3}
       propertyPath: Record
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295380, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: NumStepsToRecord
+      value: 300
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256577932836, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -1095,7 +1110,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   gravityMultiplier: 1.5
-  fixedDeltaTime: 0.01333
+  fixedDeltaTime: 0.008333334
   maximumDeltaTime: 0.15
   solverIterations: 12
   solverVelocityIterations: 12
