@@ -649,7 +649,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_BrainParameters.EmbeddingSize
-      value: 64
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295375, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
