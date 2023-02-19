@@ -148,7 +148,7 @@ class ActionModel(nn.Module):
 
     def evaluate(
         self, inputs: torch.Tensor, masks: torch.Tensor, actions: AgentAction
-    ) -> Tuple[ActionLogProbs, torch.Tensor]:
+    ) -> Tuple[ActionLogProbs, torch.Tensor, torch.Tensor]:
         """
         Given actions and encoding from the network body, gets the distributions and
         computes the log probabilites and entropies.
@@ -159,9 +159,10 @@ class ActionModel(nn.Module):
         """
         dists = self._get_dists(inputs, masks)
         log_probs, entropies = self._get_probs_and_entropy(actions, dists)
+        mus = dists.continuous.deterministic_sample()
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return log_probs, entropy_sum
+        return log_probs, entropy_sum, mus
 
     def get_action_out(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
         """

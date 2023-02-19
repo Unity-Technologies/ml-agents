@@ -1,0 +1,7 @@
+{
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.31.0.dev0",
+        "torch_version": "1.11.0+cu102"
+    }
+}

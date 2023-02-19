@@ -549,6 +549,12 @@ class Actor(abc.ABC):
         """
         pass
 
+    def get_mus(self, inputs: List[torch.Tensor],
+                masks: Optional[torch.Tensor] = None,
+                memories: Optional[torch.Tensor] = None,
+                sequence_length: int = 1) -> Dict[str, Any]:
+        pass
+
     def get_stats(
         self,
         inputs: List[torch.Tensor],
@@ -669,6 +675,22 @@ class SimpleActor(nn.Module, Actor):
 
         return action, run_out, memories
 
+    def get_mus(self, inputs: List[torch.Tensor],
+                masks: Optional[torch.Tensor] = None,
+                memories: Optional[torch.Tensor] = None,
+                sequence_length: int = 1) -> Dict[str, Any]:
+        encoding, actor_mem_outs = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+
+        (continuous_out,
+         discrete_out,
+         action_out_deprecated,
+         deterministic_continuous_out,
+         deterministic_discrete_out) = self.action_model.get_action_out(encoding, masks)
+        run_out = {"mus": deterministic_continuous_out}
+        return run_out
+
     def get_stats(
         self,
         inputs: List[torch.Tensor],
@@ -681,10 +703,12 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
 
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies, mus = self.action_model.evaluate(encoding, masks, actions)
         run_out = {}
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies
+        run_out["mus"] = mus
+
         return run_out
 
     def forward(

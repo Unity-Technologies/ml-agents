@@ -263,6 +263,7 @@ class ASESettings(RewardSignalSettings):
     beta_sdo: float = 0.5
     omega_gp: float = 5
     omega_do: float = 0.01
+    omega_wd: float = 0.0001
     batch_size: int = 1024
     shared_discriminator: bool = True
     demo_path: str = attr.ib(kw_only=True)
