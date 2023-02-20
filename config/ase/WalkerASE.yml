@@ -20,11 +20,13 @@ behaviors:
       vis_encode_type: simple
     reward_signals:
       ase:
-        latent_dim: 64
+        latent_dim: 4
         latent_steps_min: 1
         latent_steps_max: 75
         beta_sdo: 0.5
         omega_do: 0.01
+        omega_wd: 0.0001
+        omega_gp: 5
         encoder_scaling: 1.0
         batch_size: 4096
         demo_path: /home/miguelalonsojr/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
@@ -38,8 +40,8 @@ behaviors:
     keep_checkpoints: 100
     even_checkpoints: true
     max_steps: 500000000
-    time_horizon: 150
+    time_horizon: 300
     summary_freq: 100000
 env_settings:
-   num_envs: 12
-   num_areas: 6
+   num_envs: 4
+   num_areas: 8

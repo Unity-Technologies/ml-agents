@@ -36,6 +36,7 @@ public class WalkerASEAgent : Agent
 
     public float HeadTerminationHeight = 0.3f;
     public float BodyPartTerminationHeight = 0.15f;
+    public int RecoverySteps = 60;
     public bool EnableEarlyTermination = true;
 
     Vector3 m_OriginalPosition;
@@ -49,6 +50,7 @@ public class WalkerASEAgent : Agent
     string[] m_SingleAxis = { "shinL", "shinR", "lower_arm_L", "lower_arm_R" };
     string[] m_DualAxis = { "hand_L", "hand_R" };
     bool m_IsRecoveryEpisode;
+    int m_CurrentRecoverySteps = 0;
 
     public override void Initialize()
     {
@@ -71,6 +73,7 @@ public class WalkerASEAgent : Agent
         m_StartingHeight = GetRootHeightFromGround();
         m_DecisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
         m_AgentLocalFrameController = GetComponentInChildren<LocalFrameController>();
+        Academy.Instance.AgentPreStep += IncrementRecoverySteps;
     }
 
     public override void OnEpisodeBegin()
@@ -135,11 +138,28 @@ public class WalkerASEAgent : Agent
         return false;
     }
 
+    void IncrementRecoverySteps(int academyStepCount)
+    {
+        if (m_IsRecoveryEpisode)
+        {
+            if (m_CurrentRecoverySteps == RecoverySteps)
+            {
+                m_CurrentRecoverySteps = 0;
+                EndEpisode();
+            }
+            else
+            {
+                m_CurrentRecoverySteps++;
+            }
+        }
+    }
+
     void ResetAgent()
     {
         var rand = Random.Range(0f, 1f);
 
         m_IsRecoveryEpisode = false;
+        m_CurrentRecoverySteps = 0;
 
         if (randomDropProbability + randomStandProbability > 1.0f)
         {

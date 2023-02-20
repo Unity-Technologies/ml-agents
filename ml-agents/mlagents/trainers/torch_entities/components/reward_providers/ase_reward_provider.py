@@ -113,13 +113,13 @@ class DiscriminatorEncoder(nn.Module):
         else:
             self.encoding_size = network_settings.hidden_units
 
-        self.discriminator_output_layer = nn.Sequential(
-            linear_layer(self.encoding_size, 1, kernel_gain=0.2),
-            nn.Sigmoid(),
-        )
         # self.discriminator_output_layer = nn.Sequential(
-        #     linear_layer(network_settings.hidden_units, 1, kernel_gain=0.2)
+        #     linear_layer(self.encoding_size, 1, kernel_gain=0.2),
+        #     nn.Sigmoid(),
         # )
+        self.discriminator_output_layer = nn.Sequential(
+            linear_layer(self.encoding_size, 1, kernel_gain=0.2)
+        )
 
         self.encoder_output_layer = nn.Linear(
             self.encoding_size, ase_settings.latent_dim
@@ -162,24 +162,23 @@ class DiscriminatorEncoder(nn.Module):
         policy_estimate, _ = self._compute_estimates(policy_batch)
         expert_estimate, _ = self._compute_estimates_expert(expert_batch)
 
-        # disc_loss_policy = torch.nn.BCEWithLogitsLoss(policy_estimate, torch.zeros_like(policy_estimate))
-        # disc_loss_expert = torch.nn.BCEWithLogitsLoss(expert_estimate, torch.ones_like(expert_estimate))
-        #
-        # total_loss += 0.5 * (disc_loss_policy + disc_loss_expert)
-
-        # logit reg
-        # not implemented yet
-
         stats_dict[
             "Policy/ASE Discriminator Policy Estimate"
-        ] = policy_estimate.mean().item()
+        ] = torch.sigmoid(policy_estimate).mean().item()
         stats_dict[
             "Policy/ASE Discriminator Expert Estimate"
-        ] = expert_estimate.mean().item()
-        discriminator_loss = -(
-            torch.log(expert_estimate + self.EPSILON)
-            + torch.log(1.0 - policy_estimate + self.EPSILON)
-        ).mean()
+        ] = torch.sigmoid(expert_estimate).mean().item()
+
+        # discriminator_loss = -(
+        #     torch.log(expert_estimate + self.EPSILON)
+        #     + torch.log(1.0 - policy_estimate + self.EPSILON)
+        # ).mean()
+        # total_loss += discriminator_loss
+
+        policy_loss = self._calc_disc_loss_neg(policy_estimate)
+        expert_loss = self._calc_disc_loss_pos(expert_estimate)
+        discriminator_loss = expert_loss + policy_loss
+
         total_loss += discriminator_loss
 
         # weight decay regularization
@@ -349,7 +348,8 @@ class DiscriminatorEncoder(nn.Module):
             interp_input.requires_grad = True  # For gradient calculation
             interp_inputs.append(interp_input)
         hidden, _ = self.discriminator_network_body(interp_inputs)
-        estimate = self.discriminator_output_layer(hidden).squeeze(1).sum()
+        discriminator_output = torch.sigmoid(self.discriminator_output_layer(hidden))
+        estimate = discriminator_output.squeeze(1).sum()
         gradient = torch.autograd.grad(
             estimate, tuple(interp_inputs), create_graph=True
         )[0]
@@ -381,9 +381,10 @@ class DiscriminatorEncoder(nn.Module):
         return enc_reward
 
     def _calc_disc_reward(self, discriminator_prediction: torch.Tensor) -> torch.Tensor:
+        probs = torch.sigmoid(discriminator_prediction)
         disc_reward = -torch.log(
             torch.maximum(
-                1 - discriminator_prediction,
+                1 - probs,
                 torch.tensor(0.0001, device=default_device()),
             )
         )
