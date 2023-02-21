@@ -603,12 +603,12 @@ PrefabInstance:
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[0].spring
-      value: 1000
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[1].spring
-      value: 100
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -623,7 +623,7 @@ PrefabInstance:
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[4].spring
-      value: 400
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -638,47 +638,47 @@ PrefabInstance:
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[7].spring
-      value: 400
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[8].spring
-      value: 400
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[9].spring
-      value: 300
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[0].damping
-      value: 100
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[10].spring
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[11].spring
-      value: 400
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[12].spring
-      value: 300
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[13].spring
-      value: 200
+      value: 500
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[1].damping
-      value: 10
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -693,7 +693,7 @@ PrefabInstance:
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[4].damping
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -708,37 +708,37 @@ PrefabInstance:
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[7].damping
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[8].damping
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[9].damping
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[10].damping
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[11].damping
-      value: 40
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[12].damping
-      value: 30
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: cjControlSettings.Array.data[13].damping
-      value: 20
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -749,6 +749,211 @@ PrefabInstance:
         type: 3}
       propertyPath: cjControlSettings.Array.data[11].target.y
       value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.xRange.low
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.yRange.low
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.zRange.low
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.xRange.low
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.yRange.low
+      value: -50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.zRange.low
+      value: -45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].range.xRange.low
+      value: -140
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].range.yRange.low
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.xRange.low
+      value: -55
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.yRange.low
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.zRange.low
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].range.xRange.low
+      value: -140
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].range.yRange.low
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.xRange.low
+      value: -55
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.yRange.low
+      value: -30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.zRange.low
+      value: -40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].range.zRange.low
+      value: -85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.xRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.yRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].range.zRange.high
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].range.zRange.low
+      value: -85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.xRange.high
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.yRange.high
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].range.zRange.high
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].range.xRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].range.yRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[3].range.xRange.high
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.xRange.high
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.yRange.high
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].range.zRange.high
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].range.xRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].range.yRange.high
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[6].range.xRange.high
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.xRange.high
+      value: 55
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.yRange.high
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].range.zRange.high
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].range.xRange.high
+      value: 120
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].range.zRange.high
+      value: 85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[9].range.xRange.high
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].range.zRange.high
+      value: 85
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[12].range.xRange.high
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -810,15 +1015,55 @@ PrefabInstance:
       propertyPath: m_LocalRotation.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056254663104251, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056254663104251, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056254663104251, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056254663104251, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 55
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056254741763405, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056254933284734, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 85
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056254974914572, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_Enabled
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255013271628, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255251560448, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 160
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255532436980, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 160
       objectReference: {fileID: 0}
     - target: {fileID: 6103056255598150234, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -835,11 +1080,76 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 6103056255752583306, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 85
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255888712982, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255888712982, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255888712982, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -90
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255888712982, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255951391321, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255951391321, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255951391321, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056255951391321, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -140
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256128813059, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256137765978, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_Controller
       value: 
       objectReference: {fileID: 9100000, guid: 290a56593a2654fb88d314b6b7d94b9b, type: 2}
+    - target: {fileID: 6103056256180735036, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 160
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: MaxStep
@@ -939,6 +1249,41 @@ PrefabInstance:
         type: 3}
       propertyPath: NumStepsToRecord
       value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -140
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256204109727, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 60
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256353094210, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularYLimit.limit
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256353094210, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_AngularZLimit.limit
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256353094210, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_LowAngularXLimit.limit
+      value: -55
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256353094210, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_HighAngularXLimit.limit
+      value: 55
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256577932836, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
