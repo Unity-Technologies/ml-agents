@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971174, g: 0.4997772, b: 0.57563627, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -478,7 +478,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2117444762, guid: 2434e2e6b8355407fb42b513cedf5ac7, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1034208674109153868, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -644,11 +644,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: abd33dcd0f43a4e95bda457d13dcf741, type: 2}
+      objectReference: {fileID: 9100000, guid: 290a56593a2654fb88d314b6b7d94b9b, type: 2}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: MaxStep
-      value: 12000
+      value: 1200
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -659,6 +659,16 @@ PrefabInstance:
         type: 3}
       propertyPath: recordingMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: maxSpawnHeight
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: minSpawnHeight
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

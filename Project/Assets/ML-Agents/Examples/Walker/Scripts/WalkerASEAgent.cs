@@ -156,28 +156,34 @@ public class WalkerASEAgent : Agent
 
     void ResetAgent()
     {
-        var rand = Random.Range(0f, 1f);
-
         m_IsRecoveryEpisode = false;
         m_CurrentRecoverySteps = 0;
 
-        if (randomDropProbability + randomStandProbability > 1.0f)
+        if (!recordingMode)
         {
-            throw new ArgumentException("Stand and drop probabilities must sum to 1.0.");
-        }
+            var rand = Random.Range(0f, 1f);
+            if (randomDropProbability + randomStandProbability > 1.0f)
+            {
+                throw new ArgumentException("Stand and drop probabilities must sum to 1.0.");
+            }
 
-        if (rand <= randomDropProbability)
-        {
-            var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
-            var rot = GetRandomRotation();
-            m_IsRecoveryEpisode = true;
-            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(pos, Vector3.zero, rot, true));
-        }
-        else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)
-        {
+            if (rand <= randomDropProbability)
+            {
+                var pos = GetRandomSpawnPosition(minSpawnHeight, maxSpawnHeight);
+                var rot = GetRandomRotation();
+                m_IsRecoveryEpisode = true;
+                StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(pos, Vector3.zero, rot, true));
+            }
+            else if (rand > randomDropProbability && rand <= randomStandProbability + randomDropProbability)
+            {
 
-            var verticalOffset = new Vector3(0f, 0.05f, 0f);
-            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, verticalOffset, m_OriginalRotation, false));
+                var verticalOffset = new Vector3(0f, 0.05f, 0f);
+                StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, verticalOffset, m_OriginalRotation, false));
+            }
+        }
+        else
+        {
+            StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, m_OriginalRotation));
         }
     }
 
