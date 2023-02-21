@@ -86,6 +86,8 @@ public class ConfigurableJointController : MonoBehaviour
     public bool slerpDrive;
     public bool kinematicRoot;
     public float totalMass;
+    public float singleActionScaling = 1.4f;
+    public float ActionScaling = 1.2f;
 
     [SerializeField]
     public CJControlSettings[] cjControlSettings;
@@ -227,21 +229,27 @@ public class ConfigurableJointController : MonoBehaviour
             float xAngle = 0f, yAngle = 0f, zAngle = 0f;
             if (m_SingleAxis.Contains(name))
             {
-                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
+                var xAng = Mathf.Clamp(singleActionScaling * angles[offset++], -1f, 1f);
+                xAngle = cjControlSettings[i].range.xRange.Scale(xAng);
                 yAngle = cjControlSettings[i].range.yRange.Scale(0f);
                 zAngle = cjControlSettings[i].range.zRange.Scale(0f);
             }
             else if (m_DualAxis.Contains(name))
             {
-                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
+                var xAng = Mathf.Clamp(ActionScaling * angles[offset++], -1f, 1f);
+                var zAng = Mathf.Clamp(ActionScaling * angles[offset++], -1f, 1f);
+                xAngle = cjControlSettings[i].range.xRange.Scale(xAng);
                 yAngle = cjControlSettings[i].range.yRange.Scale(0f);
-                zAngle = cjControlSettings[i].range.zRange.Scale(angles[offset++]);
+                zAngle = cjControlSettings[i].range.zRange.Scale(zAng);
             }
             else
             {
-                xAngle = cjControlSettings[i].range.xRange.Scale(angles[offset++]);
-                yAngle = cjControlSettings[i].range.yRange.Scale(angles[offset++]);
-                zAngle = cjControlSettings[i].range.zRange.Scale(angles[offset++]);
+                var xAng = Mathf.Clamp(ActionScaling * angles[offset++], -1f, 1f);
+                var yAng = Mathf.Clamp(ActionScaling * angles[offset++], -1f, 1f);
+                var zAng = Mathf.Clamp(ActionScaling * angles[offset++], -1f, 1f);
+                xAngle = cjControlSettings[i].range.xRange.Scale(xAng);
+                yAngle = cjControlSettings[i].range.yRange.Scale(yAng);
+                zAngle = cjControlSettings[i].range.zRange.Scale(zAng);
             }
 
             var targetRotation = new Vector3(xAngle, yAngle, zAngle);
