@@ -129,6 +129,7 @@ class DiscriminatorEncoder(nn.Module):
         self.discriminator_reward_scale = 1
         self.gradient_penalty_weight = ase_settings.omega_gp
         self.weight_decay = ase_settings.omega_wd
+        self.dics_logit_reg = ase_settings.disc_logit_reg
         self._action_flattener = ActionFlattener(behavior_spec.action_spec)
 
     def forward(self, inputs: List[torch.Tensor]) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -177,9 +178,14 @@ class DiscriminatorEncoder(nn.Module):
 
         policy_loss = self._calc_disc_loss_neg(policy_estimate)
         expert_loss = self._calc_disc_loss_pos(expert_estimate)
-        discriminator_loss = expert_loss + policy_loss
+        discriminator_loss = 0.5 * (expert_loss + policy_loss)
 
         total_loss += discriminator_loss
+
+        # discriminator logit regularization
+        if self.dics_logit_reg > 0:
+            disc_logit_loss = self.dics_logit_reg * self._compute_disc_logit_loss()
+            total_loss += disc_logit_loss
 
         # weight decay regularization
         if self.weight_decay > 0:
@@ -363,6 +369,11 @@ class DiscriminatorEncoder(nn.Module):
         discriminator_weight_decay = torch.sum(torch.square(discriminator_weights))
         return discriminator_weight_decay
 
+    def _compute_disc_logit_loss(self):
+        discriminator_logit_weights = self._get_discriminator_logit_weights()
+        loss = torch.sum(torch.square(discriminator_logit_weights))
+        return loss
+
     def _sample_latents(self, n) -> np.ndarray:  # type: ignore
         # torch version for future reference
         # z = torch.normal(torch.zeros([n, self.latent_dim], device=default_device()))
@@ -400,6 +411,13 @@ class DiscriminatorEncoder(nn.Module):
             if isinstance(module, nn.Linear):
                 weights.append(torch.flatten(module.weight))
         return weights
+
+    def _get_discriminator_logit_weights(self):
+        weights = []
+        for module in self.discriminator_output_layer.modules():
+            if isinstance(module, nn.Linear):
+                weights.append(torch.flatten(module.weight))
+        return weights[0]
 
     @staticmethod
     def _calc_disc_loss_neg(discriminator_estimate: torch.Tensor) -> torch.Tensor:
