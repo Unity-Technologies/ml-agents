@@ -81,6 +81,7 @@ public class ConfigurableJointController : MonoBehaviour
     public float spring = 1000;
     public float damping = 250;
     public float forceLimit = 500;
+    public bool slerpDrive;
     public bool kinematicRoot;
     public float totalMass;
 
@@ -309,12 +310,30 @@ public class ConfigurableJointController : MonoBehaviour
     {
         for (int i = 1; i < m_ConfigurableJointChain.Length; i++)
         {
-            m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
-            var drive = m_ConfigurableJointChain[i].slerpDrive;
-            drive.positionSpring = spring;
-            drive.positionDamper = damping;
-            drive.maximumForce = forceLimit;
-            m_ConfigurableJointChain[i].slerpDrive = drive;
+            if (slerpDrive)
+            {
+                m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
+                var drive = m_ConfigurableJointChain[i].slerpDrive;
+                drive.positionSpring = spring;
+                drive.positionDamper = damping;
+                drive.maximumForce = forceLimit;
+                m_ConfigurableJointChain[i].slerpDrive = drive;
+            }
+            else
+            {
+                m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.XYAndZ;
+                var xDrive = m_ConfigurableJointChain[i].angularXDrive;
+                xDrive.positionSpring = spring;
+                xDrive.positionDamper = damping;
+                xDrive.maximumForce = forceLimit;
+                m_ConfigurableJointChain[i].angularXDrive = xDrive;
+
+                var yzDrive = m_ConfigurableJointChain[i].angularYZDrive;
+                yzDrive.positionSpring = spring;
+                yzDrive.positionDamper = damping;
+                yzDrive.maximumForce = forceLimit;
+                m_ConfigurableJointChain[i].angularYZDrive = yzDrive;
+            }
         }
 
     }
