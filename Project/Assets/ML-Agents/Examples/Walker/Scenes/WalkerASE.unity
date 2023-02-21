@@ -577,6 +577,21 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
+      propertyPath: spring
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: damping
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: forceLimit
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
       propertyPath: slerpDrive
       value: 0
       objectReference: {fileID: 0}
@@ -584,6 +599,176 @@ PrefabInstance:
         type: 3}
       propertyPath: kinematicRoot
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].spring
+      value: 1000
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].spring
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].spring
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[3].spring
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].spring
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].spring
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[6].spring
+      value: 500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].spring
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].spring
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[9].spring
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[0].damping
+      value: 100
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[10].spring
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].spring
+      value: 400
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[12].spring
+      value: 300
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[13].spring
+      value: 200
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[1].damping
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[2].damping
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[3].damping
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].damping
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].damping
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[6].damping
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].damping
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].damping
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[9].damping
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[10].damping
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].damping
+      value: 40
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[12].damping
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[13].damping
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].target.y
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[11].target.y
+      value: 70
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[4].originalPosition.y
+      value: -0.36899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[5].originalPosition.y
+      value: -0.30899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[7].originalPosition.y
+      value: -0.36899996
+      objectReference: {fileID: 0}
+    - target: {fileID: 3199701511023194711, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: cjControlSettings.Array.data[8].originalPosition.y
+      value: -0.30899996
       objectReference: {fileID: 0}
     - target: {fileID: 4763781581415652276, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
@@ -688,12 +873,12 @@ PrefabInstance:
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: randomDropProbability
-      value: 0
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: randomStandProbability
-      value: 1
+      value: 0.9
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

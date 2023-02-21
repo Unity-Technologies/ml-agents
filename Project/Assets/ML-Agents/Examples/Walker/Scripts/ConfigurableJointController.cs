@@ -13,6 +13,8 @@ public struct CJControlSettings
     public string name;
     public Vector3 target;
     public Range3D range;
+    public float spring;
+    public float damping;
     public Vector3 originalPosition;
     public Quaternion originalRotation;
 
@@ -78,8 +80,8 @@ public class Range
 
 public class ConfigurableJointController : MonoBehaviour
 {
-    public float spring = 1000;
-    public float damping = 250;
+    public float spring = 500;
+    public float damping = 50;
     public float forceLimit = 500;
     public bool slerpDrive;
     public bool kinematicRoot;
@@ -202,6 +204,8 @@ public class ConfigurableJointController : MonoBehaviour
                     -m_ConfigurableJointChain[i + 1].angularZLimit.limit,
                     m_ConfigurableJointChain[i + 1].angularZLimit.limit
                 );
+                cjControlSettings[i].spring = spring;
+                cjControlSettings[i].damping = damping;
                 cjControlSettings[i].originalPosition = m_ConfigurableJointChain[i].transform.localPosition;
                 cjControlSettings[i].originalRotation = m_ConfigurableJointChain[i].transform.localRotation;
             }
@@ -314,8 +318,8 @@ public class ConfigurableJointController : MonoBehaviour
             {
                 m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
                 var drive = m_ConfigurableJointChain[i].slerpDrive;
-                drive.positionSpring = spring;
-                drive.positionDamper = damping;
+                drive.positionSpring = cjControlSettings[i - 1].spring;
+                drive.positionDamper = cjControlSettings[i - 1].damping;
                 drive.maximumForce = forceLimit;
                 m_ConfigurableJointChain[i].slerpDrive = drive;
             }
@@ -323,14 +327,14 @@ public class ConfigurableJointController : MonoBehaviour
             {
                 m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.XYAndZ;
                 var xDrive = m_ConfigurableJointChain[i].angularXDrive;
-                xDrive.positionSpring = spring;
-                xDrive.positionDamper = damping;
+                xDrive.positionSpring = cjControlSettings[i - 1].spring;
+                xDrive.positionDamper = cjControlSettings[i - 1].damping;
                 xDrive.maximumForce = forceLimit;
                 m_ConfigurableJointChain[i].angularXDrive = xDrive;
 
                 var yzDrive = m_ConfigurableJointChain[i].angularYZDrive;
-                yzDrive.positionSpring = spring;
-                yzDrive.positionDamper = damping;
+                yzDrive.positionSpring = cjControlSettings[i - 1].spring;
+                yzDrive.positionDamper = cjControlSettings[i - 1].damping;
                 yzDrive.maximumForce = forceLimit;
                 m_ConfigurableJointChain[i].angularYZDrive = yzDrive;
             }
