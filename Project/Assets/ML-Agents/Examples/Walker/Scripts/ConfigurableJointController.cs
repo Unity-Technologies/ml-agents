@@ -364,12 +364,27 @@ public class ConfigurableJointController : MonoBehaviour
     {
         for (int i = 1; i < m_ConfigurableJointChain.Length; i++)
         {
-            m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
-            var drive = m_ConfigurableJointChain[i].slerpDrive;
-            drive.positionSpring = 0f;
-            drive.positionDamper = 0f;
-            drive.maximumForce = forceLimit;
-            m_ConfigurableJointChain[i].slerpDrive = drive;
+            if (slerpDrive)
+            {
+                m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.Slerp;
+                var drive = m_ConfigurableJointChain[i].slerpDrive;
+                drive.positionSpring = 0f;
+                drive.positionDamper = 0f;
+                m_ConfigurableJointChain[i].slerpDrive = drive;
+            }
+            else
+            {
+                m_ConfigurableJointChain[i].rotationDriveMode = RotationDriveMode.XYAndZ;
+                var xDrive = m_ConfigurableJointChain[i].angularXDrive;
+                xDrive.positionSpring = 0f;
+                xDrive.positionDamper = 0f;
+                m_ConfigurableJointChain[i].angularXDrive = xDrive;
+
+                var yzDrive = m_ConfigurableJointChain[i].angularYZDrive;
+                yzDrive.positionSpring = 0f;
+                yzDrive.positionDamper = 0f;
+                m_ConfigurableJointChain[i].angularYZDrive = yzDrive;
+            }
         }
     }
 

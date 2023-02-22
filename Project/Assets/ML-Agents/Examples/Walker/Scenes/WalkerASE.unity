@@ -480,6 +480,11 @@ PrefabInstance:
       propertyPath: m_Enabled
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 219519726959589128, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 1034208674109153868, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_LocalPosition.y
@@ -1174,6 +1179,11 @@ PrefabInstance:
         type: 3}
       propertyPath: minSpawnHeight
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: DisplayLocalFrame
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}

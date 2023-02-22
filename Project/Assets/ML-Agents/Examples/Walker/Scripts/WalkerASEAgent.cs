@@ -38,6 +38,7 @@ public class WalkerASEAgent : Agent
     public float BodyPartTerminationHeight = 0.15f;
     public int RecoverySteps = 60;
     public bool EnableEarlyTermination = true;
+    public bool DisplayLocalFrame = false;
 
     Vector3 m_OriginalPosition;
     Quaternion m_OriginalRotation;
@@ -89,12 +90,12 @@ public class WalkerASEAgent : Agent
             m_LatentRequestor.ResetLatents();
             m_LatentRequestor.ResetLatentStepCounts();
         }
-        m_AgentLocalFrameController.UpdateLocalFrame(root);
+        m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
     }
 
     void FixedUpdate()
     {
-        m_AgentLocalFrameController.UpdateLocalFrame(root);
+        m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
 
         if (CheckEpisodeTermination() && EnableEarlyTermination)
         {

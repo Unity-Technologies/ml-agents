@@ -1,21 +1,36 @@
-using System.Collections;
-using System.Collections.Generic;
-using InspectorGadgets;
 using UnityEngine;
 
 public class LocalFrameController : MonoBehaviour
 {
-    public void UpdateLocalFrame(Transform root)
+    public void UpdateLocalFrame(Transform root, bool display)
     {
-        var heading = CalculateHeading(root);
+        var heading = 0f;
         var lookRot = Quaternion.AngleAxis(heading, Vector3.up);
         transform.SetPositionAndRotation(root.position, lookRot);
+        UpdateDisplay(display);
+    }
+    public void UpdateLocalFrame(Transform root, Transform target, bool display)
+    {
+        var heading = CalculateHeading(root, target);
+        var lookRot = Quaternion.AngleAxis(heading, Vector3.up);
+        transform.SetPositionAndRotation(root.position, lookRot);
+        UpdateDisplay(display);
     }
 
-    float CalculateHeading(Transform root)
+    float CalculateHeading(Transform root, Transform target)
     {
-        var rotationDirection = Quaternion.FromToRotation(root.forward, Vector3.forward);
+        var direction = (target.position - root.position).normalized;
+        var rotationDirection = Quaternion.FromToRotation(direction, Vector3.forward);
         var heading = -rotationDirection.eulerAngles.y;
         return heading;
+    }
+
+    void UpdateDisplay(bool display)
+    {
+        var meshRenderers = GetComponentsInChildren<MeshRenderer>();
+        foreach (var mesh in meshRenderers)
+        {
+            mesh.enabled = display;
+        }
     }
 }
