@@ -1149,7 +1149,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Controller
       value: 
-      objectReference: {fileID: 9100000, guid: 290a56593a2654fb88d314b6b7d94b9b, type: 2}
+      objectReference: {fileID: 9100000, guid: abd33dcd0f43a4e95bda457d13dcf741, type: 2}
     - target: {fileID: 6103056256180735036, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_HighAngularXLimit.limit
@@ -1183,7 +1183,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: DisplayLocalFrame
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
