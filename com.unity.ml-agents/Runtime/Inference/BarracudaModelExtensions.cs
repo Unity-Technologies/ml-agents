@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
 using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
+using System.Text.RegularExpressions;
+using UnityEngine;
 
 namespace Unity.MLAgents.Inference
 {
@@ -11,6 +13,89 @@ namespace Unity.MLAgents.Inference
     /// </summary>
     internal static class BarracudaModelExtensions
     {
+        //@Barracude4Upgrade:
+        // document this function
+        public static float[] ParseFloatArray(string input)
+        {
+            var match = Regex.Match(input, @"\[(.*)\]");
+
+            if (!match.Success)
+            {
+                throw new FormatException("Input string is not in the correct format");
+            }
+
+            if (match.Groups[1].Value == "")
+            {
+                return new float[0];
+            }
+
+            var numbers = match.Groups[1].Value.Split(',');
+
+            var result = new float[numbers.Length];
+
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                if (!float.TryParse(numbers[i], out result[i]))
+                {
+                    throw new FormatException("Input string contains an invalid number");
+                }
+            }
+
+            return result;
+        }
+
+        public static TensorFloat GetTensorByName(this Model model, string name)
+        {
+            if (model.Metadata.TryGetValue(name, out string value))
+            {
+                var match = Regex.Match(value, @"\((.*)\) \[(.*)\]");
+
+                if (!match.Success)
+                {
+                    throw new FormatException("Input string is not in the correct format");
+                }
+
+                var intStrings = match.Groups[1].Value.Split(',');
+
+                int shapeLength = intStrings.Length;
+                if (intStrings[intStrings.Length - 1] == "")
+                    shapeLength--;
+
+                var shape = new int[shapeLength];
+
+                for (int i = 0; i < shapeLength; i++)
+                {
+                    if (intStrings[i] == "") // only the final one should ever have this happen
+                        continue;
+
+                    if (!int.TryParse(intStrings[i], out shape[i]))
+                    {
+                        throw new FormatException("Input string contains an invalid integer in shape");
+                    }
+                }
+
+                if (match.Groups[2].Value == "")
+                {
+                    return new TensorFloat(new TensorShape(shape), new float[0]);
+                }
+
+                var floatStrings = match.Groups[2].Value.Split(' ');
+                var tensorArray = new float[floatStrings.Length];
+
+                for (int i = 0; i < floatStrings.Length; i++)
+                {
+                    if (!float.TryParse(floatStrings[i], out tensorArray[i]))
+                    {
+                        throw new FormatException("Input string contains an invalid float in values");
+                    }
+                }
+
+                return new TensorFloat(new TensorShape(shape), tensorArray);
+            }
+
+            return null;
+        }
+
         /// <summary>
         /// Get array of the input tensor names of the model.
         /// </summary>
@@ -30,10 +115,11 @@ namespace Unity.MLAgents.Inference
                 names.Add(input.name);
             }
 
-            foreach (var mem in model.memories)
-            {
-                names.Add(mem.input);
-            }
+            //@Barracude4Upgrade:  this is for legacy models according to Barracuda team (AR)
+            // foreach (var mem in model.memories)
+            // {
+            //     names.Add(mem.input);
+            // }
 
             names.Sort(StringComparer.InvariantCulture);
 
@@ -50,6 +136,30 @@ namespace Unity.MLAgents.Inference
         public static int GetVersion(this Model model)
         {
             return (int)model.GetTensorByName(TensorNames.VersionNumber)[0];
+        }
+
+        //@Barracude4Upgrade: Utility function
+        /// <summary>
+        /// Cast tensor shape to int[]
+        /// Ex:
+        /// (5,2,3,4) => new [] {5,2,3,4}
+        /// </summary>
+        public static int[] ToArray(this SymbolicTensorShape tensorShape)
+        {
+            var shape = new int[tensorShape.rank];
+            if (tensorShape.rank > 0)
+            {
+                for (int i = 0; i < tensorShape.rank; i++)
+                {
+                    var tensorDim = tensorShape[i];
+                    if (!tensorDim.isValue)
+                        shape[i] = 1;
+                    else
+                        shape[i] = tensorDim.value;
+                }
+            }
+
+            return shape;
         }
 
         /// <summary>
@@ -71,9 +181,11 @@ namespace Unity.MLAgents.Inference
                 tensors.Add(new TensorProxy
                 {
                     name = input.name,
-                    valueType = TensorProxy.TensorType.FloatingPoint,
+                    //@Barracude4Upgrade:
+                    valueType = DataType.Float,  //@TODO: Infer this from the input type?
                     data = null,
-                    shape = input.shape.Select(i => (long)i).ToArray()
+                    //@Barracude4Upgrade:  I chose to use int instead of long for the shape array
+                    shape = input.shape.ToArray()
                 });
             }
 
@@ -282,7 +394,8 @@ namespace Unity.MLAgents.Inference
                 else
                 {
                     int result = 0;
-                    for (int i = 0; i < discreteOutputShape.length; i++)
+                    //@Barracude4Upgrade:
+                    for (int i = 0; i < discreteOutputShape.shape.length; i++)
                     {
                         result += (int)discreteOutputShape[i];
                     }
@@ -438,9 +551,6 @@ namespace Unity.MLAgents.Inference
                     }
 
                 }
-
-
-
 
             }
             return true;

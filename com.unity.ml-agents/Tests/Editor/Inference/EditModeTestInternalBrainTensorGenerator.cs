@@ -82,7 +82,7 @@ namespace Unity.MLAgents.Tests
             var generator = new BatchSizeGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0], batchSize);
+            Assert.AreEqual(inputTensor.FloatData[0], batchSize);  //@TODO:  This seems wrong?
             alloc.Dispose();
         }
 
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Tests
             var generator = new SequenceLengthGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0], 1);
+            Assert.AreEqual(inputTensor.FloatData[0], 1);   //@TODO:  This seems wrong?
             alloc.Dispose();
         }
 
@@ -104,7 +104,7 @@ namespace Unity.MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] { 2, 4 }
+                shape = new int[] { 2, 4 }
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgents(ObservableAttributeOptions.ExamineAll);
@@ -123,10 +123,10 @@ namespace Unity.MLAgents.Tests
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 1], 1);
-            Assert.AreEqual(inputTensor.data[0, 3], 3);
-            Assert.AreEqual(inputTensor.data[1, 1], 4);
-            Assert.AreEqual(inputTensor.data[1, 3], 6);
+            Assert.AreEqual(inputTensor.FloatData[0, 1], 1);
+            Assert.AreEqual(inputTensor.FloatData[0, 3], 3);
+            Assert.AreEqual(inputTensor.FloatData[1, 1], 4);
+            Assert.AreEqual(inputTensor.FloatData[1, 3], 6);
             alloc.Dispose();
         }
 
@@ -135,8 +135,8 @@ namespace Unity.MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] { 2, 2 },
-                valueType = TensorProxy.TensorType.Integer
+                shape = new int[] { 2, 2 },
+                valueType = DataType.Int
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgents();
@@ -151,10 +151,10 @@ namespace Unity.MLAgents.Tests
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 1);
-            Assert.AreEqual(inputTensor.data[0, 1], 2);
-            Assert.AreEqual(inputTensor.data[1, 0], 3);
-            Assert.AreEqual(inputTensor.data[1, 1], 4);
+            Assert.AreEqual(inputTensor.IntData[0, 0], 1);
+            Assert.AreEqual(inputTensor.IntData[0, 1], 2);
+            Assert.AreEqual(inputTensor.IntData[1, 0], 3);
+            Assert.AreEqual(inputTensor.IntData[1, 1], 4);
             alloc.Dispose();
         }
 
@@ -163,8 +163,8 @@ namespace Unity.MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
-                shape = new long[] { 2, 5 },
-                valueType = TensorProxy.TensorType.FloatingPoint
+                shape = new int[] { 2, 5 },
+                valueType = DataType.Float
             };
             const int batchSize = 4;
             var agentInfos = GetFakeAgents();
@@ -181,10 +181,10 @@ namespace Unity.MLAgents.Tests
 
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 1);
-            Assert.AreEqual(inputTensor.data[0, 4], 1);
-            Assert.AreEqual(inputTensor.data[1, 0], 0);
-            Assert.AreEqual(inputTensor.data[1, 4], 1);
+            Assert.AreEqual(inputTensor.FloatData[0, 0], 1);
+            Assert.AreEqual(inputTensor.FloatData[0, 4], 1);
+            Assert.AreEqual(inputTensor.FloatData[1, 0], 0);
+            Assert.AreEqual(inputTensor.FloatData[1, 4], 1);
             alloc.Dispose();
         }
     }

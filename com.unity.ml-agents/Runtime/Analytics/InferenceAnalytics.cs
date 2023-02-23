@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.Barracuda;
@@ -192,7 +193,9 @@ namespace Unity.MLAgents.Analytics
             }
 
             inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(barracudaModel);
-            inferenceEvent.ModelHash = GetModelHash(barracudaModel);
+            
+            //@Barracude4Upgrade: This is never used.
+            //inferenceEvent.ModelHash = GetModelHash(barracudaModel);
             return inferenceEvent;
         }
 
@@ -206,12 +209,10 @@ namespace Unity.MLAgents.Analytics
         static long GetModelWeightSize(Model barracudaModel)
         {
             long totalWeightsSizeInBytes = 0;
-            for (var l = 0; l < barracudaModel.layers.Count; ++l)
+            //@Barracude4Upgrade: This is new equivalent function according to Barracuda team.
+            for (var l = 0; l < barracudaModel.constants.Count; ++l)
             {
-                for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
-                {
-                    totalWeightsSizeInBytes += barracudaModel.layers[l].datasets[d].length;
-                }
+                totalWeightsSizeInBytes += barracudaModel.constants[l].length;
             }
             return totalWeightsSizeInBytes;
         }
@@ -256,6 +257,7 @@ namespace Unity.MLAgents.Analytics
             }
         }
 
+        //@Barracude4Upgrade: This was never used.
         /// <summary>
         /// Compute a hash of the model's layer data and return it as a string.
         /// A subset of the layer weights are used for performance.
@@ -263,21 +265,21 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         /// <param name="barracudaModel"></param>
         /// <returns></returns>
-        static string GetModelHash(Model barracudaModel)
-        {
-            var hash = new MLAgentsHash128();
-
-            // Limit the max number of float bytes that we hash for performance.
-            const int kMaxFloats = 256;
-
-            foreach (var layer in barracudaModel.layers)
-            {
-                hash.Append(layer.name);
-                var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
-                hash.Append(layer.weights, numFloatsToHash);
-            }
-
-            return hash.ToString();
-        }
+        //static string GetModelHash(Model barracudaModel)
+        // {
+        //     var hash = new MLAgentsHash128();
+        //
+        //     // Limit the max number of float bytes that we hash for performance.
+        //     const int kMaxFloats = 256;
+        //
+        //     foreach (var layer in barracudaModel.layers)
+        //     {
+        //         hash.Append(layer.name);
+        //         var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
+        //         hash.Append(layer.weights, numFloatsToHash);
+        //     }
+        //
+        //     return hash.ToString();
+        // }
     }
 }

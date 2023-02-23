@@ -24,7 +24,8 @@ namespace Unity.MLAgents.Analytics
         public List<EventActuatorInfo> ActuatorInfos;
         public int MemorySize;
         public long TotalWeightSizeBytes;
-        public string ModelHash;
+        //@Barracude4Upgrade: This is never used
+        //public string ModelHash;
     }
 
     /// <summary>

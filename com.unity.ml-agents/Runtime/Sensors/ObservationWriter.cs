@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset] = value;
+                    m_Proxy.FloatData[m_Batch, index + m_Offset] = value;
                 }
             }
         }
@@ -101,29 +101,30 @@ namespace Unity.MLAgents.Sensors
         /// <param name="ch"></param>
         public float this[int h, int w, int ch]
         {
+            //@Barracude4Upgrade:
             set
             {
                 if (m_Data != null)
                 {
-                    if (h < 0 || h >= m_TensorShape.height)
+                    if (ch < 0 || ch >= m_TensorShape[-3])  //@TODO: verify correctness   was -1
                     {
-                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.height - 1}]");
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape[-3] - 1}]");  //@TODO: verify correctness
                     }
-                    if (w < 0 || w >= m_TensorShape.width)
+                    if (h < 0 || h >= m_TensorShape[-2])  //@TODO: verify correctness   was -3
                     {
-                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.width - 1}]");
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape[-2] - 1}]");  //@TODO: verify correctness
                     }
-                    if (ch < 0 || ch >= m_TensorShape.channels)
+                    if (w < 0 || w >= m_TensorShape[-1])  //@TODO: verify correctness   was -2
                     {
-                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.channels - 1}]");
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape[-1] - 1}]");   //@TODO: verify correctness
                     }
 
-                    var index = m_TensorShape.Index(m_Batch, h, w, ch + m_Offset);
+                    var index = m_TensorShape.RavelIndex(m_Batch, ch, h, w + m_Offset); //@TODO: verify correctness
                     m_Data[index] = value;
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                    m_Proxy.FloatData[m_Batch, ch, h, w + m_Offset] = value;
                 }
             }
         }
@@ -148,7 +149,7 @@ namespace Unity.MLAgents.Sensors
                 for (var index = 0; index < data.Count; index++)
                 {
                     var val = data[index];
-                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
+                    m_Proxy.FloatData[m_Batch, index + m_Offset + writeOffset] = val;
                 }
             }
         }
@@ -168,9 +169,9 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 2] = vec.z;
             }
         }
 
@@ -190,10 +191,10 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = vec.w;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 3] = vec.w;
             }
         }
 
@@ -214,10 +215,10 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = quat.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = quat.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = quat.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = quat.w;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 0] = quat.x;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 1] = quat.y;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 2] = quat.z;
+                m_Proxy.FloatData[m_Batch, m_Offset + writeOffset + 3] = quat.w;
             }
         }
     }

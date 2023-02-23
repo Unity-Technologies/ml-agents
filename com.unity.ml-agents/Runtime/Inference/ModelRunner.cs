@@ -90,11 +90,12 @@ namespace Unity.MLAgents.Inference
                 WorkerFactory.Type executionDevice;
                 switch (inferenceDevice)
                 {
-                    case InferenceDevice.CPU:
-                        executionDevice = WorkerFactory.Type.CSharp;
-                        break;
+                    //@Barracude4Upgrade: plain non-Burst CSharp not supported any more.
+                    // case InferenceDevice.CPU:
+                    //     executionDevice = WorkerFactory.Type.CSharp;
+                    //     break;
                     case InferenceDevice.GPU:
-                        executionDevice = WorkerFactory.Type.ComputePrecompiled;
+                        executionDevice = WorkerFactory.Type.ComputeShader;
                         break;
                     case InferenceDevice.Burst:
                         executionDevice = WorkerFactory.Type.CSharpBurst;

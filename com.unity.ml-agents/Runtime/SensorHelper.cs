@@ -75,8 +75,9 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public static bool CompareObservation(ISensor sensor, float[,,] expected, out string errorMessage)
         {
-            var tensorShape = new TensorShape(0, expected.GetLength(0), expected.GetLength(1), expected.GetLength(2));
-            var numExpected = tensorShape.height * tensorShape.width * tensorShape.channels;
+            //@Barracude4Upgrade: Format doesn't expect the 4th tensor dimension any more.
+            var tensorShape = new TensorShape(expected.GetLength(0), expected.GetLength(1), expected.GetLength(2));
+            var numExpected = tensorShape.length;  //@TODO: verify correctness
             const float fill = -1337f;
             var output = new float[numExpected];
             for (var i = 0; i < numExpected; i++)
@@ -107,16 +108,16 @@ namespace Unity.MLAgents.Sensors
             }
 
             sensor.Write(writer);
-            for (var h = 0; h < tensorShape.height; h++)
+            for (var h = 0; h < tensorShape[-3]; h++) //@TODO: verify correctness
             {
-                for (var w = 0; w < tensorShape.width; w++)
+                for (var w = 0; w < tensorShape[-2]; w++) //@TODO: verify correctness
                 {
-                    for (var c = 0; c < tensorShape.channels; c++)
+                    for (var c = 0; c < tensorShape[-1]; c++) //@TODO: verify correctness
                     {
-                        if (expected[h, w, c] != output[tensorShape.Index(0, h, w, c)])
+                        if (expected[h, w, c] != output[tensorShape.RavelIndex(0, h, w, c)]) //@TODO: verify correctness  -- also, should equality be tested here or test against some epsilon?
                         {
                             errorMessage = $"Expected and actual differed in position [{h}, {w}, {c}]. " +
-                                $"Expected: {expected[h, w, c]}  Actual: {output[tensorShape.Index(0, h, w, c)]} ";
+                                $"Expected: {expected[h, w, c]}  Actual: {output[tensorShape.RavelIndex(0, h, w, c)]} ";  //@TODO: verify correctness
                             return false;
                         }
                     }

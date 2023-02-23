@@ -29,8 +29,8 @@ namespace Unity.MLAgents.Tests
             var actionSpec = ActionSpec.MakeContinuous(3);
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                shape = new int[] { 2, 3 },
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 })
             };
 
             var applier = new ContinuousActionOutputApplier(actionSpec);
@@ -57,10 +57,8 @@ namespace Unity.MLAgents.Tests
             var actionSpec = ActionSpec.MakeDiscrete(2, 3);
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 5 },
-                data = new Tensor(
-                    2,
-                    5,
+                shape = new int[] { 2, 5 },
+                data = new TensorFloat(new TensorShape(2,5),
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var alloc = new TensorCachingAllocator();
@@ -87,11 +85,10 @@ namespace Unity.MLAgents.Tests
             var actionSpec = ActionSpec.MakeDiscrete(2, 3);
             var inputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 2 },
-                data = new Tensor(
-                    2,
-                    2,
-                    new[] { 1f, 1f, 1f, 2f }),
+                shape = new int[] { 2, 2 },
+                data = new TensorInt(new TensorShape(2,2),
+                    new[] { 1, 1, 1, 2 }),
+                valueType = DataType.Int
             };
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
@@ -117,15 +114,13 @@ namespace Unity.MLAgents.Tests
             var actionSpec = new ActionSpec(3, new[] { 2, 3 });
             var continuousInputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                shape = new int[] { 2, 3 },
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 })
             };
             var discreteInputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 8 },
-                data = new Tensor(
-                    2,
-                    5,
+                shape = new int[] { 2, 8 },   //@TODO: why is this different?
+                data = new TensorFloat(new TensorShape(2, 5),
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
@@ -160,16 +155,16 @@ namespace Unity.MLAgents.Tests
             var actionSpec = new ActionSpec(3, new[] { 2, 3 });
             var continuousInputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                shape = new int[] { 2, 3 },
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 }),
+                valueType = DataType.Float
             };
             var discreteInputTensor = new TensorProxy()
             {
-                shape = new long[] { 2, 2 },
-                data = new Tensor(
-                    2,
-                    2,
-                    new[] { 1f, 1f, 1f, 2f }),
+                shape = new int[] { 2, 2 },
+                data = new TensorInt(new TensorShape(2,2),
+                    new[] { 1, 1, 1, 2 }),
+                valueType = DataType.Int
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
             var alloc = new TensorCachingAllocator();

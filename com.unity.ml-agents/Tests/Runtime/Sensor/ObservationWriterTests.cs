@@ -41,59 +41,62 @@ namespace Unity.MLAgents.Tests
         public void TestWritesToTensor()
         {
             ObservationWriter writer = new ObservationWriter();
+            var srcData = new float[6];
             var t = new TensorProxy
             {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 3)
+                valueType = DataType.Float,
+                data = new TensorFloat(new TensorShape(2, 3), srcData)
             };
 
             writer.SetTarget(t, 0, 0);
-            Assert.AreEqual(0f, t.data[0, 0]);
+            Assert.AreEqual(0f, t.FloatData[0, 0]);
             writer[0] = 1f;
-            Assert.AreEqual(1f, t.data[0, 0]);
+            Assert.AreEqual(1f, t.FloatData[0, 0]);
 
             writer.SetTarget(t, 1, 1);
             writer[0] = 2f;
             writer[1] = 3f;
             // [0, 0] shouldn't change
-            Assert.AreEqual(1f, t.data[0, 0]);
-            Assert.AreEqual(2f, t.data[1, 1]);
-            Assert.AreEqual(3f, t.data[1, 2]);
+            Assert.AreEqual(1f, t.FloatData[0, 0]);
+            Assert.AreEqual(2f, t.FloatData[1, 1]);
+            Assert.AreEqual(3f, t.FloatData[1, 2]);
 
             // AddList
+            var srcData2 = new float[6];
             t = new TensorProxy
             {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 3)
+                valueType = DataType.Float,
+                data = new TensorFloat(new TensorShape(2, 3), srcData2)
             };
 
             writer.SetTarget(t, 1, 1);
             writer.AddList(new[] { -1f, -2f });
-            Assert.AreEqual(0f, t.data[0, 0]);
-            Assert.AreEqual(0f, t.data[0, 1]);
-            Assert.AreEqual(0f, t.data[0, 2]);
-            Assert.AreEqual(0f, t.data[1, 0]);
-            Assert.AreEqual(-1f, t.data[1, 1]);
-            Assert.AreEqual(-2f, t.data[1, 2]);
+            Assert.AreEqual(0f, t.FloatData[0, 0]);
+            Assert.AreEqual(0f, t.FloatData[0, 1]);
+            Assert.AreEqual(0f, t.FloatData[0, 2]);
+            Assert.AreEqual(0f, t.FloatData[1, 0]);
+            Assert.AreEqual(-1f, t.FloatData[1, 1]);
+            Assert.AreEqual(-2f, t.FloatData[1, 2]);
         }
 
         [Test]
         public void TestWritesToTensor3D()
         {
             ObservationWriter writer = new ObservationWriter();
+            var srcData = new float[24];
             var t = new TensorProxy
             {
-                valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 2, 2, 3)
+                valueType = DataType.Float,
+                data = new TensorFloat(new TensorShape(2, 2, 2, 3), srcData)
             };
 
             writer.SetTarget(t, 0, 0);
             writer[1, 0, 1] = 1f;
-            Assert.AreEqual(1f, t.data[0, 1, 0, 1]);
+            Assert.AreEqual(1f, t.FloatData[0, 1, 0, 1]);
 
             writer.SetTarget(t, 0, 1);
             writer[1, 0, 0] = 2f;
-            Assert.AreEqual(2f, t.data[0, 1, 0, 1]);
+            Assert.AreEqual(2f, t.FloatData[0, 1, 0, 1]);
         }
     }
 }

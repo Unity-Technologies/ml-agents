@@ -11,6 +11,7 @@ using Unity.MLAgents.Demonstrations;
 using Unity.MLAgents.Policies;
 
 using Unity.MLAgents.Analytics;
+using Unity.MLAgents.Inference;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
@@ -346,7 +347,7 @@ namespace Unity.MLAgents
             var compressionSpec = sensor.GetCompressionSpec();
             var compressionType = compressionSpec.SensorCompressionType;
             // Check capabilities if we need to concatenate PNGs
-            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[2] > 3)
+            if (compressionType == SensorCompressionType.PNG && shape.Length == 3 && shape[TensorProxy.ChIndex] > 3)
             {
                 var trainerCanHandle = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.ConcatenatedPngObservations;
                 if (!trainerCanHandle)
@@ -364,7 +365,7 @@ namespace Unity.MLAgents
                 }
             }
             // Check capabilities if we need mapping for compressed observations
-            if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[2] > 3)
+            if (compressionType != SensorCompressionType.None && shape.Length == 3 && shape[TensorProxy.ChIndex] > 3)
             {
                 var trainerCanHandleMapping = Academy.Instance.TrainerCapabilities == null || Academy.Instance.TrainerCapabilities.CompressedChannelMapping;
                 var isTrivialMapping = compressionSpec.IsTrivialMapping();

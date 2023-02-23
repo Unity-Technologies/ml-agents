@@ -6,6 +6,7 @@ from setuptools.command.install import install
 from mlagents.plugins import ML_AGENTS_STATS_WRITER, ML_AGENTS_TRAINER_TYPE
 import mlagents.trainers
 
+
 VERSION = mlagents.trainers.__version__
 EXPECTED_TAG = mlagents.trainers.__release_tag__
 
@@ -84,6 +85,8 @@ setup(
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
+            "remove-nodes=mlagents.trainers.remove_nodes:main",
+            "convert-onnx-models=mlagents.trainers.add_onnx_metadata:main",
         ],
         # Plugins - each plugin type should have an entry here for the default behavior
         ML_AGENTS_STATS_WRITER: [

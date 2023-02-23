@@ -147,8 +147,8 @@ class ModelSerializer:
         Converts the shape of an observation to be compatible with the NCHW format
         of ONNX
         """
-        if len(shape) == 3:
-            return shape[2], shape[0], shape[1]
+        #if len(shape) == 3:
+        #    return shape[2], shape[0], shape[1]
         return shape
 
     def export_policy_model(self, output_filepath: str) -> None:

@@ -22,7 +22,8 @@ namespace Unity.MLAgents.Inference
 
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            //@Barracude4Upgrade:  Using back of array indexing to get the last element 
+            var actionSize = tensorProxy.shape[^1];
             var agentIndex = 0;
             for (var i = 0; i < actionIds.Count; i++)
             {
@@ -38,7 +39,9 @@ namespace Unity.MLAgents.Inference
                     var continuousBuffer = actionBuffer.ContinuousActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        continuousBuffer[j] = tensorProxy.data[agentIndex, j];
+                        //@Barracude4Upgrade: explicitly refenence float data since the base class doesn't provide indexing.
+                        //This will fail if the data is Integer
+                        continuousBuffer[j] = tensorProxy.FloatData[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -62,7 +65,7 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var actionSize = tensorProxy.shape[^1];
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
@@ -77,7 +80,9 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        discreteBuffer[j] = (int)tensorProxy.data[agentIndex, j];
+                        //@Barracude4Upgrade: explicitly refenence int data since the base class doesn't provide indexing.
+                        //This will fail if the data is not Integer
+                        discreteBuffer[j] = tensorProxy.IntData[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -152,14 +157,16 @@ namespace Unity.MLAgents.Inference
             var maxProb = float.NegativeInfinity;
             for (var cls = 0; cls < branchSize; ++cls)
             {
-                maxProb = Mathf.Max(logProbs.data[batch, cls + channelOffset], maxProb);
+                //@Barracude4Upgrade:
+                maxProb = Mathf.Max(logProbs.FloatData[batch, cls + channelOffset], maxProb);
             }
 
             // Sum the log probabilities and compute CDF
             var sumProb = 0.0f;
             for (var cls = 0; cls < branchSize; ++cls)
             {
-                sumProb += Mathf.Exp(logProbs.data[batch, cls + channelOffset] - maxProb);
+                //@Barracude4Upgrade:
+                sumProb += Mathf.Exp(logProbs.FloatData[batch, cls + channelOffset] - maxProb);
                 m_CdfBuffer[cls] = sumProb;
             }
         }
@@ -182,7 +189,8 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var memorySize = tensorProxy.data.width;
+            //@Barracude4Upgrade:
+            var memorySize = tensorProxy.data.shape[-2]; //width;  ////@TODO: verify correctness
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
@@ -196,7 +204,7 @@ namespace Unity.MLAgents.Inference
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[j] = tensorProxy.data[agentIndex, 0, j, 0];
+                    memory[j] = tensorProxy.FloatData[agentIndex, 0, j, 0];  ////@TODO: verify correctness
                 }
 
                 m_Memories[agentId] = memory;

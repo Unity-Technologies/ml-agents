@@ -419,12 +419,13 @@ namespace Unity.MLAgents.Inference
             TensorProxy tensorProxy, ISensor sensor)
         {
             var shape = sensor.GetObservationSpec().Shape;
-            var heightBp = shape[0];
-            var widthBp = shape[1];
-            var pixelBp = shape[2];
-            var heightT = tensorProxy.Height;
-            var widthT = tensorProxy.Width;
-            var pixelT = tensorProxy.Channels;
+            //@Barracude4Upgrade: use const for from back indexes too?
+            var heightBp = shape[TensorProxy.HIndex];
+            var widthBp = shape[TensorProxy.WIndex];
+            var pixelBp = shape[TensorProxy.ChIndex];
+            var heightT = tensorProxy.shape[^2];
+            var widthT = tensorProxy.shape[^1];
+            var pixelT = tensorProxy.shape[^3];
             if ((widthBp != widthT) || (heightBp != heightT) || (pixelBp != pixelT))
             {
                 return FailedCheck.Warning($"The visual Observation of the model does not match. " +
@@ -447,12 +448,13 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckRankTwoObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
+            //@Barracude4Upgrade:
             var shape = sensor.GetObservationSpec().Shape;
             var dim1Bp = shape[0];
             var dim2Bp = shape[1];
-            var dim1T = tensorProxy.Channels;
-            var dim2T = tensorProxy.Width;
-            var dim3T = tensorProxy.Height;
+            var dim1T = tensorProxy.shape[^2]; //Channels;
+            var dim2T = tensorProxy.shape[^1]; //Width
+            var dim3T = 1; //tensorProxy.Height;
             if ((dim1Bp != dim1T) || (dim2Bp != dim2T))
             {
                 var proxyDimStr = $"[?x{dim1T}x{dim2T}]";
@@ -480,11 +482,12 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckRankOneObsShape(
             TensorProxy tensorProxy, ISensor sensor)
         {
+            //@Barracude4Upgrade:
             var shape = sensor.GetObservationSpec().Shape;
             var dim1Bp = shape[0];
-            var dim1T = tensorProxy.Channels;
-            var dim2T = tensorProxy.Width;
-            var dim3T = tensorProxy.Height;
+            var dim1T = tensorProxy.shape[^1]; //Channels;
+            var dim2T = 1; //tensorProxy.Width;
+            var dim3T = 1; //tensorProxy.Height;
             if ((dim1Bp != dim1T))
             {
                 var proxyDimStr = $"[?x{dim1T}]";
@@ -533,10 +536,11 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            // This isn't needed anymore?
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             var visObsIndex = 0;
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
@@ -672,10 +676,11 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            //@TODO: verify correctness
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
@@ -784,7 +789,7 @@ namespace Unity.MLAgents.Inference
             }
             if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
-                var modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                TensorFloat modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
                 discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);
             }
 
@@ -810,7 +815,7 @@ namespace Unity.MLAgents.Inference
         /// check failed. If the check passed, returns null.
         /// </returns>
         static FailedCheck CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, Tensor modelDiscreteBranches)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorFloat modelDiscreteBranches)
         {
 
             var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();
@@ -820,7 +825,8 @@ namespace Unity.MLAgents.Inference
                 discreteActionBranches.AddRange(actionSpec.BranchSizes);
             }
 
-            int modelDiscreteBranchesLength = modelDiscreteBranches?.length ?? 0;
+            //@Barracude4Upgrade:
+            int modelDiscreteBranchesLength = modelDiscreteBranches?.shape.length ?? 0;
             if (modelDiscreteBranchesLength != discreteActionBranches.Count)
             {
                 return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +

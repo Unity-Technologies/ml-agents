@@ -22,18 +22,16 @@ namespace Unity.MLAgents.Tests
 
             var actionTensor = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    2,
+                data = new TensorInt(new TensorShape(2, 2),
                     new[]
                     {
-                        2.0f, // Agent 0, branch 0
-                        1.0f, // Agent 0, branch 1
-                        0.0f, // Agent 1, branch 0
-                        0.0f  // Agent 1, branch 1
+                        2, // Agent 0, branch 0
+                        1, // Agent 0, branch 1
+                        0, // Agent 1, branch 0
+                        0  // Agent 1, branch 1
                     }),
-                shape = new long[] { 2, 2 },
-                valueType = TensorProxy.TensorType.FloatingPoint
+                shape = new int[] { 2, 2 },
+                valueType = DataType.Int
             };
 
             applier.Apply(actionTensor, agentIds, actionBuffers);
@@ -56,9 +54,7 @@ namespace Unity.MLAgents.Tests
 
             var logProbs = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    5,
+                data = new TensorFloat(new TensorShape(2, 5),
                     new[]
                     {
                         smallLogProb, smallLogProb, largeLogProb, // Agent 0, branch 0
@@ -66,7 +62,7 @@ namespace Unity.MLAgents.Tests
                         largeLogProb, smallLogProb, smallLogProb, // Agent 1, branch 0
                         largeLogProb, smallLogProb,               // Agent 1, branch 1
                     }),
-                valueType = TensorProxy.TensorType.FloatingPoint
+                valueType = DataType.Float
             };
 
             var applier = new LegacyDiscreteActionOutputApplier(actionSpec, 2020, null);

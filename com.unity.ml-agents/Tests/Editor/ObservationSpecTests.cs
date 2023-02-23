@@ -51,15 +51,15 @@ namespace Unity.MLAgents.Tests
 
             var shape = obsSpec.Shape;
             Assert.AreEqual(3, shape.Length);
-            Assert.AreEqual(5, shape[0]);
-            Assert.AreEqual(6, shape[1]);
-            Assert.AreEqual(7, shape[2]);
+            Assert.AreEqual(5, shape[1]);
+            Assert.AreEqual(6, shape[2]);
+            Assert.AreEqual(7, shape[0]);
 
             var dimensionProps = obsSpec.DimensionProperties;
             Assert.AreEqual(3, dimensionProps.Length);
-            Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[0]);
             Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[1]);
-            Assert.AreEqual(DimensionProperty.None, dimensionProps[2]);
+            Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[2]);
+            Assert.AreEqual(DimensionProperty.None, dimensionProps[0]);
 
             Assert.AreEqual(ObservationType.Default, obsSpec.ObservationType);
         }

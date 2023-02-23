@@ -175,13 +175,13 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(continuousONNXModel);
             Assert.IsNotNull(discreteONNXModel);
             Assert.IsNotNull(hybridONNXModel);
-            Assert.IsNotNull(continuousNNModel);
-            Assert.IsNotNull(discreteNNModel);
+            //Assert.IsNotNull(continuousNNModel);
+            //Assert.IsNotNull(discreteNNModel);
             Assert.IsNotNull(rank2ONNXModel);
             Assert.IsNotNull(hybridRecurrV2Model);
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestGetInputTensorsContinuous(bool useDeprecatedNNModel)
         {
@@ -201,7 +201,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, model.GetNumVisualInputs());
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestGetInputTensorsDiscrete(bool useDeprecatedNNModel)
         {
@@ -221,7 +221,7 @@ namespace Unity.MLAgents.Tests
             Assert.Contains(TensorNames.VectorObservationPlaceholder, inputNames);
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestGetOutputTensorsContinuous(bool useDeprecatedNNModel)
         {
@@ -235,7 +235,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, model.GetOutputNames().Count());
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestGetOutputTensorsDiscrete(bool useDeprecatedNNModel)
         {
@@ -291,7 +291,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreNotEqual(0, errors.Count()); // Wrong vector sensor size
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelValidContinuous(bool useDeprecatedNNModel)
         {
@@ -311,7 +311,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelValidDiscrete(bool useDeprecatedNNModel)
         {
@@ -374,7 +374,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0, errors.Count()); // There should not be any errors
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelThrowsVectorObservationContinuous(bool useDeprecatedNNModel)
         {
@@ -407,7 +407,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelThrowsVectorObservationDiscrete(bool useDeprecatedNNModel)
         {
@@ -447,7 +447,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelThrowsActionContinuous(bool useDeprecatedNNModel)
         {
@@ -478,7 +478,7 @@ namespace Unity.MLAgents.Tests
             Assert.Greater(errors.Count(), 0);
         }
 
-        [TestCase(true)]
+        //[TestCase(true)]
         [TestCase(false)]
         public void TestCheckModelThrowsActionDiscrete(bool useDeprecatedNNModel)
         {

@@ -86,6 +86,8 @@ namespace Unity.MLAgents.Sensors
             );
         }
 
+        //@Barracude4Upgrade: Do we want to reorder parameters of such functions to CHW for consistency?
+
         /// <summary>
         /// Construct an ObservationSpec for visual-like observations, e.g. observations
         /// with a height, width, and possible multiple channels.
@@ -95,15 +97,16 @@ namespace Unity.MLAgents.Sensors
         /// <param name="channels"></param>
         /// <param name="obsType"></param>
         /// <returns></returns>
-        public static ObservationSpec Visual(int height, int width, int channels, ObservationType obsType = ObservationType.Default)
+        public static ObservationSpec Visual(int height, int width, int channels,
+            ObservationType obsType = ObservationType.Default)
         {
             var dimProps = new InplaceArray<DimensionProperty>(
+                DimensionProperty.None,
                 DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.TranslationalEquivariance,
-                DimensionProperty.None
+                DimensionProperty.TranslationalEquivariance
             );
             return new ObservationSpec(
-                new InplaceArray<int>(height, width, channels),
+                new InplaceArray<int>(channels, height, width),
                 dimProps,
                 obsType
             );
