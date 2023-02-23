@@ -223,10 +223,28 @@ def test_ppo_optimizer_update_ase(ase_dummy_config, dummy_config):  # noqa: F811
     update_buffer[BufferKey.CONTINUOUS_LOG_PROBS] = np.ones_like(
         update_buffer[BufferKey.CONTINUOUS_ACTION]
     )
-    optimizer.update(
+    return_update_stats, return_diversity_stats = optimizer.update(
         update_buffer,
         num_sequences=update_buffer.num_experiences // optimizer.policy.sequence_length,
     )
+
+    # Make sure we have the right stats
+    required_update_stats = [
+        "Losses/Policy Loss",
+        "Losses/Value Loss",
+        "Policy/Learning Rate",
+        "Policy/Epsilon",
+        "Policy/Beta",
+    ]
+    for stat in required_update_stats:
+        assert stat in return_update_stats.keys()
+
+    # Make sure we have the right stats for diversity
+    rqeuired_diversity_stats = [
+        "Losses/ASE Diversity Loss"
+    ]
+    for stat in rqeuired_diversity_stats:
+        assert stat in return_diversity_stats.keys()
 
     # Check if buffer size is too big
     update_buffer = mb.simulate_rollout(3000, optimizer.policy.behavior_spec)
