@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Inference
 
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
-            //@Barracude4Upgrade:  Using back of array indexing to get the last element 
+            //@Barracude4Upgrade:  Using back of array indexing to get the last element
             var actionSize = tensorProxy.shape[^1];
             var agentIndex = 0;
             for (var i = 0; i < actionIds.Count; i++)
@@ -190,7 +190,7 @@ namespace Unity.MLAgents.Inference
         {
             var agentIndex = 0;
             //@Barracude4Upgrade:
-            var memorySize = tensorProxy.data.shape[-2]; //width;  ////@TODO: verify correctness
+            var memorySize = tensorProxy.data.shape[-1]; //width;  ////@TODO: verify correctness
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
@@ -204,7 +204,7 @@ namespace Unity.MLAgents.Inference
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[j] = tensorProxy.FloatData[agentIndex, 0, j, 0];  ////@TODO: verify correctness
+                    memory[j] = tensorProxy.FloatData[agentIndex, 0, j];  ////@TODO: verify correctness
                 }
 
                 m_Memories[agentId] = memory;

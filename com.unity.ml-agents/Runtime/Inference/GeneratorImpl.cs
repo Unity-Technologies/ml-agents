@@ -96,7 +96,7 @@ namespace Unity.MLAgents.Inference
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
 
-            var memorySize = tensorProxy.data.shape[-2]; //width;  //@TODO: verify correctness
+            var memorySize = tensorProxy.data.shape[-1]; //width;  //@TODO: verify correctness
 
             var agentIndex = 0;
             for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var j = 0; j < memorySize; j++)
                     {
-                        tensorProxy.FloatData[agentIndex, 0, j, 0] = 0;
+                        tensorProxy.FloatData[agentIndex, 0, j] = 0;
                     }
                     agentIndex++;
                     continue;
@@ -124,7 +124,7 @@ namespace Unity.MLAgents.Inference
                     {
                         break;
                     }
-                    tensorProxy.FloatData[agentIndex, 0, j, 0] = memory[j];
+                    tensorProxy.FloatData[agentIndex, 0, j] = memory[j];
                 }
                 agentIndex++;
             }
