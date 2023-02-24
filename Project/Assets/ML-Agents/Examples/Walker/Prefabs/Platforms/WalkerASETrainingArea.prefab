@@ -113,7 +113,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 45
+    limit: 85
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -264,7 +264,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 140
+    limit: 160
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -437,7 +437,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 45
+    limit: 85
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -585,22 +585,22 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -30
+    limit: -90
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 10
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 25
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 25
+    limit: 50
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -747,18 +747,18 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -120
+    limit: -140
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 35
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 85
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
@@ -872,8 +872,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3171162567809937537}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 50, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 5, z: 101}
+  m_LocalPosition: {x: 200, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 5, z: 400}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176736196627991691}
@@ -969,8 +969,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3171272695706083521}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 50}
-  m_LocalScale: {x: 100, y: 5, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 200}
+  m_LocalScale: {x: 400, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176736196627991691}
@@ -1066,8 +1066,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3171291115465717425}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -50}
-  m_LocalScale: {x: 100, y: 5, z: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -200}
+  m_LocalScale: {x: 400, y: 5, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176736196627991691}
@@ -1163,8 +1163,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3171446398170871701}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 25, y: 0.25, z: 25}
+  m_LocalPosition: {x: 0, y: -0.125, z: 0}
+  m_LocalScale: {x: 100.00012, y: 0.25, z: 100}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176743355427625743}
@@ -1295,8 +1295,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3172219584693611249}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -50, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 5, z: 101}
+  m_LocalPosition: {x: -200, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 5, z: 400}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3176736196627991691}
@@ -1465,22 +1465,22 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -30
+    limit: -60
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 30
+    limit: 40
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 30
+    limit: 50
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 85
+    limit: 45
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -1589,7 +1589,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4437022868084351901}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.369, z: 0}
+  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1664,7 +1664,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 140
+    limit: 160
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -1833,7 +1833,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5052284145116520654}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.30899993, z: 0}
+  m_LocalPosition: {x: 0, y: -0.30899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1890,22 +1890,22 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -55
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 55
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 50
+    limit: 30
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 25
+    limit: 40
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}
@@ -2052,18 +2052,18 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -120
+    limit: -140
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 35
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 85
+    limit: 60
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
@@ -2143,7 +2143,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5574458696170048728}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.369, z: 0}
+  m_LocalPosition: {x: 0, y: -0.36899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2218,7 +2218,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 140
+    limit: 160
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -3581,7 +3581,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056255598150233}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.022, z: 0.099999994}
+  m_LocalPosition: {x: -0, y: -0.043, z: 0.043}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -4216,7 +4216,7 @@ Animator:
   m_GameObject: {fileID: 6103056256137765976}
   m_Enabled: 1
   m_Avatar: {fileID: 9000000, guid: 50266c2fce82a40ecab960553f05bf25, type: 3}
-  m_Controller: {fileID: 9100000, guid: c747e6ae519de4c708474baf95c8bf93, type: 2}
+  m_Controller: {fileID: 0}
   m_CullingMode: 0
   m_UpdateMode: 0
   m_ApplyRootMotion: 1
@@ -4290,7 +4290,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256198295374}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0.15, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -4312,9 +4312,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2079264ed7d4b4902a80b2cf7b282c16, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spring: 2500
-  damping: 125
-  forceLimit: 2500
+  spring: 500
+  damping: 50
+  forceLimit: 1000
   slerpDrive: 0
   kinematicRoot: 0
   totalMass: 62.300007
@@ -4325,48 +4325,48 @@ MonoBehaviour:
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -30
-        high: 10
+        low: -90
+        high: 60
       yRange:
-        low: -25
-        high: 25
+        low: -60
+        high: 60
       zRange:
-        low: -25
-        high: 25
-    spring: 0
-    damping: 0
+        low: -50
+        high: 50
+    spring: 500
+    damping: 50
     originalPosition: {x: 0, y: 0.81500006, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: head
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -30
-        high: 30
+        low: -60
+        high: 40
       yRange:
-        low: -30
-        high: 30
+        low: -50
+        high: 50
       zRange:
-        low: -85
-        high: 85
-    spring: 0
-    damping: 0
+        low: -45
+        high: 45
+    spring: 500
+    damping: 50
     originalPosition: {x: 0, y: 0.31838995, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: thighL
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -120
-        high: 35
+        low: -140
+        high: 60
       yRange:
-        low: -85
-        high: 85
+        low: -60
+        high: 60
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: 0, y: 0.40665007, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: shinL
@@ -4374,83 +4374,83 @@ MonoBehaviour:
     range:
       xRange:
         low: 0
-        high: 140
+        high: 160
       yRange:
         low: -10
         high: 10
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: -0.13199802, y: -0.093000054, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: footL
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -50
-        high: 50
+        low: -55
+        high: 55
       yRange:
-        low: -50
-        high: 50
+        low: -30
+        high: 30
       zRange:
-        low: -25
-        high: 25
-    spring: 0
-    damping: 0
-    originalPosition: {x: 0, y: -0.369, z: 0}
+        low: -40
+        high: 40
+    spring: 500
+    damping: 50
+    originalPosition: {x: 0, y: -0.36899996, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: thighR
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -120
-        high: 35
+        low: -140
+        high: 60
       yRange:
-        low: -85
-        high: 85
+        low: -60
+        high: 60
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
-    originalPosition: {x: 0, y: -0.30899993, z: 0}
+    spring: 500
+    damping: 50
+    originalPosition: {x: 0, y: -0.30899996, z: 0}
     originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: shinR
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
-        high: 140
+        high: 160
       yRange:
         low: -10
         high: 10
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: 0.13199802, y: -0.093000054, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: footR
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
-        low: -50
-        high: 50
+        low: -55
+        high: 55
       yRange:
-        low: -50
-        high: 50
+        low: -30
+        high: 30
       zRange:
-        low: -25
-        high: 25
-    spring: 0
-    damping: 0
-    originalPosition: {x: 0, y: -0.369, z: 0}
+        low: -40
+        high: 40
+    spring: 500
+    damping: 50
+    originalPosition: {x: 0, y: -0.36899996, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_L
-    target: {x: -0, y: 75, z: 0}
+    target: {x: -0, y: 70, z: 0}
     range:
       xRange:
         low: -35
@@ -4459,26 +4459,26 @@ MonoBehaviour:
         low: -85
         high: 85
       zRange:
-        low: -45
-        high: 45
-    spring: 0
-    damping: 0
-    originalPosition: {x: 0, y: -0.30899993, z: 0}
+        low: -85
+        high: 85
+    spring: 500
+    damping: 50
+    originalPosition: {x: 0, y: -0.30899996, z: 0}
     originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: lower_arm_L
     target: {x: -0, y: 0, z: 0}
     range:
       xRange:
         low: 0
-        high: 140
+        high: 160
       yRange:
         low: -10
         high: 10
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: -0.22999997, y: 0.1726501, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: hand_L
@@ -4493,12 +4493,12 @@ MonoBehaviour:
       zRange:
         low: -25
         high: 25
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: -0.36400002, y: 0, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: upper_arm_R
-    target: {x: -0, y: 75, z: 0}
+    target: {x: -0, y: 70, z: 0}
     range:
       xRange:
         low: -35
@@ -4507,10 +4507,10 @@ MonoBehaviour:
         low: -85
         high: 85
       zRange:
-        low: -45
-        high: 45
-    spring: 0
-    damping: 0
+        low: -85
+        high: 85
+    spring: 500
+    damping: 50
     originalPosition: {x: -0.31200004, y: 0, z: 0}
     originalRotation: {x: 0, y: -0, z: -0, w: 1}
   - name: lower_arm_R
@@ -4518,15 +4518,15 @@ MonoBehaviour:
     range:
       xRange:
         low: 0
-        high: 140
+        high: 160
       yRange:
         low: -10
         high: 10
       zRange:
         low: -45
         high: 45
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: 0.22999997, y: 0.1726501, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   - name: hand_R
@@ -4541,8 +4541,8 @@ MonoBehaviour:
       zRange:
         low: -25
         high: 25
-    spring: 0
-    damping: 0
+    spring: 500
+    damping: 50
     originalPosition: {x: 0.36400002, y: 0, z: 0}
     originalRotation: {x: -0, y: -0, z: -0, w: 1}
   hips: {fileID: 5695505378220711187}
@@ -4573,7 +4573,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_BrainParameters:
-    EmbeddingSize: 3
+    EmbeddingSize: 4
     VectorObservationSize: 23
     NumStackedVectorObservations: 1
     m_ActionSpec:
@@ -4590,7 +4590,7 @@ MonoBehaviour:
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
-  m_DeterministicInference: 0
+  m_DeterministicInference: 1
   m_ObservableAttributeHandling: 0
 --- !u!114 &6103056256198295368
 MonoBehaviour:
@@ -4607,7 +4607,7 @@ MonoBehaviour:
   agentParameters:
     maxStep: 0
   hasUpgradedFromAgentParameters: 1
-  MaxStep: 750
+  MaxStep: 1200
   recordingMode: 0
   root: {fileID: 5695505378220711187}
   chest: {fileID: 6103056255301904744}
@@ -4619,11 +4619,12 @@ MonoBehaviour:
   randomDropProbability: 0.1
   randomStandProbability: 0.9
   minSpawnHeight: 2
-  maxSpawnHeight: 4
-  HeadTerminationHeight: 0.476
-  BodyPartTerminationHeight: 0.276
-  RecoverySteps: 60
+  maxSpawnHeight: 3
+  HeadTerminationHeight: 0.3
+  BodyPartTerminationHeight: 0.15
+  RecoverySteps: 240
   EnableEarlyTermination: 1
+  DisplayLocalFrame: 1
 --- !u!114 &6103056256198295370
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4636,7 +4637,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3a5c9d521e5ef4759a8246a07d52221e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DecisionPeriod: 5
+  DecisionPeriod: 4
   TakeActionsBetweenDecisions: 1
 --- !u!114 &6103056256198295382
 MonoBehaviour:
@@ -4689,7 +4690,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Record: 0
-  NumStepsToRecord: 150
+  NumStepsToRecord: 300
   DemonstrationName: 
   DemonstrationDirectory: 
 --- !u!114 &6731448381779622356
@@ -5071,7 +5072,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6103056256577932827}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -0, y: -0.022, z: 0.099999994}
+  m_LocalPosition: {x: 0, y: -0.043, z: 0.043}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -6101,7 +6102,7 @@ ConfigurableJoint:
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 140
+    limit: 160
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
@@ -6688,7 +6689,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8601457487075615947}
   m_LocalRotation: {x: 0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: -0.30899993, z: 0}
+  m_LocalPosition: {x: 0, y: -0.30899996, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -6745,22 +6746,22 @@ ConfigurableJoint:
     spring: 0
     damper: 0
   m_LowAngularXLimit:
-    limit: -50
+    limit: -55
     bounciness: 0
     contactDistance: 0
   m_HighAngularXLimit:
-    limit: 50
+    limit: 55
     bounciness: 0
     contactDistance: 0
   m_AngularYZLimitSpring:
     spring: 0
     damper: 0
   m_AngularYLimit:
-    limit: 50
+    limit: 30
     bounciness: 0
     contactDistance: 0
   m_AngularZLimit:
-    limit: 25
+    limit: 40
     bounciness: 0
     contactDistance: 0
   m_TargetPosition: {x: 0, y: 0, z: 0}

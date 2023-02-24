@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class LocalFrameController : MonoBehaviour
 {
-    public void UpdateLocalFrame(Transform root, bool display)
+    public Quaternion UpdateLocalFrame(Transform root, bool display)
     {
-        var heading = 0f;
-        var lookRot = Quaternion.AngleAxis(heading, Vector3.up);
-        transform.SetPositionAndRotation(root.position, lookRot);
+        var headingRotation = CalculateHeadingQuaternionInverse(root);
+        transform.SetPositionAndRotation(root.position, headingRotation);
         UpdateDisplay(display);
+        return headingRotation;
     }
     public void UpdateLocalFrame(Transform root, Transform target, bool display)
     {
@@ -32,5 +32,18 @@ public class LocalFrameController : MonoBehaviour
         {
             mesh.enabled = display;
         }
+    }
+
+    Quaternion CalculateHeadingQuaternionInverse(Transform root)
+    {
+        var heading = CalculateHeading(root.rotation) * Mathf.Rad2Deg;
+        var headingQuaternion = Quaternion.AngleAxis(heading, Vector3.up);
+        return headingQuaternion;
+    }
+
+    float CalculateHeading(Quaternion rootRotation)
+    {
+        var rotatonDirection = rootRotation * Vector3.forward;
+        return Mathf.Atan2(rotatonDirection.x, rotatonDirection.z);
     }
 }

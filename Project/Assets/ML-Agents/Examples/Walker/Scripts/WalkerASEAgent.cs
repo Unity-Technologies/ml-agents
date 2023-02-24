@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using RootMotion.Dynamics;
 using Unity.MLAgents;
@@ -52,6 +53,7 @@ public class WalkerASEAgent : Agent
     string[] m_DualAxis = { "hand_L", "hand_R" };
     bool m_IsRecoveryEpisode;
     int m_CurrentRecoverySteps = 0;
+    Quaternion m_CurrentHeadingRotation;
 
     public override void Initialize()
     {
@@ -90,12 +92,12 @@ public class WalkerASEAgent : Agent
             m_LatentRequestor.ResetLatents();
             m_LatentRequestor.ResetLatentStepCounts();
         }
-        m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
+        m_CurrentHeadingRotation = m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
     }
 
     void FixedUpdate()
     {
-        m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
+        m_CurrentHeadingRotation = m_AgentLocalFrameController.UpdateLocalFrame(root, DisplayLocalFrame);
 
         if (CheckEpisodeTermination() && EnableEarlyTermination)
         {
@@ -210,6 +212,20 @@ public class WalkerASEAgent : Agent
         sensor.AddObservation(GetRelativePosition(rightHand)); // 3
         sensor.AddObservation(GetRelativePosition(leftFoot)); // 3
         sensor.AddObservation(GetRelativePosition(rightFoot)); // 3
+
+        var joints = m_Controller.ConfigurableJointChain;
+        for (int i = 1; i < joints.Length; i++)
+        {
+            var jointRotation = joints[i].GetCurrentRotation();
+            sensor.AddObservation(jointRotation);
+        }
+
+        var rigidBodies = m_Controller.RigidBodyChain;
+        for (int i = 1; i < rigidBodies.Length; i++)
+        {
+            var jointVelocity = rigidBodies[i].GetLocalVelocity();
+            sensor.AddObservation(jointVelocity);
+        }
     }
 
     public override void CollectEmbedding(VectorSensor embedding)
@@ -283,7 +299,7 @@ public class WalkerASEAgent : Agent
 
     Quaternion GetRelativeRootRotation()
     {
-        return Quaternion.FromToRotation(m_AgentLocalFrameController.transform.forward, root.forward);
+        return m_CurrentHeadingRotation * root.rotation;
     }
 
     Vector3 GetRelativePosition(Transform joint)
@@ -293,11 +309,11 @@ public class WalkerASEAgent : Agent
 
     Vector3 GetRelativeVelocity()
     {
-        return m_AgentLocalFrameController.transform.InverseTransformDirection(GetVelocity());
+        return m_CurrentHeadingRotation * GetVelocity();
     }
 
     Vector3 GetRelativeAngularVelocity()
     {
-        return m_AgentLocalFrameController.transform.InverseTransformDirection(GetAngularVelocity());
+        return m_CurrentHeadingRotation * GetAngularVelocity();
     }
 }
