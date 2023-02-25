@@ -122,8 +122,7 @@ def process_pixels(
             image = Image.open(image_fp)
             # Normally Image loads lazily, load() forces it to do loading in the timer scope.
             image.load()
-        tmp = np.array(image, dtype=np.float32) / 255.0
-        image_arrays.append(tmp)
+        image_arrays.append(np.array(image, dtype=np.float32) / 255.0)
 
         # Look for the next header, starting from the current stream location
         try:
@@ -179,16 +178,16 @@ def _process_images_num_channels(image_arrays, expected_channels):
     """
     if expected_channels == 1:
         # Convert to grayscale
-        img = np.mean(image_arrays[0], axis=0)
-        img = np.reshape(img, [1, img.shape[1], img.shape[2]])
+        img = np.mean(image_arrays[0], axis=2)
+        img = np.reshape(img, [img.shape[0], img.shape[1], 1])
     else:
-        img = np.concatenate(image_arrays, axis=0)
+        img = np.concatenate(image_arrays, axis=2)
         # We can drop additional channels since they may need to be added to include
         # numbers of observation channels not divisible by 3.
-        actual_channels = list(img.shape)[0]
+        actual_channels = list(img.shape)[2]
         if actual_channels > expected_channels:
             img = img[..., 0:expected_channels]
-    return img
+    return img.transpose((2, 0, 1))
 
 
 def _check_observations_match_spec(
