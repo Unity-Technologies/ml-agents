@@ -208,16 +208,17 @@ public class WalkerASEAgent : Agent
         sensor.AddObservation(GetRelativeRootRotation()); // 4
         sensor.AddObservation(GetRelativeVelocity()); // 3
         sensor.AddObservation(GetRelativeAngularVelocity()); // 3
-        sensor.AddObservation(GetRelativePosition(leftHand)); // 3
-        sensor.AddObservation(GetRelativePosition(rightHand)); // 3
-        sensor.AddObservation(GetRelativePosition(leftFoot)); // 3
-        sensor.AddObservation(GetRelativePosition(rightFoot)); // 3
+        // sensor.AddObservation(GetRelativePosition(leftHand)); // 3
+        // sensor.AddObservation(GetRelativePosition(rightHand)); // 3
+        // sensor.AddObservation(GetRelativePosition(leftFoot)); // 3
+        // sensor.AddObservation(GetRelativePosition(rightFoot)); // 3
 
         var joints = m_Controller.ConfigurableJointChain;
         for (int i = 1; i < joints.Length; i++)
         {
             var jointRotation = joints[i].GetCurrentRotation();
             sensor.AddObservation(jointRotation);
+            sensor.AddObservation(GetRelativePosition(joints[i].transform));
         }
 
         var rigidBodies = m_Controller.RigidBodyChain;
@@ -284,6 +285,12 @@ public class WalkerASEAgent : Agent
     public float GetChestBalance()
     {
         var agentUp = chest.transform.TransformDirection(Vector3.up);
+        return Vector3.Dot(agentUp, Vector3.up);
+    }
+
+    public float GetRootBalance()
+    {
+        var agentUp = root.transform.TransformDirection(Vector3.up);
         return Vector3.Dot(agentUp, Vector3.up);
     }
 
