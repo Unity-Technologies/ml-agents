@@ -266,9 +266,52 @@ public class ConfigurableJointController : MonoBehaviour
         }
     }
 
+    public void SetCJointTargets(Quaternion[] targets)
+    {
+        for (int i = 0; i < cjControlSettings.Length; i++)
+        {
+            SetCJointTarget(m_ConfigurableJointChain[i + 1], targets[i]);
+        }
+    }
+
     public void SetCJointTarget(ConfigurableJoint joint, Vector3 target)
     {
         joint.targetRotation = Quaternion.Euler(target);
+    }
+
+    public void SetCJointTarget(ConfigurableJoint joint, Quaternion target)
+    {
+        joint.targetRotation = target;
+    }
+
+    void SetRBVelocities(Vector3 rootVelocity, Vector3[] resetStateJointVelocities)
+    {
+        m_RigidbodyChain[0].velocity = rootVelocity;
+        for (int i = 1; i < m_RigidbodyChain.Length; i++)
+        {
+            var parentTransform = m_RigidbodyChain[i].transform.parent;
+            var velocity = parentTransform.TransformVector(resetStateJointVelocities[i - 1]);
+            m_RigidbodyChain[i].velocity = velocity;
+        }
+    }
+
+    public IEnumerator ResetToResetState(ResetState resetState)
+    {
+        Academy.Instance.AutomaticSteppingEnabled = false;
+        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = true;
+        ZeroCJointPhysicsSettings();
+        ZeroCJointPhysics();
+        var position = new Vector3(0f, resetState.RootHeightFromGround + 0.05f, 0f);
+        SetPosRot(position, resetState.RelativeRootRotation);
+        SetCJointPhysicsSettings();
+        yield return new WaitForSeconds(1.0f / 120f);
+        SetCJointTargets(resetState.JointRotations);
+        yield return new WaitForSeconds(60.0f / 120f);
+        m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
+        yield return new WaitForSeconds(1.0f / 120f);
+        SetRBVelocities(resetState.RelativeVelocity, resetState.JointVelocities);
+        yield return new WaitForSeconds(60.0f / 120f);
+        Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
     public IEnumerator ResetCJointTargetsAndPositions(Vector3 position, Quaternion rotation)

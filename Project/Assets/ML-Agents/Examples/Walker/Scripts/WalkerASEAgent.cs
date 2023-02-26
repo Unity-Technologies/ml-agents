@@ -9,6 +9,18 @@ using Unity.MLAgents.Sensors;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
+
+public struct ResetState
+{
+    public float RootHeightFromGround;
+    public Quaternion RelativeRootRotation;
+    public Vector3 RelativeVelocity;
+    public Vector3 RelativeAngularVelocity;
+    public Quaternion[] JointRotations;
+    public Vector3[] JointPositions;
+    public Vector3[] JointVelocities;
+}
+
 public class WalkerASEAgent : Agent
 {
     public bool recordingMode;
@@ -25,6 +37,9 @@ public class WalkerASEAgent : Agent
 
     [Range(0f, 1f)]
     public float randomStandProbability;
+
+    [Range(0, 1f)]
+    public float randomDemoInitProbability;
 
     [Range(0f, 5f)]
     public float minSpawnHeight = 2f;
@@ -54,6 +69,7 @@ public class WalkerASEAgent : Agent
     bool m_IsRecoveryEpisode;
     int m_CurrentRecoverySteps = 0;
     Quaternion m_CurrentHeadingRotation;
+    DemonstrationReader m_DemoReader;
 
     public override void Initialize()
     {
@@ -77,6 +93,7 @@ public class WalkerASEAgent : Agent
         m_DecisionPeriod = GetComponent<DecisionRequester>().DecisionPeriod;
         m_AgentLocalFrameController = GetComponentInChildren<LocalFrameController>();
         Academy.Instance.AgentPreStep += IncrementRecoverySteps;
+        m_DemoReader = GetComponent<DemonstrationReader>();
     }
 
     public override void OnEpisodeBegin()
@@ -165,7 +182,7 @@ public class WalkerASEAgent : Agent
         if (!recordingMode)
         {
             var rand = Random.Range(0f, 1f);
-            if (randomDropProbability + randomStandProbability > 1.0f)
+            if (randomDropProbability + randomStandProbability + randomDemoInitProbability > 1.0f)
             {
                 throw new ArgumentException("Stand and drop probabilities must sum to 1.0.");
             }
@@ -182,6 +199,12 @@ public class WalkerASEAgent : Agent
 
                 var verticalOffset = new Vector3(0f, 0.05f, 0f);
                 StartCoroutine(m_Controller.ResetCJointTargetsAndPositions(m_OriginalPosition, verticalOffset, m_OriginalRotation, false));
+            }
+            else if (rand > randomDropProbability + randomStandProbability)
+            {
+                var resetState = ParseResetState(m_DemoReader.GetRandomInitState());
+                StartCoroutine(m_Controller.ResetToResetState(resetState));
+                // Debug.Log("Hit!");
             }
         }
         else
@@ -322,5 +345,48 @@ public class WalkerASEAgent : Agent
     Vector3 GetRelativeAngularVelocity()
     {
         return m_CurrentHeadingRotation * GetAngularVelocity();
+    }
+
+    ResetState ParseResetState(float[] resetStateInfo)
+    {
+        var resetState = new ResetState();
+        var index = 0;
+        resetState.RootHeightFromGround = resetStateInfo[index++];
+        resetState.RelativeRootRotation.x = resetStateInfo[index++];
+        resetState.RelativeRootRotation.y = resetStateInfo[index++];
+        resetState.RelativeRootRotation.z = resetStateInfo[index++];
+        resetState.RelativeRootRotation.w = resetStateInfo[index++];
+        resetState.RelativeVelocity.x = resetStateInfo[index++];
+        resetState.RelativeVelocity.y = resetStateInfo[index++];
+        resetState.RelativeVelocity.z = resetStateInfo[index++];
+        resetState.RelativeAngularVelocity.x = resetStateInfo[index++];
+        resetState.RelativeAngularVelocity.y = resetStateInfo[index++];
+        resetState.RelativeAngularVelocity.z = resetStateInfo[index++];
+
+        var activeNumJoints = m_Controller.ConfigurableJointChain.Length - 1;
+        resetState.JointRotations = new Quaternion[activeNumJoints];
+        resetState.JointPositions = new Vector3[activeNumJoints];
+        resetState.JointVelocities = new Vector3[activeNumJoints];
+
+        for (int i = 0; i < activeNumJoints; i++)
+        {
+            resetState.JointRotations[i].x = resetStateInfo[index++];
+            resetState.JointRotations[i].y = resetStateInfo[index++];
+            resetState.JointRotations[i].z = resetStateInfo[index++];
+            resetState.JointRotations[i].w = resetStateInfo[index++];
+
+            resetState.JointPositions[i].x = resetStateInfo[index++];
+            resetState.JointPositions[i].y = resetStateInfo[index++];
+            resetState.JointPositions[i].z = resetStateInfo[index++];
+        }
+
+        for (int i = 0; i < activeNumJoints; i++)
+        {
+            resetState.JointVelocities[i].x = resetStateInfo[index++];
+            resetState.JointVelocities[i].y = resetStateInfo[index++];
+            resetState.JointVelocities[i].z = resetStateInfo[index++];
+        }
+
+        return resetState;
     }
 }

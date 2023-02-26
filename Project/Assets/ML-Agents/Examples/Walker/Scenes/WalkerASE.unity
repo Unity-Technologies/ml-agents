@@ -130,7 +130,7 @@ MonoBehaviour:
     type: 3}
   m_PrefabInstance: {fileID: 1349526913}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 197129572}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1804ef116ddef4ad6b8e536bc696c505, type: 3}
@@ -193,6 +193,25 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5889392e3f05b448a8a06c5def6c2dec, type: 3}
+--- !u!1 &197129572 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6103056256198295374, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+    type: 3}
+  m_PrefabInstance: {fileID: 1349526913}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &197129580
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 197129572}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5731d838c616340f1889697a00475e37, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DemonstrationDirectory: /Users/miguel.alonso/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
 --- !u!1 &437798614
 GameObject:
   m_ObjectHideFlags: 0
@@ -240,7 +259,7 @@ MonoBehaviour:
   baseArea: {fileID: 1349526914}
   numAreas: 1
   separation: 200
-  buildOnly: 1
+  buildOnly: 0
 --- !u!850595691 &579492083
 LightingSettings:
   m_ObjectHideFlags: 0
@@ -554,6 +573,21 @@ PrefabInstance:
         type: 3}
       propertyPath: recordingMode
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: randomDropProbability
+      value: 0.1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: randomStandProbability
+      value: 0.45
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: randomDemoInitProbability
+      value: 0.45
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
