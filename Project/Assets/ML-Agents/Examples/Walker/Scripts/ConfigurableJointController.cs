@@ -284,9 +284,10 @@ public class ConfigurableJointController : MonoBehaviour
         joint.targetRotation = target;
     }
 
-    void SetRBVelocities(Vector3 rootVelocity, Vector3[] resetStateJointVelocities)
+    void SetRBVelocities(Vector3 rootVelocity, Vector3 rootAngularVelocity, Vector3[] resetStateJointVelocities)
     {
         m_RigidbodyChain[0].velocity = rootVelocity;
+        m_RigidbodyChain[0].angularVelocity = rootAngularVelocity;
         for (int i = 1; i < m_RigidbodyChain.Length; i++)
         {
             var parentTransform = m_RigidbodyChain[i].transform.parent;
@@ -309,7 +310,7 @@ public class ConfigurableJointController : MonoBehaviour
         yield return new WaitForSeconds(60.0f / 120f);
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
         yield return new WaitForSeconds(1.0f / 120f);
-        SetRBVelocities(resetState.RelativeVelocity, resetState.JointVelocities);
+        SetRBVelocities(resetState.RelativeVelocity, resetState.RelativeAngularVelocity, resetState.JointVelocities);
         yield return new WaitForSeconds(60.0f / 120f);
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
