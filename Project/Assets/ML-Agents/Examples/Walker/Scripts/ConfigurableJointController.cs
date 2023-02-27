@@ -311,7 +311,7 @@ public class ConfigurableJointController : MonoBehaviour
         m_ConfigurableJointChain[0].GetComponent<Rigidbody>().isKinematic = kinematicRoot;
         yield return new WaitForSeconds(1.0f / 120f);
         SetRBVelocities(resetState.RelativeVelocity, resetState.RelativeAngularVelocity, resetState.JointVelocities);
-        yield return new WaitForSeconds(60.0f / 120f);
+        yield return new WaitForSeconds(1.0f / 120f);
         Academy.Instance.AutomaticSteppingEnabled = true;
     }
 
