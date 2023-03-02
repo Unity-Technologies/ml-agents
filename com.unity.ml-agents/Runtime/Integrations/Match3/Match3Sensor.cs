@@ -155,7 +155,7 @@ namespace Unity.MLAgents.Integrations.Match3
                 }
             }
 
-            for (var r = currentBoardSize.Rows; r < m_MaxBoardSize.Columns; r++)
+            for (var r = currentBoardSize.Rows; r < m_MaxBoardSize.Rows; r++)
             {
                 for (var c = 0; c < m_MaxBoardSize.Columns; c++)
                 {
