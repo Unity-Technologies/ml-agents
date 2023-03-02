@@ -108,16 +108,16 @@ namespace Unity.MLAgents.Sensors
             }
 
             sensor.Write(writer);
-            for (var h = 0; h < tensorShape[-3]; h++) //@TODO: verify correctness
+            for (var h = 0; h < tensorShape[-2]; h++) //@TODO: verify correctness
             {
-                for (var w = 0; w < tensorShape[-2]; w++) //@TODO: verify correctness
+                for (var w = 0; w < tensorShape[-1]; w++) //@TODO: verify correctness
                 {
-                    for (var c = 0; c < tensorShape[-1]; c++) //@TODO: verify correctness
+                    for (var c = 0; c < tensorShape[-3]; c++) //@TODO: verify correctness
                     {
-                        if (expected[h, w, c] != output[tensorShape.RavelIndex(0, h, w, c)]) //@TODO: verify correctness  -- also, should equality be tested here or test against some epsilon?
+                        if (expected[c, h, w] != output[tensorShape.RavelIndex(0, c, h, w)]) //@TODO: verify correctness  -- also, should equality be tested here or test against some epsilon?
                         {
                             errorMessage = $"Expected and actual differed in position [{h}, {w}, {c}]. " +
-                                $"Expected: {expected[h, w, c]}  Actual: {output[tensorShape.RavelIndex(0, h, w, c)]} ";  //@TODO: verify correctness
+                                $"Expected: {expected[c, h, w]}  Actual: {output[tensorShape.RavelIndex(0, c, h, w)]} ";  //@TODO: verify correctness
                             return false;
                         }
                     }

@@ -91,12 +91,12 @@ namespace Unity.MLAgents.Tests
             };
 
             writer.SetTarget(t, 0, 0);
-            writer[1, 0, 1] = 1f;
-            Assert.AreEqual(1f, t.FloatData[0, 1, 0, 1]);
+            writer[1, 1, 0] = 1f;
+            Assert.AreEqual(1f, t.FloatData[0, 0, 1, 1]);
 
             writer.SetTarget(t, 0, 1);
             writer[1, 0, 0] = 2f;
-            Assert.AreEqual(2f, t.FloatData[0, 1, 0, 1]);
+            Assert.AreEqual(2f, t.FloatData[0, 0, 1, 1]);
         }
     }
 }

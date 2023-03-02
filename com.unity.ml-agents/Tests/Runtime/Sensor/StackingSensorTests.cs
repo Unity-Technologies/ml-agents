@@ -151,13 +151,13 @@ namespace Unity.MLAgents.Tests
 
             public int Write(ObservationWriter writer)
             {
-                for (var h = 0; h < ObservationSpec.Shape[0]; h++)
+                for (var h = 0; h < ObservationSpec.Shape[1]; h++)
                 {
-                    for (var w = 0; w < ObservationSpec.Shape[1]; w++)
+                    for (var w = 0; w < ObservationSpec.Shape[2]; w++)
                     {
-                        for (var c = 0; c < ObservationSpec.Shape[2]; c++)
+                        for (var c = 0; c < ObservationSpec.Shape[0]; c++)
                         {
-                            writer[h, w, c] = CurrentObservation[h, w, c];
+                            writer[h, w, c] = CurrentObservation[c, h, w];
                         }
                     }
                 }
@@ -227,24 +227,35 @@ namespace Unity.MLAgents.Tests
             var sensor = new StackingSensor(wrapped, 2);
 
             // Check the stacking is on the last dimension
-            wrapped.CurrentObservation = new[, ,] { { { 1f, 2f } }, { { 3f, 4f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 1f, 2f } }, { { 0f, 0f, 3f, 4f } } });
+            //wrapped.CurrentObservation = new[, ,] { { { 1f, 2f } }, { { 3f, 4f } } };
+
+            wrapped.CurrentObservation = new[,,] { { { 1f }, { 3f } }, { { 2f }, { 4f } } };
+
+            //SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 1f, 2f } }, { { 0f, 0f, 3f, 4f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f }, { 0f } }, { { 0f }, { 0f } }, { { 1f }, { 3f } }, { { 2f }, { 4f } } });
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 5f, 6f } }, { { 7f, 8f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 1f, 2f, 5f, 6f } }, { { 3f, 4f, 7f, 8f } } });
+            //wrapped.CurrentObservation = new[, ,] { { { 5f, 6f } }, { { 7f, 8f } } };
+            wrapped.CurrentObservation = new[,,] { { { 5f }, { 7f } }, { { 6f }, { 8f } } };
+            //SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 1f, 2f, 5f, 6f } }, { { 3f, 4f, 7f, 8f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 1f }, { 3f } }, { { 2f }, { 4f } }, { { 5f }, { 7f } }, { { 6f }, { 8f } } });
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 9f, 10f } }, { { 11f, 12f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            //wrapped.CurrentObservation = new[, ,] { { { 9f, 10f } }, { { 11f, 12f } } };
+            wrapped.CurrentObservation = new[,,] { { { 9f }, { 11f } }, { { 10f }, { 12f } } };
+            //SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f }, { 7f } }, { { 6f }, { 8f } }, { { 9f }, { 11f } }, { { 10f }, { 12f } } });
 
             // Check that if we don't call Update(), the same observations are produced
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            //SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f }, { 7f } }, { { 6f }, { 8f } }, { { 9f }, { 11f } }, { { 10f }, { 12f } } });
 
             // Test reset
             sensor.Reset();
-            wrapped.CurrentObservation = new[, ,] { { { 13f, 14f } }, { { 15f, 16f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 13f, 14f } }, { { 0f, 0f, 15f, 16f } } });
+            //wrapped.CurrentObservation = new[, ,] { { { 13f, 14f } }, { { 15f, 16f } } };
+            wrapped.CurrentObservation = new[,,] { { { 13f }, { 15f } }, { { 14f }, { 16f } } };
+            //SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 13f, 14f } }, { { 0f, 0f, 15f, 16f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f }, { 0f } }, { { 0f }, { 0f } }, { { 13f }, { 15f } }, { { 14f }, { 16f } } });
         }
 
         [Test]
@@ -254,24 +265,25 @@ namespace Unity.MLAgents.Tests
             wrapped.ObservationSpec = ObservationSpec.Visual(1, 1, 3);
             var sensor = new StackingSensor(wrapped, 2);
 
-            wrapped.CurrentObservation = new[, ,] { { { 1f, 2f, 3f } } };
+            //wrapped.CurrentObservation = new[, ,] { { { 1f, 2f, 3f } } };
+            wrapped.CurrentObservation = new[, ,] { { { 1f}}, {{2f}}, {{3f } } };
             var expected1 = sensor.CreateEmptyPNG();
             expected1 = expected1.Concat(Array.ConvertAll(new[] { 1f, 2f, 3f }, (z) => (byte)z)).ToArray();
             Assert.AreEqual(sensor.GetCompressedObservation(), expected1);
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 4f, 5f, 6f } } };
+            wrapped.CurrentObservation = new[, ,] { { { 4f}}, {{5f}}, {{6f } } };
             var expected2 = Array.ConvertAll(new[] { 1f, 2f, 3f, 4f, 5f, 6f }, (z) => (byte)z);
             Assert.AreEqual(sensor.GetCompressedObservation(), expected2);
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 7f, 8f, 9f } } };
+            wrapped.CurrentObservation = new[, ,] { { { 7f}}, {{8f}}, {{9f } } };
             var expected3 = Array.ConvertAll(new[] { 4f, 5f, 6f, 7f, 8f, 9f }, (z) => (byte)z);
             Assert.AreEqual(sensor.GetCompressedObservation(), expected3);
 
             // Test reset
             sensor.Reset();
-            wrapped.CurrentObservation = new[, ,] { { { 10f, 11f, 12f } } };
+            wrapped.CurrentObservation = new[, ,] { { { 10f}}, {{11f}}, {{12f } } };
             var expected4 = sensor.CreateEmptyPNG();
             expected4 = expected4.Concat(Array.ConvertAll(new[] { 10f, 11f, 12f }, (z) => (byte)z)).ToArray();
             Assert.AreEqual(sensor.GetCompressedObservation(), expected4);
