@@ -26,6 +26,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 3019509692332007777}
   m_Father: {fileID: 0}
@@ -64,6 +65,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3019509691567202569}
   m_RootOrder: 0
@@ -97,6 +99,7 @@ MonoBehaviour:
   TeamId: 0
   m_UseChildSensors: 1
   m_UseChildActuators: 1
+  m_DeterministicInference: 0
   m_ObservableAttributeHandling: 0
 --- !u!114 &3019509692332007781
 MonoBehaviour:
@@ -167,8 +170,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 530d2f105aa145bd8a00e021bdd925fd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SensorName: Match3 Sensor
-  ObservationType: 2
+  m_SensorName: Match3 Sensor
+  m_ObservationType: 2
 --- !u!114 &8270768986451624427
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -181,9 +184,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b17adcc6c9b241da903aa134f2dac930, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ActuatorName: Match3 Actuator
-  RandomSeed: -1
-  ForceHeuristic: 0
+  m_ActuatorName: Match3 Actuator
+  m_RandomSeed: -1
+  m_ForceHeuristic: 0
 --- !u!114 &5564406567458194538
 MonoBehaviour:
   m_ObjectHideFlags: 0
