@@ -20,5 +20,5 @@ jobs:
         run: |
           pip install mkdocs
           git remote add public git@github.com:Unity-Technologies/ml-agents.git
-          mkdocs gh-deply --clean -r public
+          mkdocs gh-deploy --clean -r public
 
