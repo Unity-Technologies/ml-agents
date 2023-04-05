@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Inference
                     var continuousBuffer = actionBuffer.ContinuousActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        continuousBuffer[j] = tensorProxy.data[agentIndex, j];
+                        continuousBuffer[j] = ((TensorFloat)tensorProxy.data)[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        discreteBuffer[j] = (int)tensorProxy.data[agentIndex, j];
+                        discreteBuffer[j] = ((TensorInt)tensorProxy.data)[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -152,14 +152,14 @@ namespace Unity.MLAgents.Inference
             var maxProb = float.NegativeInfinity;
             for (var cls = 0; cls < branchSize; ++cls)
             {
-                maxProb = Mathf.Max(logProbs.data[batch, cls + channelOffset], maxProb);
+                maxProb = Mathf.Max(((TensorFloat)logProbs.data)[batch, cls + channelOffset], maxProb);
             }
 
             // Sum the log probabilities and compute CDF
             var sumProb = 0.0f;
             for (var cls = 0; cls < branchSize; ++cls)
             {
-                sumProb += Mathf.Exp(logProbs.data[batch, cls + channelOffset] - maxProb);
+                sumProb += Mathf.Exp(((TensorFloat)logProbs.data)[batch, cls + channelOffset] - maxProb);
                 m_CdfBuffer[cls] = sumProb;
             }
         }
@@ -196,7 +196,7 @@ namespace Unity.MLAgents.Inference
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[j] = tensorProxy.data[agentIndex, 0, j, 0];
+                    memory[j] = ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0];
                 }
 
                 m_Memories[agentId] = memory;

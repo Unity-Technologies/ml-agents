@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         public string BehaviorName;
         public string BarracudaModelSource;
-        public string BarracudaModelVersion;
+        public long BarracudaModelVersion;
         public string BarracudaModelProducer;
         public string BarracudaPackageVersion;
         /// <summary>

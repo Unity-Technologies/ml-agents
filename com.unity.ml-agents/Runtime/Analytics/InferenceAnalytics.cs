@@ -208,6 +208,7 @@ namespace Unity.MLAgents.Analytics
             long totalWeightsSizeInBytes = 0;
             for (var l = 0; l < barracudaModel.layers.Count; ++l)
             {
+                // for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
                 for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
                 {
                     totalWeightsSizeInBytes += barracudaModel.layers[l].datasets[d].length;
