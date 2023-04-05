@@ -88,7 +88,7 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset] = value;
+                    ((TensorFloat)m_Proxy.data)[m_Batch, index + m_Offset] = value;
                 }
             }
         }
@@ -123,7 +123,7 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                    ((TensorFloat)m_Proxy.data)[m_Batch, h, w, ch + m_Offset] = value;
                 }
             }
         }
@@ -148,7 +148,7 @@ namespace Unity.MLAgents.Sensors
                 for (var index = 0; index < data.Count; index++)
                 {
                     var val = data[index];
-                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
+                    ((TensorFloat)m_Proxy.data)[m_Batch, index + m_Offset + writeOffset] = val;
                 }
             }
         }
@@ -168,9 +168,9 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
             }
         }
 
@@ -190,10 +190,10 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = vec.w;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 3] = vec.w;
             }
         }
 
@@ -214,10 +214,10 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = quat.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = quat.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = quat.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = quat.w;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = quat.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = quat.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = quat.z;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 3] = quat.w;
             }
         }
     }

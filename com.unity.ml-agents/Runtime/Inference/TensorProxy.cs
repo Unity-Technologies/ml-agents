@@ -122,7 +122,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var c = 0; c < channels; c++)
                     {
-                        tensorProxy.data[batch, h, w, c] = fillValue;
+                        ((TensorFloat)tensorProxy.data)[batch, h, w, c] = fillValue;
                     }
                 }
             }
@@ -154,7 +154,7 @@ namespace Unity.MLAgents.Inference
 
             for (var i = 0; i < tensorProxy.data.length; i++)
             {
-                tensorProxy.data[i] = (float)randomNormal.NextDouble();
+                ((TensorFloat)tensorProxy.data)[i] = (float)randomNormal.NextDouble();
             }
         }
     }

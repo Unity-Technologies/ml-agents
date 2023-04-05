@@ -810,7 +810,7 @@ namespace Unity.MLAgents.Inference
         /// check failed. If the check passed, returns null.
         /// </returns>
         static FailedCheck CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, Tensor modelDiscreteBranches)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorInt modelDiscreteBranches)
         {
 
             var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();
@@ -820,7 +820,7 @@ namespace Unity.MLAgents.Inference
                 discreteActionBranches.AddRange(actionSpec.BranchSizes);
             }
 
-            int modelDiscreteBranchesLength = modelDiscreteBranches?.length ?? 0;
+            int modelDiscreteBranchesLength = modelDiscreteBranches?.shape.length ?? 0;
             if (modelDiscreteBranchesLength != discreteActionBranches.Count)
             {
                 return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +

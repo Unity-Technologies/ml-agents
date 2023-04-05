@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Inference
         {
             tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-            tensorProxy.data[0] = batchSize;
+            ((TensorInt)tensorProxy.data)[0] = batchSize;
         }
     }
 
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Inference
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-            tensorProxy.data[0] = 1;
+            ((TensorInt)tensorProxy.data)[0] = 1;
         }
     }
 
@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var j = 0; j < memorySize; j++)
                     {
-                        tensorProxy.data[agentIndex, 0, j, 0] = 0;
+                        ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0] = 0;
                     }
                     agentIndex++;
                     continue;
@@ -123,7 +123,7 @@ namespace Unity.MLAgents.Inference
                     {
                         break;
                     }
-                    tensorProxy.data[agentIndex, 0, j, 0] = memory[j];
+                    ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0] = memory[j];
                 }
                 agentIndex++;
             }
@@ -160,7 +160,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var j = 0; j < actionSize; j++)
                     {
-                        tensorProxy.data[agentIndex, j] = pastAction[j];
+                        ((TensorInt)tensorProxy.data)[agentIndex, j] = pastAction[j];
                     }
                 }
 
@@ -198,7 +198,7 @@ namespace Unity.MLAgents.Inference
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
-                    tensorProxy.data[agentIndex, j] = isUnmasked;
+                    ((TensorFloat)tensorProxy.data)[agentIndex, j] = isUnmasked;
                 }
                 agentIndex++;
             }
