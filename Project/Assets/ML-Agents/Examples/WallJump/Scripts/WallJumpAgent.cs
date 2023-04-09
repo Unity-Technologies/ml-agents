@@ -7,6 +7,7 @@ using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgentsExamples;
+using Random = UnityEngine.Random;
 
 public class WallJumpAgent : Agent
 {

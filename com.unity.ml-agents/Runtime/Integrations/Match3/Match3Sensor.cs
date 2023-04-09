@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Integrations.Match3
             m_ObservationType = obsType;
             m_ObservationSpec = obsType == Match3ObservationType.Vector
                 ? ObservationSpec.Vector(maxBoardSize.Rows * maxBoardSize.Columns * oneHotSize)
-                : ObservationSpec.Visual(maxBoardSize.Rows, maxBoardSize.Columns, oneHotSize);
+                : ObservationSpec.Visual(oneHotSize, maxBoardSize.Rows, maxBoardSize.Columns);
         }
 
         /// <summary>

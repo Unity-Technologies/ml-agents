@@ -110,7 +110,7 @@ namespace Tests
             Assert.IsNotNull(sensorComponent.RaySensor);
 #endif
             // Let's change the inference device
-            var otherDevice = behaviorParams.InferenceDevice == InferenceDevice.CPU ? InferenceDevice.GPU : InferenceDevice.CPU;
+            var otherDevice = behaviorParams.InferenceDevice == InferenceDevice.Burst ? InferenceDevice.ComputeShader : InferenceDevice.Burst;
             agent.SetModel(behaviorParams.BehaviorName, behaviorParams.Model, otherDevice);
 
             agent.AddReward(1.0f);

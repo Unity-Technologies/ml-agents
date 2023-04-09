@@ -99,31 +99,31 @@ namespace Unity.MLAgents.Sensors
         /// <param name="h"></param>
         /// <param name="w"></param>
         /// <param name="ch"></param>
-        public float this[int h, int w, int ch]
+        public float this[int ch, int h, int w]
         {
             set
             {
                 if (m_Data != null)
                 {
-                    if (h < 0 || h >= m_TensorShape.height)
+                    if (h < 0 || h >= m_TensorShape.Height())
                     {
-                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.height - 1}]");
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.Height() - 1}]");
                     }
-                    if (w < 0 || w >= m_TensorShape.width)
+                    if (w < 0 || w >= m_TensorShape.Width())
                     {
-                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.width - 1}]");
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.Width() - 1}]");
                     }
-                    if (ch < 0 || ch >= m_TensorShape.channels)
+                    if (ch < 0 || ch >= m_TensorShape.Channels())
                     {
-                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.channels - 1}]");
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.Channels() - 1}]");
                     }
 
-                    var index = m_TensorShape.Index(m_Batch, h, w, ch + m_Offset);
+                    var index = m_TensorShape.Index(m_Batch, ch + m_Offset, h, w);
                     m_Data[index] = value;
                 }
                 else
                 {
-                    ((TensorFloat)m_Proxy.data)[m_Batch, h, w, ch + m_Offset] = value;
+                    ((TensorFloat)m_Proxy.data)[m_Batch, ch + m_Offset, h, w] = value;
                 }
             }
         }
@@ -202,7 +202,6 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="quat">The Quaternion to be written.</param>
         /// <param name="writeOffset">Optional write offset.</param>
-
         public void Add(Quaternion quat, int writeOffset = 0)
         {
             if (m_Data != null)
@@ -254,6 +253,7 @@ namespace Unity.MLAgents.Sensors
             var height = texture.height;
 
             var texturePixels = texture.GetPixels32();
+
             // During training, we convert from Texture to PNG before sending to the trainer, which has the
             // effect of flipping the image. We need another flip here at inference time to match this.
             for (var h = height - 1; h >= 0; h--)
@@ -290,6 +290,7 @@ namespace Unity.MLAgents.Sensors
             var height = texture.height;
 
             var rawBytes = texture.GetRawTextureData<byte>();
+
             // During training, we convert from Texture to PNG before sending to the trainer, which has the
             // effect of flipping the image. We need another flip here at inference time to match this.
             for (var h = height - 1; h >= 0; h--)
@@ -303,14 +304,14 @@ namespace Unity.MLAgents.Sensors
 
                     if (grayScale)
                     {
-                        obsWriter[h, w, 0] = (r + g + b) / 3f / 255.0f;
+                        obsWriter[0, h, w] = (r + g + b) / 3f / 255.0f;
                     }
                     else
                     {
                         // For Color32, the r, g and b values are between 0 and 255.
-                        obsWriter[h, w, 0] = r / 255.0f;
-                        obsWriter[h, w, 1] = g / 255.0f;
-                        obsWriter[h, w, 2] = b / 255.0f;
+                        obsWriter[0, h, w] = r / 255.0f;
+                        obsWriter[1, h, w] = g / 255.0f;
+                        obsWriter[2, h, w] = b / 255.0f;
                     }
                 }
             }

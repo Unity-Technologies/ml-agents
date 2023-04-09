@@ -90,11 +90,11 @@ namespace Unity.MLAgents.Inference
                 WorkerFactory.Type executionDevice;
                 switch (inferenceDevice)
                 {
-                    case InferenceDevice.CPU:
-                        executionDevice = WorkerFactory.Type.CSharp;
+                    case InferenceDevice.ComputeShader:
+                        executionDevice = WorkerFactory.Type.ComputeShader;
                         break;
-                    case InferenceDevice.GPU:
-                        executionDevice = WorkerFactory.Type.ComputePrecompiled;
+                    case InferenceDevice.PixelShader:
+                        executionDevice = WorkerFactory.Type.PixelShader;
                         break;
                     case InferenceDevice.Burst:
                         executionDevice = WorkerFactory.Type.CSharpBurst;

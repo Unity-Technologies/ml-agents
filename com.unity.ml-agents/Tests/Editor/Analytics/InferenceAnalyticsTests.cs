@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Tests.Analytics
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
                 continuousONNXModel, behaviorName,
-                InferenceDevice.CPU, sensors, actionSpec,
+                InferenceDevice.Burst, sensors, actionSpec,
                 actuators
             );
 
@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Tests.Analytics
                     GetContinuous2vis8vec2actionActionSpec(),
                     Array.Empty<IActuator>(),
                     continuousONNXModel,
-                    InferenceDevice.CPU,
+                    InferenceDevice.Burst,
                     "testBehavior"
                 );
                 policy.RequestDecision(new AgentInfo(), sensors);

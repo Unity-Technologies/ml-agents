@@ -18,9 +18,9 @@ namespace Unity.MLAgents.Policies
         Default = 0,
 
         /// <summary>
-        /// GPU inference. Corresponds to WorkerFactory.Type.ComputePrecompiled in Barracuda.
+        /// GPU inference with the Compute Shader backend. Corresponds to WorkerFactory.Type.ComputeShader in Barracuda.
         /// </summary>
-        GPU = 1,
+        ComputeShader = 1,
 
         /// <summary>
         /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Barracuda.
@@ -28,10 +28,10 @@ namespace Unity.MLAgents.Policies
         Burst = 2,
 
         /// <summary>
-        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
+        /// GPU inference with the Pixel Shader backend. Corresponds to in WorkerFactory.Type.PixelShader Barracuda.
         /// Burst is recommended instead; this is kept for legacy compatibility.
         /// </summary>
-        CPU = 3,
+        PixelShader = 3,
     }
 
     /// <summary>

@@ -38,8 +38,8 @@ namespace Unity.MLAgents.Tests
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
         const string k_discreteONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_obsolete_recurr_v1_0.onnx";
         const string k_hybridONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/hybrid0vis53vec_3c_2daction_v1_0.onnx";
-        const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated_v1_0.nn";
-        const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated_v1_0.nn";
+        // const string k_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_deprecated_v1_0.nn";
+        // const string k_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/discrete1vis0vec_2_3action_recurr_deprecated_v1_0.nn";
         // models with deterministic action tensors
         private const string k_deterministic_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterDiscrete1obs3action_v2_0.onnx";
         private const string k_deterministic_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterContinuous2vis8vec2action_v2_0.onnx";
@@ -48,8 +48,8 @@ namespace Unity.MLAgents.Tests
         NNModel continuousONNXModel;
         NNModel discreteONNXModel;
         NNModel hybridONNXModel;
-        NNModel continuousNNModel;
-        NNModel discreteNNModel;
+        // NNModel continuousNNModel;
+        // NNModel discreteNNModel;
         NNModel deterministicDiscreteNNModel;
         NNModel deterministicContinuousNNModel;
         Test3DSensorComponent sensor_21_20_3;
@@ -79,8 +79,8 @@ namespace Unity.MLAgents.Tests
             continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
             discreteONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(NNModel));
             hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
-            continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
-            discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
+            // continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
+            // discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
             deterministicDiscreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_discreteNNPath, typeof(NNModel));
             deterministicContinuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_continuousNNPath, typeof(NNModel));
             var go = new GameObject("SensorA");
@@ -96,8 +96,8 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(continuousONNXModel);
             Assert.IsNotNull(discreteONNXModel);
             Assert.IsNotNull(hybridONNXModel);
-            Assert.IsNotNull(continuousNNModel);
-            Assert.IsNotNull(discreteNNModel);
+            // Assert.IsNotNull(continuousNNModel);
+            // Assert.IsNotNull(discreteNNModel);
             Assert.IsNotNull(hybridONNXModelV2);
             Assert.IsNotNull(deterministicDiscreteNNModel);
             Assert.IsNotNull(deterministicContinuousNNModel);
@@ -117,15 +117,15 @@ namespace Unity.MLAgents.Tests
             });
             modelRunner = new ModelRunner(hybridONNXModel, GetHybrid0vis53vec_3c_2dActionSpec(), inferenceDevice);
             modelRunner.Dispose();
-            modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
-            modelRunner.Dispose();
+            // modelRunner = new ModelRunner(continuousNNModel, GetContinuous2vis8vec2actionActionSpec(), inferenceDevice);
+            // modelRunner.Dispose();
 
-            Assert.Throws<UnityAgentsException>(() =>
-            {
-                // Cannot load a model trained with 1.x that has an LSTM
-                modelRunner = new ModelRunner(discreteNNModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
-                modelRunner.Dispose();
-            });
+            // Assert.Throws<UnityAgentsException>(() =>
+            // {
+            // Cannot load a model trained with 1.x that has an LSTM
+            // modelRunner = new ModelRunner(discreteNNModel, GetDiscrete1vis0vec_2_3action_recurrModelActionSpec(), inferenceDevice);
+            // modelRunner.Dispose();
+            // });
             // This one was trained with 2.0 so it should not raise an error:
             modelRunner = new ModelRunner(hybridONNXModelV2, new ActionSpec(2, new[] { 2, 3 }), inferenceDevice);
             modelRunner.Dispose();
@@ -143,10 +143,10 @@ namespace Unity.MLAgents.Tests
         [Test]
         public void TestHasModel()
         {
-            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), InferenceDevice.CPU);
-            Assert.True(modelRunner.HasModel(continuousONNXModel, InferenceDevice.CPU));
-            Assert.False(modelRunner.HasModel(continuousONNXModel, InferenceDevice.GPU));
-            Assert.False(modelRunner.HasModel(discreteONNXModel, InferenceDevice.CPU));
+            var modelRunner = new ModelRunner(continuousONNXModel, GetContinuous2vis8vec2actionActionSpec(), InferenceDevice.Burst);
+            Assert.True(modelRunner.HasModel(continuousONNXModel, InferenceDevice.Burst));
+            Assert.False(modelRunner.HasModel(continuousONNXModel, InferenceDevice.ComputeShader));
+            Assert.False(modelRunner.HasModel(discreteONNXModel, InferenceDevice.Burst));
             modelRunner.Dispose();
         }
 
