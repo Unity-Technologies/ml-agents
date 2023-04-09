@@ -161,7 +161,7 @@ namespace Unity.MLAgents.Analytics
             inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
             inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
             inferenceEvent.BarracudaModelProducer = barracudaModel.ProducerName;
-            inferenceEvent.MemorySize = (int)barracudaModel.GetTensorByName(TensorNames.MemorySize)[0];
+            inferenceEvent.MemorySize = (int)((TensorFloat)barracudaModel.GetTensorByName(TensorNames.MemorySize))[0];
             inferenceEvent.InferenceDevice = (int)inferenceDevice;
 
             if (barracudaModel.ProducerName == "Script")
@@ -206,13 +206,9 @@ namespace Unity.MLAgents.Analytics
         static long GetModelWeightSize(Model barracudaModel)
         {
             long totalWeightsSizeInBytes = 0;
-            for (var l = 0; l < barracudaModel.layers.Count; ++l)
+            for (var c = 0; c < barracudaModel.constants.Count; c++)
             {
-                // for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
-                for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
-                {
-                    totalWeightsSizeInBytes += barracudaModel.layers[l].datasets[d].length;
-                }
+                totalWeightsSizeInBytes += barracudaModel.constants[c].length;
             }
             return totalWeightsSizeInBytes;
         }
@@ -271,11 +267,11 @@ namespace Unity.MLAgents.Analytics
             // Limit the max number of float bytes that we hash for performance.
             const int kMaxFloats = 256;
 
-            foreach (var layer in barracudaModel.layers)
+            foreach (var constant in barracudaModel.constants)
             {
-                hash.Append(layer.name);
-                var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
-                hash.Append(layer.weights, numFloatsToHash);
+                hash.Append(constant.name);
+                var numFloatsToHash = Mathf.Min(constant.weights.Length, kMaxFloats);
+                hash.Append(constant.weights.ToString());
             }
 
             return hash.ToString();

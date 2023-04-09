@@ -90,7 +90,7 @@ namespace Unity.MLAgents.Inference
                 );
             }
 
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var memorySize = (int)((TensorFloat)model.GetTensorByName(TensorNames.MemorySize))[0];
 
             if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0 && memorySize > 0)
             {
@@ -162,7 +162,7 @@ namespace Unity.MLAgents.Inference
                 failedModelChecks.Add(versionCheck);
             }
 
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var memorySize = (int)((TensorFloat)model.GetTensorByName(TensorNames.MemorySize))[0];
             if (memorySize == -1)
             {
                 failedModelChecks.Add(FailedCheck.Warning($"Missing node in the model provided : {TensorNames.MemorySize}"
@@ -528,10 +528,10 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             var visObsIndex = 0;
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
@@ -665,10 +665,10 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
@@ -776,7 +776,7 @@ namespace Unity.MLAgents.Inference
             }
             if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
-                var modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                var modelDiscreteBranches = (TensorInt)model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
                 discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);
             }
 

@@ -21,9 +21,8 @@ namespace Unity.MLAgents.Tests
 
             var actionTensor = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    2,
+                data = new TensorFloat(
+                    new TensorShape(2, 2),
                     new[]
                     {
                         2.0f, // Agent 0, branch 0
@@ -55,10 +54,9 @@ namespace Unity.MLAgents.Tests
 
             var logProbs = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    5,
-                    new[]
+                data = new TensorFloat(
+                    new TensorShape(2, 5),
+                new[]
                     {
                         smallLogProb, smallLogProb, largeLogProb, // Agent 0, branch 0
                         smallLogProb, largeLogProb,               // Agent 0, branch 1

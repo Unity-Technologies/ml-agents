@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Sensors
             m_Grayscale = grayscale;
             m_Name = name;
             var channels = grayscale ? 1 : 3;
-            m_ObservationSpec = ObservationSpec.Visual(height, width, channels, observationType);
+            m_ObservationSpec = ObservationSpec.Visual(channels, height, width, observationType);
             m_CompressionType = compression;
             m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
         }

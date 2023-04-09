@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 using Unity.Barracuda;
+using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -44,7 +45,7 @@ namespace Unity.MLAgents.Sensors
 
         byte[] m_EmptyCompressedObservation;
         int[] m_CompressionMapping;
-        TensorShape m_tensorShape;
+        TensorShape m_TensorShape;
 
         /// <summary>
         /// Initializes the sensor.
@@ -93,7 +94,7 @@ namespace Unity.MLAgents.Sensors
             if (m_WrappedSpec.Rank != 1)
             {
                 var wrappedShape = m_WrappedSpec.Shape;
-                m_tensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
+                m_TensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
             }
         }
 
@@ -126,7 +127,7 @@ namespace Unity.MLAgents.Sensors
                         {
                             for (var c = 0; c < m_WrappedSpec.Shape[2]; c++)
                             {
-                                writer[h, w, i * m_WrappedSpec.Shape[2] + c] = m_StackedObservations[obsIndex][m_tensorShape.Index(0, h, w, c)];
+                                writer[h, w, i * m_WrappedSpec.Shape[2] + c] = m_StackedObservations[obsIndex][m_TensorShape.Index(0, c, h, w)];
                             }
                         }
                     }

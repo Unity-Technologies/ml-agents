@@ -17,7 +17,7 @@ namespace Unity.MLAgents.Tests
             Height = height;
             m_Name = name;
 
-            m_ObservationSpec = ObservationSpec.Visual(height, width, 1);
+            m_ObservationSpec = ObservationSpec.Visual(1, height, width);
             floatData = new float[Height, Width];
         }
 
@@ -27,7 +27,7 @@ namespace Unity.MLAgents.Tests
             Height = floatData.GetLength(0);
             Width = floatData.GetLength(1);
             m_Name = name;
-            m_ObservationSpec = ObservationSpec.Visual(Height, Width, 1);
+            m_ObservationSpec = ObservationSpec.Visual(1, Height, Width);
         }
 
         public string GetName()
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Tests
                 {
                     for (var w = 0; w < Width; w++)
                     {
-                        writer[h, w, 0] = floatData[h, w];
+                        writer[0, h, w] = floatData[h, w];
                     }
                 }
                 var numWritten = Height * Width;

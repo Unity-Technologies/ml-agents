@@ -3,6 +3,7 @@ using System;
 using Unity.Barracuda;
 using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Sensors;
+using static Unity.MLAgents.Inference.TensorProxy;
 
 namespace Unity.MLAgents.Inference
 {
@@ -42,7 +43,7 @@ namespace Unity.MLAgents.Inference
         public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
         {
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
+            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType);
             ((TensorInt)tensorProxy.data)[0] = batchSize;
         }
     }
@@ -66,7 +67,7 @@ namespace Unity.MLAgents.Inference
         {
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
+            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType);
             ((TensorInt)tensorProxy.data)[0] = 1;
         }
     }
@@ -95,7 +96,7 @@ namespace Unity.MLAgents.Inference
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
 
-            var memorySize = tensorProxy.data.width;
+            var memorySize = tensorProxy.data.Width();
 
             var agentIndex = 0;
             for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
@@ -267,6 +268,7 @@ namespace Unity.MLAgents.Inference
                 else
                 {
                     var tensorOffset = 0;
+
                     // Write each sensor consecutively to the tensor
                     for (var sensorIndexIndex = 0; sensorIndexIndex < m_SensorIndices.Count; sensorIndexIndex++)
                     {

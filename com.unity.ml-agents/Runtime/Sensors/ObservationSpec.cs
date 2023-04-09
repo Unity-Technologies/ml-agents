@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Sensors
         /// <param name="channels"></param>
         /// <param name="obsType"></param>
         /// <returns></returns>
-        public static ObservationSpec Visual(int height, int width, int channels, ObservationType obsType = ObservationType.Default)
+        public static ObservationSpec Visual(int channels, int height, int width, ObservationType obsType = ObservationType.Default)
         {
             var dimProps = new InplaceArray<DimensionProperty>(
                 DimensionProperty.TranslationalEquivariance,
@@ -103,7 +103,7 @@ namespace Unity.MLAgents.Sensors
                 DimensionProperty.None
             );
             return new ObservationSpec(
-                new InplaceArray<int>(height, width, channels),
+                new InplaceArray<int>(channels, height, width),
                 dimProps,
                 obsType
             );

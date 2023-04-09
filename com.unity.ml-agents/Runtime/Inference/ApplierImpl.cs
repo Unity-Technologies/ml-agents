@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        discreteBuffer[j] = ((TensorInt)tensorProxy.data)[agentIndex, j];
+                        discreteBuffer[j] = (int)((TensorFloat)tensorProxy.data)[agentIndex, j];
                     }
                 }
                 agentIndex++;
@@ -182,7 +182,7 @@ namespace Unity.MLAgents.Inference
         public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
             var agentIndex = 0;
-            var memorySize = tensorProxy.data.width;
+            var memorySize = tensorProxy.data.Width();
             for (var i = 0; i < actionIds.Count; i++)
             {
                 var agentId = actionIds[i];
