@@ -114,10 +114,10 @@ namespace Unity.MLAgents.Sensors
                 {
                     for (var c = 0; c < tensorShape.Channels(); c++)
                     {
-                        if (expected[h, w, c] != output[tensorShape.Index(0, c, h, w)])
+                        if (expected[c, h, w] != output[tensorShape.Index(0, c, h, w)])
                         {
                             errorMessage = $"Expected and actual differed in position [{c}, {h}, {w}]. " +
-                                $"Expected: {expected[h, w, c]}  Actual: {output[tensorShape.Index(0, c, h, w)]} ";
+                                $"Expected: {expected[c, h, w]}  Actual: {output[tensorShape.Index(0, c, h, w)]} ";
                             return false;
                         }
                     }
