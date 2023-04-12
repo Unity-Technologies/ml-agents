@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Sensors
     /// Sensor that wraps around another Sensor to provide temporal stacking.
     /// Conceptually, consecutive observations are stored left-to-right, which is how they're output
     /// For example, 4 stacked sets of observations would be output like
-    ///   |  t = now - 3  |  t = now -3  |  t = now - 2  |  t = now  |
+    ///   |  t = now - 3  |  t = now -2  |  t = now - 1  |  t = now  |
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Sensors
             // Set up the cached observation spec for the StackingSensor
             var newShape = m_WrappedSpec.Shape;
             // TODO support arbitrary stacking dimension
-            newShape[newShape.Length - 1] *= numStackedObservations;
+            newShape[newShape.Length < 3 ? newShape.Length - 1 : newShape.Length - 3] *= numStackedObservations;
             m_ObservationSpec = new ObservationSpec(
                 newShape, m_WrappedSpec.DimensionProperties, m_WrappedSpec.ObservationType
             );
@@ -121,13 +121,13 @@ namespace Unity.MLAgents.Sensors
                 for (var i = 0; i < m_NumStackedObservations; i++)
                 {
                     var obsIndex = (m_CurrentIndex + 1 + i) % m_NumStackedObservations;
-                    for (var h = 0; h < m_WrappedSpec.Shape[0]; h++)
+                    for (var h = 0; h < m_WrappedSpec.Shape[1]; h++)
                     {
-                        for (var w = 0; w < m_WrappedSpec.Shape[1]; w++)
+                        for (var w = 0; w < m_WrappedSpec.Shape[2]; w++)
                         {
-                            for (var c = 0; c < m_WrappedSpec.Shape[2]; c++)
+                            for (var c = 0; c < m_WrappedSpec.Shape[0]; c++)
                             {
-                                writer[h, w, i * m_WrappedSpec.Shape[2] + c] = m_StackedObservations[obsIndex][m_TensorShape.Index(0, c, h, w)];
+                                writer[i * m_WrappedSpec.Shape[0] + c, h, w] = m_StackedObservations[obsIndex][m_TensorShape.Index(0, c, h, w)];
                             }
                         }
                     }
@@ -238,7 +238,7 @@ namespace Unity.MLAgents.Sensors
             // wrapped sensor doesn't have one, use default mapping.
             // Default mapping: {0, 0, 0} for grayscale, identity mapping {1, 2, ..., n} otherwise.
             int[] wrappedMapping = null;
-            int wrappedNumChannel = m_WrappedSpec.Shape[2];
+            int wrappedNumChannel = m_WrappedSpec.Shape[0];
 
             wrappedMapping = wrappedSenesor.GetCompressionSpec().CompressedChannelMapping;
             if (wrappedMapping == null)

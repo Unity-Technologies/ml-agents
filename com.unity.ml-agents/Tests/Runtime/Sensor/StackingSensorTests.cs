@@ -151,13 +151,13 @@ namespace Unity.MLAgents.Tests
 
             public int Write(ObservationWriter writer)
             {
-                for (var h = 0; h < ObservationSpec.Shape[0]; h++)
+                for (var c = 0; c < ObservationSpec.Shape[0]; c++)
                 {
-                    for (var w = 0; w < ObservationSpec.Shape[1]; w++)
+                    for (var h = 0; h < ObservationSpec.Shape[1]; h++)
                     {
-                        for (var c = 0; c < ObservationSpec.Shape[2]; c++)
+                        for (var w = 0; w < ObservationSpec.Shape[2]; w++)
                         {
-                            writer[h, w, c] = CurrentObservation[h, w, c];
+                            writer[c, h, w] = CurrentObservation[c, h, w];
                         }
                     }
                 }
@@ -206,14 +206,14 @@ namespace Unity.MLAgents.Tests
 
             // Test mapping with number of layers not being multiple of 3
             var dummySensor = new Dummy3DSensor();
-            dummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
+            dummySensor.ObservationSpec = ObservationSpec.Visual(4, 2, 2);
             dummySensor.Mapping = new[] { 0, 1, 2, 3 };
             var stackedDummySensor = new StackingSensor(dummySensor, 2);
             Assert.AreEqual(stackedDummySensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
 
             // Test mapping with dummy layers that should be dropped
             var paddedDummySensor = new Dummy3DSensor();
-            paddedDummySensor.ObservationSpec = ObservationSpec.Visual(2, 2, 4);
+            paddedDummySensor.ObservationSpec = ObservationSpec.Visual(4, 2, 2);
             paddedDummySensor.Mapping = new[] { 0, 1, 2, 3, -1, -1 };
             var stackedPaddedDummySensor = new StackingSensor(paddedDummySensor, 2);
             Assert.AreEqual(stackedPaddedDummySensor.GetCompressionSpec().CompressedChannelMapping, new[] { 0, 1, 2, 3, -1, -1, 4, 5, 6, 7, -1, -1 });
@@ -223,28 +223,29 @@ namespace Unity.MLAgents.Tests
         public void Test3DStacking()
         {
             var wrapped = new Dummy3DSensor();
-            wrapped.ObservationSpec = ObservationSpec.Visual(2, 1, 2);
+            wrapped.ObservationSpec = ObservationSpec.Visual(2, 2, 1);
             var sensor = new StackingSensor(wrapped, 2);
 
-            // Check the stacking is on the last dimension
-            wrapped.CurrentObservation = new[, ,] { { { 1f, 2f } }, { { 3f, 4f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 1f, 2f } }, { { 0f, 0f, 3f, 4f } } });
+            // Check the stacking is on the channel dimension
+            wrapped.CurrentObservation = new[, ,] { { { 1f }, { 2f } }, { { 3f }, { 4f } } };
+            // var expectedObs = new[,,] { { { 0f, 0f, 1f, 2f } }, { { 0f, 0f, 3f, 4f } } };
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f }, { 0f } }, { { 0f }, { 0f } }, { { 1f }, { 2f } }, { { 3f }, { 4f } } });
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 5f, 6f } }, { { 7f, 8f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 1f, 2f, 5f, 6f } }, { { 3f, 4f, 7f, 8f } } });
+            wrapped.CurrentObservation = new[, ,] { { { 5f }, { 6f } }, { { 7f }, { 8f } } };
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 1f }, { 2f } }, { { 3f }, { 4f } }, { { 5f }, { 6f } }, { { 7f }, { 8f } } });
 
             sensor.Update();
-            wrapped.CurrentObservation = new[, ,] { { { 9f, 10f } }, { { 11f, 12f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            wrapped.CurrentObservation = new[, ,] { { { 9f }, { 10f } }, { { 11f }, { 12f } } };
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f }, { 6f } }, { { 7f }, { 8f } }, { { 9f }, { 10f } }, { { 11f }, { 12f } } });
 
             // Check that if we don't call Update(), the same observations are produced
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f, 6f, 9f, 10f } }, { { 7f, 8f, 11f, 12f } } });
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 5f }, { 6f } }, { { 7f }, { 8f } }, { { 9f }, { 10f } }, { { 11f }, { 12f } } });
 
             // Test reset
             sensor.Reset();
-            wrapped.CurrentObservation = new[, ,] { { { 13f, 14f } }, { { 15f, 16f } } };
-            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f, 0f, 13f, 14f } }, { { 0f, 0f, 15f, 16f } } });
+            wrapped.CurrentObservation = new[, ,] { { { 13f }, { 14f } }, { { 15f }, { 16f } } };
+            SensorTestHelper.CompareObservation(sensor, new[, ,] { { { 0f }, { 0f } }, { { 0f }, { 0f } }, { { 13f }, { 14f } }, { { 15f }, { 16f } } });
         }
 
         [Test]
