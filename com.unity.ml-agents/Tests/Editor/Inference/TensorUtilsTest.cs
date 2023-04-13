@@ -46,6 +46,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(width, tensorProxy.data.shape.Width());
             Assert.AreEqual(channels, tensorProxy.data.shape.Channels());
 
+            // TODO this resize is changing the tensor dimensions.need fix.
             TensorUtils.ResizeTensor(tensorProxy, 42, alloc);
 
             Assert.AreEqual(height, tensorProxy.shape[dimension - 2]);

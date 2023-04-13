@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Inference
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < actionSize; j++)
                     {
-                        discreteBuffer[j] = (int)((TensorFloat)tensorProxy.data)[agentIndex, j];
+                        discreteBuffer[j] = ((TensorInt)tensorProxy.data)[agentIndex, j];
                     }
                 }
                 agentIndex++;

@@ -324,7 +324,7 @@ namespace Unity.MLAgents.Sensors
                     {
                         for (var d = 0; d < m_CellObservationSize; d++)
                         {
-                            writer[h, w, d] = m_PerceptionBuffer[index];
+                            writer[d, h, w] = m_PerceptionBuffer[index];
                             index++;
                         }
                     }
