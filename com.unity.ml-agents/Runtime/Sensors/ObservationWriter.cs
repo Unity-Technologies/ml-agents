@@ -264,15 +264,15 @@ namespace Unity.MLAgents.Sensors
 
                     if (grayScale)
                     {
-                        obsWriter[h, w, 0] =
+                        obsWriter[0, h, w] =
                             (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
                     }
                     else
                     {
                         // For Color32, the r, g and b values are between 0 and 255.
-                        obsWriter[h, w, 0] = currentPixel.r / 255.0f;
-                        obsWriter[h, w, 1] = currentPixel.g / 255.0f;
-                        obsWriter[h, w, 2] = currentPixel.b / 255.0f;
+                        obsWriter[0, h, w] = currentPixel.r / 255.0f;
+                        obsWriter[1, h, w] = currentPixel.g / 255.0f;
+                        obsWriter[2, h, w] = currentPixel.b / 255.0f;
                     }
                 }
             }

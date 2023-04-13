@@ -784,7 +784,7 @@ namespace Unity.MLAgents.Inference
             }
             if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
-                var modelDiscreteBranches = (TensorInt)model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                var modelDiscreteBranches = (TensorFloat)model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
                 discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);
             }
 
@@ -810,7 +810,7 @@ namespace Unity.MLAgents.Inference
         /// check failed. If the check passed, returns null.
         /// </returns>
         static FailedCheck CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorInt modelDiscreteBranches)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorFloat modelDiscreteBranches)
         {
 
             var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();

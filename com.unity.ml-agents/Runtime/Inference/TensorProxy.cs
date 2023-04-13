@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.Barracuda;
 using Unity.MLAgents.Inference.Utils;
 
@@ -46,17 +47,17 @@ namespace Unity.MLAgents.Inference
 
         public long Height
         {
-            get { return shape.Length == 4 ? shape[1] : shape[5]; }
+            get { return shape.Length >= 4 ? shape[^2] : 1; }
         }
 
         public long Width
         {
-            get { return shape.Length == 4 ? shape[2] : shape[6]; }
+            get { return shape.Length >= 3 ? shape[^1] : 1; }
         }
 
         public long Channels
         {
-            get { return shape.Length == 4 ? shape[3] : shape[7]; }
+            get { return shape.Length >= 4 ? shape[^3] : shape.Length == 3 ? shape[^2] : shape.Length == 2 ? shape[^1] : 1; }
         }
     }
 
@@ -72,24 +73,8 @@ namespace Unity.MLAgents.Inference
 
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
-
-            if (tensor.shape.Length == 4 || tensor.shape.Length == 8)
-            {
-                tensor.data = allocator.Alloc(
-                    new TensorShape(
-                        batch,
-                        (int)tensor.Height,
-                        (int)tensor.Width,
-                        (int)tensor.Channels),
-                    tensor.DType);
-            }
-            else
-            {
-                tensor.data = allocator.Alloc(
-                    new TensorShape(
-                        batch,
-                        (int)tensor.shape[tensor.shape.Length - 1]), tensor.DType);
-            }
+            tensor.data = allocator.Alloc(
+                new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType);
         }
 
         internal static long[] TensorShapeFromBarracuda(TensorShape src)
@@ -108,7 +93,7 @@ namespace Unity.MLAgents.Inference
             return new TensorProxy
             {
                 name = nameOverride ?? src.name,
-                valueType = TensorProxy.TensorType.FloatingPoint,
+                valueType = src.dataType == DataType.Float ? TensorProxy.TensorType.FloatingPoint : TensorProxy.TensorType.Integer,
                 shape = shape,
                 data = src
             };
@@ -131,7 +116,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var c = 0; c < channels; c++)
                     {
-                        ((TensorFloat)tensorProxy.data)[batch, h, w, c] = fillValue;
+                        ((TensorFloat)tensorProxy.data)[batch, c, h, w] = fillValue;
                     }
                 }
             }
