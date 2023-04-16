@@ -215,8 +215,8 @@ namespace Unity.MLAgents.Sensors
         internal byte[] CreateEmptyPNG()
         {
             var shape = m_WrappedSpec.Shape;
-            int height = shape[0];
-            int width = shape[1];
+            int height = shape[1];
+            int width = shape[2];
             var texture2D = new Texture2D(width, height, TextureFormat.RGB24, false);
             Color32[] resetColorArray = texture2D.GetPixels32();
             Color32 black = new Color32(0, 0, 0, 0);
