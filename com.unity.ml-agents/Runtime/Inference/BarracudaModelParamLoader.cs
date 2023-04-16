@@ -419,9 +419,9 @@ namespace Unity.MLAgents.Inference
             TensorProxy tensorProxy, ISensor sensor)
         {
             var shape = sensor.GetObservationSpec().Shape;
-            var heightBp = shape[0];
-            var widthBp = shape[1];
-            var pixelBp = shape[2];
+            var heightBp = shape[1];
+            var widthBp = shape[2];
+            var pixelBp = shape[0];
             var heightT = tensorProxy.Height;
             var widthT = tensorProxy.Width;
             var pixelT = tensorProxy.Channels;

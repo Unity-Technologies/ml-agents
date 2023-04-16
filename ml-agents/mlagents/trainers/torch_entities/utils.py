@@ -34,9 +34,9 @@ class ModelUtils:
     VALID_VISUAL_PROP = frozenset(
         [
             (
-                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
-                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
                 DimensionProperty.NONE,
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
+                DimensionProperty.TRANSLATIONAL_EQUIVARIANCE,
             ),
             (DimensionProperty.UNSPECIFIED,) * 3,
         ]
@@ -166,9 +166,9 @@ class ModelUtils:
         if dim_prop in ModelUtils.VALID_VISUAL_PROP:
             visual_encoder_class = ModelUtils.get_encoder_for_type(vis_encode_type)
             ModelUtils._check_resolution_for_encoder(
-                shape[0], shape[1], vis_encode_type
+                shape[1], shape[2], vis_encode_type
             )
-            return (visual_encoder_class(shape[0], shape[1], shape[2], h_size), h_size)
+            return (visual_encoder_class(shape[1], shape[2], shape[0], h_size), h_size)
         # VECTOR
         if dim_prop in ModelUtils.VALID_VECTOR_PROP:
             return (VectorInput(shape[0], normalize), shape[0])

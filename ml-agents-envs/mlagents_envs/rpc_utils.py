@@ -167,7 +167,7 @@ def _process_images_mapping(image_arrays, mappings):
 
     for i, img_array in enumerate(processed_image_arrays):
         processed_image_arrays[i] = np.mean(img_array, axis=0)
-    img = np.stack(processed_image_arrays, axis=2)
+    img = np.stack(processed_image_arrays, axis=0)
     return img
 
 
@@ -225,7 +225,7 @@ def _observation_to_np_array(
             raise UnityObservationException(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
-    expected_channels = obs.shape[2]
+    expected_channels = obs.shape[0]
     if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)
