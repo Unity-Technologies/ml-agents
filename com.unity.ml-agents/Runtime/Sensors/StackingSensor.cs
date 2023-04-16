@@ -98,15 +98,18 @@ namespace Unity.MLAgents.Sensors
                 m_TensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
             }
 
-            m_TensorIndex = new int[m_WrappedSpec.Shape[0], m_WrappedSpec.Shape[1], m_WrappedSpec.Shape[2]];
-
-            for (var h = 0; h < m_WrappedSpec.Shape[1]; h++)
+            if (m_WrappedSpec.Rank == 3)
             {
-                for (var w = 0; w < m_WrappedSpec.Shape[2]; w++)
+                m_TensorIndex = new int[m_WrappedSpec.Shape[0], m_WrappedSpec.Shape[1], m_WrappedSpec.Shape[2]];
+
+                for (var h = 0; h < m_WrappedSpec.Shape[1]; h++)
                 {
-                    for (var c = 0; c < m_WrappedSpec.Shape[0]; c++)
+                    for (var w = 0; w < m_WrappedSpec.Shape[2]; w++)
                     {
-                        m_TensorIndex[c, h, w] = m_TensorShape.Index(0, c, h, w);
+                        for (var c = 0; c < m_WrappedSpec.Shape[0]; c++)
+                        {
+                            m_TensorIndex[c, h, w] = m_TensorShape.Index(0, c, h, w);
+                        }
                     }
                 }
             }

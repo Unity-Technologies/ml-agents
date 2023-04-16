@@ -57,9 +57,9 @@ namespace Unity.MLAgents.Tests
 
             var dimensionProps = obsSpec.DimensionProperties;
             Assert.AreEqual(3, dimensionProps.Length);
-            Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[0]);
             Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[1]);
-            Assert.AreEqual(DimensionProperty.None, dimensionProps[2]);
+            Assert.AreEqual(DimensionProperty.TranslationalEquivariance, dimensionProps[2]);
+            Assert.AreEqual(DimensionProperty.None, dimensionProps[0]);
 
             Assert.AreEqual(ObservationType.Default, obsSpec.ObservationType);
         }
