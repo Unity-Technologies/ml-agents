@@ -46,6 +46,7 @@ namespace Unity.MLAgents.Sensors
         byte[] m_EmptyCompressedObservation;
         int[] m_CompressionMapping;
         TensorShape m_TensorShape;
+        int[,,] m_TensorIndex;
 
         /// <summary>
         /// Initializes the sensor.
@@ -96,6 +97,19 @@ namespace Unity.MLAgents.Sensors
                 var wrappedShape = m_WrappedSpec.Shape;
                 m_TensorShape = new TensorShape(0, wrappedShape[0], wrappedShape[1], wrappedShape[2]);
             }
+
+            m_TensorIndex = new int[m_WrappedSpec.Shape[0], m_WrappedSpec.Shape[1], m_WrappedSpec.Shape[2]];
+
+            for (var h = 0; h < m_WrappedSpec.Shape[1]; h++)
+            {
+                for (var w = 0; w < m_WrappedSpec.Shape[2]; w++)
+                {
+                    for (var c = 0; c < m_WrappedSpec.Shape[0]; c++)
+                    {
+                        m_TensorIndex[c, h, w] = m_TensorShape.Index(0, c, h, w);
+                    }
+                }
+            }
         }
 
         /// <inheritdoc/>
@@ -127,7 +141,7 @@ namespace Unity.MLAgents.Sensors
                         {
                             for (var c = 0; c < m_WrappedSpec.Shape[0]; c++)
                             {
-                                writer[i * m_WrappedSpec.Shape[0] + c, h, w] = m_StackedObservations[obsIndex][m_TensorShape.Index(0, c, h, w)];
+                                writer[i * m_WrappedSpec.Shape[0] + c, h, w] = m_StackedObservations[obsIndex][m_TensorIndex[c, h, w]];
                             }
                         }
                     }
