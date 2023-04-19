@@ -1,6 +1,7 @@
-from mlagents.torch_utils import torch
-import warnings
 from typing import Tuple, Optional, List
+
+from mlagents.torch_utils import torch
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch_entities.layers import (
     LinearEncoder,
     Initialization,
@@ -8,7 +9,6 @@ from mlagents.trainers.torch_entities.layers import (
     LayerNorm,
 )
 from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
-from mlagents.trainers.exception import UnityTrainerException
 
 
 def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
@@ -18,25 +18,6 @@ def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
     layer to mask the padding observations.
     """
     with torch.no_grad():
-
-        if exporting_to_onnx.is_exporting():
-            with warnings.catch_warnings():
-                # We ignore a TracerWarning from PyTorch that warns that doing
-                # shape[n].item() will cause the trace to be incorrect (the trace might
-                # not generalize to other inputs)
-                # We ignore this warning because we know the model will always be
-                # run with inputs of the same shape
-                warnings.simplefilter("ignore")
-                # When exporting to ONNX, we want to transpose the entities. This is
-                # because ONNX only support input in NCHW (channel first) format.
-                # Barracuda also expect to get data in NCHW.
-                entities = [
-                    torch.transpose(obs, 2, 1).reshape(
-                        -1, obs.shape[1].item(), obs.shape[2].item()
-                    )
-                    for obs in entities
-                ]
-
         # Generate the masking tensors for each entities tensor (mask only if all zeros)
         key_masks: List[torch.Tensor] = [
             (torch.sum(ent**2, axis=2) < 0.01).float() for ent in entities
@@ -45,7 +26,6 @@ def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
 
 
 class MultiHeadAttention(torch.nn.Module):
-
     NEG_INF = -1e6
 
     def __init__(self, embedding_size: int, num_heads: int):
@@ -180,14 +160,6 @@ class EntityEmbedding(torch.nn.Module):
                     number of elements."
                 )
             num_entities = entities.shape[1]
-
-        if exporting_to_onnx.is_exporting():
-            # When exporting to ONNX, we want to transpose the entities. This is
-            # because ONNX only support input in NCHW (channel first) format.
-            # Barracuda also expect to get data in NCHW.
-            entities = torch.transpose(entities, 2, 1).reshape(
-                -1, num_entities, self.entity_size
-            )
 
         if self.self_size > 0:
             expanded_self = x_self.reshape(-1, 1, self.self_size)
