@@ -99,7 +99,7 @@ namespace Unity.MLAgents.Sensors
             {
                 if (m_Data != null)
                 {
-                    m_Data[ch * m_Offset + w] = value;
+                    m_Data[ch * m_TensorShape[m_TensorShape.length - 1] + w] = value;
                 }
                 else
                 {
