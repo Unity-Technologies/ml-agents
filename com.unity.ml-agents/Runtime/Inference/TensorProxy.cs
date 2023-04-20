@@ -79,12 +79,17 @@ namespace Unity.MLAgents.Inference
 
         internal static long[] TensorShapeFromBarracuda(TensorShape src)
         {
+            if (src.rank == 2)
+            {
+                return new long[] { src.Batch(), src.Channels() };
+            }
+
             if (src.Height() == 1 && src.Width() == 1)
             {
                 return new long[] { src.Batch(), src.Channels() };
             }
 
-            return new long[] { src.Batch(), src.Height(), src.Width(), src.Channels() };
+            return new long[] { src.Batch(), src.Channels(), src.Height(), src.Width() };
         }
 
         public static TensorProxy TensorProxyFromBarracuda(Tensor src, string nameOverride = null)

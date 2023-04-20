@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Inference
 
         public static int Width(this TensorShape shape)
         {
-            return shape.rank >= 4 ? shape[shape.rank - 1] : 0;
+            return shape.rank >= 3 ? shape[shape.rank - 1] : 0;
         }
 
         public static int Channels(this TensorShape shape)
