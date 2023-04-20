@@ -196,7 +196,7 @@ namespace Unity.MLAgents.Inference
 
                 for (var j = 0; j < memorySize; j++)
                 {
-                    memory[j] = ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0];
+                    memory[j] = ((TensorFloat)tensorProxy.data)[agentIndex, 0, j];
                 }
 
                 m_Memories[agentId] = memory;

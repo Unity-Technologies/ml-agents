@@ -93,6 +93,22 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        public float this[int ch, int w]
+        {
+            set
+            {
+                if (m_Data != null)
+                {
+                    m_Data[ch * m_Offset + w] = value;
+                }
+                else
+                {
+                    ((TensorFloat)m_Proxy.data)[m_Batch, ch, w] = value;
+                }
+
+            }
+        }
+
         /// <summary>
         /// 3D write access at the specified height, width, and channel.
         /// </summary>

@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var j = 0; j < memorySize; j++)
                     {
-                        ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0] = 0;
+                        ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = 0;
                     }
                     agentIndex++;
                     continue;
@@ -124,7 +124,7 @@ namespace Unity.MLAgents.Inference
                     {
                         break;
                     }
-                    ((TensorFloat)tensorProxy.data)[agentIndex, 0, j, 0] = memory[j];
+                    ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = memory[j];
                 }
                 agentIndex++;
             }
