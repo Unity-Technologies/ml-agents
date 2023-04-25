@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
@@ -10,18 +12,21 @@ using Random = UnityEngine.Random;
 public class WalkerAgent : Agent
 {
     [Header("Walk Speed")]
-    [Range(0.1f, 10)]
+    // [Range(0.1f, 10)]
+    [Range(1, 9)]
     [SerializeField]
     //The walking speed to try and achieve
-    private float m_TargetWalkingSpeed = 10;
+    private float m_TargetWalkingSpeed = 9;
 
     public float MTargetWalkingSpeed // property
     {
         get { return m_TargetWalkingSpeed; }
         set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
     }
+    private List<float> speedOptions = new List<float>() { 1, 3, 5, 7, 9 };
 
-    const float m_maxWalkingSpeed = 10; //The max walking speed
+    // const float m_maxWalkingSpeed = 10; //The max walking speed
+    const float m_maxWalkingSpeed = 9; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
     //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
@@ -58,7 +63,7 @@ public class WalkerAgent : Agent
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
     EnvironmentParameters m_ResetParams;
-
+    private VectorSensor speedObservation;
     public override void Initialize()
     {
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -88,6 +93,7 @@ public class WalkerAgent : Agent
         SetResetParameters();
     }
 
+    private int randomSpeedChoiceIndex;
     /// <summary>
     /// Loop over body parts and reset them to initial conditions.
     /// </summary>
@@ -104,9 +110,12 @@ public class WalkerAgent : Agent
 
         UpdateOrientationObjects();
 
-        //Set our goal walking speed
-        MTargetWalkingSpeed =
-            randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
+        randomSpeedChoiceIndex = Random.Range(0, speedOptions.Count);
+        MTargetWalkingSpeed = (float)speedOptions[randomSpeedChoiceIndex];
+
+        // //Set our goal walking speed
+        // MTargetWalkingSpeed =
+        //     randomizeWalkSpeedEachEpisode ? Random.Range(0, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
         SetResetParameters();
     }
@@ -132,6 +141,8 @@ public class WalkerAgent : Agent
             sensor.AddObservation(bp.rb.transform.localRotation);
             sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
+
+
     }
 
     /// <summary>
@@ -139,6 +150,17 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
+        if (speedObservation == null)
+        {
+            speedObservation = new VectorSensor(5, "speedObsv", ObservationType.GoalSignal);
+        }
+
+        speedObservation.AddOneHotObservation(randomSpeedChoiceIndex, speedOptions.Count);
+
+
+
+
+
         var cubeForward = m_OrientationCube.transform.forward;
 
         //velocity we want to match
