@@ -1206,10 +1206,22 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
+      propertyPath: jointDampen
+      value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
+      propertyPath: maxJointSpring
+      value: 600
+      objectReference: {fileID: 0}
+    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
+      propertyPath: maxJointForceLimit
+      value: 2000
+      objectReference: {fileID: 0}
     - target: {fileID: 654595229, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: e7fbe43369e6c4376a43ae23cc8589c3,
+      objectReference: {fileID: 5022602860645237092, guid: 81468a65553d34f8d9cdecbccaf8e516,
         type: 3}
     - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}

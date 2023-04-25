@@ -132,17 +132,137 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3599283674160848331, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674160848331, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674258174711, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674258174711, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674353725471, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674353725471, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674701520976, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674701520976, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674879403207, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674879403207, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674929991235, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674929991235, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675061353162, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675061353162, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675242808011, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675242808011, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675594846473, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675594846473, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 71fe1fe4f177841a1b4b85987277495c,
+      objectReference: {fileID: 5022602860645237092, guid: e7fbe43369e6c4376a43ae23cc8589c3,
         type: 3}
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: target
       value: 
       objectReference: {fileID: 140846861312608762}
+    - target: {fileID: 3599283675835168082, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675835168082, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675894408087, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675894408087, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283676062257936, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283676062257936, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: agentDoneOnGroundContact
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3925309372585159072, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_RootOrder
@@ -213,7 +333,8 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 1
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 3599283675615088289, guid: dd62a2a5a838943fba3d2cbb377a75b3, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dd62a2a5a838943fba3d2cbb377a75b3, type: 3}
 --- !u!1001 &3797443287568727108
 PrefabInstance:

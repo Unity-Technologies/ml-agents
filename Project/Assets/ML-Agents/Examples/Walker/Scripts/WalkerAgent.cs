@@ -21,9 +21,9 @@ public class WalkerAgent : Agent
     public float MTargetWalkingSpeed // property
     {
         get { return m_TargetWalkingSpeed; }
-        set { m_TargetWalkingSpeed = Mathf.Clamp(value, .1f, m_maxWalkingSpeed); }
+        set { m_TargetWalkingSpeed = Mathf.Clamp(value, 0, m_maxWalkingSpeed); }
     }
-    private List<float> speedOptions = new List<float>() { 1, 3, 5, 7, 9 };
+    private List<float> speedOptions = new List<float>() { 0.00001f, 3, 5, 7, 9 };
 
     // const float m_maxWalkingSpeed = 10; //The max walking speed
     const float m_maxWalkingSpeed = 9; //The max walking speed
@@ -103,10 +103,14 @@ public class WalkerAgent : Agent
         foreach (var bodyPart in m_JdController.bodyPartsDict.Values)
         {
             bodyPart.Reset(bodyPart);
+            bodyPart.InitializeRandomJointSettings();
+
         }
 
         //Random start rotation to help generalize
         hips.rotation = Quaternion.Euler(0, Random.Range(0.0f, 360.0f), 0);
+
+
 
         UpdateOrientationObjects();
 
@@ -118,6 +122,23 @@ public class WalkerAgent : Agent
         //     randomizeWalkSpeedEachEpisode ? Random.Range(0, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
         SetResetParameters();
+        StartCoroutine(WaitingPeriod());
+
+    }
+    public bool canRequestDecision = false;
+
+    IEnumerator WaitingPeriod()
+    {
+        canRequestDecision = false;
+        yield return new WaitForSeconds(1);
+        WaitForFixedUpdate wait = new WaitForFixedUpdate();
+        //wait until the body rigidbody is not moving
+        var bodyRB = m_JdController.bodyPartsDict[hips].rb;
+        while (bodyRB.velocity.magnitude > 0.1f && bodyRB.angularVelocity.magnitude > 0.1f)
+        {
+            yield return wait;
+        }
+        canRequestDecision = true;
     }
 
     /// <summary>
@@ -275,6 +296,10 @@ public class WalkerAgent : Agent
         }
 
         AddReward(matchSpeedReward * lookAtTargetReward);
+        if (canRequestDecision && Academy.Instance.StepCount % 5 == 0)
+        {
+            RequestDecision();
+        }
     }
 
     //Returns the average velocity of all of the body parts

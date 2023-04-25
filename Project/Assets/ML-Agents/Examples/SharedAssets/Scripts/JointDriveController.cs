@@ -11,7 +11,7 @@ namespace Unity.MLAgentsExamples
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
@@ -62,6 +62,14 @@ namespace Unity.MLAgentsExamples
             {
                 bp.targetContact.touchingTarget = false;
             }
+        }
+
+        public void InitializeRandomJointSettings()
+        {
+            if (!joint)
+                return;
+            SetJointTargetRotation(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
+            SetJointStrength(Random.Range(-1f, 1f));
         }
 
         /// <summary>
