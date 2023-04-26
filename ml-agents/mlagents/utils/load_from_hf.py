@@ -1,8 +1,7 @@
-from huggingface_hub import Repository
 import os
-
+import logging
 import argparse
-
+from huggingface_hub import HfApi, snapshot_download
 
 def load_from_hf(repo_id: str, 
                  local_dir: str):
@@ -14,8 +13,12 @@ def load_from_hf(repo_id: str,
     _, repo_name = repo_id.split('/')
 
     local_dir = os.path.join(local_dir, repo_name)
-    repo = Repository(local_dir, repo_id)
-    print(f"The repository {repo_id} has been cloned to {local_dir}")
+
+    repo_path = snapshot_download(repo_id = repo_id,
+                                  local_dir= local_dir,
+                                  local_dir_use_symlinks="auto")
+
+    logging.info(f"The repository {repo_id} has been cloned to {local_dir}")
 
 
 def main():
@@ -31,5 +34,3 @@ def main():
 # For python debugger to directly run this script
 if __name__ == "__main__":
     main()
-
-
