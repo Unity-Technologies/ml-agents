@@ -1175,7 +1175,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ec51f47c5ed0478080c449c74fd9c154, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  gravityMultiplier: 1.5
+  gravityMultiplier: 1
   fixedDeltaTime: 0.01333
   maximumDeltaTime: 0.15
   solverIterations: 12
@@ -1206,23 +1206,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
-      propertyPath: jointDampen
-      value: 15
-      objectReference: {fileID: 0}
-    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
-      propertyPath: maxJointSpring
-      value: 600
-      objectReference: {fileID: 0}
-    - target: {fileID: 654595227, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
-      propertyPath: maxJointForceLimit
-      value: 2000
-      objectReference: {fileID: 0}
-    - target: {fileID: 654595229, guid: 84359146bf7af47e58c229d877e801d7, type: 3}
-      propertyPath: m_Model
-      value: 
-      objectReference: {fileID: 5022602860645237092, guid: 81468a65553d34f8d9cdecbccaf8e516,
-        type: 3}
     - target: {fileID: 6713178126238440196, guid: 84359146bf7af47e58c229d877e801d7,
         type: 3}
       propertyPath: m_Name

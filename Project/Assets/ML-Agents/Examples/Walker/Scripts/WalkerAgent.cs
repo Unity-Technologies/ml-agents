@@ -130,7 +130,7 @@ public class WalkerAgent : Agent
     IEnumerator WaitingPeriod()
     {
         canRequestDecision = false;
-        yield return new WaitForSeconds(1);
+        yield return new WaitForSeconds(2);
         WaitForFixedUpdate wait = new WaitForFixedUpdate();
         //wait until the body rigidbody is not moving
         var bodyRB = m_JdController.bodyPartsDict[hips].rb;
@@ -166,6 +166,13 @@ public class WalkerAgent : Agent
 
     }
 
+
+    public float chestUpDot;
+    public float hipsUpDot;
+    public float shinLUpDot;
+    public float shinRUpDot;
+    public float legLUpDot;
+    public float legRUpDot;
     /// <summary>
     /// Loop over body parts to add them to observation.
     /// </summary>
@@ -178,8 +185,22 @@ public class WalkerAgent : Agent
 
         speedObservation.AddOneHotObservation(randomSpeedChoiceIndex, speedOptions.Count);
 
+        chestUpDot = Mathf.Clamp01((Vector3.Dot(chest.up, Vector3.up) + 1) / 2);
+        hipsUpDot = Mathf.Clamp01((Vector3.Dot(hips.up, Vector3.up) + 1) / 2);
+        shinLUpDot = Mathf.Clamp01((Vector3.Dot(shinL.up, Vector3.up) + 1) / 2);
+        shinRUpDot = Mathf.Clamp01((Vector3.Dot(shinR.up, Vector3.up) + 1) / 2);
+        legLUpDot = Mathf.Clamp01((Vector3.Dot(thighL.up, Vector3.up) + 1) / 2);
+        legRUpDot = Mathf.Clamp01((Vector3.Dot(thighR.up, Vector3.up) + 1) / 2);
 
+        sensor.AddObservation(chestUpDot);
+        sensor.AddObservation(hipsUpDot);
+        sensor.AddObservation(shinLUpDot);
+        sensor.AddObservation(shinRUpDot);
+        sensor.AddObservation(legLUpDot);
+        sensor.AddObservation(legRUpDot);
 
+        var headHeightDelta = head.position.y - ((footL.position.y + footR.position.y) / 2);
+        sensor.AddObservation(headHeightDelta);
 
 
         var cubeForward = m_OrientationCube.transform.forward;
@@ -259,9 +280,9 @@ public class WalkerAgent : Agent
         }
     }
 
-    void FixedUpdate()
+    public float headHeightRew;
+    void AddRewards()
     {
-        UpdateOrientationObjects();
 
         var cubeForward = m_OrientationCube.transform.forward;
 
@@ -270,34 +291,47 @@ public class WalkerAgent : Agent
         //This reward will approach 1 if it matches perfectly and approach zero as it deviates
         var matchSpeedReward = GetMatchingVelocityReward(cubeForward * MTargetWalkingSpeed, GetAvgVelocity());
 
-        //Check for NaNs
-        if (float.IsNaN(matchSpeedReward))
-        {
-            throw new ArgumentException(
-                "NaN in moveTowardsTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" hips.velocity: {m_JdController.bodyPartsDict[hips].rb.velocity}\n" +
-                $" maximumWalkingSpeed: {m_maxWalkingSpeed}"
-            );
-        }
-
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var charForward = (head.forward + hips.forward) / 2;
+        charForward.y = 0;
+        // var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, charForward) + 1) * .5F;
 
-        //Check for NaNs
-        if (float.IsNaN(lookAtTargetReward))
-        {
-            throw new ArgumentException(
-                "NaN in lookAtTargetReward.\n" +
-                $" cubeForward: {cubeForward}\n" +
-                $" head.forward: {head.forward}"
-            );
-        }
 
-        AddReward(matchSpeedReward * lookAtTargetReward);
+        headHeightRew = head.position.y - ((footL.position.y + footR.position.y) / 2);
+        var facingUpRew = hipsUpDot * chestUpDot * shinLUpDot * shinRUpDot * legRUpDot * legLUpDot;
+        var rew = facingUpRew;
+        // if (headHeightRew > 1.3f)
+        // {
+        //     rew *= lookAtTargetReward;
+        //     if (lookAtTargetReward > .8f)
+        //     {
+        //         rew *= matchSpeedReward;
+        //     }
+        // }
+        // AddReward(matchSpeedReward * lookAtTargetReward);
+        // if (canRequestDecision)
+        // {
+        //height first
+        // if()
+        // AddReward(matchSpeedReward * lookAtTargetReward * headHeightRew);
+        AddReward(rew);
+        // }
+    }
+
+    void FixedUpdate()
+    {
+        UpdateOrientationObjects();
+        // if (canRequestDecision)
+        // {
+        //     //height first
+        //     // if()
+        //     // AddReward(matchSpeedReward * lookAtTargetReward * headHeightRew);
+        // }
         if (canRequestDecision && Academy.Instance.StepCount % 5 == 0)
         {
+            AddRewards();
             RequestDecision();
         }
     }
