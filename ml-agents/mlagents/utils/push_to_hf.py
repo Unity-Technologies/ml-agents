@@ -1,20 +1,15 @@
-import logging
 import os
-
 import argparse
 
 import yaml
 import json
 
-import shutil
-
 from pathlib import Path
 
-from huggingface_hub import HfApi, HfFolder, Repository, upload_folder
-from huggingface_hub.repocard import metadata_eval_result, metadata_save
+from huggingface_hub import HfApi, create_repo, upload_folder
+from huggingface_hub.repocard import metadata_save
 
 from typing import Optional
-
 
 def _generate_config(repo_local_path, configfile_name):
     """
@@ -30,13 +25,11 @@ def _generate_config(repo_local_path, configfile_name):
         json.dump(yaml_object, json_out)
 
 
-def _generate_metadata(model_name: str, env_id: str, mean_reward: float, std_reward: float):
+def _generate_metadata(model_name: str, env_id: str):
     """
     Define the tags for the model card
     :param model_name: name of the model
     :param env_id: name of the environment
-    :mean_reward: mean reward of the agent
-    :std_reward: standard deviation of the mean reward of the agent
     """
     env_tag = "ML-Agents-" + env_id
 
@@ -49,35 +42,15 @@ def _generate_metadata(model_name: str, env_id: str, mean_reward: float, std_rew
         env_tag,
     ]
 
-    """
-    TODO: Need to get the evaluation metrics
-    # Add metrics
-    eval = metadata_eval_result(
-        model_pretty_name=model_name,
-        task_pretty_name="reinforcement-learning",
-        task_id="reinforcement-learning",
-        metrics_pretty_name="mean_reward",
-        metrics_id="mean_reward",
-        metrics_value=f"{mean_reward:.2f} +/- {std_reward:.2f}",
-        dataset_pretty_name=env_id,
-        dataset_id=env_id,
-    )
-    
-    # Merges both dictionaries
-    metadata = {**metadata, **eval}
-    """
-
     return metadata
 
 
-def _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward, std_reward):
+def _generate_model_card(repo_local_path, configfile_name, repo_id):
     """
     Generate the model card for the Hub
     :param repo_local_path: local path of the repo
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     :param repo_id: id of the model repository from the Hugging Face Hub
-    :mean_reward: mean reward of the agent
-    :std_reward: standard deviation of the mean reward of the agent
     """
     # Step 1: Read the config.json
     with open(os.path.join(repo_local_path, "config.json"), 'r') as f:
@@ -88,7 +61,7 @@ def _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward,
         model_name = data["behaviors"][env_id]["trainer_type"]
 
     # Step 2: Create the metadata
-    metadata = _generate_metadata(model_name, env_id, mean_reward, std_reward)
+    metadata = _generate_metadata(model_name, env_id)
 
     # Step 3: Generate the model card
     model_card = f"""
@@ -96,27 +69,27 @@ def _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward,
   This is a trained model of a **{model_name}** agent playing **{env_id}** using the [Unity ML-Agents Library](https://github.com/Unity-Technologies/ml-agents).
   """
 
-    model_card += """
+    model_card += f"""
   ## Usage (with ML-Agents)
-  The Documentation: https://github.com/huggingface/ml-agents#get-started
+  The Documentation: https://unity-technologies.github.io/ml-agents/ML-Agents-Toolkit-Documentation/
   We wrote a complete tutorial to learn to train your first agent using ML-Agents and publish it to the Hub:
-
+  - A *short tutorial* where you teach Huggy the Dog 🐶 to fetch the stick and then play with him directly in your browser: https://huggingface.co/learn/deep-rl-course/unitbonus1/introduction
+  - A *longer tutorial* to understand how works ML-Agents: https://huggingface.co/learn/deep-rl-course/unit5/introduction
 
   ### Resume the training
   ```
   mlagents-learn <your_configuration_file_path.yaml> --run-id=<run_id> --resume
   ```
-  ### Watch your Agent play
-  You can watch your agent **playing directly in your browser:**.
-  """
 
-    model_card += f"""
-  1. Go to https://huggingface.co/spaces/unity/ML-Agents-{env_id}
+  ### Watch your Agent play
+  You can watch your agent **playing directly in your browser** 
+
+  1. If the environment is part of ML-Agents official environments, go to https://huggingface.co/unity
   2. Step 1: Find your model_id: {repo_id}
   3. Step 2: Select your *.nn /*.onnx file
-  4. Click on Watch the agent play 👀
+  4. Click on Watch the agent play 👀 
   """
-
+  
     return model_card, metadata
 
 
@@ -127,14 +100,9 @@ def _save_model_card(repo_dir: Path, generated_model_card: str, metadata):
     :param metadata: metadata
     """
     readme_path = repo_dir / "README.md"
-    readme = ""
-    if readme_path.exists():
-        with readme_path.open("r", encoding="utf8") as f:
-            readme = f.read()
-    else:
-        readme = generated_model_card
+
     with readme_path.open("w", encoding="utf-8") as f:
-        f.write(readme)
+        f.write(generated_model_card)
 
     # Save our metrics to Readme metadata
     metadata_save(readme_path, metadata)
@@ -144,9 +112,7 @@ def package_to_hub(run_id,
                    path_of_run_id,
                    repo_id: str,
                    commit_message: str,
-                   configfile_name,
-                   # token: Optional[str] = None,
-                   local_repo_path="hub",
+                   configfile_name
                    ):
     """
     This method generates the model card and upload the run_id folder
@@ -157,7 +123,7 @@ def package_to_hub(run_id,
     :param commit_message: commit message
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     """
-    logging.info(
+    print(
         f"This function will create a model card and upload your {run_id} "
         f"into HuggingFace Hub. This is a work in progress: If you encounter a bug, "
         f"please send open an issue")
@@ -167,63 +133,30 @@ def package_to_hub(run_id,
     # Step 1: Clone or create the repo
     # Create the repo (or clone its content if it's nonempty)
     api = HfApi()
+
     repo_url = api.create_repo(
         repo_id=repo_id,
         exist_ok=True, )
-
-    # Step 2: Download the files
-    # Git pull
-    repo_local_path = Path(local_repo_path) / repo_name
-    repo = Repository(repo_local_path, clone_from=repo_url)
-    repo.git_pull(rebase=True)
-    repo.lfs_track(["*.onnx"])
-
-    # Step 3: Copy and paste the files to the repo
-    repo_local_path = Path(local_repo_path) / repo_name
-
-    # Store the source and destination directory path into two variables
-    src_path = Path(path_of_run_id)
-    dst_path = repo_local_path
-
-    for filename in src_path.iterdir():
-        _copy_file(Path(filename), repo_local_path)
-
-    # Step 4: Create a config file
-    _generate_config(repo_local_path, configfile_name)
     
-    # Step 5: Retrieve evaluation results TODO
-    # Retrieve evaluation
-    mean_reward = 0.0
-    std_reward = 0.0
+    local_path = Path(path_of_run_id)
 
-    # Step 6: Generate and save the model card
-    generated_model_card, metadata = _generate_model_card(repo_local_path, configfile_name, repo_id, mean_reward, std_reward)
-    _save_model_card(repo_local_path, generated_model_card, metadata)
+    # Step 2: Create a config file
+    _generate_config(local_path, configfile_name)
+    
+    # Step 3: Generate and save the model card
+    generated_model_card, metadata = _generate_model_card(local_path, configfile_name, repo_id)
+    _save_model_card(local_path, generated_model_card, metadata)
 
-    logging.info(f"Pushing repo {run_id} to the Hugging Face Hub")
-    repo.push_to_hub(commit_message=commit_message)
+    print(f"Pushing repo {run_id} to the Hugging Face Hub")
+      
+    # Step 4. Push everything to the Hub
+    api.upload_folder(
+        repo_id=repo_id,
+        folder_path=local_path,
+        path_in_repo=".",
+    )
 
-    logging.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
-    print(f"\n Your model is pushed to the hub. You can view your model here: {repo_url}")
-    return repo_url
-
-
-def _copy_file(filepath: Path, dst_directory: Path):
-    """
-    Copy the file to the correct directory
-    :param filepath: path of the file
-    :param dst_directory: destination directory
-    """
-    dst = dst_directory / filepath.name
-
-    if dst.is_dir():
-        shutil.rmtree(str(dst))
-    elif dst.is_file():
-        dst.unlink()
-    if filepath.is_dir():
-        shutil.copytree(filepath, dst)
-    elif filepath.is_file():
-        shutil.copy(str(filepath), str(dst))
+    print(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
 
 
 def main():
@@ -231,10 +164,9 @@ def main():
     parser.add_argument("--run-id", help="Name of the run-id folder", type=str)
     parser.add_argument("--local-dir", help="Path of the run_id folder that contains the trained model", type=str, default="./")
     parser.add_argument("--repo-id", help="Repo id of the model repository from the Hugging Face Hub", type=str)
-    parser.add_argument("--commit-message", help="Commit message", type=str)
+    parser.add_argument("--commit-message", help="Commit message", type=str, default="Push to Hub")
     parser.add_argument("--configfile-name", help="Name of the configuration yaml file", type=str,
                         default="configuration.yaml")
-    parser.add_argument("--local-repo-path", help="local repository path", type=str, default="hub")
     args = parser.parse_args()
 
     # Push model to hub
@@ -242,10 +174,9 @@ def main():
                    args.local_dir,
                    args.repo_id,
                    args.commit_message,
-                   args.configfile_name,
-                   args.local_repo_path)
+                   args.configfile_name)
+    
 
 # For python debugger to directly run this script
 if __name__ == "__main__":
     main()
-
