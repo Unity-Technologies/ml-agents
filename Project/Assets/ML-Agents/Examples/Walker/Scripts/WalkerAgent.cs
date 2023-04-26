@@ -90,7 +90,7 @@ public class WalkerAgent : Agent
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
 
-        SetResetParameters();
+        // SetResetParameters();
     }
 
     private int randomSpeedChoiceIndex;
@@ -121,7 +121,7 @@ public class WalkerAgent : Agent
         // MTargetWalkingSpeed =
         //     randomizeWalkSpeedEachEpisode ? Random.Range(0, m_maxWalkingSpeed) : MTargetWalkingSpeed;
 
-        SetResetParameters();
+        // SetResetParameters();
         StartCoroutine(WaitingPeriod());
 
     }
@@ -160,7 +160,7 @@ public class WalkerAgent : Agent
         if (bp.rb.transform != hips && bp.rb.transform != handL && bp.rb.transform != handR)
         {
             sensor.AddObservation(bp.rb.transform.localRotation);
-            sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
+            // sensor.AddObservation(bp.currentStrength / m_JdController.maxJointForceLimit);
         }
 
 
@@ -180,7 +180,8 @@ public class WalkerAgent : Agent
     {
         if (speedObservation == null)
         {
-            speedObservation = new VectorSensor(5, "speedObsv", ObservationType.GoalSignal);
+            // speedObservation = new VectorSensor(5, "speedObsv", ObservationType.GoalSignal);
+            speedObservation = GetComponent<VectorSensorComponent>().GetSensor();
         }
 
         speedObservation.AddOneHotObservation(randomSpeedChoiceIndex, speedOptions.Count);
@@ -253,20 +254,20 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[head].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
-        //update joint strength settings
-        bpDict[chest].SetJointStrength(continuousActions[++i]);
-        bpDict[spine].SetJointStrength(continuousActions[++i]);
-        bpDict[head].SetJointStrength(continuousActions[++i]);
-        bpDict[thighL].SetJointStrength(continuousActions[++i]);
-        bpDict[shinL].SetJointStrength(continuousActions[++i]);
-        bpDict[footL].SetJointStrength(continuousActions[++i]);
-        bpDict[thighR].SetJointStrength(continuousActions[++i]);
-        bpDict[shinR].SetJointStrength(continuousActions[++i]);
-        bpDict[footR].SetJointStrength(continuousActions[++i]);
-        bpDict[armL].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmL].SetJointStrength(continuousActions[++i]);
-        bpDict[armR].SetJointStrength(continuousActions[++i]);
-        bpDict[forearmR].SetJointStrength(continuousActions[++i]);
+        // //update joint strength settings
+        // bpDict[chest].SetJointStrength(continuousActions[++i]);
+        // bpDict[spine].SetJointStrength(continuousActions[++i]);
+        // bpDict[head].SetJointStrength(continuousActions[++i]);
+        // bpDict[thighL].SetJointStrength(continuousActions[++i]);
+        // bpDict[shinL].SetJointStrength(continuousActions[++i]);
+        // bpDict[footL].SetJointStrength(continuousActions[++i]);
+        // bpDict[thighR].SetJointStrength(continuousActions[++i]);
+        // bpDict[shinR].SetJointStrength(continuousActions[++i]);
+        // bpDict[footR].SetJointStrength(continuousActions[++i]);
+        // bpDict[armL].SetJointStrength(continuousActions[++i]);
+        // bpDict[forearmL].SetJointStrength(continuousActions[++i]);
+        // bpDict[armR].SetJointStrength(continuousActions[++i]);
+        // bpDict[forearmR].SetJointStrength(continuousActions[++i]);
     }
 
     //Update OrientationCube and DirectionIndicator

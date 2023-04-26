@@ -69,7 +69,7 @@ namespace Unity.MLAgentsExamples
             if (!joint)
                 return;
             SetJointTargetRotation(Random.Range(-1f, 1f), Random.Range(-1f, 1f), Random.Range(-1f, 1f));
-            SetJointStrength(Random.Range(-1f, 1f));
+            // SetJointStrength(Random.Range(-1f, 1f));
         }
 
         /// <summary>
