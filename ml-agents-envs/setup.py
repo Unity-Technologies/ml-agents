@@ -60,7 +60,7 @@ setup(
         "numpy==1.21.2",
         "filelock>=3.4.0",
     ],
-    python_requires=">=3.8.13,<=3.10.8",
+    python_requires=">=3.8.13,<=3.10.11",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
     cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )
