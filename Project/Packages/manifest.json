@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "com.unity.formats.fbx": "4.1.3",
     "com.unity.ide.rider": "3.0.5",
     "com.unity.inputsystem": "1.3.0",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
