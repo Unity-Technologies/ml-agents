@@ -11,7 +11,7 @@ from huggingface_hub.repocard import metadata_save
 
 from typing import Optional
 
-def _generate_config(repo_local_path, configfile_name):
+def _generate_config(repo_local_path: str, configfile_name: str) -> None:
     """
     Generate a config.json file from configuration.yaml
     To do that we convert yaml to json
@@ -19,10 +19,10 @@ def _generate_config(repo_local_path, configfile_name):
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     """
     # Read the YAML file and generate a config.json
-    with open(os.path.join(repo_local_path, configfile_name), "r") as yaml_in, open(
-        os.path.join(repo_local_path, "config.json"), "w") as json_out:
+    with open(os.path.join(repo_local_path, configfile_name), "r") as yaml_in
         yaml_object = yaml.safe_load(yaml_in)
-        json.dump(yaml_object, json_out)
+        with open(os.path.join(repo_local_path, "config.json"), "w") as json_out:
+                json.dump(yaml_object, json_out)
 
 
 def _generate_metadata(model_name: str, env_id: str):
@@ -47,7 +47,7 @@ def _generate_metadata(model_name: str, env_id: str):
 
 def _generate_model_card(repo_local_path, configfile_name, repo_id):
     """
-    Generate the model card for the Hub
+    Generate the model card
     :param repo_local_path: local path of the repo
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     :param repo_id: id of the model repository from the Hugging Face Hub
@@ -77,7 +77,7 @@ def _generate_model_card(repo_local_path, configfile_name, repo_id):
   - A *longer tutorial* to understand how works ML-Agents: https://huggingface.co/learn/deep-rl-course/unit5/introduction
 
   ### Resume the training
-  ```
+  ```bash
   mlagents-learn <your_configuration_file_path.yaml> --run-id=<run_id> --resume
   ```
 
