@@ -12,7 +12,7 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: true
-      hidden_units: 512
+      hidden_units: 256
       num_layers: 3
       vis_encode_type: simple
     reward_signals:
