@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44971168, g: 0.4997775, b: 0.57563686, a: 1}
+  m_IndirectSpecularColor: {r: 0.44971174, g: 0.4997772, b: 0.57563627, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -211,7 +211,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5731d838c616340f1889697a00475e37, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  DemonstrationDirectory: /Users/miguel.alonso/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
+  DemonstrationDirectory: /home/miguelalonsojr/Products/ml-agents/Project/Assets/ML-Agents/Examples/Walker/Demos/ASE
 --- !u!1 &437798614
 GameObject:
   m_ObjectHideFlags: 0
@@ -576,6 +576,16 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
+      propertyPath: DisplayLocalFrame
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
+      propertyPath: HeadTerminationHeight
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6103056256198295368, guid: 2434e2e6b8355407fb42b513cedf5ac7,
+        type: 3}
       propertyPath: randomDropProbability
       value: 0.1
       objectReference: {fileID: 0}
@@ -593,8 +603,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 487c2978571156613a7238a84304f7f8,
-        type: 3}
+      objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_DeterministicInference
@@ -603,7 +612,7 @@ PrefabInstance:
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
       propertyPath: m_BrainParameters.EmbeddingSize
-      value: 3
+      value: 8
       objectReference: {fileID: 0}
     - target: {fileID: 6103056256198295369, guid: 2434e2e6b8355407fb42b513cedf5ac7,
         type: 3}
