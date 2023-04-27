@@ -136,8 +136,13 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 71fe1fe4f177841a1b4b85987277495c,
+      objectReference: {fileID: 5022602860645237092, guid: b000e8fcd1edc454d9e6deb84abefbf9,
         type: 3}
+    - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: m_DeterministicInference
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: target
