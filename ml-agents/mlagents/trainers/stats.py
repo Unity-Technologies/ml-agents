@@ -1,18 +1,17 @@
-from collections import defaultdict
-from enum import Enum
-from typing import List, Dict, NamedTuple, Any, Optional
-import numpy as np
 import abc
 import os
 import time
+from collections import defaultdict
+from enum import Enum
 from threading import RLock
+from typing import List, Dict, NamedTuple, Any, Optional
 
-from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+import numpy as np
+from torch.utils.tensorboard import SummaryWriter
 
 from mlagents_envs.logging_util import get_logger
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 from mlagents_envs.timers import set_gauge
-from torch.utils.tensorboard import SummaryWriter
-from mlagents.torch_utils.globals import get_rank
 
 logger = get_logger(__name__)
 
@@ -155,12 +154,12 @@ class GaugeWriter(StatsWriter):
 
 
 class ConsoleWriter(StatsWriter):
-    def __init__(self):
+    def __init__(self, rank: int = None):
         self.training_start_time = time.time()
         # If self-play, we want to print ELO as well as reward
         self.self_play = False
         self.self_play_team = -1
-        self.rank = get_rank()
+        self.rank = rank
 
     def write_stats(
         self, category: str, values: Dict[str, StatsSummary], step: int
@@ -195,6 +194,7 @@ class ConsoleWriter(StatsWriter):
             log_info.append("No episode was completed since last summary")
             log_info.append(is_training)
         logger.info(". ".join(log_info) + ".")
+        logger.handlers[0].flush()
 
     def add_property(
         self, category: str, property_type: StatsPropertyType, value: Any

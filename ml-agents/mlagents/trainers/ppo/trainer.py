@@ -19,7 +19,11 @@ from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
 
-from mlagents.trainers.torch_entities.networks import SimpleActor, SharedActorCritic
+from mlagents.trainers.torch_entities.networks import (
+    SimpleActor,
+    SharedActorCritic,
+    DistributedSimpleActor,
+)
 
 logger = get_logger(__name__)
 
@@ -38,6 +42,7 @@ class PPOTrainer(OnPolicyTrainer):
         load: bool,
         seed: int,
         artifact_path: str,
+        rank: int = None,
     ):
         """
         Responsible for collecting experiences and training PPO model.
@@ -57,6 +62,7 @@ class PPOTrainer(OnPolicyTrainer):
             load,
             seed,
             artifact_path,
+            rank,
         )
         self.hyperparameters: PPOSettings = cast(
             PPOSettings, self.trainer_settings.hyperparameters
@@ -166,7 +172,7 @@ class PPOTrainer(OnPolicyTrainer):
 
     def create_optimizer(self) -> TorchOptimizer:
         return TorchPPOOptimizer(  # type: ignore
-            cast(TorchPolicy, self.policy), self.trainer_settings  # type: ignore
+            cast(TorchPolicy, self.policy), self.trainer_settings, self.rank  # type: ignore
         )  # type: ignore
 
     def create_policy(
@@ -178,7 +184,9 @@ class PPOTrainer(OnPolicyTrainer):
         :param behavior_spec: specifications for policy construction
         :return policy
         """
-        actor_cls: Union[Type[SimpleActor], Type[SharedActorCritic]] = SimpleActor
+        actor_cls: Union[
+            Type[SimpleActor], Type[SharedActorCritic], Type[DistributedSimpleActor]
+        ] = SimpleActor
         actor_kwargs: Dict[str, Any] = {
             "conditional_sigma": False,
             "tanh_squash": False,
@@ -190,6 +198,8 @@ class PPOTrainer(OnPolicyTrainer):
             ]
             actor_cls = SharedActorCritic
             actor_kwargs.update({"stream_names": reward_signal_names})
+        elif self.rank is not None:
+            actor_cls = DistributedSimpleActor
 
         policy = TorchPolicy(
             self.seed,
@@ -197,6 +207,7 @@ class PPOTrainer(OnPolicyTrainer):
             self.trainer_settings.network_settings,
             actor_cls,
             actor_kwargs,
+            self.rank,
         )
         return policy
 

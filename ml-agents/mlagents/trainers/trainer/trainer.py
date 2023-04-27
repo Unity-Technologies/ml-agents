@@ -12,7 +12,6 @@ from mlagents.trainers.policy import Policy
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.settings import TrainerSettings
 
-
 logger = get_logger(__name__)
 
 
@@ -27,6 +26,7 @@ class Trainer(abc.ABC):
         load: bool,
         artifact_path: str,
         reward_buff_cap: int = 1,
+        rank: int = None,
     ):
         """
         Responsible for collecting experiences and training a neural network model.
@@ -49,6 +49,7 @@ class Trainer(abc.ABC):
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
         self.policies: Dict[str, Policy] = {}
+        self.rank = rank
 
     @property
     def stats_reporter(self):

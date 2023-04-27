@@ -1,6 +1,7 @@
 import os
 from typing import Dict
 
+from mlagents.plugins.trainer_type import register_trainer_plugins
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.exception import TrainerConfigError
@@ -10,8 +11,8 @@ from mlagents.trainers.ghost.controller import GhostController
 from mlagents.trainers.settings import TrainerSettings
 from mlagents.plugins import all_trainer_types
 
-
 logger = get_logger(__name__)
+_, _ = register_trainer_plugins()
 
 
 class TrainerFactory:
@@ -25,6 +26,7 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
+        rank: int = None,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -52,6 +54,7 @@ class TrainerFactory:
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
+        self.rank = rank
 
     def generate(self, behavior_name: str) -> Trainer:
         trainer_settings = self.trainer_config[behavior_name]
@@ -65,6 +68,7 @@ class TrainerFactory:
             self.seed,
             self.param_manager,
             self.multi_gpu,
+            self.rank,
         )
 
     @staticmethod
@@ -78,6 +82,7 @@ class TrainerFactory:
         seed: int,
         param_manager: EnvironmentParameterManager,
         multi_gpu: bool = False,
+        rank: int = None,
     ) -> Trainer:
         """
         Initializes a trainer given a provided trainer configuration and brain parameters, as well as
@@ -110,6 +115,7 @@ class TrainerFactory:
                 load_model,
                 seed,
                 trainer_artifact_path,
+                rank,
             )
 
         except KeyError:

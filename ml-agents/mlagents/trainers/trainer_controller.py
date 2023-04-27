@@ -4,31 +4,30 @@
 
 import os
 import threading
-from typing import Dict, Set, List
 from collections import defaultdict
+from typing import Dict, Set, List
 
 import numpy as np
 
-from mlagents_envs.logging_util import get_logger
+from mlagents import torch_utils
+from mlagents.trainers.agent_processor import AgentManager
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
+from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.trainer import TrainerFactory
 from mlagents_envs.exception import (
     UnityEnvironmentException,
     UnityCommunicationException,
     UnityCommunicatorStoppedException,
 )
+from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import (
     hierarchical_timer,
     timed,
     get_timer_stack_for_thread,
     merge_gauges,
 )
-from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.trainer import TrainerFactory
-from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
-from mlagents.trainers.agent_processor import AgentManager
-from mlagents import torch_utils
-from mlagents.torch_utils.globals import get_rank
 
 
 class TrainerController:
@@ -40,6 +39,7 @@ class TrainerController:
         param_manager: EnvironmentParameterManager,
         train: bool,
         training_seed: int,
+        rank: int = None,
     ):
         """
         :param output_path: Path to save the model.
@@ -49,7 +49,8 @@ class TrainerController:
         environment parameters.
         :param train: Whether to train model, or only run inference.
         :param training_seed: Seed to use for Numpy and Torch random number generation.
-        :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
+        :param rank: The worker rank. Only applicable for distributed training. Default is None.
+
         """
         self.trainers: Dict[str, Trainer] = {}
         self.brain_name_to_identifier: Dict[str, Set] = defaultdict(set)
@@ -66,7 +67,7 @@ class TrainerController:
         self.kill_trainers = False
         np.random.seed(training_seed)
         torch_utils.torch.manual_seed(training_seed)
-        self.rank = get_rank()
+        self.rank = rank
 
     @timed
     def _save_models(self):

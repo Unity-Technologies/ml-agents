@@ -1,7 +1,9 @@
-from typing import Callable, List, Dict, Tuple, Optional, Union, Any
+from typing import Callable, List, Dict, Tuple, Optional, Union, Any, Iterator
 import abc
 
-from mlagents.torch_utils import torch, nn
+from torch.nn import Parameter
+
+from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
 from mlagents.trainers.torch_entities.action_model import ActionModel
@@ -20,7 +22,6 @@ from mlagents.trainers.torch_entities.attention import (
     get_zero_entities_mask,
 )
 from mlagents.trainers.exception import UnityTrainerException
-
 
 ActivationFunction = Callable[[torch.Tensor], torch.Tensor]
 EncoderFunction = Callable[
@@ -765,3 +766,41 @@ class LearningRate(nn.Module):
         # Todo: add learning rate decay
         super().__init__()
         self.learning_rate = torch.Tensor([lr])
+
+
+class DistributedActorMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._distributed_actor = None
+
+    def init_distributed(self, find_unused_params: bool = True) -> None:
+        class Guard:
+            def __init__(self, model: nn.Module, device: torch.device) -> None:
+                if device.type == "cuda":
+                    self.ddp = torch.nn.parallel.DistributedDataParallel(
+                        model,
+                        device_ids=[device],
+                        output_device=device,
+                        find_unused_parameters=find_unused_params,
+                    )
+                else:
+                    self.ddp = torch.nn.parallel.DistributedDataParallel(
+                        model, find_unused_parameters=find_unused_params
+                    )
+
+        self._distributed_actor = Guard(self, default_device())
+
+    def get_parameters(self, recurse: bool = True) -> Iterator[Parameter]:
+        return self._distributed_actor.ddp.parameters(recurse)
+
+    def forward(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+    ) -> Tuple[Union[int, torch.Tensor], ...]:
+        return self._distributed_actor.ddp(inputs, masks, memories)
+
+
+class DistributedSimpleActor(DistributedActorMixin, SimpleActor):
+    pass

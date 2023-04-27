@@ -19,7 +19,9 @@ from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWrite
 logger = logging_util.get_logger(__name__)
 
 
-def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
+def get_default_stats_writers(
+    run_options: RunOptions, rank: int = None
+) -> List[StatsWriter]:
     """
     The StatsWriters that mlagents-learn always uses:
     * A TensorboardWriter to write information to TensorBoard
@@ -34,11 +36,13 @@ def get_default_stats_writers(run_options: RunOptions) -> List[StatsWriter]:
             hidden_keys=["Is Training", "Step"],
         ),
         GaugeWriter(),
-        ConsoleWriter(),
+        ConsoleWriter(rank),
     ]
 
 
-def register_stats_writer_plugins(run_options: RunOptions) -> List[StatsWriter]:
+def register_stats_writer_plugins(
+    run_options: RunOptions, rank: int = None
+) -> List[StatsWriter]:
     """
     Registers all StatsWriter plugins (including the default one),
     and evaluates them, and returns the list of all the StatsWriter implementations.
@@ -50,7 +54,7 @@ def register_stats_writer_plugins(run_options: RunOptions) -> List[StatsWriter]:
             "Uninstalling and reinstalling ml-agents via pip should resolve. "
             "Using default plugins for now."
         )
-        return get_default_stats_writers(run_options)
+        return get_default_stats_writers(run_options, rank)
 
     entry_points = importlib_metadata.entry_points()[ML_AGENTS_STATS_WRITER]
 

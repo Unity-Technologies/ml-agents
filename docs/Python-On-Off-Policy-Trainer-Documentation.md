@@ -84,7 +84,7 @@ The PPOTrainer is an implementation of the PPO algorithm.
 #### \_\_init\_\_
 
 ```python
- | __init__(behavior_name: str, reward_buff_cap: int, trainer_settings: TrainerSettings, training: bool, load: bool, seed: int, artifact_path: str)
+ | __init__(behavior_name: str, reward_buff_cap: int, trainer_settings: TrainerSettings, training: bool, load: bool, seed: int, artifact_path: str, rank: int = None)
 ```
 
 Responsible for collecting experiences and training an on-policy model.
@@ -249,7 +249,7 @@ This class is the base class for the mlagents_envs.trainers
 #### \_\_init\_\_
 
 ```python
- | __init__(brain_name: str, trainer_settings: TrainerSettings, training: bool, load: bool, artifact_path: str, reward_buff_cap: int = 1)
+ | __init__(brain_name: str, trainer_settings: TrainerSettings, training: bool, load: bool, artifact_path: str, reward_buff_cap: int = 1, rank: int = None)
 ```
 
 Responsible for collecting experiences and training a neural network model.

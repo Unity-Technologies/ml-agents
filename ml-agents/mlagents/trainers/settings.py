@@ -849,6 +849,7 @@ class EngineSettings:
 @attr.s(auto_attribs=True)
 class TorchSettings:
     device: Optional[str] = parser.get_default("device")
+    num_workers: int = attr.ib(default=parser.get_default("num_workers"))
 
 
 @attr.s(auto_attribs=True)

@@ -33,7 +33,9 @@ class PPOSettings(OnPolicyHyperparamSettings):
 
 
 class TorchPPOOptimizer(TorchOptimizer):
-    def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
+    def __init__(
+        self, policy: TorchPolicy, trainer_settings: TrainerSettings, rank: int = None
+    ):
         """
         Takes a Policy and a Dict of trainer parameters and creates an Optimizer around the policy.
         The PPO optimizer has a value estimator and a loss function.
@@ -51,7 +53,12 @@ class TorchPPOOptimizer(TorchOptimizer):
             PPOSettings, trainer_settings.hyperparameters
         )
 
-        params = list(self.policy.actor.parameters())
+        self.rank = rank
+
+        if self.rank is not None:
+            params = list(self.policy.actor.get_parameters())
+        else:
+            params = list(self.policy.actor.parameters())
         if self.hyperparameters.shared_critic:
             self._critic = policy.actor
         else:

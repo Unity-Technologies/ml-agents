@@ -25,6 +25,7 @@ class TorchPolicy(Policy):
         network_settings: NetworkSettings,
         actor_cls: type,
         actor_kwargs: Dict[str, Any],
+        rank: int = None,
     ):
         """
         Policy that uses a multilayer perceptron to map the observations to actions. Could
@@ -57,8 +58,12 @@ class TorchPolicy(Policy):
         self._export_m_size = self.m_size
         # m_size needed for training is determined by network, not trainer settings
         self.m_size = self.actor.memory_size
+        self.rank = rank
 
         self.actor.to(default_device())
+
+        if self.rank is not None:
+            self.actor.init_distributed(find_unused_params=False)
 
     @property
     def export_memory_size(self) -> int:

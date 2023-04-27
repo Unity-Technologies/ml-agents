@@ -30,6 +30,7 @@ class OnPolicyTrainer(RLTrainer):
         load: bool,
         seed: int,
         artifact_path: str,
+        rank: int = None,
     ):
         """
         Responsible for collecting experiences and training an on-policy model.
@@ -48,6 +49,7 @@ class OnPolicyTrainer(RLTrainer):
             load,
             artifact_path,
             reward_buff_cap,
+            rank,
         )
         self.hyperparameters = cast(
             OnPolicyHyperparamSettings, self.trainer_settings.hyperparameters

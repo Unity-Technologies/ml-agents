@@ -1,39 +1,40 @@
 # # Unity ML-Agents Toolkit
-from mlagents import torch_utils
-import yaml
-
-import os
-import numpy as np
 import json
-
+import os
+import sys
 from typing import Callable, Optional, List
+
+import numpy as np
+import torch.distributed as dist
+import torch.multiprocessing as mp
+import yaml
 
 import mlagents.trainers
 import mlagents_envs
-from mlagents.trainers.trainer_controller import TrainerController
-from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
-from mlagents.trainers.trainer import TrainerFactory
+from mlagents import torch_utils
+from mlagents.plugins.stats_writer import register_stats_writer_plugins
+from mlagents.plugins.trainer_type import register_trainer_plugins
+from mlagents.trainers.cli_utils import parser
 from mlagents.trainers.directory_utils import (
     validate_existing_directories,
     setup_init_path,
 )
-from mlagents.trainers.stats import StatsReporter
-from mlagents.trainers.cli_utils import parser
-from mlagents_envs.environment import UnityEnvironment
+from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.settings import RunOptions
-
-from mlagents.trainers.training_status import GlobalTrainingStatus
-from mlagents_envs.base_env import BaseEnv
+from mlagents.trainers.stats import StatsReporter
 from mlagents.trainers.subprocess_env_manager import SubprocessEnvManager
+from mlagents.trainers.trainer import TrainerFactory
+from mlagents.trainers.trainer_controller import TrainerController
+from mlagents.trainers.training_status import GlobalTrainingStatus
+from mlagents_envs import logging_util
+from mlagents_envs.base_env import BaseEnv
+from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.side_channel import SideChannel
 from mlagents_envs.timers import (
     hierarchical_timer,
     get_timer_tree,
     add_metadata as add_timer_metadata,
 )
-from mlagents_envs import logging_util
-from mlagents.plugins.stats_writer import register_stats_writer_plugins
-from mlagents.plugins.trainer_type import register_trainer_plugins
 
 logger = logging_util.get_logger(__name__)
 
@@ -139,6 +140,100 @@ def run_training(run_seed: int, options: RunOptions, num_areas: int) -> None:
         write_run_options(checkpoint_settings.write_path, options)
         write_timing_tree(run_logs_dir)
         write_training_status(run_logs_dir)
+
+
+def run_dist_training(
+    rank: int, run_seed: int, options: RunOptions, num_areas: int
+) -> None:
+    """
+    Launches a distributed training session.
+    :param rank: worker rank
+    :param run_seed: random seed used for training
+    :param options: parsed command line arguments
+    :param num_areas: number of training areas to instantiate
+    """
+
+    torch_utils.set_torch_config(options.torch_settings)
+    checkpoint_settings = options.checkpoint_settings
+    env_settings = options.env_settings
+    engine_settings = options.engine_settings
+
+    run_logs_dir = checkpoint_settings.run_logs_dir
+    port: Optional[int] = env_settings.base_port + rank * options.env_settings.num_envs
+    print(f"Running on port {port} for worker {rank}")
+
+    if rank == 0:
+        # Make run logs directory
+        os.makedirs(run_logs_dir, exist_ok=True)
+        # Redirect stdout and stderr if worker == 0
+        # initialize_logging()
+
+    # Load any needed states in case of resume
+    if checkpoint_settings.resume:
+        GlobalTrainingStatus.load_state(
+            os.path.join(run_logs_dir, "training_status.json")
+        )
+        # In case of initialization, set full init_path for all behaviors
+    elif checkpoint_settings.maybe_init_path is not None:
+        setup_init_path(options.behaviors, checkpoint_settings.maybe_init_path)
+
+    # Configure Tensorboard Writers and StatsReporter only on worker 0
+    if rank == 0:
+        stats_writers = register_stats_writer_plugins(options, rank)
+        for sw in stats_writers:
+            StatsReporter.add_writer(sw)
+
+    if env_settings.env_path is None:
+        port = None
+
+    env_factory = create_environment_factory(
+        env_settings.env_path,
+        engine_settings.no_graphics,
+        run_seed,
+        num_areas,
+        port,
+        env_settings.env_args,
+        os.path.abspath(run_logs_dir),  # Unity environment requires absolute path
+    )
+    env_manager = SubprocessEnvManager(env_factory, options, env_settings.num_envs)
+    env_parameter_manager = EnvironmentParameterManager(
+        options.environment_parameters, run_seed, restore=checkpoint_settings.resume
+    )
+
+    trainer_factory = TrainerFactory(
+        trainer_config=options.behaviors,
+        output_path=checkpoint_settings.write_path,
+        train_model=not checkpoint_settings.inference,
+        load_model=checkpoint_settings.resume,
+        seed=run_seed,
+        param_manager=env_parameter_manager,
+        init_path=checkpoint_settings.maybe_init_path,
+        rank=rank,
+    )
+
+    # Create controller and begin training.
+    tc = TrainerController(
+        trainer_factory,
+        checkpoint_settings.write_path,
+        checkpoint_settings.run_id,
+        env_parameter_manager,
+        not checkpoint_settings.inference,
+        run_seed,
+        rank=rank,
+    )
+
+    try:
+        print(f"Starting training on worker {rank}")
+        tc.start_learning(env_manager)
+    finally:
+        env_manager.close()
+
+
+def dist_training(rank, world_size, run_seed, options, num_areas):
+    print("Distributed training bitches!")
+    setup(rank, world_size)
+    run_dist_training(rank, run_seed, options, num_areas)
+    cleanup()
 
 
 def write_run_options(output_dir: str, run_options: RunOptions) -> None:
@@ -257,7 +352,36 @@ def run_cli(options: RunOptions) -> None:
     if options.env_settings.seed == -1:
         run_seed = np.random.randint(0, 10000)
         logger.debug(f"run_seed set to {run_seed}")
-    run_training(run_seed, options, num_areas)
+    if options.torch_settings.num_workers is not None:
+        world_size = options.torch_settings.num_workers
+        mp.spawn(
+            dist_training,
+            args=(
+                world_size,
+                run_seed,
+                options,
+                num_areas,
+            ),
+            nprocs=world_size,
+            join=True,
+        )
+    else:
+        run_training(run_seed, options, num_areas)
+
+
+def setup(rank, world_size):
+    os.environ["MASTER_ADDR"] = "localhost"
+    os.environ["MASTER_PORT"] = "12355"
+    dist.init_process_group("gloo", rank=rank, world_size=world_size)
+
+
+def cleanup():
+    dist.destroy_process_group()
+
+
+def initialize_logging():
+    sys.stdout = open(str(os.getpid()) + ".out", "w")
+    sys.stderr = open(str(os.getpid()) + "_error.out", "w")
 
 
 def main():

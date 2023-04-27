@@ -298,6 +298,13 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
         help='Settings for the default torch.device used in training, for example, "cpu", "cuda", or "cuda:0"',
     )
+    torch_conf.add_argument(
+        "--num-workers",
+        default=None,
+        dest="num_workers",
+        action=DetectDefault,
+        help="Sets the number of workers for distributed training. The default is none.",
+    )
     return argparser
 
 

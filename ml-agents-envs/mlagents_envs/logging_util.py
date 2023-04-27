@@ -16,6 +16,9 @@ DEBUG_LOG_FORMAT = "%(asctime)s %(levelname)s [%(filename)s:%(lineno)d] %(messag
 LOG_FORMAT = "[%(levelname)s] %(message)s"
 
 
+# TODO fix logging for multiprocessing
+
+
 def get_logger(name: str) -> logging.Logger:
     """
     Create a logger with the specified name. The logger will use the log level

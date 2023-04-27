@@ -43,7 +43,6 @@ from mlagents.trainers.training_analytics_side_channel import (
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
 
-
 logger = logging_util.get_logger(__name__)
 WORKER_SHUTDOWN_TIMEOUT_S = 10
 
