@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using System.Diagnostics.Eventing.Reader;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgentsExamples;
@@ -63,7 +64,12 @@ public class WalkerAgent : Agent
     DirectionIndicator m_DirectionIndicator;
     JointDriveController m_JdController;
     EnvironmentParameters m_ResetParams;
-    private VectorSensor speedObservation;
+    // private VectorSensor speedObservation;
+    public float startingChestHeight;
+    public float startingHipHeight;
+    public float currentChestHeight;
+    public float currentHipHeight;
+
     public override void Initialize()
     {
         m_OrientationCube = GetComponentInChildren<OrientationCubeController>();
@@ -89,8 +95,25 @@ public class WalkerAgent : Agent
         m_JdController.SetupBodyPart(handR);
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-
+        startingChestHeight = GetDistToGround(chest);
+        startingHipHeight = GetDistToGround(hips);
         // SetResetParameters();
+    }
+
+    public LayerMask groundLayer;
+    float GetDistToGround(Transform t)
+    {
+        RaycastHit hit;
+        var maxDist = 2f;
+        Ray ray = new Ray(t.position, Vector3.down);
+        if (Physics.Raycast(ray, out hit, maxDist, groundLayer))
+        {
+            return hit.distance / maxDist;
+        }
+        else
+        {
+            return 1f;
+        }
     }
 
     private int randomSpeedChoiceIndex;
@@ -178,27 +201,35 @@ public class WalkerAgent : Agent
     /// </summary>
     public override void CollectObservations(VectorSensor sensor)
     {
-        if (speedObservation == null)
-        {
-            // speedObservation = new VectorSensor(5, "speedObsv", ObservationType.GoalSignal);
-            speedObservation = GetComponent<VectorSensorComponent>().GetSensor();
-        }
+        // if (speedObservation == null)
+        // {
+        //     // speedObservation = new VectorSensor(5, "speedObsv", ObservationType.GoalSignal);
+        //     speedObservation = GetComponent<VectorSensorComponent>().GetSensor();
+        // }
+        //
+        // speedObservation.AddOneHotObservation(randomSpeedChoiceIndex, speedOptions.Count);
 
-        speedObservation.AddOneHotObservation(randomSpeedChoiceIndex, speedOptions.Count);
+        currentChestHeight = Mathf.Clamp01(GetDistToGround(chest) / startingChestHeight);
+        currentHipHeight = Mathf.Clamp01(GetDistToGround(hips) / startingChestHeight);
+        // currentHipHeight = GetDistToGround(hips);
+        // currentChestHeight = GetDistToGround(chest);
+        // currentHipHeight = GetDistToGround(hips);
+        sensor.AddObservation(currentChestHeight);
+        sensor.AddObservation(currentHipHeight);
 
-        chestUpDot = Mathf.Clamp01((Vector3.Dot(chest.up, Vector3.up) + 1) / 2);
         hipsUpDot = Mathf.Clamp01((Vector3.Dot(hips.up, Vector3.up) + 1) / 2);
+        // chestUpDot = Mathf.Clamp01((Vector3.Dot(chest.up, Vector3.up) + 1) / 2);
         shinLUpDot = Mathf.Clamp01((Vector3.Dot(shinL.up, Vector3.up) + 1) / 2);
         shinRUpDot = Mathf.Clamp01((Vector3.Dot(shinR.up, Vector3.up) + 1) / 2);
-        legLUpDot = Mathf.Clamp01((Vector3.Dot(thighL.up, Vector3.up) + 1) / 2);
-        legRUpDot = Mathf.Clamp01((Vector3.Dot(thighR.up, Vector3.up) + 1) / 2);
+        // legLUpDot = Mathf.Clamp01((Vector3.Dot(thighL.up, Vector3.up) + 1) / 2);
+        // legRUpDot = Mathf.Clamp01((Vector3.Dot(thighR.up, Vector3.up) + 1) / 2);
 
-        sensor.AddObservation(chestUpDot);
         sensor.AddObservation(hipsUpDot);
+        // sensor.AddObservation(chestUpDot);
         sensor.AddObservation(shinLUpDot);
         sensor.AddObservation(shinRUpDot);
-        sensor.AddObservation(legLUpDot);
-        sensor.AddObservation(legRUpDot);
+        // sensor.AddObservation(legLUpDot);
+        // sensor.AddObservation(legRUpDot);
 
         var headHeightDelta = head.position.y - ((footL.position.y + footR.position.y) / 2);
         sensor.AddObservation(headHeightDelta);
@@ -231,6 +262,8 @@ public class WalkerAgent : Agent
         }
     }
 
+    public float chestStandImpulseForce = 50;
+    public bool addChestStandForce;
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
@@ -254,6 +287,13 @@ public class WalkerAgent : Agent
         bpDict[forearmR].SetJointTargetRotation(continuousActions[++i], 0, 0);
         bpDict[head].SetJointTargetRotation(continuousActions[++i], continuousActions[++i], 0);
 
+
+        //add chest impulse to help stand
+        if (continuousActions[++i] > 0)
+        {
+            addChestStandForce = true;
+            // bpDict[chest].rb.AddForce(chestStandImpulseForce * Vector3.up, ForceMode.Impulse);
+        }
         // //update joint strength settings
         // bpDict[chest].SetJointStrength(continuousActions[++i]);
         // bpDict[spine].SetJointStrength(continuousActions[++i]);
@@ -280,6 +320,21 @@ public class WalkerAgent : Agent
             m_DirectionIndicator.MatchOrientation(m_OrientationCube.transform);
         }
     }
+
+
+    public float hipHeightRew;
+    public float chestHeightRew;
+    void AddStandingRewards()
+    {
+        // chestHeightRew = Mathf.Clamp01(currentChestHeight/startingChestHeight);
+        // hipHeightRew = Mathf.Clamp01(currentHipHeight/startingHipHeight);
+
+        // AddReward(chestHeightRew * hipHeightRew * hipsUpDot);
+        // AddReward(currentChestHeight * currentHipHeight * hipsUpDot);
+        AddReward(currentChestHeight * currentHipHeight * hipsUpDot * shinLUpDot * shinRUpDot);
+    }
+
+
 
     public float headHeightRew;
     void AddRewards()
@@ -332,7 +387,15 @@ public class WalkerAgent : Agent
         // }
         if (canRequestDecision && Academy.Instance.StepCount % 5 == 0)
         {
-            AddRewards();
+            if (addChestStandForce)
+            {
+                print("adding chest force");
+                // AddReward(-.25f);
+                addChestStandForce = false;
+                m_JdController.bodyPartsDict[chest].rb.AddForce(chestStandImpulseForce * Vector3.up, ForceMode.Impulse);
+            }
+            // AddRewards();
+            AddStandingRewards();
             RequestDecision();
         }
     }
@@ -375,15 +438,15 @@ public class WalkerAgent : Agent
         AddReward(1f);
     }
 
-    public void SetTorsoMass()
-    {
-        m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
-        m_JdController.bodyPartsDict[spine].rb.mass = m_ResetParams.GetWithDefault("spine_mass", 8);
-        m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
-    }
-
-    public void SetResetParameters()
-    {
-        SetTorsoMass();
-    }
+    // public void SetTorsoMass()
+    // {
+    //     m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
+    //     m_JdController.bodyPartsDict[spine].rb.mass = m_ResetParams.GetWithDefault("spine_mass", 8);
+    //     m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
+    // }
+    //
+    // public void SetResetParameters()
+    // {
+    //     SetTorsoMass();
+    // }
 }

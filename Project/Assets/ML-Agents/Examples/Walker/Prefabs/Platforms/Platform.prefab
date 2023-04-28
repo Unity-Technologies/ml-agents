@@ -105,7 +105,7 @@ PrefabInstance:
     - target: {fileID: 6907401236047902865, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
       propertyPath: m_Layer
-      value: 0
+      value: 6
       objectReference: {fileID: 0}
     - target: {fileID: 6907740118844148851, guid: f0d7741d9e06247f6843b921a206b978,
         type: 3}
@@ -135,7 +135,12 @@ PrefabInstance:
     - target: {fileID: 3599283674109553346, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: groundContactPenalty
-      value: -0.001
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283674109553346, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283674160848331, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -175,7 +180,7 @@ PrefabInstance:
     - target: {fileID: 3599283674353725471, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: penalizeGroundContact
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3599283674353725471, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -230,12 +235,12 @@ PrefabInstance:
     - target: {fileID: 3599283675061353162, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: groundContactPenalty
-      value: -0.001
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675061353162, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: penalizeGroundContact
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675061353162, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -291,7 +296,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Model
       value: 
-      objectReference: {fileID: 5022602860645237092, guid: 3dc707dd8ec714869a8d8e7255e61705,
+      objectReference: {fileID: 5022602860645237092, guid: c7477efd67ab045aab3e60da3e43ff0b,
         type: 3}
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -301,17 +306,17 @@ PrefabInstance:
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_BrainParameters.VectorObservationSize
-      value: 237
+      value: 236
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_BrainParameters.VectorActionSize.Array.data[0]
-      value: 26
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088294, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: m_BrainParameters.m_ActionSpec.m_NumContinuousActions
-      value: 26
+      value: 27
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -321,22 +326,37 @@ PrefabInstance:
     - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: MaxStep
-      value: 2500
+      value: 1500
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: groundLayer.m_Bits
+      value: 64
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675615088295, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: chestStandImpulseForce
+      value: 30
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675641068689, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: groundContactPenalty
-      value: -0.001
+      value: -1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3599283675641068689, guid: dd62a2a5a838943fba3d2cbb377a75b3,
+        type: 3}
+      propertyPath: penalizeGroundContact
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675835168082, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: groundContactPenalty
-      value: -0.001
+      value: -1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675835168082, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: penalizeGroundContact
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675835168082, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -351,7 +371,7 @@ PrefabInstance:
     - target: {fileID: 3599283675894408087, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
       propertyPath: penalizeGroundContact
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3599283675894408087, guid: dd62a2a5a838943fba3d2cbb377a75b3,
         type: 3}
@@ -446,28 +466,6 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 3599283675615088289, guid: dd62a2a5a838943fba3d2cbb377a75b3, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: dd62a2a5a838943fba3d2cbb377a75b3, type: 3}
---- !u!1 &919132147965585697 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 4409675767907316506, guid: dd62a2a5a838943fba3d2cbb377a75b3,
-    type: 3}
-  m_PrefabInstance: {fileID: 3599283675128273467}
-  m_PrefabAsset: {fileID: 0}
---- !u!114 &1020553079
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 919132147965585697}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 38b7cc1f5819445aa85e9a9b054552dc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  m_SensorName: VectorSensor
-  m_ObservationSize: 5
-  m_ObservationType: 1
-  m_ObservationStacks: 1
 --- !u!1001 &3797443287568727108
 PrefabInstance:
   m_ObjectHideFlags: 0
