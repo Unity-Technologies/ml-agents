@@ -76,7 +76,7 @@ setup(
         "cattrs<1.1.0; python_version<'3.8'",
         "cattrs>=1.1.0,<1.7; python_version>='3.8'",
         "attrs>=19.3.0",
-        "huggingface_hub>=0.12",
+        "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata==4.4; python_version<'3.8'",
     ],
