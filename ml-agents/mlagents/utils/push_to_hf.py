@@ -11,6 +11,7 @@ from huggingface_hub.repocard import metadata_save
 
 from typing import Optional
 
+
 def _generate_config(local_dir: Path, configfile_name: str) -> None:
     """
     Generate a config.json file from configuration.yaml
@@ -22,7 +23,7 @@ def _generate_config(local_dir: Path, configfile_name: str) -> None:
     with open(os.path.join(local_dir, configfile_name), "r") as yaml_in:
         yaml_object = yaml.safe_load(yaml_in)
         with open(os.path.join(local_dir, "config.json"), "w") as json_out:
-                json.dump(yaml_object, json_out)
+            json.dump(yaml_object, json_out)
 
 
 def _generate_metadata(model_name: str, env_id: str):
@@ -53,7 +54,7 @@ def _generate_model_card(local_dir: Path, configfile_name: str, repo_id: str):
     :param repo_id: id of the model repository from the Hugging Face Hub
     """
     # Step 1: Read the config.json
-    with open(os.path.join(local_dir, "config.json"), 'r') as f:
+    with open(os.path.join(local_dir, "config.json"), "r") as f:
         data = json.load(f)
         # Get env_id
         env_id = list(data["behaviors"].keys())[0]
@@ -87,7 +88,7 @@ def _generate_model_card(local_dir: Path, configfile_name: str, repo_id: str):
   3. Step 2: Select your *.nn /*.onnx file
   4. Click on Watch the agent play 👀 
   """
-  
+
     return model_card, metadata
 
 
@@ -106,12 +107,13 @@ def _save_model_card(local_dir: Path, generated_model_card: str, metadata: dict)
     metadata_save(readme_path, metadata)
 
 
-def package_to_hub(run_id: str,
-                   path_of_run_id: Path,
-                   repo_id: str,
-                   commit_message: str,
-                   configfile_name: str
-                   ):
+def package_to_hub(
+    run_id: str,
+    path_of_run_id: Path,
+    repo_id: str,
+    commit_message: str,
+    configfile_name: str,
+):
     """
     This method generates the model card and upload the run_id folder
     with all his files into the Hub
@@ -124,33 +126,35 @@ def package_to_hub(run_id: str,
     print(
         f"This function will create a model card and upload your {run_id} "
         f"into HuggingFace Hub. This is a work in progress: If you encounter a bug, "
-        f"please send open an issue")
+        f"please send open an issue"
+    )
 
-    _, repo_name = repo_id.split('/')
+    _, repo_name = repo_id.split("/")
 
     # Step 1: Create the repo
     api = HfApi()
 
     repo_url = api.create_repo(
         repo_id=repo_id,
-        exist_ok=True, )
-    
+        exist_ok=True,
+    )
+
     local_path = Path(path_of_run_id)
 
     # Step 2: Create a config file
     _generate_config(local_path, configfile_name)
-    
+
     # Step 3: Generate and save the model card
-    generated_model_card, metadata = _generate_model_card(local_path, configfile_name, repo_id)
+    generated_model_card, metadata = _generate_model_card(
+        local_path, configfile_name, repo_id
+    )
     _save_model_card(local_path, generated_model_card, metadata)
 
     print(f"Pushing repo {run_id} to the Hugging Face Hub")
-      
+
     # Step 4. Push everything to the Hub
     api.upload_folder(
-        repo_id=repo_id,
-        folder_path=local_path,
-        commit_message=commit_message
+        repo_id=repo_id, folder_path=local_path, commit_message=commit_message
     )
 
     print(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
@@ -159,20 +163,37 @@ def package_to_hub(run_id: str,
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--run-id", help="Name of the run-id folder", type=str)
-    parser.add_argument("--local-dir", help="Path of the run_id folder that contains the trained model", type=str, default="./")
-    parser.add_argument("--repo-id", help="Repo id of the model repository from the Hugging Face Hub", type=str)
-    parser.add_argument("--commit-message", help="Commit message", type=str, default="Push to Hub")
-    parser.add_argument("--configfile-name", help="Name of the configuration yaml file", type=str,
-                        default="configuration.yaml")
+    parser.add_argument(
+        "--local-dir",
+        help="Path of the run_id folder that contains the trained model",
+        type=str,
+        default="./",
+    )
+    parser.add_argument(
+        "--repo-id",
+        help="Repo id of the model repository from the Hugging Face Hub",
+        type=str,
+    )
+    parser.add_argument(
+        "--commit-message", help="Commit message", type=str, default="Push to Hub"
+    )
+    parser.add_argument(
+        "--configfile-name",
+        help="Name of the configuration yaml file",
+        type=str,
+        default="configuration.yaml",
+    )
     args = parser.parse_args()
 
     # Push model to hub
-    package_to_hub(args.run_id,
-                   args.local_dir,
-                   args.repo_id,
-                   args.commit_message,
-                   args.configfile_name)
-    
+    package_to_hub(
+        args.run_id,
+        args.local_dir,
+        args.repo_id,
+        args.commit_message,
+        args.configfile_name,
+    )
+
 
 # For python debugger to directly run this script
 if __name__ == "__main__":

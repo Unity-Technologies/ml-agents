@@ -3,26 +3,35 @@ import logging
 import argparse
 from huggingface_hub import HfApi, snapshot_download
 
+
 def load_from_hf(repo_id: str, local_dir: str) -> None:
     """
     Download a model from Hugging Face Hub.
     :param repo_id: id of the model repository from the Hugging Face Hub
     :param local_dir: local destination of the repository
     """
-    _, repo_name = repo_id.split('/')
+    _, repo_name = repo_id.split("/")
 
     local_dir = os.path.join(local_dir, repo_name)
 
-    repo_path = snapshot_download(repo_id=repo_id,
-                                  local_dir=local_dir)
+    repo_path = snapshot_download(repo_id=repo_id, local_dir=local_dir)
 
     logging.info(f"The repository {repo_id} has been downloaded to {local_dir}")
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--repo-id", help="Repo id of the model repository from the Hugging Face Hub", type=str)
-    parser.add_argument("--local-dir", help="Local destination of the repository", type=str, default="./")
+    parser.add_argument(
+        "--repo-id",
+        help="Repo id of the model repository from the Hugging Face Hub",
+        type=str,
+    )
+    parser.add_argument(
+        "--local-dir",
+        help="Local destination of the repository",
+        type=str,
+        default="./",
+    )
     args = parser.parse_args()
 
     # Load model from the Hub
