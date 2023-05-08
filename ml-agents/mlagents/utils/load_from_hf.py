@@ -1,7 +1,7 @@
 import os
 import logging
 import argparse
-from huggingface_hub import HfApi, snapshot_download
+from huggingface_hub import snapshot_download
 
 
 def load_from_hf(repo_id: str, local_dir: str) -> None:
@@ -14,7 +14,7 @@ def load_from_hf(repo_id: str, local_dir: str) -> None:
 
     local_dir = os.path.join(local_dir, repo_name)
 
-    repo_path = snapshot_download(repo_id=repo_id, local_dir=local_dir)
+    snapshot_download(repo_id=repo_id, local_dir=local_dir)
 
     logging.info(f"The repository {repo_id} has been downloaded to {local_dir}")
 

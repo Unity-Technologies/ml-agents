@@ -6,10 +6,8 @@ import json
 
 from pathlib import Path
 
-from huggingface_hub import HfApi, create_repo, upload_folder
+from huggingface_hub import HfApi
 from huggingface_hub.repocard import metadata_save
-
-from typing import Optional
 
 
 def _generate_config(local_dir: Path, configfile_name: str) -> None:
@@ -67,13 +65,17 @@ def _generate_model_card(local_dir: Path, configfile_name: str, repo_id: str):
     # Step 3: Generate the model card
     model_card = f"""
   # **{model_name}** Agent playing **{env_id}**
-  This is a trained model of a **{model_name}** agent playing **{env_id}** using the [Unity ML-Agents Library](https://github.com/Unity-Technologies/ml-agents).
-  
+  This is a trained model of a **{model_name}** agent playing **{env_id}**
+  using the [Unity ML-Agents Library](https://github.com/Unity-Technologies/ml-agents).
+
   ## Usage (with ML-Agents)
   The Documentation: https://unity-technologies.github.io/ml-agents/ML-Agents-Toolkit-Documentation/
+
   We wrote a complete tutorial to learn to train your first agent using ML-Agents and publish it to the Hub:
-  - A *short tutorial* where you teach Huggy the Dog 🐶 to fetch the stick and then play with him directly in your browser: https://huggingface.co/learn/deep-rl-course/unitbonus1/introduction
-  - A *longer tutorial* to understand how works ML-Agents: https://huggingface.co/learn/deep-rl-course/unit5/introduction
+  - A *short tutorial* where you teach Huggy the Dog 🐶 to fetch the stick and then play with him directly in your
+  browser: https://huggingface.co/learn/deep-rl-course/unitbonus1/introduction
+  - A *longer tutorial* to understand how works ML-Agents:
+  https://huggingface.co/learn/deep-rl-course/unit5/introduction
 
   ### Resume the training
   ```bash
@@ -81,12 +83,12 @@ def _generate_model_card(local_dir: Path, configfile_name: str, repo_id: str):
   ```
 
   ### Watch your Agent play
-  You can watch your agent **playing directly in your browser** 
+  You can watch your agent **playing directly in your browser**
 
   1. If the environment is part of ML-Agents official environments, go to https://huggingface.co/unity
   2. Step 1: Find your model_id: {repo_id}
   3. Step 2: Select your *.nn /*.onnx file
-  4. Click on Watch the agent play 👀 
+  4. Click on Watch the agent play 👀
   """
 
     return model_card, metadata
