@@ -1,8 +1,0 @@
-- description: Replace "ML agents toolkit", "ML-Agents toolkit" etc
-  search: /ML[ -]Agents toolkit/
-  replacement: ML-Agents Toolkit
-  insensitive: true
-- description: Replace "the the"
-  search: /the the/
-  replacement: the
-  insensitive: true

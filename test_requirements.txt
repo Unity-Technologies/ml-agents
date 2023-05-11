@@ -1,5 +1,0 @@
-# Test-only dependencies should go here, not in setup.py
-pytest>=6.2.5
-pytest-cov>=2.12.1
-pytest-xdist>=2.5.0
-filelock>=3.4.2

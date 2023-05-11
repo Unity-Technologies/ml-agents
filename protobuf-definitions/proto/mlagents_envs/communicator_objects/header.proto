@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-option csharp_namespace = "Unity.MLAgents.CommunicatorObjects";
-package communicator_objects;
-
-message HeaderProto {
-	int32 status = 1;
-	string message = 2;
-}
