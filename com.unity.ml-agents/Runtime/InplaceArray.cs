@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace Unity.MLAgents
+namespace TransformsAI.MicroMLAgents
 {
     /// <summary>
     /// An array-like object that stores up to four elements.

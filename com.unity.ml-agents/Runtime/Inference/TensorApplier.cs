@@ -1,9 +1,9 @@
+using System;
 using System.Collections.Generic;
+using TransformsAI.MicroMLAgents.Actuators;
 using Unity.Barracuda;
-using Unity.MLAgents.Actuators;
 
-
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// Mapping between the output tensor names and the method that will use the
@@ -31,7 +31,7 @@ namespace Unity.MLAgents.Inference
             /// </param>
             /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
             /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions);
+            void Apply(TensorProxy tensorProxy, IList<IAgent> infos);
         }
 
         readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
@@ -46,21 +46,13 @@ namespace Unity.MLAgents.Inference
         /// <param name="barracudaModel"></param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic.</param>
-        public TensorApplier(
-            ActionSpec actionSpec,
-            int seed,
-            ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories,
-            object barracudaModel = null,
-            bool deterministicInference = false)
+        public TensorApplier(int seed, ActionSpec actionSpec, ITensorAllocator allocator, Model model, bool deterministicInference = false)
         {
-            // If model is null, no inference to run and exception is thrown before reaching here.
-            if (barracudaModel == null)
-            {
-                return;
-            }
+            var modelVersion = model.GetVersion();
+            if (modelVersion != (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                throw new NotSupportedException("MLAgents Version Not Supported");
 
-            var model = (Model)barracudaModel;
+
             if (!model.SupportsContinuousAndDiscrete())
             {
                 actionSpec.CheckAllContinuousOrDiscrete();
@@ -70,20 +62,13 @@ namespace Unity.MLAgents.Inference
                 var tensorName = model.ContinuousOutputName(deterministicInference);
                 m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
-            var modelVersion = model.GetVersion();
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName(deterministicInference);
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
-                {
-                    m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
-                }
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-                {
-                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
-                }
+                m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
             }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
+
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier();
         }
 
         /// <summary>
@@ -95,7 +80,7 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IReadOnlyList<TensorProxy> tensors, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+            IReadOnlyList<TensorProxy> tensors, IList<IAgent> agents)
         {
             for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
@@ -105,7 +90,7 @@ namespace Unity.MLAgents.Inference
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as output : {tensor.name}");
                 }
-                m_Dict[tensor.name].Apply(tensor, actionIds, lastActions);
+                m_Dict[tensor.name].Apply(tensor, agents);
             }
         }
     }

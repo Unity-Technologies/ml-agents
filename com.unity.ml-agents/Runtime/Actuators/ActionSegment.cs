@@ -1,10 +1,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
+using UnityEngine;
 
-namespace Unity.MLAgents.Actuators
+namespace TransformsAI.MicroMLAgents.Actuators
 {
     /// <summary>
     /// ActionSegment{T} is a data structure that allows access to a segment of an underlying array
@@ -175,7 +175,7 @@ namespace Unity.MLAgents.Actuators
 
         /// <summary>
         /// A private <see cref="IEnumerator{T}"/> for the <see cref="ActionSegment{T}"/> value type which follows its
-        /// rules of being a view into an underlying <see cref="Array"/>.
+        /// rules of being a view into an underlying <see cref="ActionSegment{T}.Array"/>.
         /// </summary>
         struct Enumerator : IEnumerator<T>
         {
@@ -232,3 +232,4 @@ namespace Unity.MLAgents.Actuators
         }
     }
 }
+

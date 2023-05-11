@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
+using TransformsAI.MicroMLAgents.Inference;
 using Unity.Barracuda;
-using Unity.MLAgents.Inference;
 using UnityEngine;
 
-namespace Unity.MLAgents.Sensors
+namespace TransformsAI.MicroMLAgents.Sensors
 {
     /// <summary>
     /// Allows sensors to write to both TensorProxy and float arrays/lists.

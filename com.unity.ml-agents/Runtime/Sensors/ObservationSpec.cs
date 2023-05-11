@@ -1,11 +1,13 @@
-namespace Unity.MLAgents.Sensors
+using System;
+
+namespace TransformsAI.MicroMLAgents.Sensors
 {
     /// <summary>
     /// A description of the observations that an ISensor produces.
     /// This includes the size of the observation, the properties of each dimension, and how the observation
     /// should be used for training.
     /// </summary>
-    public struct ObservationSpec
+    public struct ObservationSpec : IEquatable<ObservationSpec>
     {
         internal readonly InplaceArray<int> m_Shape;
 
@@ -134,5 +136,58 @@ namespace Unity.MLAgents.Sensors
             m_DimensionProperties = dimensionProperties;
             m_ObservationType = observationType;
         }
+
+        public bool Equals(ObservationSpec other) => m_Shape.Equals(other.m_Shape) && m_DimensionProperties.Equals(other.m_DimensionProperties) && m_ObservationType == other.m_ObservationType;
+        public override bool Equals(object obj) => obj is ObservationSpec other && Equals(other);
+        public override int GetHashCode() => HashCode.Combine(m_Shape, m_DimensionProperties, (int)m_ObservationType);
+        public static bool operator ==(ObservationSpec left, ObservationSpec right) => left.Equals(right);
+        public static bool operator !=(ObservationSpec left, ObservationSpec right) => !left.Equals(right);
     }
+
+    /// <summary>
+    /// The Dimension property flags of the observations
+    /// </summary>
+    [Flags]
+    public enum DimensionProperty
+    {
+        /// <summary>
+        /// No properties specified.
+        /// </summary>
+        Unspecified = 0,
+
+        /// <summary>
+        /// No Property of the observation in that dimension. Observation can be processed with
+        /// fully connected networks.
+        /// </summary>
+        None = 1,
+
+        /// <summary>
+        /// Means it is suitable to do a convolution in this dimension.
+        /// </summary>
+        TranslationalEquivariance = 2,
+
+        /// <summary>
+        /// Means that there can be a variable number of observations in this dimension.
+        /// The observations are unordered.
+        /// </summary>
+        VariableSize = 4,
+    }
+
+    /// <summary>
+    /// The ObservationType enum of the Sensor.
+    /// </summary>
+    public enum ObservationType
+    {
+        /// <summary>
+        /// Collected observations are generic.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// Collected observations contain goal information.
+        /// </summary>
+        GoalSignal = 1,
+    }
+
 }
+

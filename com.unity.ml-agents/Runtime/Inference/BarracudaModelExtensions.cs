@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Barracuda;
-using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
+using FailedCheck = TransformsAI.MicroMLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
 
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// Barracuda Model extension methods.

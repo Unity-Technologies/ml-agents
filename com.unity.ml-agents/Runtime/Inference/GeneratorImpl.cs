@@ -1,10 +1,10 @@
-using System.Collections.Generic;
 using System;
+using System.Collections.Generic;
+using TransformsAI.MicroMLAgents.Inference.Utils;
+using TransformsAI.MicroMLAgents.Sensors;
 using Unity.Barracuda;
-using Unity.MLAgents.Inference.Utils;
-using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// Reshapes a Tensor so that its first dimension becomes equal to the current batch size
@@ -20,9 +20,9 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
         }
     }
 
@@ -39,11 +39,11 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
             tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-            tensorProxy.data[0] = batchSize;
+            tensorProxy.data[0] = batch.Count;
         }
     }
 
@@ -62,9 +62,9 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            tensorProxy.shape = new long[0];
+            tensorProxy.shape = Array.Empty<long>();
             tensorProxy.data?.Dispose();
             tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
             tensorProxy.data[0] = 1;
@@ -80,35 +80,24 @@ namespace Unity.MLAgents.Inference
     internal class RecurrentInputGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
-        Dictionary<int, List<float>> m_Memories;
 
-        public RecurrentInputGenerator(
-            ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories)
+        public RecurrentInputGenerator(ITensorAllocator allocator)
         {
             m_Allocator = allocator;
-            m_Memories = memories;
         }
 
-        public void Generate(
-            TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
 
             var memorySize = tensorProxy.data.width;
-
-            var agentIndex = 0;
-            for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
+            
+            for (var agentIndex = 0; agentIndex < batch.Count; agentIndex++)
             {
-                var infoSensorPair = infos[infoIndex];
-                var info = infoSensorPair.agentInfo;
-                List<float> memory;
-
-                if (info.done)
-                {
-                    m_Memories.Remove(info.episodeId);
-                }
-                if (!m_Memories.TryGetValue(info.episodeId, out memory))
+                var info = batch[agentIndex];
+                var memory = info.Memory;
+                
+                if (memory == null)
                 {
                     for (var j = 0; j < memorySize; j++)
                     {
@@ -125,7 +114,6 @@ namespace Unity.MLAgents.Inference
                     }
                     tensorProxy.data[agentIndex, 0, j, 0] = memory[j];
                 }
-                agentIndex++;
             }
         }
     }
@@ -145,17 +133,15 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
 
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            var agentIndex = 0;
-            for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
+            var actionSize = tensorProxy.shape[^1];
+            for (var agentIndex = 0; agentIndex < batch.Count; agentIndex++)
             {
-                var infoSensorPair = infos[infoIndex];
-                var info = infoSensorPair.agentInfo;
-                var pastAction = info.storedActions.DiscreteActions;
+                var info = batch[agentIndex];
+                var pastAction = info.ActionBuffer.DiscreteActions;
                 if (!pastAction.IsEmpty())
                 {
                     for (var j = 0; j < actionSize; j++)
@@ -163,8 +149,6 @@ namespace Unity.MLAgents.Inference
                         tensorProxy.data[agentIndex, j] = pastAction[j];
                     }
                 }
-
-                agentIndex++;
             }
         }
     }
@@ -184,23 +168,20 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
 
-            var maskSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            var agentIndex = 0;
-            for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
+            var maskSize = tensorProxy.shape[^1];
+            for (var agentIndex = 0; agentIndex < batch.Count; agentIndex++)
             {
-                var infoSensorPair = infos[infoIndex];
-                var agentInfo = infoSensorPair.agentInfo;
-                var maskList = agentInfo.discreteActionMasks;
+                var agentInfo = batch[agentIndex];
+                var maskList = agentInfo.DiscreteActionMasks;
                 for (var j = 0; j < maskSize; j++)
                 {
-                    var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
+                    var isUnmasked = maskList != null && maskList[j] ? 0.0f : 1.0f;
                     tensorProxy.data[agentIndex, j] = isUnmasked;
                 }
-                agentIndex++;
             }
         }
     }
@@ -221,9 +202,9 @@ namespace Unity.MLAgents.Inference
             m_Allocator = allocator;
         }
 
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
             TensorUtils.FillTensorWithRandomNormal(tensorProxy, m_RandomNormal);
         }
     }
@@ -237,47 +218,26 @@ namespace Unity.MLAgents.Inference
     internal class ObservationGenerator : TensorGenerator.IGenerator
     {
         readonly ITensorAllocator m_Allocator;
-        List<int> m_SensorIndices = new List<int>();
+        readonly int m_Index;
         ObservationWriter m_ObservationWriter = new ObservationWriter();
 
-        public ObservationGenerator(ITensorAllocator allocator)
+        public ObservationGenerator(ITensorAllocator allocator, int index)
         {
             m_Allocator = allocator;
+            m_Index = index;
         }
-
-        public void AddSensorIndex(int sensorIndex)
+        
+        public void Generate(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            m_SensorIndices.Add(sensorIndex);
-        }
-
-        public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
-        {
-            TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
-            var agentIndex = 0;
-            for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
+            TensorUtils.ResizeTensor(tensorProxy, batch.Count, m_Allocator);
+            for (var agentIndex = 0; agentIndex < batch.Count; agentIndex++)
             {
-                var info = infos[infoIndex];
-                if (info.agentInfo.done)
-                {
-                    // If the agent is done, we might have a stale reference to the sensors
-                    // e.g. a dependent object might have been disposed.
-                    // To avoid this, just fill observation with zeroes instead of calling sensor.Write.
-                    TensorUtils.FillTensorBatch(tensorProxy, agentIndex, 0.0f);
-                }
-                else
-                {
-                    var tensorOffset = 0;
-                    // Write each sensor consecutively to the tensor
-                    for (var sensorIndexIndex = 0; sensorIndexIndex < m_SensorIndices.Count; sensorIndexIndex++)
-                    {
-                        var sensorIndex = m_SensorIndices[sensorIndexIndex];
-                        var sensor = info.sensors[sensorIndex];
-                        m_ObservationWriter.SetTarget(tensorProxy, agentIndex, tensorOffset);
-                        var numWritten = sensor.Write(m_ObservationWriter);
-                        tensorOffset += numWritten;
-                    }
-                }
-                agentIndex++;
+                var info = batch[agentIndex];
+                var tensorOffset = 0;
+
+                m_ObservationWriter.SetTarget(tensorProxy, agentIndex, tensorOffset);
+                var numWritten = info.WriteObservation(m_ObservationWriter, m_Index);
+                
             }
         }
     }

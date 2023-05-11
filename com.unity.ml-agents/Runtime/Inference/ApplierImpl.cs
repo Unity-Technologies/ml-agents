@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.MLAgents.Inference.Utils;
-using Unity.MLAgents.Actuators;
+using TransformsAI.MicroMLAgents.Actuators;
+using TransformsAI.MicroMLAgents.Inference.Utils;
 using Unity.Barracuda;
 using UnityEngine;
 
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// The Applier for the Continuous Action output tensor. Tensor is assumed to contain the
@@ -20,28 +20,24 @@ namespace Unity.MLAgents.Inference
             m_ActionSpec = actionSpec;
         }
 
-        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
+            var actionSize = tensorProxy.shape[^1];
             var agentIndex = 0;
-            for (var i = 0; i < actionIds.Count; i++)
+            for (var i = 0; i < batch.Count; i++)
             {
-                var agentId = actionIds[i];
-                if (lastActions.ContainsKey(agentId))
+                var agent = batch[i];
+                var actionBuffer = agent.ActionBuffer;
+                if (actionBuffer.IsEmpty())
                 {
-                    var actionBuffer = lastActions[agentId];
-                    if (actionBuffer.IsEmpty())
-                    {
-                        actionBuffer = new ActionBuffers(m_ActionSpec);
-                        lastActions[agentId] = actionBuffer;
-                    }
-                    var continuousBuffer = actionBuffer.ContinuousActions;
-                    for (var j = 0; j < actionSize; j++)
-                    {
-                        continuousBuffer[j] = tensorProxy.data[agentIndex, j];
-                    }
+                    actionBuffer = new ActionBuffers(m_ActionSpec);
+                    agent.ActionBuffer = actionBuffer;
                 }
-                agentIndex++;
+                var continuousBuffer = actionBuffer.ContinuousActions;
+                for (var j = 0; j < actionSize; j++)
+                {
+                    continuousBuffer[j] = tensorProxy.data[agentIndex, j];
+                }
             }
         }
     }
@@ -59,28 +55,23 @@ namespace Unity.MLAgents.Inference
             m_ActionSpec = actionSpec;
         }
 
-        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
+        public void Apply(TensorProxy tensorProxy, IList<IAgent> batch)
         {
-            var agentIndex = 0;
-            var actionSize = tensorProxy.shape[tensorProxy.shape.Length - 1];
-            for (var i = 0; i < actionIds.Count; i++)
+            var actionSize = tensorProxy.shape[^1];
+            for (var agentIndex = 0; agentIndex < batch.Count; agentIndex++)
             {
-                var agentId = actionIds[i];
-                if (lastActions.ContainsKey(agentId))
+                var agent = batch[agentIndex];
+                var actionBuffer = agent.ActionBuffer;
+                if (actionBuffer.IsEmpty())
                 {
-                    var actionBuffer = lastActions[agentId];
-                    if (actionBuffer.IsEmpty())
-                    {
-                        actionBuffer = new ActionBuffers(m_ActionSpec);
-                        lastActions[agentId] = actionBuffer;
-                    }
-                    var discreteBuffer = actionBuffer.DiscreteActions;
-                    for (var j = 0; j < actionSize; j++)
-                    {
-                        discreteBuffer[j] = (int)tensorProxy.data[agentIndex, j];
-                    }
+                    actionBuffer = new ActionBuffers(m_ActionSpec);
+                    agent.ActionBuffer = actionBuffer;
                 }
-                agentIndex++;
+                var discreteBuffer = actionBuffer.DiscreteActions;
+                for (var j = 0; j < actionSize; j++)
+                {
+                    discreteBuffer[j] = (int)tensorProxy.data[agentIndex, j];
+                }
             }
         }
     }
@@ -163,6 +154,11 @@ namespace Unity.MLAgents.Inference
                 m_CdfBuffer[cls] = sumProb;
             }
         }
+
+        public void Apply(TensorProxy tensorProxy, IList<IAgent> infos)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     /// <summary>
@@ -171,36 +167,33 @@ namespace Unity.MLAgents.Inference
     /// </summary>
     internal class MemoryOutputApplier : TensorApplier.IApplier
     {
-        Dictionary<int, List<float>> m_Memories;
-
-        public MemoryOutputApplier(
-            Dictionary<int, List<float>> memories)
+        public void Apply(TensorProxy tensorProxy, IList<IAgent> infos)
         {
-            m_Memories = memories;
-        }
-
-        public void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
-        {
-            var agentIndex = 0;
             var memorySize = tensorProxy.data.width;
-            for (var i = 0; i < actionIds.Count; i++)
+            for (var agentIndex = 0; agentIndex < infos.Count; agentIndex++)
             {
-                var agentId = actionIds[i];
-                List<float> memory;
-                if (!m_Memories.TryGetValue(agentId, out memory)
-                    || memory.Count < memorySize)
+                var agent = infos[agentIndex];
+                var memory = agent.Memory;
+
+                if (memory == null)
                 {
-                    memory = new List<float>();
-                    memory.AddRange(Enumerable.Repeat(0f, memorySize));
+                    if (memorySize == 0) continue;
+                    throw new UnityAgentsException("Agent With Memory has no memory initialized");
+                }
+
+                var existingSize = memory.Count;
+
+                if (existingSize != memorySize)
+                {
+                    memory.Clear();
+                    for (var j = 0; j < memorySize; j++) memory.Add(0f);
                 }
 
                 for (var j = 0; j < memorySize; j++)
                 {
                     memory[j] = tensorProxy.data[agentIndex, 0, j, 0];
                 }
-
-                m_Memories[agentId] = memory;
-                agentIndex++;
+                
             }
         }
     }

@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.MLAgents
+namespace TransformsAI.MicroMLAgents
 {
     /// <summary>
     /// Contains exceptions specific to ML-Agents.

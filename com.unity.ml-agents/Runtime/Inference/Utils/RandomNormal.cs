@@ -1,6 +1,6 @@
 using System;
 
-namespace Unity.MLAgents.Inference.Utils
+namespace TransformsAI.MicroMLAgents.Inference.Utils
 {
     /// <summary>
     /// RandomNormal - A random number generator that produces normally distributed random

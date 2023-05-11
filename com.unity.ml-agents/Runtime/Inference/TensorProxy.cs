@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using TransformsAI.MicroMLAgents.Inference.Utils;
 using Unity.Barracuda;
-using Unity.MLAgents.Inference.Utils;
 
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// Tensor - A class to encapsulate a Tensor used for inference.

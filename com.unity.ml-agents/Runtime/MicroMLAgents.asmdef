@@ -1,0 +1,17 @@
+{
+    "name": "MicroMLA",
+    "rootNamespace": "TransformsAI.MicroMLAgents",
+    "references": [
+        "Unity.Barracuda",
+        "Unity.Mathematics"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

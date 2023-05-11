@@ -2,7 +2,7 @@ using System;
 using System.Diagnostics;
 using UnityEngine;
 
-namespace Unity.MLAgents
+namespace TransformsAI.MicroMLAgents
 {
     internal static class Utilities
     {

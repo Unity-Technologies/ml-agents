@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Unity.MLAgents.Actuators
+namespace TransformsAI.MicroMLAgents.Actuators
 {
     /// <summary>
     /// A structure that wraps the <see cref="ActionSegment{T}"/>s for a particular <see cref="IActionReceiver"/> and is
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Actuators
         /// <param name="actionSpec">The <see cref="ActionSpec"/>  to send to an <see cref="IActionReceiver"/>.</param>
         public ActionBuffers(ActionSpec actionSpec)
             : this(new ActionSegment<float>(new float[actionSpec.NumContinuousActions]),
-            new ActionSegment<int>(new int[actionSpec.NumDiscreteActions]))
+                new ActionSegment<int>(new int[actionSpec.NumDiscreteActions]))
         { }
 
         /// <summary>
@@ -141,7 +141,7 @@ namespace Unity.MLAgents.Actuators
 
             var ab = (ActionBuffers)obj;
             return ab.ContinuousActions.SequenceEqual(ContinuousActions) &&
-                ab.DiscreteActions.SequenceEqual(DiscreteActions);
+                   ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
         /// <summary>
@@ -155,38 +155,5 @@ namespace Unity.MLAgents.Actuators
                 return (ContinuousActions.GetHashCode() * 397) ^ DiscreteActions.GetHashCode();
             }
         }
-    }
-
-    /// <summary>
-    /// An interface that describes an object that can receive actions from a Reinforcement Learning network.
-    /// </summary>
-    public interface IActionReceiver
-    {
-        /// <summary>
-        /// Method called in order too allow object to execute actions based on the
-        /// <see cref="ActionBuffers"/> contents.  The structure of the contents in the <see cref="ActionBuffers"/>
-        /// are defined by the <see cref="ActionSpec"/>.
-        /// </summary>
-        /// <param name="actionBuffers">The data structure containing the action buffers for this object.</param>
-        void OnActionReceived(ActionBuffers actionBuffers);
-
-        /// <summary>
-        /// Implement `WriteDiscreteActionMask()` to modify the masks for discrete
-        /// actions. When using discrete actions, the agent will not perform the masked
-        /// action.
-        /// </summary>
-        /// <param name="actionMask">
-        /// The action mask for the agent.
-        /// </param>
-        /// <remarks>
-        /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it with <see cref="IDiscreteActionMask.SetActionEnabled"/>.
-        ///
-        /// See [Agents - Actions] for more information on masking actions.
-        ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Learning-Environment-Design-Agents.md#actions
-        /// </remarks>
-        /// <seealso cref="IActionReceiver.OnActionReceived"/>
-        void WriteDiscreteActionMask(IDiscreteActionMask actionMask);
     }
 }

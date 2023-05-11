@@ -1,8 +1,9 @@
+using System;
 using System.Collections.Generic;
+using TransformsAI.MicroMLAgents.Sensors;
 using Unity.Barracuda;
-using Unity.MLAgents.Sensors;
 
-namespace Unity.MLAgents.Inference
+namespace TransformsAI.MicroMLAgents.Inference
 {
     /// <summary>
     /// Mapping between Tensor names and generators.
@@ -30,12 +31,10 @@ namespace Unity.MLAgents.Inference
             /// List of AgentInfos containing the information that will be used to populate
             /// the tensor's data.
             /// </param>
-            void Generate(
-                TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos);
+            void Generate(TensorProxy tensorProxy, IList<IAgent> batch);
         }
 
         readonly Dictionary<string, IGenerator> m_Dict = new Dictionary<string, IGenerator>();
-        int m_ApiVersion;
 
         /// <summary>
         /// Returns a new TensorGenerators object.
@@ -48,34 +47,25 @@ namespace Unity.MLAgents.Inference
         /// deterministic. </param>
         public TensorGenerator(
             int seed,
+            IList<ObservationSpec> sensors,
             ITensorAllocator allocator,
-            Dictionary<int, List<float>> memories,
-            object barracudaModel = null,
-            bool deterministicInference = false)
+            Model model,
+            bool deterministicInference)
         {
-            // If model is null, no inference to run and exception is thrown before reaching here.
-            if (barracudaModel == null)
-            {
-                return;
-            }
-            var model = (Model)barracudaModel;
 
-            m_ApiVersion = model.GetVersion();
+            var apiVersion = model.GetVersion();
+            
+            if (apiVersion != (int) BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                throw new NotSupportedException("MLAgents Version Not Supported");
 
             // Generator for Inputs
-            m_Dict[TensorNames.BatchSizePlaceholder] =
-                new BatchSizeGenerator(allocator);
-            m_Dict[TensorNames.SequenceLengthPlaceholder] =
-                new SequenceLengthGenerator(allocator);
-            m_Dict[TensorNames.RecurrentInPlaceholder] =
-                new RecurrentInputGenerator(allocator, memories);
+            m_Dict[TensorNames.BatchSizePlaceholder] = new BatchSizeGenerator(allocator);
+            m_Dict[TensorNames.SequenceLengthPlaceholder] = new SequenceLengthGenerator(allocator);
+            m_Dict[TensorNames.RecurrentInPlaceholder] = new RecurrentInputGenerator(allocator);
 
-            m_Dict[TensorNames.PreviousActionPlaceholder] =
-                new PreviousActionInputGenerator(allocator);
-            m_Dict[TensorNames.ActionMaskPlaceholder] =
-                new ActionMaskInputGenerator(allocator);
-            m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] =
-                new RandomNormalInputGenerator(seed, allocator);
+            m_Dict[TensorNames.PreviousActionPlaceholder] = new PreviousActionInputGenerator(allocator);
+            m_Dict[TensorNames.ActionMaskPlaceholder] = new ActionMaskInputGenerator(allocator);
+            m_Dict[TensorNames.RandomNormalEpsilonPlaceholder] = new RandomNormalInputGenerator(seed, allocator);
 
 
             // Generators for Outputs
@@ -89,65 +79,13 @@ namespace Unity.MLAgents.Inference
             }
             m_Dict[TensorNames.RecurrentOutput] = new BiDimensionalOutputGenerator(allocator);
             m_Dict[TensorNames.ValueEstimateOutput] = new BiDimensionalOutputGenerator(allocator);
-        }
 
-        public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
-        {
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
+
+            for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
             {
-                // Loop through the sensors on a representative agent.
-                // All vector observations use a shared ObservationGenerator since they are concatenated.
-                // All other observations use a unique ObservationInputGenerator
-                var visIndex = 0;
-                ObservationGenerator vecObsGen = null;
-                for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
-                {
-                    var sensor = sensors[sensorIndex];
-                    var rank = sensor.GetObservationSpec().Rank;
-                    ObservationGenerator obsGen = null;
-                    string obsGenName = null;
-                    switch (rank)
-                    {
-                        case 1:
-                            if (vecObsGen == null)
-                            {
-                                vecObsGen = new ObservationGenerator(allocator);
-                            }
-                            obsGen = vecObsGen;
-                            obsGenName = TensorNames.VectorObservationPlaceholder;
-                            break;
-                        case 2:
-                            // If the tensor is of rank 2, we use the index of the sensor
-                            // to create the name
-                            obsGen = new ObservationGenerator(allocator);
-                            obsGenName = TensorNames.GetObservationName(sensorIndex);
-                            break;
-                        case 3:
-                            // If the tensor is of rank 3, we use the "visual observation
-                            // index", which only counts the rank 3 sensors
-                            obsGen = new ObservationGenerator(allocator);
-                            obsGenName = TensorNames.GetVisualObservationName(visIndex);
-                            visIndex++;
-                            break;
-                        default:
-                            throw new UnityAgentsException(
-                                $"Sensor {sensor.GetName()} have an invalid rank {rank}");
-                    }
-                    obsGen.AddSensorIndex(sensorIndex);
-                    m_Dict[obsGenName] = obsGen;
-                }
-            }
-
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
-            {
-                for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
-                {
-                    var obsGen = new ObservationGenerator(allocator);
-                    var obsGenName = TensorNames.GetObservationName(sensorIndex);
-                    obsGen.AddSensorIndex(sensorIndex);
-                    m_Dict[obsGenName] = obsGen;
-
-                }
+                var obsGen = new ObservationGenerator(allocator,sensorIndex);
+                var obsGenName = TensorNames.GetObservationName(sensorIndex);
+                m_Dict[obsGenName] = obsGen;
             }
         }
 
@@ -162,8 +100,7 @@ namespace Unity.MLAgents.Inference
         /// data that will be used to modify the tensors</param>
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated generator.</exception>
-        public void GenerateTensors(
-            IReadOnlyList<TensorProxy> tensors, int currentBatchSize, IList<AgentInfoSensorsPair> infos)
+        public void GenerateTensors(IReadOnlyList<TensorProxy> tensors, IList<IAgent> infos)
         {
             for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
@@ -173,8 +110,9 @@ namespace Unity.MLAgents.Inference
                     throw new UnityAgentsException(
                         $"Unknown tensorProxy expected as input : {tensor.name}");
                 }
-                m_Dict[tensor.name].Generate(tensor, currentBatchSize, infos);
+                m_Dict[tensor.name].Generate(tensor, infos);
             }
         }
     }
+
 }

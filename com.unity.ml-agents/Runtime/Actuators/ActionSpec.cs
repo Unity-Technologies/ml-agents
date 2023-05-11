@@ -2,13 +2,13 @@ using System;
 using System.Linq;
 using UnityEngine;
 
-namespace Unity.MLAgents.Actuators
+namespace TransformsAI.MicroMLAgents.Actuators
 {
     /// <summary>
     /// Defines the structure of the actions to be used by the Actuator system.
     /// </summary>
     [Serializable]
-    public struct ActionSpec
+    public struct ActionSpec : IEquatable<ActionSpec>
     {
         [SerializeField]
         int m_NumContinuousActions;
@@ -86,7 +86,7 @@ namespace Unity.MLAgents.Actuators
         {
             if (NumContinuousActions > 0 && NumDiscreteActions > 0)
             {
-                throw new UnityAgentsException(
+                throw new Exception(
                     "Action spaces with both continuous and discrete actions are not supported by the trainer. " +
                     "ActionSpecs must be all continuous or all discrete."
                 );
@@ -133,5 +133,35 @@ namespace Unity.MLAgents.Actuators
             }
             return new ActionSpec(numContinuous, branchSizes);
         }
+        
+        public override int GetHashCode()
+        {
+            var hash = new HashCode();
+            hash.Add(m_NumContinuousActions);
+            if (BranchSizes == null) return hash.ToHashCode();
+            foreach (var size in BranchSizes) hash.Add(size);
+            return hash.ToHashCode();
+        }
+
+        public bool Equals(ActionSpec other)
+        {
+            if (m_NumContinuousActions != other.m_NumContinuousActions) return false;
+            if (other.BranchSizes == null && BranchSizes == null) return true;
+            if (other.BranchSizes == null || BranchSizes == null) return false;
+            if (other.BranchSizes.Length != BranchSizes.Length) return false;
+
+            for (var i = 0; i < BranchSizes.Length; i++)
+                if (BranchSizes[i] != other.BranchSizes[i])
+                    return false;
+
+            return true;
+        }
+
+        public override bool Equals(object obj) => obj is ActionSpec other && Equals(other);
+        public static bool operator ==(ActionSpec left, ActionSpec right) => left.Equals(right);
+        public static bool operator !=(ActionSpec left, ActionSpec right) => !left.Equals(right);
+
+
     }
 }
+

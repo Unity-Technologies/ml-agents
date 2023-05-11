@@ -1,4 +1,4 @@
-namespace Unity.MLAgents.Inference.Utils
+namespace TransformsAI.MicroMLAgents.Inference.Utils
 {
     /// <summary>
     /// Multinomial - Draws samples from a multinomial distribution given a (potentially unscaled)
