@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using TransformsAI.Animo.Tools;
+using System.Threading;
 using TransformsAI.MicroMLAgents.Actuators;
 using TransformsAI.MicroMLAgents.Sensors;
 using Unity.Barracuda;
@@ -11,6 +11,8 @@ namespace TransformsAI.MicroMLAgents.Inference
 {
     public class ModelRunner : IDisposable
     {
+        private static readonly ThreadLocal<Stack<List<IAgent>>> Pool = new(() => new Stack<List<IAgent>>());
+
         ITensorAllocator m_TensorAllocator;
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
@@ -170,12 +172,17 @@ namespace TransformsAI.MicroMLAgents.Inference
 
         public void Decide(IAgent agent)
         {
-            using var agentPool = PooledList<IAgent>.Acquire();
+            var agentList = Pool.Value.Count > 0 ? Pool.Value.Pop() : new List<IAgent>();
+            try
+            {
+                agentList.Add(agent);
 
-            agentPool.List.Add(agent);
-
-            DecideBatch(agentPool.List);
-
+                DecideBatch(agentList);
+            }
+            finally
+            {
+                Pool.Value.Push(agentList);
+            }
         }
     }
 }
