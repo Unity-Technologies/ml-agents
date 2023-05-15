@@ -62,7 +62,7 @@ setup(
         f"mlagents_envs=={VERSION}",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6",
+        "protobuf>=3.6,<3.20",
         "pyyaml>=3.1.0",
         # Windows ver. of PyTorch doesn't work from PyPi. Installation:
         # https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Installation.md#windows-installing-pytorch
