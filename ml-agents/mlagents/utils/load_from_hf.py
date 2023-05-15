@@ -3,10 +3,10 @@ import argparse
 
 from huggingface_hub import snapshot_download
 
-from mlagents_envs import logging_util
+from mlagents_envs.logging_util import get_logger
 
+logger = get_logger(__name__)
 
-logger = logging_util.get_logger(__name__)
 
 def load_from_hf(repo_id: str, local_dir: str) -> None:
     """
