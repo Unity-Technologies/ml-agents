@@ -1,8 +1,12 @@
 import os
-import logging
 import argparse
+
 from huggingface_hub import snapshot_download
 
+from mlagents_envs import logging_util
+
+
+logger = logging_util.get_logger(__name__)
 
 def load_from_hf(repo_id: str, local_dir: str) -> None:
     """
@@ -16,7 +20,7 @@ def load_from_hf(repo_id: str, local_dir: str) -> None:
 
     snapshot_download(repo_id=repo_id, local_dir=local_dir)
 
-    logging.info(f"The repository {repo_id} has been downloaded to {local_dir}")
+    logger.info(f"The repository {repo_id} has been downloaded to {local_dir}")
 
 
 def main():

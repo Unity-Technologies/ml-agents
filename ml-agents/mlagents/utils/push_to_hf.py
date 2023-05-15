@@ -9,6 +9,10 @@ from pathlib import Path
 from huggingface_hub import HfApi
 from huggingface_hub.repocard import metadata_save
 
+from mlagents_envs import logging_util
+
+
+logger = logging_util.get_logger(__name__)
 
 def _generate_config(local_dir: Path, configfile_name: str) -> None:
     """
@@ -125,7 +129,7 @@ def package_to_hub(
     :param commit_message: commit message
     :param configfile_name: name of the yaml config file (by default configuration.yaml)
     """
-    print(
+    logger.info(
         f"This function will create a model card and upload your {run_id} "
         f"into HuggingFace Hub. This is a work in progress: If you encounter a bug, "
         f"please send open an issue"
@@ -152,14 +156,14 @@ def package_to_hub(
     )
     _save_model_card(local_path, generated_model_card, metadata)
 
-    print(f"Pushing repo {run_id} to the Hugging Face Hub")
+    logger.info(f"Pushing repo {run_id} to the Hugging Face Hub")
 
     # Step 4. Push everything to the Hub
     api.upload_folder(
         repo_id=repo_id, folder_path=local_path, commit_message=commit_message
     )
 
-    print(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
+    logger.info(f"Your model is pushed to the hub. You can view your model here: {repo_url}")
 
 
 def main():
