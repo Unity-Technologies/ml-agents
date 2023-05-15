@@ -9,9 +9,11 @@ from pathlib import Path
 from huggingface_hub import HfApi
 from huggingface_hub.repocard import metadata_save
 
+from mlagents_envs import logging_util
 from mlagents_envs.logging_util import get_logger
 
 logger = get_logger(__name__)
+logging_util.set_log_level(logging_util.INFO)
 
 
 def _generate_config(local_dir: Path, configfile_name: str) -> None:
