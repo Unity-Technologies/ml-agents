@@ -1,6 +1,5 @@
 import os
 import argparse
-import Tuple
 
 import yaml
 import json
@@ -9,6 +8,8 @@ from pathlib import Path
 
 from huggingface_hub import HfApi
 from huggingface_hub.repocard import metadata_save
+
+from typing import Tuple
 
 from mlagents_envs import logging_util
 from mlagents_envs.logging_util import get_logger
