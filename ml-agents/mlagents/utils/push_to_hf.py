@@ -42,14 +42,12 @@ def _generate_metadata(model_name: str, env_id: str) -> dict:
 
     metadata = {}
     metadata["library_name"] = "ml-agents"
-    metadata["tags"] = ", ".join(
-        [
-            env_id,
-            "deep-reinforcement-learning",
-            "reinforcement-learning",
-            env_tag,
-        ]
-    )
+    metadata["tags"] = [
+        env_id,
+        "deep-reinforcement-learning",
+        "reinforcement-learning",
+        env_tag,
+    ]
 
     return metadata
 
