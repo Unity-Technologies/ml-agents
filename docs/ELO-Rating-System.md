@@ -1,5 +1,4 @@
 # ELO Rating System
-
 In adversarial games, the cumulative environment reward may **not be a meaningful metric** by which to track 
 learning progress. 
 
