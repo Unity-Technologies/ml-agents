@@ -7,14 +7,13 @@ using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Policies
 {
     /// <summary>
-    /// The Heuristic Policy uses a hards coded Heuristic method
+    /// The Heuristic Policy uses a hard-coded Heuristic method
     /// to take decisions each time the RequestDecision method is
     /// called.
     /// </summary>
     internal class HeuristicPolicy : IPolicy
     {
-        public delegate void ActionGenerator(in ActionBuffers actionBuffers);
-        ActionGenerator m_Heuristic;
+        ActuatorManager m_ActuatorManager;
         ActionBuffers m_ActionBuffers;
         bool m_Done;
         bool m_DecisionRequested;
@@ -23,10 +22,9 @@ namespace Unity.MLAgents.Policies
         NullList m_NullList = new NullList();
 
 
-        /// <inheritdoc />
-        public HeuristicPolicy(ActionGenerator heuristic, ActionSpec actionSpec)
+        public HeuristicPolicy(ActuatorManager actuatorManager, ActionSpec actionSpec)
         {
-            m_Heuristic = heuristic;
+            m_ActuatorManager = actuatorManager;
             var numContinuousActions = actionSpec.NumContinuousActions;
             var numDiscreteActions = actionSpec.NumDiscreteActions;
             var continuousDecision = new ActionSegment<float>(new float[numContinuousActions], 0, numContinuousActions);
@@ -47,7 +45,8 @@ namespace Unity.MLAgents.Policies
         {
             if (!m_Done && m_DecisionRequested)
             {
-                m_Heuristic.Invoke(m_ActionBuffers);
+                m_ActionBuffers.Clear();
+                m_ActuatorManager.ApplyHeuristic(m_ActionBuffers);
             }
             m_DecisionRequested = false;
             return ref m_ActionBuffers;
@@ -61,7 +60,7 @@ namespace Unity.MLAgents.Policies
         /// Trivial implementation of the IList interface that does nothing.
         /// This is only used for "writing" observations that we will discard.
         /// </summary>
-        class NullList : IList<float>
+        internal class NullList : IList<float>
         {
             public IEnumerator<float> GetEnumerator()
             {
@@ -128,9 +127,9 @@ namespace Unity.MLAgents.Policies
         {
             foreach (var sensor in sensors)
             {
-                if (sensor.GetCompressionType() == SensorCompressionType.None)
+                if (sensor.GetCompressionSpec().SensorCompressionType == SensorCompressionType.None)
                 {
-                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationShape(), 0);
+                    m_ObservationWriter.SetTarget(m_NullList, sensor.GetObservationSpec(), 0);
                     sensor.Write(m_ObservationWriter);
                 }
                 else

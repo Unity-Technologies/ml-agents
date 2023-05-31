@@ -18,6 +18,7 @@ from mlagents.trainers.demo_loader import (
     get_demo_files,
     write_delimited,
 )
+from mlagents.trainers.buffer import BufferKey
 
 
 BEHAVIOR_SPEC = create_mock_3dball_behavior_specs()
@@ -28,11 +29,14 @@ def test_load_demo():
     behavior_spec, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test.demo"
     )
-    assert np.sum(behavior_spec.observation_shapes[0]) == 8
+    assert np.sum(behavior_spec.observation_specs[0].shape) == 8
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test.demo", 1, BEHAVIOR_SPEC)
-    assert len(demo_buffer["actions"]) == total_expected - 1
+    assert (
+        len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
+        or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
+    )
 
 
 def test_load_demo_dir():
@@ -40,11 +44,14 @@ def test_load_demo_dir():
     behavior_spec, pair_infos, total_expected = load_demonstration(
         path_prefix + "/test_demo_dir"
     )
-    assert np.sum(behavior_spec.observation_shapes[0]) == 8
+    assert np.sum(behavior_spec.observation_specs[0].shape) == 8
     assert len(pair_infos) == total_expected
 
     _, demo_buffer = demo_to_buffer(path_prefix + "/test_demo_dir", 1, BEHAVIOR_SPEC)
-    assert len(demo_buffer["actions"]) == total_expected - 1
+    assert (
+        len(demo_buffer[BufferKey.CONTINUOUS_ACTION]) == total_expected - 1
+        or len(demo_buffer[BufferKey.DISCRETE_ACTION]) == total_expected - 1
+    )
 
 
 def test_demo_mismatch():

@@ -120,6 +120,13 @@ namespace Unity.MLAgents.SideChannels
         /// <returns></returns>
         internal static byte[] GetSideChannelMessage(Dictionary<Guid, SideChannel> sideChannels)
         {
+            if (!HasOutgoingMessages(sideChannels))
+            {
+                // Early out so that we don't create the MemoryStream or BinaryWriter.
+                // This is the most common case.
+                return Array.Empty<byte>();
+            }
+
             using (var memStream = new MemoryStream())
             {
                 using (var binaryWriter = new BinaryWriter(memStream))
@@ -138,6 +145,25 @@ namespace Unity.MLAgents.SideChannels
                     return memStream.ToArray();
                 }
             }
+        }
+
+        /// <summary>
+        /// Check whether any of the sidechannels have queued messages.
+        /// </summary>
+        /// <param name="sideChannels"></param>
+        /// <returns></returns>
+        static bool HasOutgoingMessages(Dictionary<Guid, SideChannel> sideChannels)
+        {
+            foreach (var sideChannel in sideChannels.Values)
+            {
+                var messageList = sideChannel.MessageQueue;
+                if (messageList.Count > 0)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -213,31 +239,6 @@ namespace Unity.MLAgents.SideChannels
                     }
                 }
             }
-        }
-    }
-
-    /// <summary>
-    /// Deprecated, use <see cref="SideChannelManager"/> instead.
-    /// </summary>
-    [Obsolete("Use SideChannelManager instead.")]
-    public static class SideChannelsManager
-    {
-        /// <summary>
-        /// Deprecated, use <see cref="SideChannelManager.RegisterSideChannel"/> instead.
-        /// </summary>
-        /// <param name="sideChannel"></param>
-        public static void RegisterSideChannel(SideChannel sideChannel)
-        {
-            SideChannelManager.RegisterSideChannel(sideChannel);
-        }
-
-        /// <summary>
-        /// Deprecated, use <see cref="SideChannelManager.UnregisterSideChannel"/> instead.
-        /// </summary>
-        /// <param name="sideChannel"></param>
-        public static void UnregisterSideChannel(SideChannel sideChannel)
-        {
-            SideChannelManager.UnregisterSideChannel(sideChannel);
         }
     }
 }

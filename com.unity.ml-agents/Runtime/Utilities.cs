@@ -1,12 +1,11 @@
 using System;
+using System.Diagnostics;
 using UnityEngine;
-using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents
 {
     internal static class Utilities
     {
-
         /// <summary>
         /// Calculates the cumulative sum of an integer array. The result array will be one element
         /// larger than the input array since it has a padded 0 at the beginning.
@@ -28,10 +27,26 @@ namespace Unity.MLAgents
             return result;
         }
 
-#if DEBUG
+        /// <summary>
+        /// Safely destroy a texture. This has to be used differently in unit tests.
+        /// </summary>
+        /// <param name="texture"></param>
+        internal static void DestroyTexture(Texture2D texture)
+        {
+            if (Application.isEditor)
+            {
+                // Edit Mode tests complain if we use Destroy()
+                UnityEngine.Object.DestroyImmediate(texture);
+            }
+            else
+            {
+                UnityEngine.Object.Destroy(texture);
+            }
+        }
+
+        [Conditional("DEBUG")]
         internal static void DebugCheckNanAndInfinity(float value, string valueCategory, string caller)
         {
-
             if (float.IsNaN(value))
             {
                 throw new ArgumentException($"NaN {valueCategory} passed to {caller}.");
@@ -41,7 +56,5 @@ namespace Unity.MLAgents
                 throw new ArgumentException($"Inifinity {valueCategory} passed to {caller}.");
             }
         }
-#endif
     }
-
 }

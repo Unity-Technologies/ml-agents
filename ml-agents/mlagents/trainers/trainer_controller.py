@@ -8,8 +8,6 @@ from typing import Dict, Set, List
 from collections import defaultdict
 
 import numpy as np
-from mlagents.tf_utils import tf
-from mlagents import tf_utils
 
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep
@@ -29,8 +27,8 @@ from mlagents.trainers.environment_parameter_manager import EnvironmentParameter
 from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
-from mlagents.tf_utils.globals import get_rank
 from mlagents import torch_utils
+from mlagents.torch_utils.globals import get_rank
 
 
 class TrainerController:
@@ -50,7 +48,7 @@ class TrainerController:
         :param param_manager: EnvironmentParameterManager object which stores information about all
         environment parameters.
         :param train: Whether to train model, or only run inference.
-        :param training_seed: Seed to use for Numpy and Tensorflow random number generation.
+        :param training_seed: Seed to use for Numpy and Torch random number generation.
         :param threaded: Whether or not to run trainers in a separate thread. Disable for testing/debugging.
         """
         self.trainers: Dict[str, Trainer] = {}
@@ -67,8 +65,6 @@ class TrainerController:
         self.trainer_threads: List[threading.Thread] = []
         self.kill_trainers = False
         np.random.seed(training_seed)
-        if tf_utils.is_available():
-            tf.set_random_seed(training_seed)
         torch_utils.torch.manual_seed(training_seed)
         self.rank = get_rank()
 
@@ -82,7 +78,7 @@ class TrainerController:
 
         for brain_name in self.trainers.keys():
             self.trainers[brain_name].save_model()
-        self.logger.info("Saved Model")
+        self.logger.debug("Saved Model")
 
     @staticmethod
     def _create_output_path(output_path):
@@ -134,9 +130,13 @@ class TrainerController:
                     target=self.trainer_update_func, args=(trainer,), daemon=True
                 )
                 self.trainer_threads.append(trainerthread)
+            env_manager.on_training_started(
+                brain_name, self.trainer_factory.trainer_config[brain_name]
+            )
 
         policy = trainer.create_policy(
-            parsed_behavior_id, env_manager.training_behaviors[name_behavior_id]
+            parsed_behavior_id,
+            env_manager.training_behaviors[name_behavior_id],
         )
         trainer.add_policy(parsed_behavior_id, policy)
 
@@ -167,11 +167,10 @@ class TrainerController:
     @timed
     def start_learning(self, env_manager: EnvManager) -> None:
         self._create_output_path(self.output_path)
-        if tf_utils.is_available():
-            tf.reset_default_graph()
         try:
             # Initial reset
             self._reset_env(env_manager)
+            self.param_manager.log_current_lesson()
             while self._not_done_training():
                 n_steps = self.advance(env_manager)
                 for _ in range(n_steps):
@@ -209,7 +208,7 @@ class TrainerController:
     def reset_env_if_ready(self, env: EnvManager) -> None:
         # Get the sizes of the reward buffers.
         reward_buff = {k: list(t.reward_buffer) for (k, t) in self.trainers.items()}
-        curr_step = {k: int(t.step) for (k, t) in self.trainers.items()}
+        curr_step = {k: int(t.get_step) for (k, t) in self.trainers.items()}
         max_step = {k: int(t.get_max_steps) for (k, t) in self.trainers.items()}
         # Attempt to increment the lessons of the brains who
         # were ready.

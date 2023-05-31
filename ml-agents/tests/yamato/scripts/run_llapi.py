@@ -1,5 +1,4 @@
 import argparse
-import numpy as np
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.side_channel.engine_configuration_channel import (
@@ -35,16 +34,20 @@ def test_run_environment(env_name):
         decision_steps, terminal_steps = env.get_steps(group_name)
 
         # Examine the number of observations per Agent
-        print("Number of observations : ", len(group_spec.observation_shapes))
+        print("Number of observations : ", len(group_spec.observation_specs))
+
+        for obs_spec in group_spec.observation_specs:
+            # Make sure the name was set in the ObservationSpec
+            assert bool(obs_spec.name) is True, f'obs_spec.name="{obs_spec.name}"'
 
         # Is there a visual observation ?
-        vis_obs = any(len(shape) == 3 for shape in group_spec.observation_shapes)
+        vis_obs = any(
+            len(obs_spec.shape) == 3 for obs_spec in group_spec.observation_specs
+        )
         print("Is there a visual observation ?", vis_obs)
 
         # Examine the state space for the first observation for the first agent
-        print(
-            "First Agent observation looks like: \n{}".format(decision_steps.obs[0][0])
-        )
+        print(f"First Agent observation looks like: \n{decision_steps.obs[0][0]}")
 
         for _episode in range(10):
             env.reset()
@@ -53,27 +56,10 @@ def test_run_environment(env_name):
             episode_rewards = 0
             tracked_agent = -1
             while not done:
-                if group_spec.action_spec.is_continuous():
-                    action = np.random.randn(
-                        len(decision_steps), group_spec.action_spec.continuous_size
-                    )
-
-                elif group_spec.action_spec.is_discrete():
-                    branch_size = group_spec.action_spec.discrete_branches
-                    action = np.column_stack(
-                        [
-                            np.random.randint(
-                                0, branch_size[i], size=(len(decision_steps))
-                            )
-                            for i in range(len(branch_size))
-                        ]
-                    )
-                else:
-                    # Should never happen
-                    action = None
+                action_tuple = group_spec.action_spec.random_action(len(decision_steps))
                 if tracked_agent == -1 and len(decision_steps) >= 1:
                     tracked_agent = decision_steps.agent_id[0]
-                env.set_actions(group_name, action)
+                env.set_actions(group_name, action_tuple)
                 env.step()
                 decision_steps, terminal_steps = env.get_steps(group_name)
                 done = False

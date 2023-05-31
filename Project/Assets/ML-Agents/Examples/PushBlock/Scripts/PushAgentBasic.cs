@@ -51,8 +51,9 @@ public class PushAgentBasic : Agent
 
     EnvironmentParameters m_ResetParams;
 
-    void Awake()
+    protected override void Awake()
     {
+        base.Awake();
         m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
     }
 
@@ -177,7 +178,6 @@ public class PushAgentBasic : Agent
     public override void Heuristic(in ActionBuffers actionsOut)
     {
         var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut[0] = 0;
         if (Input.GetKey(KeyCode.D))
         {
             discreteActionsOut[0] = 3;

@@ -1,0 +1,2 @@
+# pip constraints to use a version in the middle of allowed ranges in ml-agents/setup.py
+torch==1.8.0

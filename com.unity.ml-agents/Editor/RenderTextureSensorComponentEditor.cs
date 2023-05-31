@@ -1,9 +1,8 @@
-using UnityEngine;
 using UnityEditor;
 using Unity.MLAgents.Sensors;
 namespace Unity.MLAgents.Editor
 {
-    [CustomEditor(typeof(RenderTextureSensorComponent))]
+    [CustomEditor(typeof(RenderTextureSensorComponent), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class RenderTextureSensorComponentEditor : UnityEditor.Editor
     {

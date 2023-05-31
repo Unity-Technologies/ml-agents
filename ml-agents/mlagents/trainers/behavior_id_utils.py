@@ -1,5 +1,9 @@
 from typing import NamedTuple
 from urllib.parse import urlparse, parse_qs
+from mlagents_envs.base_env import AgentId, GroupId
+
+GlobalGroupId = str
+GlobalAgentId = str
 
 
 class BehaviorIdentifiers(NamedTuple):
@@ -38,16 +42,23 @@ class BehaviorIdentifiers(NamedTuple):
 
 def create_name_behavior_id(name: str, team_id: int) -> str:
     """
-   Reconstructs fully qualified behavior name from name and team_id
-   :param name: brain name
-   :param team_id: team ID
-   :return: name_behavior_id
-   """
+    Reconstructs fully qualified behavior name from name and team_id
+    :param name: brain name
+    :param team_id: team ID
+    :return: name_behavior_id
+    """
     return name + "?team=" + str(team_id)
 
 
-def get_global_agent_id(worker_id: int, agent_id: int) -> str:
+def get_global_agent_id(worker_id: int, agent_id: AgentId) -> GlobalAgentId:
     """
     Create an agent id that is unique across environment workers using the worker_id.
     """
-    return f"${worker_id}-{agent_id}"
+    return f"agent_{worker_id}-{agent_id}"
+
+
+def get_global_group_id(worker_id: int, group_id: GroupId) -> GlobalGroupId:
+    """
+    Create a group id that is unique across environment workers when using the worker_id.
+    """
+    return f"group_{worker_id}-{group_id}"

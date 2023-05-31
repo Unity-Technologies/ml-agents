@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Actuators;
@@ -70,7 +69,7 @@ public class FoodCollectorAgent : Agent
         return new Color32(r, g, b, 255);
     }
 
-    public void MoveAgent(ActionSegment<int> act)
+    public void MoveAgent(ActionBuffers actionBuffers)
     {
         m_Shoot = false;
 
@@ -93,49 +92,20 @@ public class FoodCollectorAgent : Agent
         var dirToGo = Vector3.zero;
         var rotateDir = Vector3.zero;
 
+        var continuousActions = actionBuffers.ContinuousActions;
+        var discreteActions = actionBuffers.DiscreteActions;
+
         if (!m_Frozen)
         {
-            var shootCommand = false;
-            var forwardAxis = (int)act[0];
-            var rightAxis = (int)act[1];
-            var rotateAxis = (int)act[2];
-            var shootAxis = (int)act[3];
+            var forward = Mathf.Clamp(continuousActions[0], -1f, 1f);
+            var right = Mathf.Clamp(continuousActions[1], -1f, 1f);
+            var rotate = Mathf.Clamp(continuousActions[2], -1f, 1f);
 
-            switch (forwardAxis)
-            {
-                case 1:
-                    dirToGo = transform.forward;
-                    break;
-                case 2:
-                    dirToGo = -transform.forward;
-                    break;
-            }
+            dirToGo = transform.forward * forward;
+            dirToGo += transform.right * right;
+            rotateDir = -transform.up * rotate;
 
-            switch (rightAxis)
-            {
-                case 1:
-                    dirToGo = transform.right;
-                    break;
-                case 2:
-                    dirToGo = -transform.right;
-                    break;
-            }
-
-            switch (rotateAxis)
-            {
-                case 1:
-                    rotateDir = -transform.up;
-                    break;
-                case 2:
-                    rotateDir = transform.up;
-                    break;
-            }
-            switch (shootAxis)
-            {
-                case 1:
-                    shootCommand = true;
-                    break;
-            }
+            var shootCommand = discreteActions[0] > 0;
             if (shootCommand)
             {
                 m_Shoot = true;
@@ -216,32 +186,30 @@ public class FoodCollectorAgent : Agent
     public override void OnActionReceived(ActionBuffers actionBuffers)
 
     {
-        MoveAgent(actionBuffers.DiscreteActions);
+        MoveAgent(actionBuffers);
     }
 
     public override void Heuristic(in ActionBuffers actionsOut)
     {
-        var discreteActionsOut = actionsOut.DiscreteActions;
-        discreteActionsOut[0] = 0;
-        discreteActionsOut[1] = 0;
-        discreteActionsOut[2] = 0;
+        var continuousActionsOut = actionsOut.ContinuousActions;
         if (Input.GetKey(KeyCode.D))
         {
-            discreteActionsOut[2] = 2;
+            continuousActionsOut[2] = 1;
         }
         if (Input.GetKey(KeyCode.W))
         {
-            discreteActionsOut[0] = 1;
+            continuousActionsOut[0] = 1;
         }
         if (Input.GetKey(KeyCode.A))
         {
-            discreteActionsOut[2] = 1;
+            continuousActionsOut[2] = -1;
         }
         if (Input.GetKey(KeyCode.S))
         {
-            discreteActionsOut[0] = 2;
+            continuousActionsOut[0] = -1;
         }
-        discreteActionsOut[3] = Input.GetKey(KeyCode.Space) ? 1 : 0;
+        var discreteActionsOut = actionsOut.DiscreteActions;
+        discreteActionsOut[0] = Input.GetKey(KeyCode.Space) ? 1 : 0;
     }
 
     public override void OnEpisodeBegin()

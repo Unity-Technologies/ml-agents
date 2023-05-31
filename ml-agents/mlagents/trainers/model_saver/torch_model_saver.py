@@ -1,17 +1,18 @@
 import os
 import shutil
 from mlagents.torch_utils import torch
-from typing import Dict, Union, Optional, cast
+from typing import Dict, Union, Optional, cast, Tuple, List
 from mlagents_envs.exception import UnityPolicyException
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 from mlagents.trainers.settings import TrainerSettings, SerializationSettings
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
-from mlagents.trainers.torch.model_serialization import ModelSerializer
+from mlagents.trainers.torch_entities.model_serialization import ModelSerializer
 
 
 logger = get_logger(__name__)
+DEFAULT_CHECKPOINT_NAME = "checkpoint.pt"
 
 
 class TorchModelSaver(BaseModelSaver):
@@ -45,17 +46,19 @@ class TorchModelSaver(BaseModelSaver):
             self.policy = module
             self.exporter = ModelSerializer(self.policy)
 
-    def save_checkpoint(self, behavior_name: str, step: int) -> str:
+    def save_checkpoint(self, behavior_name: str, step: int) -> Tuple[str, List[str]]:
         if not os.path.exists(self.model_path):
             os.makedirs(self.model_path)
         checkpoint_path = os.path.join(self.model_path, f"{behavior_name}-{step}")
         state_dict = {
             name: module.state_dict() for name, module in self.modules.items()
         }
+        pytorch_ckpt_path = f"{checkpoint_path}.pt"
+        export_ckpt_path = f"{checkpoint_path}.onnx"
         torch.save(state_dict, f"{checkpoint_path}.pt")
-        torch.save(state_dict, os.path.join(self.model_path, "checkpoint.pt"))
+        torch.save(state_dict, os.path.join(self.model_path, DEFAULT_CHECKPOINT_NAME))
         self.export(checkpoint_path, behavior_name)
-        return checkpoint_path
+        return export_ckpt_path, [pytorch_ckpt_path]
 
     def export(self, output_filepath: str, behavior_name: str) -> None:
         if self.exporter is not None:
@@ -67,11 +70,17 @@ class TorchModelSaver(BaseModelSaver):
         # This argument is mainly for initialization of the ghost trainer's fixed policy.
         reset_steps = not self.load
         if self.initialize_path is not None:
+            logger.info(f"Initializing from {self.initialize_path}.")
             self._load_model(
                 self.initialize_path, policy, reset_global_steps=reset_steps
             )
         elif self.load:
-            self._load_model(self.model_path, policy, reset_global_steps=reset_steps)
+            logger.info(f"Resuming from {self.model_path}.")
+            self._load_model(
+                os.path.join(self.model_path, DEFAULT_CHECKPOINT_NAME),
+                policy,
+                reset_global_steps=reset_steps,
+            )
 
     def _load_model(
         self,
@@ -79,8 +88,7 @@ class TorchModelSaver(BaseModelSaver):
         policy: Optional[TorchPolicy] = None,
         reset_global_steps: bool = False,
     ) -> None:
-        model_path = os.path.join(load_path, "checkpoint.pt")
-        saved_state_dict = torch.load(model_path)
+        saved_state_dict = torch.load(load_path)
         if policy is None:
             modules = self.modules
             policy = self.policy
@@ -89,7 +97,34 @@ class TorchModelSaver(BaseModelSaver):
         policy = cast(TorchPolicy, policy)
 
         for name, mod in modules.items():
-            mod.load_state_dict(saved_state_dict[name])
+            try:
+                if isinstance(mod, torch.nn.Module):
+                    missing_keys, unexpected_keys = mod.load_state_dict(
+                        saved_state_dict[name], strict=False
+                    )
+                    if missing_keys:
+                        logger.warning(
+                            f"Did not find these keys {missing_keys} in checkpoint. Initializing."
+                        )
+                    if unexpected_keys:
+                        logger.warning(
+                            f"Did not expect these keys {unexpected_keys} in checkpoint. Ignoring."
+                        )
+                else:
+                    # If module is not an nn.Module, try to load as one piece
+                    mod.load_state_dict(saved_state_dict[name])
+
+            # KeyError is raised if the module was not present in the last run but is being
+            # accessed in the saved_state_dict.
+            # ValueError is raised by the optimizer's load_state_dict if the parameters have
+            # have changed. Note, the optimizer uses a completely different load_state_dict
+            # function because it is not an nn.Module.
+            # RuntimeError is raised by PyTorch if there is a size mismatch between modules
+            # of the same name. This will still partially assign values to those layers that
+            # have not changed shape.
+            except (KeyError, ValueError, RuntimeError) as err:
+                logger.warning(f"Failed to load for module {name}. Initializing")
+                logger.debug(f"Module loading error : {err}")
 
         if reset_global_steps:
             policy.set_step(0)

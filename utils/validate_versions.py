@@ -8,11 +8,7 @@ import argparse
 
 VERSION_LINE_START = "__version__ = "
 
-DIRECTORIES = [
-    "ml-agents/mlagents/trainers",
-    "ml-agents-envs/mlagents_envs",
-    "gym-unity/gym_unity",
-]
+DIRECTORIES = ["ml-agents/mlagents/trainers", "ml-agents-envs/mlagents_envs"]
 
 MLAGENTS_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
 MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH = "com.unity.ml-agents.extensions/package.json"
@@ -64,7 +60,10 @@ def check_versions() -> bool:
 
 
 def set_version(
-    python_version: str, csharp_version: str, release_tag: Optional[str]
+    python_version: str,
+    csharp_version: str,
+    csharp_extensions_version: str,
+    release_tag: Optional[str],
 ) -> None:
     # Sanity check - make sure test tags have a test or dev version
     if release_tag and "test" in release_tag:
@@ -82,13 +81,17 @@ def set_version(
             f.write(new_contents)
 
     if csharp_version is not None:
-        package_version = csharp_version + "-preview"
+        package_version = f"{csharp_version}-exp.1"
+        if csharp_extensions_version is not None:
+            # since this has never been promoted we need to keep
+            # it in preview forever or CI will fail
+            extension_version = f"{csharp_extensions_version}-preview"
         print(
             f"Setting package version to {package_version} in {MLAGENTS_PACKAGE_JSON_PATH}"
             f" and {MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH}"
         )
         set_package_version(package_version)
-        set_extension_package_version(package_version)
+        set_extension_package_version(package_version, extension_version)
         print(f"Setting package version to {package_version} in {ACADEMY_PATH}")
         set_academy_version_string(package_version)
 
@@ -103,10 +106,14 @@ def set_package_version(new_version: str) -> None:
         f.write("\n")
 
 
-def set_extension_package_version(new_version: str) -> None:
+def set_extension_package_version(
+    new_dependency_version: str, new_extension_version
+) -> None:
     with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH) as f:
         package_json = json.load(f)
-    package_json["dependencies"]["com.unity.ml-agents"] = new_version
+    package_json["dependencies"]["com.unity.ml-agents"] = new_dependency_version
+    if new_extension_version is not None:
+        package_json["version"] = new_extension_version
     with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
         f.write("\n")
@@ -159,6 +166,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--python-version", default=None)
     parser.add_argument("--csharp-version", default=None)
+    parser.add_argument("--csharp-extensions-version", default=None)
     parser.add_argument("--release-tag", default=None)
     # unused, but allows precommit to pass filenames
     parser.add_argument("files", nargs="*")
@@ -168,7 +176,16 @@ if __name__ == "__main__":
         print(f"Updating python library to version {args.python_version}")
         if args.csharp_version:
             print(f"Updating C# package to version {args.csharp_version}")
-        set_version(args.python_version, args.csharp_version, args.release_tag)
+        if args.csharp_extensions_version:
+            print(
+                f"Updating C# extensions package to version {args.csharp_extensions_version}"
+            )
+        set_version(
+            args.python_version,
+            args.csharp_version,
+            args.csharp_extensions_version,
+            args.release_tag,
+        )
         if args.release_tag is not None:
             print_release_tag_commands(
                 args.python_version, args.csharp_version, args.release_tag

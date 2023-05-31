@@ -97,9 +97,11 @@ namespace Unity.MLAgents.Sensors
             set { m_RayLength = value; UpdateSensor(); }
         }
 
+        // The value of the default layers.
+        const int k_PhysicsDefaultLayers = -5;
         [HideInInspector, SerializeField, FormerlySerializedAs("rayLayerMask")]
         [Tooltip("Controls which layers the rays can hit.")]
-        LayerMask m_RayLayerMask = Physics.DefaultRaycastLayers;
+        LayerMask m_RayLayerMask = k_PhysicsDefaultLayers;
 
         /// <summary>
         /// Controls which layers the rays can hit.
@@ -123,6 +125,24 @@ namespace Unity.MLAgents.Sensors
         {
             get { return m_ObservationStacks; }
             set { m_ObservationStacks = value; }
+        }
+
+        [HideInInspector, SerializeField]
+        [Tooltip("Disable to provide the rays in left to right order.  Warning: Alternating order will be deprecated, disable it to ensure compatibility with future versions of ML-Agents.")]
+        public bool m_AlternatingRayOrder = true;
+
+        /// <summary>
+        /// Determines how the rays are ordered.  By default the ordering is as follows: middle ray is first;
+        /// then alternates outward adding rays to the left and right.  If set to false, then the rays are
+        /// ordered from left to right (viewed from above) which is more amenable to processing with
+        /// conv nets.
+        /// This property will be deprecated with the next major version update and the left to right ordering
+        /// will be used thereafter.
+        /// </summary>
+        public bool AlternatingRayOrder
+        {
+            get { return m_AlternatingRayOrder; }
+            set { m_AlternatingRayOrder = value; }
         }
 
         /// <summary>
@@ -179,7 +199,7 @@ namespace Unity.MLAgents.Sensors
         /// Returns an initialized raycast sensor.
         /// </summary>
         /// <returns></returns>
-        public override ISensor CreateSensor()
+        public override ISensor[] CreateSensors()
         {
             var rayPerceptionInput = GetRayPerceptionInput();
 
@@ -188,10 +208,10 @@ namespace Unity.MLAgents.Sensors
             if (ObservationStacks != 1)
             {
                 var stackingSensor = new StackingSensor(m_RaySensor, ObservationStacks);
-                return stackingSensor;
+                return new ISensor[] { stackingSensor };
             }
 
-            return m_RaySensor;
+            return new ISensor[] { m_RaySensor };
         }
 
         /// <summary>
@@ -202,9 +222,12 @@ namespace Unity.MLAgents.Sensors
         /// <param name="maxRayDegrees">
         /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
         /// Greater than 90 degrees will go backwards.
+        /// Orders the rays starting with the centermost and alternating to the left and right.
+        /// Should be deprecated with a future major version release (doing so will break existing
+        /// models).
         /// </param>
         /// <returns></returns>
-        internal static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
+        internal static float[] GetRayAnglesAlternating(int raysPerDirection, float maxRayDegrees)
         {
             // Example:
             // { 90, 90 - delta, 90 + delta, 90 - 2*delta, 90 + 2*delta }
@@ -220,17 +243,30 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Returns the observation shape for this raycast sensor which depends on the number
-        /// of tags for detected objects and the number of rays.
+        /// Returns the specific ray angles given the number of rays per direction and the
+        /// cone size for the rays.
         /// </summary>
+        /// <param name="raysPerDirection">Number of rays to the left and right of center.</param>
+        /// <param name="maxRayDegrees">
+        /// Cone size for rays. Using 90 degrees will cast rays to the left and right.
+        /// Greater than 90 degrees will go backwards.
+        /// Orders the rays from the left-most to the right-most which makes using a convolution
+        /// in the model easier.
+        /// </param>
         /// <returns></returns>
-        public override int[] GetObservationShape()
+        internal static float[] GetRayAngles(int raysPerDirection, float maxRayDegrees)
         {
-            var numRays = 2 * RaysPerDirection + 1;
-            var numTags = m_DetectableTags?.Count ?? 0;
-            var obsSize = (numTags + 2) * numRays;
-            var stacks = ObservationStacks > 1 ? ObservationStacks : 1;
-            return new[] { obsSize * stacks };
+            // Example:
+            // { 90 - 3*delta, 90 - 2*delta, ..., 90, 90 + delta, ..., 90 + 3*delta }
+            var anglesOut = new float[2 * raysPerDirection + 1];
+            var delta = maxRayDegrees / raysPerDirection;
+
+            for (var i = 0; i < 2 * raysPerDirection + 1; i++)
+            {
+                anglesOut[i] = 90 + (i - raysPerDirection) * delta;
+            }
+
+            return anglesOut;
         }
 
         /// <summary>
@@ -239,7 +275,9 @@ namespace Unity.MLAgents.Sensors
         /// <returns></returns>
         public RayPerceptionInput GetRayPerceptionInput()
         {
-            var rayAngles = GetRayAngles(RaysPerDirection, MaxRayDegrees);
+            var rayAngles = m_AlternatingRayOrder ?
+                GetRayAnglesAlternating(RaysPerDirection, MaxRayDegrees) :
+                GetRayAngles(RaysPerDirection, MaxRayDegrees);
 
             var rayPerceptionInput = new RayPerceptionInput();
             rayPerceptionInput.RayLength = RayLength;
@@ -264,16 +302,26 @@ namespace Unity.MLAgents.Sensors
             }
         }
 
+        internal int SensorObservationAge()
+        {
+            if (m_RaySensor != null)
+            {
+                return Time.frameCount - m_RaySensor.DebugLastFrameCount;
+            }
+
+            return 0;
+        }
+
         void OnDrawGizmosSelected()
         {
-            if (m_RaySensor?.debugDisplayInfo?.rayInfos != null)
+            if (m_RaySensor?.RayPerceptionOutput?.RayOutputs != null)
             {
                 // If we have cached debug info from the sensor, draw that.
                 // Draw "old" observations in a lighter color.
                 // Since the agent may not step every frame, this helps de-emphasize "stale" hit information.
-                var alpha = Mathf.Pow(.5f, m_RaySensor.debugDisplayInfo.age);
+                var alpha = Mathf.Pow(.5f, SensorObservationAge());
 
-                foreach (var rayInfo in m_RaySensor.debugDisplayInfo.rayInfos)
+                foreach (var rayInfo in m_RaySensor.RayPerceptionOutput.RayOutputs)
                 {
                     DrawRaycastGizmos(rayInfo, alpha);
                 }
@@ -288,9 +336,8 @@ namespace Unity.MLAgents.Sensors
                 rayInput.DetectableTags = null;
                 for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
                 {
-                    DebugDisplayInfo.RayInfo debugRay;
-                    RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex, out debugRay);
-                    DrawRaycastGizmos(debugRay);
+                    var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
+                    DrawRaycastGizmos(rayOutput);
                 }
             }
         }
@@ -298,24 +345,24 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// Draw the debug information from the sensor (if available).
         /// </summary>
-        void DrawRaycastGizmos(DebugDisplayInfo.RayInfo rayInfo, float alpha = 1.0f)
+        void DrawRaycastGizmos(RayPerceptionOutput.RayOutput rayOutput, float alpha = 1.0f)
         {
-            var startPositionWorld = rayInfo.worldStart;
-            var endPositionWorld = rayInfo.worldEnd;
+            var startPositionWorld = rayOutput.StartPositionWorld;
+            var endPositionWorld = rayOutput.EndPositionWorld;
             var rayDirection = endPositionWorld - startPositionWorld;
-            rayDirection *= rayInfo.rayOutput.HitFraction;
+            rayDirection *= rayOutput.HitFraction;
 
             // hit fraction ^2 will shift "far" hits closer to the hit color
-            var lerpT = rayInfo.rayOutput.HitFraction * rayInfo.rayOutput.HitFraction;
+            var lerpT = rayOutput.HitFraction * rayOutput.HitFraction;
             var color = Color.Lerp(rayHitColor, rayMissColor, lerpT);
             color.a *= alpha;
             Gizmos.color = color;
             Gizmos.DrawRay(startPositionWorld, rayDirection);
 
             // Draw the hit point as a sphere. If using rays to cast (0 radius), use a small sphere.
-            if (rayInfo.rayOutput.HasHit)
+            if (rayOutput.HasHit)
             {
-                var hitRadius = Mathf.Max(rayInfo.castRadius, .05f);
+                var hitRadius = Mathf.Max(rayOutput.ScaledCastRadius, .05f);
                 Gizmos.DrawWireSphere(startPositionWorld + rayDirection, hitRadius);
             }
         }

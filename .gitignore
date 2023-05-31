@@ -3,12 +3,17 @@
 /summaries
 # Output Artifacts
 /results
+# Output Builds
+/Builds
 
 # Training environments
 /envs
 
 # Environemnt logfile
 *Project.log
+
+# Custom settings asset
+*.settings.asset*
 
 # Visual Studio 2015 cache directory
 /Project/.vs/
@@ -88,3 +93,5 @@ venv/
 .coverage
 coverage.xml
 /htmlcov/
+
+**/UserSettings/*

@@ -1,0 +1,43 @@
+{% metadata_file .yamato/coverage_tests.metafile %}
+---
+{% for package in coverage_test_packages %}
+{% for editor in coverage_test_editors %}
+{% for platform in coverage_test_platforms %}
+{% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
+
+test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
+    name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }}
+    agent:
+        type: {{ platform.type }}
+        image: {{ platform.image }}
+        flavor: {{ platform.flavor}}
+    commands:
+        - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+        - upm-ci project test -u {{ editor.version }} --type project-tests --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
+        - |
+          conda activate python3.8
+          python3 ml-agents/tests/yamato/check_coverage_percent.py upm-ci~/test-results/ {{ package.minCoveragePct }}
+    artifacts:
+        logs:
+            paths:
+                - "upm-ci~/test-results/**/*"
+    dependencies:
+        - .yamato/com.unity.ml-agents-pack.yml#pack
+    triggers:
+        cancel_old_ci: true
+      {% if platform.name == "linux" %}
+        expression: |
+            (pull_request.target eq "main" OR
+            pull_request.target eq "develop" OR
+            pull_request.target match "release.+") AND
+            NOT pull_request.draft AND
+            (pull_request.changes.any match "com.unity.ml-agents/**" OR
+             pull_request.changes.any match " {{ editor.testProject }}/**" OR
+            {% if package.name == "com.unity.ml-agents.extensions" %}
+            pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
+            {% endif %}
+            pull_request.changes.any match ".yamato/com.unity.ml-agents-coverage.yml")
+      {% endif %}
+{% endfor %}
+{% endfor %}
+{% endfor %}

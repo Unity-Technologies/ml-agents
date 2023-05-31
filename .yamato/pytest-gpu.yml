@@ -1,0 +1,32 @@
+pytest_gpu:
+  name: Pytest GPU
+  agent:
+    type: Unity::VM::GPU
+    image: ml-agents/ml-agents-ubuntu-18.04:latest
+    flavor: b1.large
+  commands:
+    - |
+      eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+      conda activate python3.8
+      python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python3 -u -m ml-agents.tests.yamato.setup_venv
+      python3 -m pip install --progress-bar=off -r test_requirements.txt --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python3 -m pip install torch==1.7.1+cu101 torchvision==0.8.2+cu101 torchaudio==0.7.2 -f https://download.pytorch.org/whl/torch_stable.html --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      if python -c "exec('import torch \nif not torch.cuda.is_available(): raise')" &> /dev/null; then
+        echo 'all good'
+      else
+        exit 1
+      fi
+      python3 -m pytest -m "not slow" --junitxml=junit/test-results.xml -p no:warnings
+  triggers:
+    cancel_old_ci: true
+    expression: |
+      (push.branch eq "main" OR
+      push.branch eq "develop" OR
+      push.branch match "release.+") AND
+      push.changes.any match "ml-agents/**" AND
+      NOT push.changes.all match "**/*.md"
+  artifacts:
+    logs:
+      paths:
+        - "artifacts/standalone_build.txt"

@@ -1,24 +1,27 @@
+from typing import List, Tuple
+from mlagents_envs.base_env import ObservationSpec, DimensionProperty, ObservationType
 import pytest
 import copy
 import os
 from mlagents.trainers.settings import (
     TrainerSettings,
-    PPOSettings,
-    SACSettings,
     GAILSettings,
     CuriositySettings,
     RewardSignalSettings,
     NetworkSettings,
-    TrainerType,
     RewardSignalType,
     ScheduleType,
 )
+
+from mlagents.trainers.ppo.optimizer_torch import PPOSettings
+from mlagents.trainers.sac.optimizer_torch import SACSettings
+from mlagents.trainers.poca.optimizer_torch import POCASettings
 
 CONTINUOUS_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
 
 _PPO_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.PPO,
+    trainer_type="ppo",
     hyperparameters=PPOSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
@@ -32,7 +35,7 @@ _PPO_CONFIG = TrainerSettings(
 )
 
 _SAC_CONFIG = TrainerSettings(
-    trainer_type=TrainerType.SAC,
+    trainer_type="sac",
     hyperparameters=SACSettings(
         learning_rate=5.0e-3,
         learning_rate_schedule=ScheduleType.CONSTANT,
@@ -48,6 +51,20 @@ _SAC_CONFIG = TrainerSettings(
     threaded=False,
 )
 
+_POCA_CONFIG = TrainerSettings(
+    trainer_type="poca",
+    hyperparameters=POCASettings(
+        learning_rate=5.0e-3,
+        learning_rate_schedule=ScheduleType.CONSTANT,
+        batch_size=16,
+        buffer_size=64,
+    ),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
+    summary_freq=500,
+    max_steps=3000,
+    threaded=False,
+)
+
 
 def ppo_dummy_config():
     return copy.deepcopy(_PPO_CONFIG)
@@ -55,6 +72,10 @@ def ppo_dummy_config():
 
 def sac_dummy_config():
     return copy.deepcopy(_SAC_CONFIG)
+
+
+def poca_dummy_config():
+    return copy.deepcopy(_POCA_CONFIG)
 
 
 @pytest.fixture
@@ -70,3 +91,21 @@ def curiosity_dummy_config():
 @pytest.fixture
 def extrinsic_dummy_config():
     return {RewardSignalType.EXTRINSIC: RewardSignalSettings()}
+
+
+def create_observation_specs_with_shapes(
+    shapes: List[Tuple[int, ...]]
+) -> List[ObservationSpec]:
+    obs_specs: List[ObservationSpec] = []
+    for i, shape in enumerate(shapes):
+        dim_prop = (DimensionProperty.UNSPECIFIED,) * len(shape)
+        if len(shape) == 2:
+            dim_prop = (DimensionProperty.VARIABLE_SIZE, DimensionProperty.NONE)
+        spec = ObservationSpec(
+            name=f"observation {i} with shape {shape}",
+            shape=shape,
+            dimension_property=dim_prop,
+            observation_type=ObservationType.DEFAULT,
+        )
+        obs_specs.append(spec)
+    return obs_specs

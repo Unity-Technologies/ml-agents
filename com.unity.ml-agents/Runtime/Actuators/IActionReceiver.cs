@@ -62,6 +62,54 @@ namespace Unity.MLAgents.Actuators
         }
 
         /// <summary>
+        /// Construct an <see cref="ActionBuffers"/> instance with <see cref="ActionSpec"/>. All values are initialized to zeros.
+        /// /// </summary>
+        /// <param name="actionSpec">The <see cref="ActionSpec"/>  to send to an <see cref="IActionReceiver"/>.</param>
+        public ActionBuffers(ActionSpec actionSpec)
+            : this(new ActionSegment<float>(new float[actionSpec.NumContinuousActions]),
+            new ActionSegment<int>(new int[actionSpec.NumDiscreteActions]))
+        { }
+
+        /// <summary>
+        /// Create an <see cref="ActionBuffers"/> instance with ActionSpec and all actions stored as a float array.
+        /// </summary>
+        /// <param name="actionSpec"><see cref="ActionSpec"/> of the <see cref="ActionBuffers"/></param>
+        /// <param name="actions">The float array of all actions, including discrete and continuous actions.</param>
+        /// <returns>An <see cref="ActionBuffers"/> instance initialized with a <see cref="ActionSpec"/> and a float array.</returns>
+        internal static ActionBuffers FromActionSpec(ActionSpec actionSpec, float[] actions)
+        {
+            if (actions == null)
+            {
+                return ActionBuffers.Empty;
+            }
+
+            Debug.Assert(actions.Length == actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions,
+                $"The length of '{nameof(actions)}' does not match the total size of ActionSpec.\n" +
+                $"{nameof(actions)}.Length: {actions.Length}\n" +
+                $"{nameof(actionSpec)}: {actionSpec.NumContinuousActions + actionSpec.NumDiscreteActions}");
+
+            ActionSegment<float> continuousActionSegment = ActionSegment<float>.Empty;
+            ActionSegment<int> discreteActionSegment = ActionSegment<int>.Empty;
+            int offset = 0;
+            if (actionSpec.NumContinuousActions > 0)
+            {
+                continuousActionSegment = new ActionSegment<float>(actions, 0, actionSpec.NumContinuousActions);
+                offset += actionSpec.NumContinuousActions;
+            }
+            if (actionSpec.NumDiscreteActions > 0)
+            {
+                int[] discreteActions = new int[actionSpec.NumDiscreteActions];
+                for (var i = 0; i < actionSpec.NumDiscreteActions; i++)
+                {
+                    discreteActions[i] = (int)actions[i + offset];
+                }
+                discreteActionSegment = new ActionSegment<int>(discreteActions);
+            }
+
+            return new ActionBuffers(continuousActionSegment, discreteActionSegment);
+        }
+
+        /// <summary>
         /// Clear the <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/> segments to be all zeros.
         /// </summary>
         public void Clear()
@@ -70,7 +118,20 @@ namespace Unity.MLAgents.Actuators
             DiscreteActions.Clear();
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Check if the <see cref="ActionBuffers"/> is empty.
+        /// </summary>
+        /// <returns>Whether the buffers are empty.</returns>
+        public bool IsEmpty()
+        {
+            return ContinuousActions.IsEmpty() && DiscreteActions.IsEmpty();
+        }
+
+        /// <summary>
+        /// Indicates whether the current ActionBuffers is equal to another ActionBuffers.
+        /// </summary>
+        /// <param name="obj">An ActionBuffers to compare with this ActionBuffers.</param>
+        /// <returns>true if the current ActionBuffers is equal to the other parameter; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionBuffers))
@@ -83,52 +144,15 @@ namespace Unity.MLAgents.Actuators
                 ab.DiscreteActions.SequenceEqual(DiscreteActions);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Computes the hash code of the ActionBuffers.
+        /// </summary>
+        /// <returns>A hash code for the current ActionBuffers.</returns>
         public override int GetHashCode()
         {
             unchecked
             {
                 return (ContinuousActions.GetHashCode() * 397) ^ DiscreteActions.GetHashCode();
-            }
-        }
-
-        /// <summary>
-        /// Packs the continuous and discrete actions into one float array.  The array passed into this method
-        /// must have a Length that is greater than or equal to the sum of the Lengths of
-        /// <see cref="ContinuousActions"/> and <see cref="DiscreteActions"/>.
-        /// </summary>
-        /// <param name="destination">A float array to pack actions into whose length is greater than or
-        /// equal to the addition of the Lengths of this objects <see cref="ContinuousActions"/> and
-        /// <see cref="DiscreteActions"/> segments.</param>
-        public void PackActions(in float[] destination)
-        {
-            Debug.Assert(destination.Length >= ContinuousActions.Length + DiscreteActions.Length,
-                $"argument '{nameof(destination)}' is not large enough to pack the actions into.\n" +
-                $"{nameof(destination)}.Length: {destination.Length}\n" +
-                $"{nameof(ContinuousActions)}.Length + {nameof(DiscreteActions)}.Length: {ContinuousActions.Length + DiscreteActions.Length}");
-
-            var start = 0;
-            if (ContinuousActions.Length > 0)
-            {
-                Array.Copy(ContinuousActions.Array,
-                    ContinuousActions.Offset,
-                    destination,
-                    start,
-                    ContinuousActions.Length);
-                start = ContinuousActions.Length;
-            }
-            if (start >= destination.Length)
-            {
-                return;
-            }
-
-            if (DiscreteActions.Length > 0)
-            {
-                Array.Copy(DiscreteActions.Array,
-                    DiscreteActions.Offset,
-                    destination,
-                    start,
-                    DiscreteActions.Length);
             }
         }
     }
@@ -156,11 +180,11 @@ namespace Unity.MLAgents.Actuators
         /// </param>
         /// <remarks>
         /// When using Discrete Control, you can prevent the Agent from using a certain
-        /// action by masking it with <see cref="IDiscreteActionMask.WriteMask"/>.
+        /// action by masking it with <see cref="IDiscreteActionMask.SetActionEnabled"/>.
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);

@@ -20,12 +20,14 @@
     - [Recording Demonstrations](#recording-demonstrations)
   - [Summary](#summary)
 - [Training Methods: Environment-specific](#training-methods-environment-specific)
-  - [Training in Multi-Agent Environments with Self-Play](#training-in-multi-agent-environments-with-self-play)
+  - [Training in Competitive Multi-Agent Environments with Self-Play](#training-in-competitive-multi-agent-environments-with-self-play)
+  - [Training in Cooperative Multi-Agent Environments with MA-POCA](#training-in-cooperative-multi-agent-environments-with-ma-poca)
   - [Solving Complex Tasks using Curriculum Learning](#solving-complex-tasks-using-curriculum-learning)
   - [Training Robust Agents using Environment Parameter Randomization](#training-robust-agents-using-environment-parameter-randomization)
 - [Model Types](#model-types)
   - [Learning from Vector Observations](#learning-from-vector-observations)
   - [Learning from Cameras using Convolutional Neural Networks](#learning-from-cameras-using-convolutional-neural-networks)
+  - [Learning from Variable Length Observations using Attention](#learning-from-variable-length-observations-using-attention)
   - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
 - [Additional Features](#additional-features)
 - [Summary and Next Steps](#summary-and-next-steps)
@@ -165,7 +167,7 @@ The ML-Agents Toolkit contains five high-level components:
   process to communicate with and control the Academy during training. However,
   it can be used for other purposes as well. For example, you could use the API
   to use Unity as the simulation engine for your own machine learning
-  algorithms. See [Python API](Python-API.md) for more information.
+  algorithms. See [Python API](Python-LLAPI.md) for more information.
 - **External Communicator** - which connects the Learning Environment with the
   Python Low-Level API. It lives within the Learning Environment.
 - **Python Trainers** which contains all the machine learning algorithms that
@@ -177,12 +179,17 @@ The ML-Agents Toolkit contains five high-level components:
 - **Gym Wrapper** (not pictured). A common way in which machine learning
   researchers interact with simulation environments is via a wrapper provided by
   OpenAI called [gym](https://github.com/openai/gym). We provide a gym wrapper
-  in a dedicated `gym-unity` Python package and
-  [instructions](../gym-unity/README.md) for using it with existing machine
-  learning algorithms which utilize gym.
+  in the `ml-agents-envs` package and [instructions](Python-Gym-API.md) for using
+  it with existing machine learning algorithms which utilize gym.
+- **PettingZoo Wrapper** (not pictured) PettingZoo is python API for
+  interacting with multi-agent simulation environments that provides a
+  gym-like interface. We provide a PettingZoo wrapper for Unity ML-Agents
+  environments in the `ml-agents-envs` package and
+  [instructions](Python-PettingZoo-API.md) for using it with machine learning
+  algorithms.
 
 <p align="center">
-  <img src="images/learning_environment_basic.png"
+  <img src="../images/learning_environment_basic.png"
        alt="Simplified ML-Agents Scene Block Diagram"
        width="600"
        border="10" />
@@ -217,7 +224,7 @@ can have the same Behavior. This does not mean that at each instance they will
 have identical observation and action _values_.
 
 <p align="center">
-  <img src="images/learning_environment_example.png"
+  <img src="../images/learning_environment_example.png"
        alt="Example ML-Agents Scene Block Diagram"
        width="700"
        border="10" />
@@ -239,7 +246,7 @@ Channels_ is to exchange data with Python about _Environment Parameters_. The
 following diagram illustrates the above.
 
 <p align="center">
-  <img src="images/learning_environment_full.png"
+  <img src="../images/learning_environment_full.png"
        alt="More Complete Example ML-Agents Scene Block Diagram"
        border="10" />
 </p>
@@ -284,10 +291,10 @@ In the previous mode, the Agents were used for training to generate a PyTorch
 model that the Agents can later use. However, any user of the ML-Agents Toolkit
 can leverage their own algorithms for training. In this case, the behaviors of
 all the Agents in the scene will be controlled within Python. You can even turn
-your environment into a [gym.](../gym-unity/README.md)
+your environment into a [gym.](Python-Gym-API.md)
 
 We do not currently have a tutorial highlighting this mode, but you can learn
-more about the Python API [here](Python-API.md).
+more about the Python API [here](Python-LLAPI.md).
 
 ## Flexible Training Scenarios
 
@@ -372,7 +379,7 @@ your agent's behavior:
   below).
 - `rnd`: represents an intrinsic reward signal that encourages exploration
   in sparse-reward environments that is defined by the Curiosity module (see
-  below). (Not available for TensorFlow trainers)
+  below).
 
 ### Deep Reinforcement Learning
 
@@ -437,8 +444,6 @@ of the trained model is used as intrinsic reward. The more an Agent visits a sta
 more accurate the predictions and the lower the rewards which encourages the Agent to
 explore new states with higher prediction errors.
 
-__Note:__ RND is not available for TensorFlow trainers (only PyTorch trainers)
-
 ### Imitation Learning
 
 It is often more intuitive to simply demonstrate the behavior we want an agent
@@ -461,7 +466,7 @@ episodes of demonstrations can reduce training steps by more than 4 times. See
 Behavioral Cloning + GAIL + Curiosity + RL below.
 
 <p align="center">
-  <img src="images/mlagents-ImitationAndRL.png"
+  <img src="../images/mlagents-ImitationAndRL.png"
        alt="Using Demonstrations with Reinforcement Learning"
        width="700" border="0" />
 </p>
@@ -474,12 +479,23 @@ Learning (GAIL). In most scenarios, you can combine these two features:
 - If you want to help your agents learn (especially with environments that have
   sparse rewards) using pre-recorded demonstrations, you can generally enable
   both GAIL and Behavioral Cloning at low strengths in addition to having an
-  extrinsic reward. An example of this is provided for the Pyramids example
-  environment under `PyramidsLearning` in `config/gail_config.yaml`.
-- If you want to train purely from demonstrations, GAIL and BC _without_ an
-  extrinsic reward signal is the preferred approach. An example of this is
-  provided for the Crawler example environment under `CrawlerStaticLearning` in
-  `config/gail_config.yaml`.
+  extrinsic reward. An example of this is provided for the PushBlock example
+  environment in `config/imitation/PushBlock.yaml`.
+- If you want to train purely from demonstrations with GAIL and BC _without_ an
+  extrinsic reward signal, please see the CrawlerStatic example environment under
+  in `config/imitation/CrawlerStatic.yaml`.
+
+***Note:*** GAIL introduces a [_survivor bias_](https://arxiv.org/pdf/1809.02925.pdf)
+to the learning process. That is, by giving positive rewards based on similarity
+to the expert, the agent is incentivized to remain alive for as long as possible.
+This can directly conflict with goal-oriented tasks like our PushBlock or Pyramids
+example environments where an agent must reach a goal state thus ending the
+episode as quickly as possible. In these cases, we strongly recommend that you
+use a low strength GAIL reward signal and a sparse extrinisic signal when
+the agent achieves the task. This way, the GAIL reward signal will guide the
+agent until it discovers the extrnisic signal and will not overpower it. If the
+agent appears to be ignoring the extrinsic reward signal, you should reduce
+the strength of GAIL.
 
 #### GAIL (Generative Adversarial Imitation Learning)
 
@@ -490,7 +506,7 @@ of demonstrations. GAIL can be used with or without environment rewards, and
 works well when there are a limited number of demonstrations. In this framework,
 a second neural network, the discriminator, is taught to distinguish whether an
 observation/action is from a demonstration or produced by the agent. This
-discriminator can the examine a new observation/action and provide it a reward
+discriminator can then examine a new observation/action and provide it a reward
 based on how close it believes this new observation/action is to the provided
 demonstrations.
 
@@ -543,7 +559,7 @@ In addition to the three environment-agnostic training methods introduced in the
 previous section, the ML-Agents Toolkit provides additional methods that can aid
 in training behaviors for specific types of environments.
 
-### Training in Multi-Agent Environments with Self-Play
+### Training in Competitive Multi-Agent Environments with Self-Play
 
 ML-Agents provides the functionality to train both symmetric and asymmetric
 adversarial games with
@@ -551,10 +567,10 @@ adversarial games with
 one in which opposing agents are equal in form, function and objective. Examples
 of symmetric games are our Tennis and Soccer example environments. In
 reinforcement learning, this means both agents have the same observation and
-action spaces and learn from the same reward function and so _they can share the
+actions and learn from the same reward function and so _they can share the
 same policy_. In asymmetric games, this is not the case. An example of an
 asymmetric games are Hide and Seek. Agents in these types of games do not always
-have the same observation or action spaces and so sharing policy networks is not
+have the same observation or actions and so sharing policy networks is not
 necessarily ideal.
 
 With self-play, an agent learns in adversarial games by competing against fixed,
@@ -577,6 +593,39 @@ page for more information on setting up teams in your Unity scene. Also, read
 our
 [blog post on self-play](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
 for additional information.
+
+### Training In Cooperative Multi-Agent Environments with MA-POCA
+
+![PushBlock with Agents Working Together](images/cooperative_pushblock.png)
+
+ML-Agents provides the functionality for training cooperative behaviors - i.e.,
+groups of agents working towards a common goal, where the success of the individual
+is linked to the success of the whole group. In such a scenario, agents typically receive
+rewards as a group. For instance, if a team of agents wins a game against an opposing
+team, everyone is rewarded - even agents who did not directly contribute to the win. This
+makes learning what to do as an individual difficult - you may get a win
+for doing nothing, and a loss for doing your best.
+
+In ML-Agents, we provide MA-POCA (MultiAgent POsthumous Credit Assignment), which
+is a novel multi-agent trainer that trains a _centralized critic_, a neural network
+that acts as a "coach" for a whole group of agents. You can then give rewards to the team
+as a whole, and the agents will learn how best to contribute to achieving that reward.
+Agents can _also_ be given rewards individually, and the team will work together to help the
+individual achieve those goals. During an episode, agents can be added or removed from the group,
+such as when agents spawn or die in a game. If agents are removed mid-episode (e.g., if teammates die
+or are removed from the game), they will still learn whether their actions contributed
+to the team winning later, enabling agents to take group-beneficial actions even if
+they result in the individual being removed from the game (i.e., self-sacrifice).
+MA-POCA can also be combined with self-play to train teams of agents to play against each other.
+
+To learn more about enabling cooperative behaviors for agents in an ML-Agents environment,
+check out [this page](Learning-Environment-Design-Agents.md#groups-for-cooperative-scenarios).
+
+To learn more about MA-POCA, please see our paper
+[On the Use and Misuse of Absorbing States in Multi-Agent Reinforcement Learning](https://arxiv.org/pdf/2111.05992.pdf).
+For further reading, MA-POCA builds on previous work in multi-agent cooperative learning
+([Lowe et al.](https://arxiv.org/abs/1706.02275), [Foerster et al.](https://arxiv.org/pdf/1705.08926.pdf),
+among others) to enable the above use-cases.
 
 ### Solving Complex Tasks using Curriculum Learning
 
@@ -648,7 +697,7 @@ are `gravity`, `ball_mass` and `ball_scale`._
 
 Regardless of the training method deployed, there are a few model types that
 users can train using the ML-Agents Toolkit. This is due to the flexibility in
-defining agent observations, which can include vector, ray cast and visual
+defining agent observations, which include vector, ray cast and visual
 observations. You can learn more about how to instrument an agent's observation
 in the [Designing Agents](Learning-Environment-Design-Agents.md) guide.
 
@@ -685,6 +734,28 @@ three network architectures:
 
 The choice of the architecture depends on the visual complexity of the scene and
 the available computational resources.
+
+### Learning from Variable Length Observations using Attention
+
+Using the ML-Agents Toolkit, it is possible to have agents learn from a
+varying number of inputs. To do so, each agent can keep track of a buffer
+of vector observations. At each step, the agent will go through all the
+elements in the buffer and extract information but the elements
+in the buffer can change at every step.
+This can be useful in scenarios in which the agents must keep track of
+a varying number of elements throughout the episode. For example in a game
+where an agent must learn to avoid projectiles, but the projectiles can vary in
+numbers.
+
+![Variable Length Observations Illustrated](images/variable-length-observation-illustrated.png)
+
+You can learn more about variable length observations
+[here](Learning-Environment-Design-Agents.md#variable-length-observations).
+When variable length observations are utilized, the ML-Agents Toolkit
+leverages attention networks to learn from a varying number of entities.
+Agents using attention will ignore entities that are deemed not relevant
+and pay special attention to entities relevant to the current situation
+based on context.
 
 ### Memory-enhanced Agents using Recurrent Neural Networks
 

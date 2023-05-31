@@ -7,12 +7,12 @@ namespace Unity.MLAgents.Sensors
     /// <summary>
     /// A sensor implementation for vector observations.
     /// </summary>
-    public class VectorSensor : ISensor
+    public class VectorSensor : ISensor, IBuiltInSensor
     {
         // TODO use float[] instead
         // TODO allow setting float[]
         List<float> m_Observations;
-        int[] m_Shape;
+        ObservationSpec m_ObservationSpec;
         string m_Name;
 
         /// <summary>
@@ -20,22 +20,27 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="observationSize">Number of vector observations.</param>
         /// <param name="name">Name of the sensor.</param>
-        public VectorSensor(int observationSize, string name = null)
+        /// <param name="observationType"></param>
+        public VectorSensor(int observationSize, string name = null, ObservationType observationType = ObservationType.Default)
         {
-            if (name == null)
+            if (string.IsNullOrEmpty(name))
             {
                 name = $"VectorSensor_size{observationSize}";
+                if (observationType != ObservationType.Default)
+                {
+                    name += $"_{observationType.ToString()}";
+                }
             }
 
             m_Observations = new List<float>(observationSize);
             m_Name = name;
-            m_Shape = new[] { observationSize };
+            m_ObservationSpec = ObservationSpec.Vector(observationSize, observationType);
         }
 
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            var expectedObservations = m_Shape[0];
+            var expectedObservations = m_ObservationSpec.Shape[0];
             if (m_Observations.Count > expectedObservations)
             {
                 // Too many observations, truncate
@@ -57,7 +62,7 @@ namespace Unity.MLAgents.Sensors
                     m_Observations.Add(0);
                 }
             }
-            writer.AddRange(m_Observations);
+            writer.AddList(m_Observations);
             return expectedObservations;
         }
 
@@ -83,9 +88,9 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public int[] GetObservationShape()
+        public ObservationSpec GetObservationSpec()
         {
-            return m_Shape;
+            return m_ObservationSpec;
         }
 
         /// <inheritdoc/>
@@ -101,9 +106,15 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public virtual SensorCompressionType GetCompressionType()
+        public CompressionSpec GetCompressionSpec()
         {
-            return SensorCompressionType.None;
+            return CompressionSpec.Default();
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.VectorSensor;
         }
 
         void Clear()
@@ -113,9 +124,7 @@ namespace Unity.MLAgents.Sensors
 
         void AddFloatObs(float obs)
         {
-#if DEBUG
             Utilities.DebugCheckNanAndInfinity(obs, nameof(obs), nameof(AddFloatObs));
-#endif
             m_Observations.Add(obs);
         }
 
@@ -161,14 +170,14 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Adds a collection of float observations to the vector observations of the agent.
+        /// Adds a list or array of float observations to the vector observations of the agent.
         /// </summary>
         /// <param name="observation">Observation.</param>
-        public void AddObservation(IEnumerable<float> observation)
+        public void AddObservation(IList<float> observation)
         {
-            foreach (var f in observation)
+            for (var i = 0; i < observation.Count; i++)
             {
-                AddFloatObs(f);
+                AddFloatObs(observation[i]);
             }
         }
 
@@ -197,7 +206,7 @@ namespace Unity.MLAgents.Sensors
         /// Adds a one-hot encoding observation.
         /// </summary>
         /// <param name="observation">The index of this observation.</param>
-        /// <param name="range">The max index for any observation.</param>
+        /// <param name="range">The upper limit on the value observation can take (exclusive).</param>
         public void AddOneHotObservation(int observation, int range)
         {
             for (var i = 0; i < range; i++)

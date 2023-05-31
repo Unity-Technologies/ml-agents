@@ -13,7 +13,7 @@ class NonTrivialPEP420PackageFinder(PEP420PackageFinder):
     """
 
     @staticmethod
-    def _looks_like_package(path):
+    def _looks_like_package(path, package_name=None):
         glob_path = os.path.join(path, "*.py")
         return any(glob.iglob(glob_path))
 
@@ -40,7 +40,7 @@ def validate_packages(root_dir):
 
 
 def main():
-    for root_dir in ["ml-agents", "ml-agents-envs", "gym-unity"]:
+    for root_dir in ["ml-agents", "ml-agents-envs"]:
         validate_packages(root_dir)
 
 

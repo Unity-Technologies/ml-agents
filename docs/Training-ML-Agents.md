@@ -2,20 +2,27 @@
 
 **Table of Contents**
 
-- [Training with mlagents-learn](#training-with-mlagents-learn)
-  - [Starting Training](#starting-training)
-    - [Observing Training](#observing-training)
-    - [Stopping and Resuming Training](#stopping-and-resuming-training)
-    - [Loading an Existing Model](#loading-an-existing-model)
-- [Training Configurations](#training-configurations)
-  - [Behavior Configurations](#behavior-configurations)
-  - [Environment Parameters](#environment-parameters)
-    - [Environment Parameter Randomization](#environment-parameter-randomization)
-      - [Supported Sampler Types](#supported-sampler-types)
-      - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
-    - [Curriculum Learning](#curriculum)
-      - [Training with a Curriculum](#training-with-a-curriculum)
-  - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
+- [Training ML-Agents](#training-ml-agents)
+  - [Training with mlagents-learn](#training-with-mlagents-learn)
+    - [Starting Training](#starting-training)
+      - [Observing Training](#observing-training)
+      - [Stopping and Resuming Training](#stopping-and-resuming-training)
+      - [Loading an Existing Model](#loading-an-existing-model)
+  - [Training Configurations](#training-configurations)
+    - [Adding CLI Arguments to the Training Configuration file](#adding-cli-arguments-to-the-training-configuration-file)
+      - [Environment settings](#environment-settings)
+      - [Engine settings](#engine-settings)
+      - [Checkpoint settings](#checkpoint-settings)
+      - [Torch settings:](#torch-settings)
+    - [Behavior Configurations](#behavior-configurations)
+    - [Default Behavior Settings](#default-behavior-settings)
+    - [Environment Parameters](#environment-parameters)
+      - [Environment Parameter Randomization](#environment-parameter-randomization)
+        - [Supported Sampler Types](#supported-sampler-types)
+        - [Training with Environment Parameter Randomization](#training-with-environment-parameter-randomization)
+      - [Curriculum](#curriculum)
+        - [Training with a Curriculum](#training-with-a-curriculum)
+    - [Training Using Concurrent Unity Instances](#training-using-concurrent-unity-instances)
 
 For a broad overview of reinforcement learning, imitation learning and all the
 training scenarios, methods and options within the ML-Agents Toolkit, see
@@ -117,6 +124,13 @@ Python by using both the `--resume` and `--inference` flags. Note that if you
 want to run inference in Unity, you should use the
 [Unity Inference Engine](Getting-Started.md#running-a-pre-trained-model).
 
+Additionally, if the network architecture changes, you may still load an existing model,
+but ML-Agents will only load the parts of the model it can load and ignore all others. For instance,
+if you add a new reward signal, the existing model will load but the new reward signal
+will be initialized from scratch. If you have a model with a visual encoder (CNN) but
+change the `hidden_units`, the CNN will be loaded but the body of the network will be
+initialized from scratch.
+
 Alternatively, you might want to start a new training run but _initialize_ it
 using an already-trained model. You may want to do this, for instance, if your
 environment changed and you want a new model, but the old behavior is still
@@ -188,7 +202,8 @@ using the help utility:
 mlagents-learn --help
 ```
 
-These additional CLI arguments are grouped into environment, engine and checkpoint. The available settings and example values are shown below.
+These additional CLI arguments are grouped into environment, engine, checkpoint and torch.
+The available settings and example values are shown below.
 
 #### Environment settings
 
@@ -199,6 +214,9 @@ env_settings:
   base_port: 5005
   num_envs: 1
   seed: -1
+  max_lifetime_restarts: 10
+  restarts_rate_limit_n: 1
+  restarts_rate_limit_period_s: 60
 ```
 
 #### Engine settings
@@ -225,6 +243,13 @@ checkpoint_settings:
   force: true
   train_model: false
   inference: false
+```
+
+#### Torch settings:
+
+```yaml
+torch_settings:
+  device: cpu
 ```
 
 ### Behavior Configurations
@@ -254,13 +279,16 @@ behaviors:
       # PPO-specific hyperparameters
       # Replaces the "PPO-specific hyperparameters" section above
       beta: 5.0e-3
+      beta_schedule: constant
       epsilon: 0.2
+      epsilon_schedule: linear
       lambd: 0.95
       num_epoch: 3
+      shared_critic: False
 
     # Configuration of the neural network (common to PPO/SAC)
     network_settings:
-      vis_encoder_type: simple
+      vis_encode_type: simple
       normalize: false
       hidden_units: 128
       num_layers: 2
@@ -275,7 +303,7 @@ behaviors:
     summary_freq: 10000
     keep_checkpoints: 5
     checkpoint_interval: 50000
-    threaded: true
+    threaded: false
     init_path: null
 
     # behavior cloning
@@ -317,9 +345,6 @@ behaviors:
       save_steps: 50000
       swap_steps: 2000
       team_change: 100000
-
-    # use TensorFlow backend
-    framework: tensorflow
 ```
 
 Here is an equivalent file if we use an SAC trainer instead. Notice that the
@@ -485,7 +510,7 @@ Below is a list of the `sampler_type` values supported by the toolkit.
   - **parameters** - `intervals`
 
 The implementation of the samplers can be found in the
-[Samplers.cs file](../com.unity.ml-agents/Runtime/Sampler.cs).
+[Samplers.cs file](https://github.com/Unity-Technologies/ml-agents/blob/main/com.unity.ml-agents/Runtime/Sampler.cs).
 
 ##### Training with Environment Parameter Randomization
 
@@ -556,7 +581,7 @@ Each `Lesson` has 3 fields :
 
 | **Setting**         | **Description**                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | :------------------ | :---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure received reward, while `progress` uses the ratio of steps/max_steps.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| `measure`           | What to measure learning progress, and advancement in lessons by.<br><br> `reward` uses a measure of received reward, `progress` uses the ratio of steps/max_steps, while `Elo` is available only for self-play situations and uses Elo score as a curriculum completion measure.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 | `behavior`        | Specifies which behavior is being tracked. There can be multiple behaviors with different names, each at different points of training. This setting allows the curriculum to track only one of them.                                                                                                                                                                                                                                                                                                                                                                                                                 |
 | `threshold`        | Determines at what point in value of `measure` the lesson should be increased.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 | `min_lesson_length` | The minimum number of episodes that should be completed before the lesson can change. If `measure` is set to `reward`, the average cumulative reward of the last `min_lesson_length` episodes will be used to determine if the lesson should change. Must be nonnegative. <br><br> **Important**: the average reward that is compared to the thresholds is different than the mean reward that is logged to the console. For example, if `min_lesson_length` is `100`, the lesson will increment after the average cumulative reward of the last `100` episodes exceeds the current threshold. The mean reward logged to the console is dictated by the `summary_freq` parameter defined above. |

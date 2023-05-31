@@ -62,7 +62,7 @@ can interact with it.
 
 ## Interacting with the Environment
 
-If you want to use the [Python API](Python-API.md) to interact with your
+If you want to use the [Python API](Python-LLAPI.md) to interact with your
 executable, you can pass the name of the executable with the argument
 'file_name' of the `UnityEnvironment`. For instance:
 
@@ -133,9 +133,6 @@ Unity brain name: Ball3DLearning
         Number of Visual Observations (per agent): 0
         Vector Observation space size (per agent): 8
         Number of stacked Vector Observation: 1
-        Vector Action space type: continuous
-        Vector Action space size (per agent): [2]
-        Vector Action descriptions: ,
 INFO:mlagents_envs:Hyperparameters for the PPO Trainer of brain Ball3DLearning:
         batch_size:          64
         beta:                0.001
@@ -185,3 +182,17 @@ following the steps below:
 1. Drag the `<behavior_name>.onnx` file from the Project window of the Editor to
    the **Model** placeholder in the **Ball3DAgent** inspector window.
 1. Press the **Play** button at the top of the Editor.
+
+## Training on Headless Server
+
+To run training on headless server with no graphics rendering support, you need to turn off
+graphics display in the Unity executable. There are two ways to achieve this:
+1. Pass `--no-graphics` option to mlagents-learn training command. This is equivalent to
+   adding `-nographics -batchmode` to the Unity executable's commandline.
+2. Build your Unity executable with **Server Build**. You can find this setting in Build Settings
+   in the Unity Editor.
+
+If you want to train with graphics (for example, using camera and visual observations), you'll
+need to set up display rendering support (e.g. xvfb) on you server machine. In our
+[Colab Notebook Tutorials](ML-Agents-Toolkit-Documentation.md#python-tutorial-with-google-colab), the Setup section has
+examples of setting up xvfb on servers.

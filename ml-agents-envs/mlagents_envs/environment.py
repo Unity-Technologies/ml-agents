@@ -10,6 +10,7 @@ import mlagents_envs
 
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.side_channel.side_channel import SideChannel
+from mlagents_envs.side_channel import DefaultTrainingAnalyticsSideChannel
 from mlagents_envs.side_channel.side_channel_manager import SideChannelManager
 from mlagents_envs import env_utils
 
@@ -18,6 +19,7 @@ from mlagents_envs.base_env import (
     DecisionSteps,
     TerminalSteps,
     BehaviorSpec,
+    ActionTuple,
     BehaviorName,
     AgentId,
     BehaviorMapping,
@@ -60,7 +62,10 @@ class UnityEnvironment(BaseEnv):
     #  * 1.0.0 - initial version
     #  * 1.1.0 - support concatenated PNGs for compressed observations.
     #  * 1.2.0 - support compression mapping for stacked compressed observations.
-    API_VERSION = "1.2.0"
+    #  * 1.3.0 - support action spaces with both continuous and discrete actions.
+    #  * 1.4.0 - support training analytics sent from python trainer to the editor.
+    #  * 1.5.0 - support variable length observation training and multi-agent groups.
+    API_VERSION = "1.5.0"
 
     # Default port that the editor listens on. If an environment executable
     # isn't specified, this port will be used.
@@ -98,16 +103,13 @@ class UnityEnvironment(BaseEnv):
         elif unity_communicator_version.version[0] != api_version.version[0]:
             # Major versions mismatch.
             return False
-        elif unity_communicator_version.version[1] != api_version.version[1]:
-            # Non-beta minor versions mismatch.  Log a warning but allow execution to continue.
-            logger.warning(
-                f"WARNING: The communication API versions between Unity and python differ at the minor version level. "
-                f"Python API: {python_api_version}, Unity API: {unity_communicator_version}.\n"
-                f"This means that some features may not work unless you upgrade the package with the lower version."
-                f"Please find the versions that work best together from our release page.\n"
-                "https://github.com/Unity-Technologies/ml-agents/releases"
-            )
         else:
+            # Major versions match, so either:
+            # 1) The versions are identical, in which case there's no compatibility issues
+            # 2) The Unity version is newer, in which case we'll warn or fail on the Unity side if trying to use
+            #    unsupported features
+            # 3) The trainer version is newer, in which case new trainer features might be available but unused by C#
+            # In any of the cases, there's no reason to warn about mismatch here.
             logger.info(
                 f"Connected to Unity environment with package version {unity_package_version} "
                 f"and communication version {unity_com_ver}"
@@ -120,6 +122,10 @@ class UnityEnvironment(BaseEnv):
         capabilities.baseRLCapabilities = True
         capabilities.concatenatedPngObservations = True
         capabilities.compressedChannelMapping = True
+        capabilities.hybridActions = True
+        capabilities.trainingAnalytics = True
+        capabilities.variableLengthObservation = True
+        capabilities.multiAgentGroups = True
         return capabilities
 
     @staticmethod
@@ -147,6 +153,7 @@ class UnityEnvironment(BaseEnv):
         additional_args: Optional[List[str]] = None,
         side_channels: Optional[List[SideChannel]] = None,
         log_folder: Optional[str] = None,
+        num_areas: int = 1,
     ):
         """
         Starts a new unity environment and establishes a connection with the environment.
@@ -177,12 +184,23 @@ class UnityEnvironment(BaseEnv):
         # If true, this means the environment was successfully loaded
         self._loaded = False
         # The process that is started. If None, no process was started
-        self._proc1 = None
+        self._process: Optional[subprocess.Popen] = None
         self._timeout_wait: int = timeout_wait
         self._communicator = self._get_communicator(worker_id, base_port, timeout_wait)
         self._worker_id = worker_id
+        if side_channels is None:
+            side_channels = []
+        default_training_side_channel: Optional[
+            DefaultTrainingAnalyticsSideChannel
+        ] = None
+        if DefaultTrainingAnalyticsSideChannel.CHANNEL_ID not in [
+            _.channel_id for _ in side_channels
+        ]:
+            default_training_side_channel = DefaultTrainingAnalyticsSideChannel()
+            side_channels.append(default_training_side_channel)
         self._side_channel_manager = SideChannelManager(side_channels)
         self._log_folder = log_folder
+        self.academy_capabilities: UnityRLCapabilitiesProto = None  # type: ignore
 
         # If the environment name is None, a new environment will not be launched
         # and the communicator will directly try to connect to an existing unity environment.
@@ -194,7 +212,7 @@ class UnityEnvironment(BaseEnv):
             )
         if file_name is not None:
             try:
-                self._proc1 = env_utils.launch_executable(
+                self._process = env_utils.launch_executable(
                     file_name, self._executable_args()
                 )
             except UnityEnvironmentException:
@@ -212,6 +230,7 @@ class UnityEnvironment(BaseEnv):
             communication_version=self.API_VERSION,
             package_version=mlagents_envs.__version__,
             capabilities=UnityEnvironment._get_capabilities_proto(),
+            num_areas=num_areas,
         )
         try:
             aca_output = self._send_academy_parameters(rl_init_parameters_in)
@@ -236,9 +255,12 @@ class UnityEnvironment(BaseEnv):
 
         self._env_state: Dict[str, Tuple[DecisionSteps, TerminalSteps]] = {}
         self._env_specs: Dict[str, BehaviorSpec] = {}
-        self._env_actions: Dict[str, np.ndarray] = {}
+        self._env_actions: Dict[str, ActionTuple] = {}
         self._is_first_message = True
         self._update_behavior_specs(aca_output)
+        self.academy_capabilities = aca_params.capabilities
+        if default_training_side_channel is not None:
+            default_training_side_channel.environment_initialized()
 
     @staticmethod
     def _get_communicator(worker_id, base_port, timeout_wait):
@@ -249,7 +271,11 @@ class UnityEnvironment(BaseEnv):
         if self._no_graphics:
             args += ["-nographics", "-batchmode"]
         args += [UnityEnvironment._PORT_COMMAND_LINE_ARG, str(self._port)]
-        if self._log_folder:
+
+        # If the logfile arg isn't already set in the env args,
+        # try to set it to an output directory
+        logfile_set = "-logfile" in (arg.lower() for arg in self._additional_args)
+        if self._log_folder and not logfile_set:
             log_file_path = os.path.join(
                 self._log_folder, f"Player-{self._worker_id}.log"
             )
@@ -268,7 +294,7 @@ class UnityEnvironment(BaseEnv):
                 agent = agent_infos.value[0]
                 new_spec = behavior_spec_from_proto(brain_param, agent)
                 self._env_specs[brain_param.brain_name] = new_spec
-                logger.info(f"Connected new brain:\n{brain_param.brain_name}")
+                logger.info(f"Connected new brain: {brain_param.brain_name}")
 
     def _update_state(self, output: UnityRLOutputProto) -> None:
         """
@@ -289,7 +315,9 @@ class UnityEnvironment(BaseEnv):
 
     def reset(self) -> None:
         if self._loaded:
-            outputs = self._communicator.exchange(self._generate_reset_input())
+            outputs = self._communicator.exchange(
+                self._generate_reset_input(), self._poll_process
+            )
             if outputs is None:
                 raise UnityCommunicatorStoppedException("Communicator has exited.")
             self._update_behavior_specs(outputs)
@@ -317,7 +345,7 @@ class UnityEnvironment(BaseEnv):
                 ].action_spec.empty_action(n_agents)
         step_input = self._generate_step_input(self._env_actions)
         with hierarchical_timer("communicator.exchange"):
-            outputs = self._communicator.exchange(step_input)
+            outputs = self._communicator.exchange(step_input, self._poll_process)
         if outputs is None:
             raise UnityCommunicatorStoppedException("Communicator has exited.")
         self._update_behavior_specs(outputs)
@@ -336,7 +364,7 @@ class UnityEnvironment(BaseEnv):
                 f"agent group in the environment"
             )
 
-    def set_actions(self, behavior_name: BehaviorName, action: np.ndarray) -> None:
+    def set_actions(self, behavior_name: BehaviorName, action: ActionTuple) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
@@ -346,15 +374,15 @@ class UnityEnvironment(BaseEnv):
         self._env_actions[behavior_name] = action
 
     def set_action_for_agent(
-        self, behavior_name: BehaviorName, agent_id: AgentId, action: np.ndarray
+        self, behavior_name: BehaviorName, agent_id: AgentId, action: ActionTuple
     ) -> None:
         self._assert_behavior_exists(behavior_name)
         if behavior_name not in self._env_state:
             return
         action_spec = self._env_specs[behavior_name].action_spec
-        num_agents = len(self._env_state[behavior_name][0])
-        action = action_spec._validate_action(action, None, behavior_name)
+        action = action_spec._validate_action(action, 1, behavior_name)
         if behavior_name not in self._env_actions:
+            num_agents = len(self._env_state[behavior_name][0])
             self._env_actions[behavior_name] = action_spec.empty_action(num_agents)
         try:
             index = np.where(self._env_state[behavior_name][0].agent_id == agent_id)[0][
@@ -366,13 +394,28 @@ class UnityEnvironment(BaseEnv):
                     agent_id
                 )
             ) from ie
-        self._env_actions[behavior_name][index] = action
+        if action_spec.continuous_size > 0:
+            self._env_actions[behavior_name].continuous[index] = action.continuous[0, :]
+        if action_spec.discrete_size > 0:
+            self._env_actions[behavior_name].discrete[index] = action.discrete[0, :]
 
     def get_steps(
         self, behavior_name: BehaviorName
     ) -> Tuple[DecisionSteps, TerminalSteps]:
         self._assert_behavior_exists(behavior_name)
         return self._env_state[behavior_name]
+
+    def _poll_process(self) -> None:
+        """
+        Check the status of the subprocess. If it has exited, raise a UnityEnvironmentException
+        :return: None
+        """
+        if not self._process:
+            return
+        poll_res = self._process.poll()
+        if poll_res is not None:
+            exc_msg = self._returncode_to_env_message(self._process.returncode)
+            raise UnityEnvironmentException(exc_msg)
 
     def close(self):
         """
@@ -394,23 +437,20 @@ class UnityEnvironment(BaseEnv):
             timeout = self._timeout_wait
         self._loaded = False
         self._communicator.close()
-        if self._proc1 is not None:
+        if self._process is not None:
             # Wait a bit for the process to shutdown, but kill it if it takes too long
             try:
-                self._proc1.wait(timeout=timeout)
-                signal_name = self._returncode_to_signal_name(self._proc1.returncode)
-                signal_name = f" ({signal_name})" if signal_name else ""
-                return_info = f"Environment shut down with return code {self._proc1.returncode}{signal_name}."
-                logger.info(return_info)
+                self._process.wait(timeout=timeout)
+                logger.debug(self._returncode_to_env_message(self._process.returncode))
             except subprocess.TimeoutExpired:
-                logger.info("Environment timed out shutting down. Killing...")
-                self._proc1.kill()
+                logger.warning("Environment timed out shutting down. Killing...")
+                self._process.kill()
             # Set to None so we don't try to close multiple times.
-            self._proc1 = None
+            self._process = None
 
     @timed
     def _generate_step_input(
-        self, vector_action: Dict[str, np.ndarray]
+        self, vector_action: Dict[str, ActionTuple]
     ) -> UnityInputProto:
         rl_in = UnityRLInputProto()
         for b in vector_action:
@@ -418,7 +458,17 @@ class UnityEnvironment(BaseEnv):
             if n_agents == 0:
                 continue
             for i in range(n_agents):
-                action = AgentActionProto(vector_actions=vector_action[b][i])
+                action = AgentActionProto()
+                if vector_action[b].continuous is not None:
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].continuous[i]
+                    )
+                    action.continuous_actions.extend(vector_action[b].continuous[i])
+                if vector_action[b].discrete is not None:
+                    action.vector_actions_deprecated.extend(
+                        vector_action[b].discrete[i]
+                    )
+                    action.discrete_actions.extend(vector_action[b].discrete[i])
                 rl_in.agent_actions[b].value.extend([action])
                 rl_in.command = STEP
         rl_in.side_channel = bytes(
@@ -439,7 +489,7 @@ class UnityEnvironment(BaseEnv):
     ) -> UnityOutputProto:
         inputs = UnityInputProto()
         inputs.rl_initialization_input.CopyFrom(init_parameters)
-        return self._communicator.initialize(inputs)
+        return self._communicator.initialize(inputs, self._poll_process)
 
     @staticmethod
     def _wrap_unity_input(rl_input: UnityRLInputProto) -> UnityInputProto:
@@ -455,8 +505,14 @@ class UnityEnvironment(BaseEnv):
         """
         try:
             # A negative value -N indicates that the child was terminated by signal N (POSIX only).
-            s = signal.Signals(-returncode)  # pylint: disable=no-member
+            s = signal.Signals(-returncode)
             return s.name
         except Exception:
             # Should generally be a ValueError, but catch everything just in case.
             return None
+
+    @staticmethod
+    def _returncode_to_env_message(returncode: int) -> str:
+        signal_name = UnityEnvironment._returncode_to_signal_name(returncode)
+        signal_name = f" ({signal_name})" if signal_name else ""
+        return f"Environment shut down with return code {returncode}{signal_name}."

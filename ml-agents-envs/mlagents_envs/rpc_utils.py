@@ -1,8 +1,11 @@
 from mlagents_envs.base_env import (
-    BehaviorSpec,
     ActionSpec,
+    ObservationSpec,
+    DimensionProperty,
+    BehaviorSpec,
     DecisionSteps,
     TerminalSteps,
+    ObservationType,
 )
 from mlagents_envs.exception import UnityObservationException
 from mlagents_envs.timers import hierarchical_timer, timed
@@ -30,12 +33,41 @@ def behavior_spec_from_proto(
     :param agent_info: protobuf object.
     :return: BehaviorSpec object.
     """
-    observation_shape = [tuple(obs.shape) for obs in agent_info.observations]
-    if brain_param_proto.vector_action_space_type == 1:
-        action_spec = ActionSpec(brain_param_proto.vector_action_size[0], ())
+    observation_specs = []
+    for obs in agent_info.observations:
+        observation_specs.append(
+            ObservationSpec(
+                name=obs.name,
+                shape=tuple(obs.shape),
+                observation_type=ObservationType(obs.observation_type),
+                dimension_property=tuple(
+                    DimensionProperty(dim) for dim in obs.dimension_properties
+                )
+                if len(obs.dimension_properties) > 0
+                else (DimensionProperty.UNSPECIFIED,) * len(obs.shape),
+            )
+        )
+
+    # proto from communicator < v1.3 does not set action spec, use deprecated fields instead
+    if (
+        brain_param_proto.action_spec.num_continuous_actions == 0
+        and brain_param_proto.action_spec.num_discrete_actions == 0
+    ):
+        if brain_param_proto.vector_action_space_type_deprecated == 1:
+            action_spec = ActionSpec(
+                brain_param_proto.vector_action_size_deprecated[0], ()
+            )
+        else:
+            action_spec = ActionSpec(
+                0, tuple(brain_param_proto.vector_action_size_deprecated)
+            )
     else:
-        action_spec = ActionSpec(0, tuple(brain_param_proto.vector_action_size))
-    return BehaviorSpec(observation_shape, action_spec)
+        action_spec_proto = brain_param_proto.action_spec
+        action_spec = ActionSpec(
+            action_spec_proto.num_continuous_actions,
+            tuple(branch for branch in action_spec_proto.discrete_branch_sizes),
+        )
+    return BehaviorSpec(observation_specs, action_spec)
 
 
 class OffsetBytesIO:
@@ -158,8 +190,28 @@ def _process_images_num_channels(image_arrays, expected_channels):
     return img
 
 
+def _check_observations_match_spec(
+    obs_index: int,
+    observation_spec: ObservationSpec,
+    agent_info_list: Collection[AgentInfoProto],
+) -> None:
+    """
+    Check that all the observations match the expected size.
+    This gives a nicer error than a cryptic numpy error later.
+    """
+    expected_obs_shape = tuple(observation_spec.shape)
+    for agent_info in agent_info_list:
+        agent_obs_shape = tuple(agent_info.observations[obs_index].shape)
+        if expected_obs_shape != agent_obs_shape:
+            raise UnityObservationException(
+                f"Observation at index={obs_index} for agent with "
+                f"id={agent_info.id} didn't match the ObservationSpec. "
+                f"Expected shape {expected_obs_shape} but got {agent_obs_shape}."
+            )
+
+
 @timed
-def observation_to_np_array(
+def _observation_to_np_array(
     obs: ObservationProto, expected_shape: Optional[Iterable[int]] = None
 ) -> np.ndarray:
     """
@@ -192,20 +244,25 @@ def observation_to_np_array(
 
 
 @timed
-def _process_visual_observation(
+def _process_maybe_compressed_observation(
     obs_index: int,
-    shape: Tuple[int, int, int],
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
+    observation_spec: ObservationSpec,
+    agent_info_list: Collection[AgentInfoProto],
 ) -> np.ndarray:
+    shape = cast(Tuple[int, int, int], observation_spec.shape)
     if len(agent_info_list) == 0:
         return np.zeros((0, shape[0], shape[1], shape[2]), dtype=np.float32)
 
-    batched_visual = [
-        observation_to_np_array(agent_obs.observations[obs_index], shape)
-        for agent_obs in agent_info_list
-    ]
+    try:
+        batched_visual = [
+            _observation_to_np_array(agent_obs.observations[obs_index], shape)
+            for agent_obs in agent_info_list
+        ]
+    except ValueError:
+        # Try to get a more useful error message
+        _check_observations_match_spec(obs_index, observation_spec, agent_info_list)
+        # If that didn't raise anything, raise the original error
+        raise
     return np.array(batched_visual, dtype=np.float32)
 
 
@@ -230,32 +287,33 @@ def _raise_on_nan_and_inf(data: np.array, source: str) -> np.array:
 
 
 @timed
-def _process_vector_observation(
+def _process_rank_one_or_two_observation(
     obs_index: int,
-    shape: Tuple[int, ...],
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
+    observation_spec: ObservationSpec,
+    agent_info_list: Collection[AgentInfoProto],
 ) -> np.ndarray:
     if len(agent_info_list) == 0:
-        return np.zeros((0,) + shape, dtype=np.float32)
-    np_obs = np.array(
-        [
-            agent_obs.observations[obs_index].float_data.data
-            for agent_obs in agent_info_list
-        ],
-        dtype=np.float32,
-    ).reshape((len(agent_info_list),) + shape)
+        return np.zeros((0,) + observation_spec.shape, dtype=np.float32)
+    try:
+        np_obs = np.array(
+            [
+                agent_obs.observations[obs_index].float_data.data
+                for agent_obs in agent_info_list
+            ],
+            dtype=np.float32,
+        ).reshape((len(agent_info_list),) + observation_spec.shape)
+    except ValueError:
+        # Try to get a more useful error message
+        _check_observations_match_spec(obs_index, observation_spec, agent_info_list)
+        # If that didn't raise anything, raise the original error
+        raise
     _raise_on_nan_and_inf(np_obs, "observations")
     return np_obs
 
 
 @timed
 def steps_from_proto(
-    agent_info_list: Collection[
-        AgentInfoProto
-    ],  # pylint: disable=unsubscriptable-object
-    behavior_spec: BehaviorSpec,
+    agent_info_list: Collection[AgentInfoProto], behavior_spec: BehaviorSpec
 ) -> Tuple[DecisionSteps, TerminalSteps]:
     decision_agent_info_list = [
         agent_info for agent_info in agent_info_list if not agent_info.done
@@ -265,29 +323,28 @@ def steps_from_proto(
     ]
     decision_obs_list: List[np.ndarray] = []
     terminal_obs_list: List[np.ndarray] = []
-    for obs_index, obs_shape in enumerate(behavior_spec.observation_shapes):
-        is_visual = len(obs_shape) == 3
+    for obs_index, observation_spec in enumerate(behavior_spec.observation_specs):
+        is_visual = len(observation_spec.shape) == 3
         if is_visual:
-            obs_shape = cast(Tuple[int, int, int], obs_shape)
             decision_obs_list.append(
-                _process_visual_observation(
-                    obs_index, obs_shape, decision_agent_info_list
+                _process_maybe_compressed_observation(
+                    obs_index, observation_spec, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
-                _process_visual_observation(
-                    obs_index, obs_shape, terminal_agent_info_list
+                _process_maybe_compressed_observation(
+                    obs_index, observation_spec, terminal_agent_info_list
                 )
             )
         else:
             decision_obs_list.append(
-                _process_vector_observation(
-                    obs_index, obs_shape, decision_agent_info_list
+                _process_rank_one_or_two_observation(
+                    obs_index, observation_spec, decision_agent_info_list
                 )
             )
             terminal_obs_list.append(
-                _process_vector_observation(
-                    obs_index, obs_shape, terminal_agent_info_list
+                _process_rank_one_or_two_observation(
+                    obs_index, observation_spec, terminal_agent_info_list
                 )
             )
     decision_rewards = np.array(
@@ -297,12 +354,26 @@ def steps_from_proto(
         [agent_info.reward for agent_info in terminal_agent_info_list], dtype=np.float32
     )
 
+    decision_group_rewards = np.array(
+        [agent_info.group_reward for agent_info in decision_agent_info_list],
+        dtype=np.float32,
+    )
+    terminal_group_rewards = np.array(
+        [agent_info.group_reward for agent_info in terminal_agent_info_list],
+        dtype=np.float32,
+    )
+
     _raise_on_nan_and_inf(decision_rewards, "rewards")
     _raise_on_nan_and_inf(terminal_rewards, "rewards")
+    _raise_on_nan_and_inf(decision_group_rewards, "group_rewards")
+    _raise_on_nan_and_inf(terminal_group_rewards, "group_rewards")
+
+    decision_group_id = [agent_info.group_id for agent_info in decision_agent_info_list]
+    terminal_group_id = [agent_info.group_id for agent_info in terminal_agent_info_list]
 
     max_step = np.array(
         [agent_info.max_step_reached for agent_info in terminal_agent_info_list],
-        dtype=np.bool,
+        dtype=bool,
     )
     decision_agent_id = np.array(
         [agent_info.id for agent_info in decision_agent_info_list], dtype=np.int32
@@ -318,7 +389,7 @@ def steps_from_proto(
         ):
             n_agents = len(decision_agent_info_list)
             a_size = np.sum(behavior_spec.action_spec.discrete_branches)
-            mask_matrix = np.ones((n_agents, a_size), dtype=np.bool)
+            mask_matrix = np.ones((n_agents, a_size), dtype=bool)
             for agent_index, agent_info in enumerate(decision_agent_info_list):
                 if agent_info.action_mask is not None:
                     if len(agent_info.action_mask) == a_size:
@@ -326,16 +397,28 @@ def steps_from_proto(
                             False if agent_info.action_mask[k] else True
                             for k in range(a_size)
                         ]
-            action_mask = (1 - mask_matrix).astype(np.bool)
+            action_mask = (1 - mask_matrix).astype(bool)
             indices = _generate_split_indices(
                 behavior_spec.action_spec.discrete_branches
             )
             action_mask = np.split(action_mask, indices, axis=1)
     return (
         DecisionSteps(
-            decision_obs_list, decision_rewards, decision_agent_id, action_mask
+            decision_obs_list,
+            decision_rewards,
+            decision_agent_id,
+            action_mask,
+            decision_group_id,
+            decision_group_rewards,
         ),
-        TerminalSteps(terminal_obs_list, terminal_rewards, max_step, terminal_agent_id),
+        TerminalSteps(
+            terminal_obs_list,
+            terminal_rewards,
+            max_step,
+            terminal_agent_id,
+            terminal_group_id,
+            terminal_group_rewards,
+        ),
     )
 
 

@@ -4,6 +4,21 @@ import yaml
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents_envs.environment import UnityEnvironment
 import argparse
+from mlagents_envs import logging_util
+
+logger = logging_util.get_logger(__name__)
+
+
+class RaiseRemovedWarning(argparse.Action):
+    """
+    Internal custom Action to raise warning when argument is called.
+    """
+
+    def __init__(self, nargs=0, **kwargs):
+        super().__init__(nargs=nargs, **kwargs)
+
+    def __call__(self, arg_parser, namespace, values, option_string=None):
+        logger.warning(f"The command line argument {option_string} was removed.")
 
 
 class DetectDefault(argparse.Action):
@@ -77,6 +92,14 @@ def _create_parser() -> argparse.ArgumentParser:
         "behavior names as the current agents in your scene.",
     )
     argparser.add_argument(
+        "--deterministic",
+        default=False,
+        dest="deterministic",
+        action=DetectDefaultStoreTrue,
+        help="Whether to select actions deterministically in policy. `dist.mean` for continuous action "
+        "space, and `dist.argmax` for deterministic action space ",
+    )
+    argparser.add_argument(
         "--force",
         default=False,
         dest="force",
@@ -146,6 +169,15 @@ def _create_parser() -> argparse.ArgumentParser:
         "from when training",
         action=DetectDefault,
     )
+
+    argparser.add_argument(
+        "--num-areas",
+        default=1,
+        type=int,
+        help="The number of parallel training areas in each Unity environment instance.",
+        action=DetectDefault,
+    )
+
     argparser.add_argument(
         "--debug",
         default=False,
@@ -163,24 +195,42 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefault,
     )
     argparser.add_argument(
-        "--cpu",
-        default=False,
-        action=DetectDefaultStoreTrue,
-        help="Forces training using CPU only",
+        "--max-lifetime-restarts",
+        default=10,
+        help="The max number of times a single Unity executable can crash over its lifetime before ml-agents exits. "
+        "Can be set to -1 if no limit is desired.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--restarts-rate-limit-n",
+        default=1,
+        help="The maximum number of times a single Unity executable can crash over a period of time (period set in "
+        "restarts-rate-limit-period-s). Can be set to -1 to not use rate limiting with restarts.",
+        action=DetectDefault,
+    )
+    argparser.add_argument(
+        "--restarts-rate-limit-period-s",
+        default=60,
+        help="The period of time --restarts-rate-limit-n applies to.",
+        action=DetectDefault,
     )
     argparser.add_argument(
         "--torch",
         default=False,
-        action=DetectDefaultStoreTrue,
-        help="Use the PyTorch framework. Note that this option is not required anymore as PyTorch is the"
-        "default framework, and will be removed in the next release.",
+        action=RaiseRemovedWarning,
+        help="(Removed) Use the PyTorch framework.",
     )
     argparser.add_argument(
         "--tensorflow",
         default=False,
-        action=DetectDefaultStoreTrue,
-        help="(Deprecated) Use the TensorFlow framework instead of PyTorch. Install TensorFlow "
-        "before using this option.",
+        action=RaiseRemovedWarning,
+        help="(Removed) Use the TensorFlow framework.",
+    )
+    argparser.add_argument(
+        "--results-dir",
+        default="results",
+        action=DetectDefault,
+        help="Results base directory",
     )
 
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
@@ -238,6 +288,15 @@ def _create_parser() -> argparse.ArgumentParser:
         action=DetectDefaultStoreTrue,
         help="Whether to run the Unity executable in no-graphics mode (i.e. without initializing "
         "the graphics driver. Use this only if your agents don't use visual observations.",
+    )
+
+    torch_conf = argparser.add_argument_group(title="Torch Configuration")
+    torch_conf.add_argument(
+        "--torch-device",
+        default=None,
+        dest="device",
+        action=DetectDefault,
+        help='Settings for the default torch.device used in training, for example, "cpu", "cuda", or "cuda:0"',
     )
     return argparser
 

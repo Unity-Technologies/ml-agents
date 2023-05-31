@@ -17,7 +17,17 @@ namespace Unity.MLAgents
         /// To avoid conflicts when training with multiple concurrent environments, only
         /// stats from worker index 0 will be tracked.
         /// </summary>
-        MostRecent = 1
+        MostRecent = 1,
+
+        /// <summary>
+        /// Values within the summary period are summed up before reporting.
+        /// </summary>
+        Sum = 2,
+
+        /// <summary>
+        /// Values within the summary period are reported as a histogram.
+        /// </summary>
+        Histogram = 3
     }
 
     /// <summary>

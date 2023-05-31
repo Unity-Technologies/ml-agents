@@ -44,8 +44,9 @@ GameObject:
   - component: {fileID: 3019509692332007781}
   - component: {fileID: 3019509692332007778}
   - component: {fileID: 3019509692332007776}
-  - component: {fileID: 3019509692332007780}
   - component: {fileID: 3019509692332007783}
+  - component: {fileID: 8270768986451624427}
+  - component: {fileID: 5564406567458194538}
   m_Layer: 0
   m_Name: Match3 Agent
   m_TagString: Untagged
@@ -82,11 +83,15 @@ MonoBehaviour:
   m_BrainParameters:
     VectorObservationSize: 0
     NumStackedVectorObservations: 1
+    m_ActionSpec:
+      m_NumContinuousActions: 0
+      BranchSizes: 
     VectorActionSize: 
     VectorActionDescriptions: []
     VectorActionSpaceType: 0
-  m_Model: {fileID: 11400000, guid: 48d14da88fea74d0693c691c6e3f2e34, type: 3}
-  m_InferenceDevice: 0
+    hasUpgradedBrainParametersWithActionSpec: 1
+  m_Model: {fileID: 11400000, guid: 28ccdfd7cb3d941ce8af0ab89e06130a, type: 3}
+  m_InferenceDevice: 2
   m_BehaviorType: 0
   m_BehaviorName: Match3VisualObs
   TeamId: 0
@@ -112,7 +117,6 @@ MonoBehaviour:
   Board: {fileID: 0}
   MoveTime: 0.25
   MaxMoves: 500
-  HeuristicQuality: 0
 --- !u!114 &3019509692332007778
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -127,7 +131,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   DebugMoveIndex: -1
   CubeSpacing: 1.25
-  Board: {fileID: 0}
   TilePrefab: {fileID: 4007900521885639951, guid: faee4e805953b49e688bd00b45c55f2e,
     type: 3}
 --- !u!114 &3019509692332007776
@@ -142,28 +145,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6d852a063770348b68caa91b8e7642a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Rows: 9
-  Columns: 8
+  MinRows: 6
+  MaxRows: 9
+  MinColumns: 6
+  MaxColumns: 8
   NumCellTypes: 6
   NumSpecialTypes: 2
-  RandomSeed: -1
   BasicCellPoints: 1
   SpecialCell1Points: 2
   SpecialCell2Points: 3
---- !u!114 &3019509692332007780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3019509692332007790}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 08e4b0da54cb4d56bfcbae22dd49ab8d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ActuatorName: Match3 Actuator
-  ForceHeuristic: 0
+  RandomSeed: -1
 --- !u!114 &3019509692332007783
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -178,3 +169,31 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   SensorName: Match3 Sensor
   ObservationType: 2
+--- !u!114 &8270768986451624427
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3019509692332007790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b17adcc6c9b241da903aa134f2dac930, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ActuatorName: Match3 Actuator
+  RandomSeed: -1
+  ForceHeuristic: 0
+--- !u!114 &5564406567458194538
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3019509692332007790}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3a6da8f78a394c6ab027688eab81e04d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  debugCommandLineOverride: 

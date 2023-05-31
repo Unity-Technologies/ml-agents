@@ -6,14 +6,13 @@ import attr
 import cattr
 
 from mlagents.torch_utils import torch
-from mlagents.tf_utils import tf, is_available as tf_is_available
 from mlagents_envs.logging_util import get_logger
 from mlagents.trainers import __version__
 from mlagents.trainers.exception import TrainerError
 
 logger = get_logger(__name__)
 
-STATUS_FORMAT_VERSION = "0.2.0"
+STATUS_FORMAT_VERSION = "0.3.0"
 
 
 class StatusType(Enum):
@@ -21,6 +20,7 @@ class StatusType(Enum):
     STATS_METADATA = "metadata"
     CHECKPOINTS = "checkpoints"
     FINAL_CHECKPOINT = "final_checkpoint"
+    ELO = "elo"
 
 
 @attr.s(auto_attribs=True)
@@ -28,7 +28,6 @@ class StatusMetaData:
     stats_format_version: str = STATUS_FORMAT_VERSION
     mlagents_version: str = __version__
     torch_version: str = torch.__version__
-    tensorflow_version: str = tf.__version__ if tf_is_available() else -1
 
     def to_dict(self) -> Dict[str, str]:
         return cattr.unstructure(self)
@@ -46,10 +45,6 @@ class StatusMetaData:
         if self.mlagents_version != other.mlagents_version:
             logger.warning(
                 "Checkpoint was loaded from a different version of ML-Agents. Some things may not resume properly."
-            )
-        if self.tensorflow_version != other.tensorflow_version:
-            logger.warning(
-                "Tensorflow checkpoint was saved with a different version of Tensorflow. Model may not resume properly."
             )
         if self.torch_version != other.torch_version:
             logger.warning(

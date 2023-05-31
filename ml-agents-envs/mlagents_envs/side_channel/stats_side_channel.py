@@ -14,6 +14,12 @@ class StatsAggregationMethod(Enum):
     # Only the most recent value is reported.
     MOST_RECENT = 1
 
+    # Values within the summary period are summed up before reporting.
+    SUM = 2
+
+    # All values within a summary period are reported as a histogram.
+    HISTOGRAM = 3
+
 
 StatList = List[Tuple[float, StatsAggregationMethod]]
 EnvironmentStats = Mapping[str, StatList]
@@ -35,6 +41,7 @@ class StatsSideChannel(SideChannel):
     def on_message_received(self, msg: IncomingMessage) -> None:
         """
         Receive the message from the environment, and save it for later retrieval.
+
         :param msg:
         :return:
         """
@@ -47,6 +54,7 @@ class StatsSideChannel(SideChannel):
     def get_and_reset_stats(self) -> EnvironmentStats:
         """
         Returns the current stats, and resets the internal storage of the stats.
+
         :return:
         """
         s = self.stats

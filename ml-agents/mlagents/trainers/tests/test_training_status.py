@@ -60,18 +60,21 @@ def test_model_management(tmpdir):
             "file_path": os.path.join(final_model_path, f"{brain_name}-1.nn"),
             "reward": 1.312,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
         {
             "steps": 2,
             "file_path": os.path.join(final_model_path, f"{brain_name}-2.nn"),
             "reward": 1.912,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
         {
             "steps": 3,
             "file_path": os.path.join(final_model_path, f"{brain_name}-3.nn"),
             "reward": 2.312,
             "creation_time": time.time(),
+            "auxillary_file_paths": [],
         },
     ]
     GlobalTrainingStatus.set_parameter_state(
@@ -117,8 +120,8 @@ class StatsMetaDataTest(unittest.TestCase):
             version_statsmetadata = StatusMetaData(mlagents_version="test")
             default_metadata.check_compatibility(version_statsmetadata)
 
-            tf_version_statsmetadata = StatusMetaData(tensorflow_version="test")
-            default_metadata.check_compatibility(tf_version_statsmetadata)
+            torch_version_statsmetadata = StatusMetaData(torch_version="test")
+            default_metadata.check_compatibility(torch_version_statsmetadata)
 
         # Assert that 2 warnings have been thrown
         assert len(cm.output) == 2

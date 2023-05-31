@@ -1,18 +1,202 @@
 # Upgrading
 
-## :warning: Warning :warning:
+# Migrating
+<!---
+TODO: update ml-agents-env package version before release
+--->
+## Migrating to the ml-agents-envs 0.29.0 package
+- Python 3.8 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
+  Please update your python installation to 3.8.13 or higher.
+- The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
+- Example:
+  - Before
+```python
+from gym_unity.unity_gym_env import UnityToGymWrapper
+```
+  - After:
+```python
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+```
 
-The C# editor code and python trainer code are not compatible between releases.
-This means that if you upgrade one, you _must_ upgrade the other as well. If you
-experience new errors or unable to connect to training after updating, please
-double-check that the versions are in the same. The versions can be found in
 
-- `Academy.k_ApiVersion` in Academy.cs
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/UnitySDK/Assets/ML-Agents/Scripts/Academy.cs#L95))
-- `UnityEnvironment.API_VERSION` in environment.py
-  ([example](https://github.com/Unity-Technologies/ml-agents/blob/b255661084cb8f701c716b040693069a3fb9a257/ml-agents-envs/mlagents/envs/environment.py#L45))
+## Migrating the package to version 2.0
+- The official version of Unity ML-Agents supports is now 2021.3 LTS. If you run
+  into issues, please consider deleting your project's Library folder and reponening your
+  project.
+- If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
+deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
+
+### Deprecated methods removed
+| **Deprecated API** | **Suggested Replacement** |
+|:-------:|:------:|
+| `IActuator ActuatorComponent.CreateActuator()` | `IActuator[] ActuatorComponent.CreateActuators()` |
+| `IActionReceiver.PackActions(in float[] destination)` | none |
+| `Agent.CollectDiscreteActionMasks(DiscreteActionMasker actionMasker)` | `Agent.WriteDiscreteActionMask(IDiscreteActionMask actionMask)` |
+| `Agent.Heuristic(float[] actionsOut)` | `Agent.Heuristic(in ActionBuffers actionsOut)` |
+| `Agent.OnActionReceived(float[] vectorAction)` | `Agent.OnActionReceived(ActionBuffers actions)` |
+| `Agent.GetAction()` | `Agent.GetStoredActionBuffers()` |
+| `BrainParameters.SpaceType`, `VectorActionSize`, `VectorActionSpaceType`, and `NumActions` | `BrainParameters.ActionSpec` |
+| `ObservationWriter.AddRange(IEnumerable<float> data, int writeOffset = 0)` | `ObservationWriter. AddList(IList<float> data, int writeOffset = 0` |
+| `SensorComponent.IsVisual()` and `IsVector()` | none |
+| `VectorSensor.AddObservation(IEnumerable<float> observation)` | `VectorSensor.AddObservation(IList<float> observation)` |
+| `SideChannelsManager` | `SideChannelManager` |
+
+### IDiscreteActionMask changes
+- The interface for disabling specific discrete actions has changed. `IDiscreteActionMask.WriteMask()` was removed,
+and replaced with `SetActionEnabled()`. Instead of returning an IEnumerable with indices to disable, you can
+now call `SetActionEnabled` for each index to disable (or enable). As an example, if you overrode
+`Agent.WriteDiscreteActionMask()` with something that looked like:
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    var actionsToDisable = new[] {1, 3};
+    actionMask.WriteMask(branch, actionsToDisable);
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
+{
+    var branch = 2;
+    actionMask.SetActionEnabled(branch, 1, false);
+    actionMask.SetActionEnabled(branch, 3, false);
+}
+```
+### IActuator changes
+- The `IActuator` interface now implements `IHeuristicProvider`.  Please add the corresponding `Heuristic(in ActionBuffers)`
+method to your custom Actuator classes.
+
+### ISensor and SensorComponent changes
+- The `ISensor.GetObservationShape()` method and `ITypedSensor`
+and `IDimensionPropertiesSensor` interfaces were removed, and `GetObservationSpec()` was added. You can use
+`ObservationSpec.Vector()` or `ObservationSpec.Visual()` to generate `ObservationSpec`s that are equivalent to
+the previous shape. For example, if your old ISensor looked like:
+
+```csharp
+public override int[] GetObservationShape()
+{
+    return new[] { m_Height, m_Width, m_NumChannels };
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public override ObservationSpec GetObservationSpec()
+{
+    return ObservationSpec.Visual(m_Height, m_Width, m_NumChannels);
+}
+```
+
+- The `ISensor.GetCompressionType()` method and `ISparseChannelSensor` interface was removed,
+and `GetCompressionSpec()` was added. You can use `CompressionSpec.Default()` or
+`CompressionSpec.Compressed()` to generate `CompressionSpec`s that are  equivalent to
+ the previous values. For example, if your old ISensor looked like:
+ ```csharp
+public virtual SensorCompressionType GetCompressionType()
+{
+    return SensorCompressionType.None;
+}
+```
+
+the equivalent code would now be
+
+```csharp
+public CompressionSpec GetCompressionSpec()
+{
+    return CompressionSpec.Default();
+}
+```
+
+- The abstract method `SensorComponent.GetObservationShape()` was removed.
+- The abstract method `SensorComponent.CreateSensor()` was replaced with `CreateSensors()`, which returns an `ISensor[]`.
+
+### Match3 integration changes
+The Match-3 integration utilities were moved from `com.unity.ml-agents.extensions` to `com.unity.ml-agents`.
+
+The `AbstractBoard` interface was changed:
+* `AbstractBoard` no longer contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields.
+* `public abstract BoardSize GetMaxBoardSize()` was added as an abstract method. `BoardSize` is a new struct that
+contains `Rows`, `Columns`, `NumCellTypes`, and `NumSpecialTypes` fields, with the same meanings as the old
+`AbstractBoard` fields.
+* `public virtual BoardSize GetCurrentBoardSize()` is an optional method; by default it returns `GetMaxBoardSize()`. If
+you wish to use a single behavior to work with multiple board sizes, override `GetCurrentBoardSize()` to return the
+current `BoardSize`. The values returned by `GetCurrentBoardSize()` must be less than or equal to the corresponding
+values from `GetMaxBoardSize()`.
+
+### GridSensor changes
+The sensor configuration has changed:
+* The sensor implementation has been refactored and exsisting GridSensor created from extension package
+will not work in newer version. Some errors might show up when loading the old sensor in the scene.
+You'll need to remove the old sensor and create a new GridSensor.
+* These parameters names have changed but still refer to the same concept in the sensor: `GridNumSide` -> `GridSize`,
+`RotateToAgent` -> `RotateWithAgent`, `ObserveMask` -> `ColliderMask`, `DetectableObjects` -> `DetectableTags`
+* `DepthType` (`ChanelBase`/`ChannelHot`) option and `ChannelDepth` are removed. Now the default is
+one-hot encoding for detected tag. If you were using original GridSensor without overriding any method,
+switching to new GridSensor will produce similar effect for training although the actual observations
+will be slightly different.
+
+For creating your GridSensor implementation with custom data:
+* To create custom GridSensor, derive from `GridSensorBase` instead of `GridSensor`. Besides overriding
+`GetObjectData()`, you will also need to consider override `GetCellObservationSize()`, `IsDataNormalized()`
+and `GetProcessCollidersMethod()` according to the data you collect. Also you'll need to override
+`GridSensorComponent.GetGridSensors()` and return your custom GridSensor.
+* The input argument `tagIndex` in `GetObjectData()` has changed from 1-indexed to 0-indexed and the
+data type changed from `float` to `int`. The index of first detectable tag will be 0 instead of 1.
+`normalizedDistance` was removed from input.
+* The observation data should be written to the input `dataBuffer` instead of creating and returning a new array.
+* Removed the constraint of all data required to be normalized. You should specify it in `IsDataNormalized()`.
+Sensors with non-normalized data cannot use PNG compression type.
+* The sensor will not further encode the data recieved from `GetObjectData()` anymore. The values
+recieved from `GetObjectData()` will be the observation sent to the trainer.
+
+### LSTM models from previous releases no longer supported
+The way the Unity Inference Engine processes LSTM (recurrent neural networks) has changed. As a result, models
+trained with previous versions of ML-Agents will not be usable at inference if they were trained with a `memory`
+setting in the `.yaml` config file.
+If you want to use a model that has a recurrent neural network in this release of ML-Agents, you need to train
+the model using the python trainer from this release.
+
+
+## Migrating to Release 13
+### Implementing IHeuristic in your IActuator implementations
+ - If you have any custom actuators, you can now implement the `IHeuristicProvider` interface to have your actuator
+  handle the generation of actions when an Agent is running in heuristic mode.
+- `VectorSensor.AddObservation(IEnumerable<float>)` is deprecated. Use `VectorSensor.AddObservation(IList<float>)`
+  instead.
+- `ObservationWriter.AddRange()` is deprecated. Use `ObservationWriter.AddList()` instead.
+- `ActuatorComponent.CreateAcuator()` is deprecated.  Please use override `ActuatorComponent.CreateActuators`
+  instead.  Since `ActuatorComponent.CreateActuator()` is abstract, you will still need to override it in your
+  class until it is removed.  It is only ever called if you don't override `ActuatorComponent.CreateActuators`.
+  You can suppress the warnings by surrounding the method with the following pragma:
+    ```c#
+    #pragma warning disable 672
+    public IActuator CreateActuator() { ... }
+    #pragma warning restore 672
+    ```
+
 
 # Migrating
+## Migrating to Release 11
+### Agent virtual method deprecation
+ - `Agent.CollectDiscreteActionMasks()` was deprecated and should be replaced with `Agent.WriteDiscreteActionMask()`
+ - `Agent.Heuristic(float[])` was deprecated and should be replaced with `Agent.Heuristic(ActionBuffers)`.
+ - `Agent.OnActionReceived(float[])` was deprecated and should be replaced with `Agent.OnActionReceived(ActionBuffers)`.
+ - `Agent.GetAction()` was deprecated and should be replaced with `Agent.GetStoredActionBuffers()`.
+
+The default implementation of these will continue to call the deprecated versions where appropriate. However, the
+deprecated versions may not be compatible with continuous and discrete actions on the same Agent.
+
+### BrainParameters field and method deprecation
+ - `BrainParameters.VectorActionSize` was deprecated; you can now set `BrainParameters.ActionSpec.NumContinuousActions`
+ or `BrainParameters.ActionSpec.BranchSizes` instead.
+ - `BrainParameters.VectorActionSpaceType` was deprecated, since both continuous and discrete actions can now be used.
+ - `BrainParameters.NumActions()` was deprecated. Use  `BrainParameters.ActionSpec.NumContinuousActions` and
+ `BrainParameters.ActionSpec.NumDiscreteActions` instead.
 
 ## Migrating from Release 7 to latest
 
@@ -34,7 +218,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/master/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
@@ -94,9 +278,9 @@ vector observations to be used simultaneously.
 - The `play_against_current_self_ratio` self-play trainer hyperparameter has
   been renamed to `play_against_latest_model_ratio`
 - Removed the multi-agent gym option from the gym wrapper. For multi-agent
-  scenarios, use the [Low Level Python API](Python-API.md).
+  scenarios, use the [Low Level Python API](Python-LLAPI.md).
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. If
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. If
   you use `mlagents-learn` for training, this should be a transparent change.
 - The obsolete `Agent` methods `GiveModel`, `Done`, `InitializeAgent`,
   `AgentAction` and `AgentReset` have been removed.
@@ -321,7 +505,7 @@ vector observations to be used simultaneously.
 ### Important changes
 
 - The low level Python API has changed. You can look at the document
-  [Low Level Python API documentation](Python-API.md) for more information. This
+  [Low Level Python API documentation](Python-LLAPI.md) for more information. This
   should only affect you if you're writing a custom trainer; if you use
   `mlagents-learn` for training, this should be a transparent change.
   - `reset()` on the Low-Level Python API no longer takes a `train_mode`
@@ -331,7 +515,7 @@ vector observations to be used simultaneously.
     `UnityEnvironment` no longer has a `reset_parameters` field. To modify float
     properties in the environment, you must use a `FloatPropertiesChannel`. For
     more information, refer to the
-    [Low Level Python API documentation](Python-API.md)
+    [Low Level Python API documentation](Python-LLAPI.md)
 - `CustomResetParameters` are now removed.
 - The Academy no longer has a `Training Configuration` nor
   `Inference Configuration` field in the inspector. To modify the configuration

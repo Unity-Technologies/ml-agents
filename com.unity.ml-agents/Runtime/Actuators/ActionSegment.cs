@@ -107,19 +107,38 @@ namespace Unity.MLAgents.Actuators
             System.Array.Clear(Array, Offset, Length);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Check if the segment is empty.
+        /// </summary>
+        /// <returns>Whether or not the segment is empty.</returns>
+        public bool IsEmpty()
+        {
+            return Array == null || Array.Length == 0;
+        }
+
+        /// <summary>
+        /// Returns an enumerator that iterates through the ActionSegment.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the ActionSegment.</returns>
         IEnumerator<T> IEnumerable<T>.GetEnumerator()
         {
             return new Enumerator(this);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Returns an enumerator that iterates through the ActionSegment.
+        /// </summary>
+        /// <returns>An IEnumerator object that can be used to iterate through the ActionSegment.</returns>
         public IEnumerator GetEnumerator()
         {
             return new Enumerator(this);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current ActionSegment is equal to another ActionSegment.
+        /// </summary>
+        /// <param name="obj">An ActionSegment to compare with this ActionSegment.</param>
+        /// <returns>true if the current ActionSegment is equal to the other parameter; otherwise, false.</returns>
         public override bool Equals(object obj)
         {
             if (!(obj is ActionSegment<T>))
@@ -129,13 +148,20 @@ namespace Unity.MLAgents.Actuators
             return Equals((ActionSegment<T>)obj);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Indicates whether the current ActionSegment is equal to another ActionSegment.
+        /// </summary>
+        /// <param name="other">An ActionSegment to compare with this ActionSegment.</param>
+        /// <returns>true if the current ActionSegment is equal to the other parameter; otherwise, false.</returns>
         public bool Equals(ActionSegment<T> other)
         {
             return Offset == other.Offset && Length == other.Length && Array.SequenceEqual(other.Array);
         }
 
-        /// <inheritdoc/>
+        /// <summary>
+        /// Computes the hash code of the ActionSegment.
+        /// </summary>
+        /// <returns>A hash code for the current ActionSegment.</returns>
         public override int GetHashCode()
         {
             unchecked

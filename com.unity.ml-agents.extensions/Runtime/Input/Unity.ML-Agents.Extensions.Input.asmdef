@@ -1,0 +1,23 @@
+{
+    "name": "Unity.ML-Agents.Extensions.Input",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.Barracuda",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.3.0",
+            "define": "MLA_INPUT_SYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}

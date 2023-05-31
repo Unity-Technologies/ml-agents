@@ -1,3 +1,4 @@
+import os.path
 import warnings
 
 import attr
@@ -29,6 +30,7 @@ from mlagents_envs import logging_util
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
 )
+from mlagents.plugins import all_trainer_settings, all_trainer_types
 
 logger = logging_util.get_logger(__name__)
 
@@ -41,6 +43,19 @@ def check_and_structure(key: str, value: Any, class_type: type) -> Any:
         )
     # Apply cattr structure to the values
     return cattr.structure(value, attr_fields_dict[key].type)
+
+
+def check_hyperparam_schedules(val: Dict, trainer_type: str) -> Dict:
+    # Check if beta and epsilon are set. If not, set to match learning rate schedule.
+    if trainer_type == "ppo" or trainer_type == "poca":
+        if "beta_schedule" not in val.keys() and "learning_rate_schedule" in val.keys():
+            val["beta_schedule"] = val["learning_rate_schedule"]
+        if (
+            "epsilon_schedule" not in val.keys()
+            and "learning_rate_schedule" in val.keys()
+        ):
+            val["epsilon_schedule"] = val["learning_rate_schedule"]
+    return val
 
 
 def strict_to_cls(d: Mapping, t: type) -> Any:
@@ -69,7 +84,6 @@ def deep_update_dict(d: Dict, update_d: Mapping) -> None:
 
 
 class SerializationSettings:
-    convert_to_barracuda = True
     convert_to_onnx = True
     onnx_opset = 9
 
@@ -81,6 +95,7 @@ class ExportableSettings:
 
 
 class EncoderType(Enum):
+    FULLY_CONNECTED = "fully_connected"
     MATCH3 = "match3"
     SIMPLE = "simple"
     NATURE_CNN = "nature_cnn"
@@ -90,6 +105,13 @@ class EncoderType(Enum):
 class ScheduleType(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
+    # TODO add support for lesson based scheduling
+    # LESSON = "lesson"
+
+
+class ConditioningType(Enum):
+    HYPER = "hyper"
+    NONE = "none"
 
 
 @attr.s(auto_attribs=True)
@@ -115,6 +137,8 @@ class NetworkSettings:
     num_layers: int = 2
     vis_encode_type: EncoderType = EncoderType.SIMPLE
     memory: Optional[MemorySettings] = None
+    goal_conditioning_type: ConditioningType = ConditioningType.HYPER
+    deterministic: bool = parser.get_default("deterministic")
 
 
 @attr.s(auto_attribs=True)
@@ -138,28 +162,18 @@ class HyperparamSettings:
 
 
 @attr.s(auto_attribs=True)
-class PPOSettings(HyperparamSettings):
-    beta: float = 5.0e-3
-    epsilon: float = 0.2
-    lambd: float = 0.95
+class OnPolicyHyperparamSettings(HyperparamSettings):
     num_epoch: int = 3
-    learning_rate_schedule: ScheduleType = ScheduleType.LINEAR
 
 
 @attr.s(auto_attribs=True)
-class SACSettings(HyperparamSettings):
+class OffPolicyHyperparamSettings(HyperparamSettings):
     batch_size: int = 128
     buffer_size: int = 50000
     buffer_init_steps: int = 0
-    tau: float = 0.005
     steps_per_update: float = 1
     save_replay_buffer: bool = False
-    init_entcoef: float = 1.0
-    reward_signal_steps_per_update: float = attr.ib()
-
-    @reward_signal_steps_per_update.default
-    def _reward_signal_steps_per_update_default(self):
-        return self.steps_per_update
+    reward_signal_steps_per_update: float = 4
 
 
 # INTRINSIC REWARD SIGNALS #############################################################
@@ -183,6 +197,7 @@ class RewardSignalType(Enum):
 class RewardSignalSettings:
     gamma: float = 0.99
     strength: float = 1.0
+    network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
 
     @staticmethod
     def structure(d: Mapping, t: type) -> Any:
@@ -198,13 +213,26 @@ class RewardSignalSettings:
             enum_key = RewardSignalType(key)
             t = enum_key.to_settings()
             d_final[enum_key] = strict_to_cls(val, t)
+            # Checks to see if user specifying deprecated encoding_size for RewardSignals.
+            # If network_settings is not specified, this updates the default hidden_units
+            # to the value of encoding size. If specified, this ignores encoding size and
+            # uses network_settings values.
+            if "encoding_size" in val:
+                logger.warning(
+                    "'encoding_size' was deprecated for RewardSignals. Please use network_settings."
+                )
+                # If network settings was not specified, use the encoding size. Otherwise, use hidden_units
+                if "network_settings" not in val:
+                    d_final[enum_key].network_settings.hidden_units = val[
+                        "encoding_size"
+                    ]
         return d_final
 
 
 @attr.s(auto_attribs=True)
 class GAILSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: Optional[int] = None
     use_actions: bool = False
     use_vail: bool = False
     demo_path: str = attr.ib(kw_only=True)
@@ -212,14 +240,14 @@ class GAILSettings(RewardSignalSettings):
 
 @attr.s(auto_attribs=True)
 class CuriositySettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 3e-4
+    encoding_size: Optional[int] = None
 
 
 @attr.s(auto_attribs=True)
 class RNDSettings(RewardSignalSettings):
-    encoding_size: int = 64
     learning_rate: float = 1e-4
+    encoding_size: Optional[int] = None
 
 
 # SAMPLERS #############################################################################
@@ -583,29 +611,20 @@ class SelfPlaySettings:
     initial_elo: float = 1200.0
 
 
-class TrainerType(Enum):
-    PPO: str = "ppo"
-    SAC: str = "sac"
-
-    def to_settings(self) -> type:
-        _mapping = {TrainerType.PPO: PPOSettings, TrainerType.SAC: SACSettings}
-        return _mapping[self]
-
-
-class FrameworkType(Enum):
-    TENSORFLOW: str = "tensorflow"
-    PYTORCH: str = "pytorch"
-
-
 @attr.s(auto_attribs=True)
 class TrainerSettings(ExportableSettings):
     default_override: ClassVar[Optional["TrainerSettings"]] = None
-    trainer_type: TrainerType = TrainerType.PPO
+    trainer_type: str = "ppo"
     hyperparameters: HyperparamSettings = attr.ib()
+    checkpoint_interval: int = attr.ib()
 
     @hyperparameters.default
     def _set_default_hyperparameters(self):
-        return self.trainer_type.to_settings()()
+        return all_trainer_settings[self.trainer_type]()
+
+    @checkpoint_interval.default
+    def _set_default_checkpoint_interval(self):
+        return 500000
 
     network_settings: NetworkSettings = attr.ib(factory=NetworkSettings)
     reward_signals: Dict[RewardSignalType, RewardSignalSettings] = attr.ib(
@@ -613,17 +632,17 @@ class TrainerSettings(ExportableSettings):
     )
     init_path: Optional[str] = None
     keep_checkpoints: int = 5
-    checkpoint_interval: int = 500000
+    even_checkpoints: bool = False
     max_steps: int = 500000
     time_horizon: int = 64
     summary_freq: int = 50000
-    threaded: bool = True
+    threaded: bool = False
     self_play: Optional[SelfPlaySettings] = None
     behavioral_cloning: Optional[BehavioralCloningSettings] = None
-    framework: FrameworkType = FrameworkType.PYTORCH
 
-    cattr.register_structure_hook(
-        Dict[RewardSignalType, RewardSignalSettings], RewardSignalSettings.structure
+    cattr.register_structure_hook_func(
+        lambda t: t == Dict[RewardSignalType, RewardSignalSettings],
+        RewardSignalSettings.structure,
     )
 
     @network_settings.validator
@@ -637,8 +656,13 @@ class TrainerSettings(ExportableSettings):
                     "When using memory, sequence length must be less than or equal to batch size. "
                 )
 
+    @checkpoint_interval.validator
+    def _set_checkpoint_interval(self, attribute, value):
+        if self.even_checkpoints:
+            self.checkpoint_interval = int(self.max_steps / self.keep_checkpoints)
+
     @staticmethod
-    def dict_to_defaultdict(d: Dict, t: type) -> DefaultDict:
+    def dict_to_trainerdict(d: Dict, t: type) -> "TrainerSettings.DefaultTrainerDict":
         return TrainerSettings.DefaultTrainerDict(
             cattr.structure(d, Dict[str, TrainerSettings])
         )
@@ -662,6 +686,10 @@ class TrainerSettings(ExportableSettings):
 
         deep_update_dict(d_copy, d)
 
+        if "framework" in d_copy:
+            logger.warning("Framework option was deprecated but was specified")
+            d_copy.pop("framework", None)
+
         for key, val in d_copy.items():
             if attr.has(type(val)):
                 # Don't convert already-converted attrs classes.
@@ -672,25 +700,59 @@ class TrainerSettings(ExportableSettings):
                         "Hyperparameters were specified but no trainer_type was given."
                     )
                 else:
-                    d_copy[key] = strict_to_cls(
-                        d_copy[key], TrainerType(d_copy["trainer_type"]).to_settings()
+                    d_copy[key] = check_hyperparam_schedules(
+                        val, d_copy["trainer_type"]
                     )
+                    try:
+                        d_copy[key] = strict_to_cls(
+                            d_copy[key], all_trainer_settings[d_copy["trainer_type"]]
+                        )
+                    except KeyError:
+                        raise TrainerConfigError(
+                            f"Settings for trainer type {d_copy['trainer_type']} were not found"
+                        )
             elif key == "max_steps":
                 d_copy[key] = int(float(val))
                 # In some legacy configs, max steps was specified as a float
+            # elif key == "even_checkpoints":
+            #     if val:
+            #         d_copy["checkpoint_interval"] = int(d_copy["max_steps"] / d_copy["keep_checkpoints"])
+            elif key == "trainer_type":
+                if val not in all_trainer_types.keys():
+                    raise TrainerConfigError(f"Invalid trainer type {val} was found")
             else:
                 d_copy[key] = check_and_structure(key, val, t)
         return t(**d_copy)
 
     class DefaultTrainerDict(collections.defaultdict):
         def __init__(self, *args):
-            super().__init__(TrainerSettings, *args)
+            # Depending on how this is called, args may have the defaultdict
+            # callable at the start of the list or not. In particular, unpickling
+            # will pass [TrainerSettings].
+            if args and args[0] == TrainerSettings:
+                super().__init__(*args)
+            else:
+                super().__init__(TrainerSettings, *args)
+            self._config_specified = True
+
+        def set_config_specified(self, require_config_specified: bool) -> None:
+            self._config_specified = require_config_specified
 
         def __missing__(self, key: Any) -> "TrainerSettings":
             if TrainerSettings.default_override is not None:
-                return copy.deepcopy(TrainerSettings.default_override)
+                self[key] = copy.deepcopy(TrainerSettings.default_override)
+            elif self._config_specified:
+                raise TrainerConfigError(
+                    f"The behavior name {key} has not been specified in the trainer configuration. "
+                    f"Please add an entry in the configuration file for {key}, or set default_settings."
+                )
             else:
-                return TrainerSettings()
+                logger.warning(
+                    f"Behavior name {key} does not match any behaviors specified "
+                    f"in the trainer configuration file. A default configuration will be used."
+                )
+                self[key] = TrainerSettings()
+            return self[key]
 
 
 # COMMAND LINE #########################################################################
@@ -703,6 +765,49 @@ class CheckpointSettings:
     force: bool = parser.get_default("force")
     train_model: bool = parser.get_default("train_model")
     inference: bool = parser.get_default("inference")
+    results_dir: str = parser.get_default("results_dir")
+
+    @property
+    def write_path(self) -> str:
+        return os.path.join(self.results_dir, self.run_id)
+
+    @property
+    def maybe_init_path(self) -> Optional[str]:
+        return (
+            os.path.join(self.results_dir, self.initialize_from)
+            if self.initialize_from is not None
+            else None
+        )
+
+    @property
+    def run_logs_dir(self) -> str:
+        return os.path.join(self.write_path, "run_logs")
+
+    def prioritize_resume_init(self) -> None:
+        """Prioritize explicit command line resume/init over conflicting yaml options.
+        if both resume/init are set at one place use resume"""
+        _non_default_args = DetectDefault.non_default_args
+        if "resume" in _non_default_args:
+            if self.initialize_from is not None:
+                logger.warning(
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" Current run will be resumed ignoring initialization."
+                )
+                self.initialize_from = parser.get_default("initialize_from")
+        elif "initialize_from" in _non_default_args:
+            if self.resume:
+                logger.warning(
+                    f"Both 'resume' and 'initialize_from={self.initialize_from}' are set!"
+                    f" {self.run_id} is initialized_from {self.initialize_from} and resume will be ignored."
+                )
+                self.resume = parser.get_default("resume")
+        elif self.resume and self.initialize_from is not None:
+            # no cli args but both are set in yaml file
+            logger.warning(
+                f"Both 'resume' and 'initialize_from={self.initialize_from}' are set in yaml file!"
+                f" Current run will be resumed ignoring initialization."
+            )
+            self.initialize_from = parser.get_default("initialize_from")
 
 
 @attr.s(auto_attribs=True)
@@ -711,12 +816,23 @@ class EnvironmentSettings:
     env_args: Optional[List[str]] = parser.get_default("env_args")
     base_port: int = parser.get_default("base_port")
     num_envs: int = attr.ib(default=parser.get_default("num_envs"))
+    num_areas: int = attr.ib(default=parser.get_default("num_areas"))
     seed: int = parser.get_default("seed")
+    max_lifetime_restarts: int = parser.get_default("max_lifetime_restarts")
+    restarts_rate_limit_n: int = parser.get_default("restarts_rate_limit_n")
+    restarts_rate_limit_period_s: int = parser.get_default(
+        "restarts_rate_limit_period_s"
+    )
 
     @num_envs.validator
     def validate_num_envs(self, attribute, value):
         if value > 1 and self.env_path is None:
             raise ValueError("num_envs must be 1 if env_path is not set.")
+
+    @num_areas.validator
+    def validate_num_area(self, attribute, value):
+        if value <= 0:
+            raise ValueError("num_areas must be set to a positive number >= 1.")
 
 
 @attr.s(auto_attribs=True)
@@ -731,25 +847,33 @@ class EngineSettings:
 
 
 @attr.s(auto_attribs=True)
+class TorchSettings:
+    device: Optional[str] = parser.get_default("device")
+
+
+@attr.s(auto_attribs=True)
 class RunOptions(ExportableSettings):
     default_settings: Optional[TrainerSettings] = None
-    behaviors: DefaultDict[str, TrainerSettings] = attr.ib(
+    behaviors: TrainerSettings.DefaultTrainerDict = attr.ib(
         factory=TrainerSettings.DefaultTrainerDict
     )
     env_settings: EnvironmentSettings = attr.ib(factory=EnvironmentSettings)
     engine_settings: EngineSettings = attr.ib(factory=EngineSettings)
     environment_parameters: Optional[Dict[str, EnvironmentParameterSettings]] = None
     checkpoint_settings: CheckpointSettings = attr.ib(factory=CheckpointSettings)
+    torch_settings: TorchSettings = attr.ib(factory=TorchSettings)
 
     # These are options that are relevant to the run itself, and not the engine or environment.
     # They will be left here.
     debug: bool = parser.get_default("debug")
-    # Strict conversion
+
+    # Convert to settings while making sure all fields are valid
     cattr.register_structure_hook(EnvironmentSettings, strict_to_cls)
     cattr.register_structure_hook(EngineSettings, strict_to_cls)
     cattr.register_structure_hook(CheckpointSettings, strict_to_cls)
-    cattr.register_structure_hook(
-        Dict[str, EnvironmentParameterSettings], EnvironmentParameterSettings.structure
+    cattr.register_structure_hook_func(
+        lambda t: t == Dict[str, EnvironmentParameterSettings],
+        EnvironmentParameterSettings.structure,
     )
     cattr.register_structure_hook(Lesson, strict_to_cls)
     cattr.register_structure_hook(
@@ -760,7 +884,7 @@ class RunOptions(ExportableSettings):
     )
     cattr.register_structure_hook(TrainerSettings, TrainerSettings.structure)
     cattr.register_structure_hook(
-        DefaultDict[str, TrainerSettings], TrainerSettings.dict_to_defaultdict
+        TrainerSettings.DefaultTrainerDict, TrainerSettings.dict_to_trainerdict
     )
     cattr.register_unstructure_hook(collections.defaultdict, defaultdict_to_dict)
 
@@ -781,9 +905,14 @@ class RunOptions(ExportableSettings):
             "checkpoint_settings": {},
             "env_settings": {},
             "engine_settings": {},
+            "torch_settings": {},
         }
+        _require_all_behaviors = True
         if config_path is not None:
             configured_dict.update(load_config(config_path))
+        else:
+            # If we're not loading from a file, we don't require all behavior names to be specified.
+            _require_all_behaviors = False
 
         # Use the YAML file values for all values not specified in the CLI.
         for key in configured_dict.keys():
@@ -794,9 +923,11 @@ class RunOptions(ExportableSettings):
                         key
                     )
                 )
+
         # Override with CLI args
         # Keep deprecated --load working, TODO: remove
         argparse_args["resume"] = argparse_args["resume"] or argparse_args["load_model"]
+
         for key, val in argparse_args.items():
             if key in DetectDefault.non_default_args:
                 if key in attr.fields_dict(CheckpointSettings):
@@ -805,14 +936,33 @@ class RunOptions(ExportableSettings):
                     configured_dict["env_settings"][key] = val
                 elif key in attr.fields_dict(EngineSettings):
                     configured_dict["engine_settings"][key] = val
+                elif key in attr.fields_dict(TorchSettings):
+                    configured_dict["torch_settings"][key] = val
                 else:  # Base options
                     configured_dict[key] = val
 
         final_runoptions = RunOptions.from_dict(configured_dict)
+        final_runoptions.checkpoint_settings.prioritize_resume_init()
+        # Need check to bypass type checking but keep structure on dict working
+        if isinstance(final_runoptions.behaviors, TrainerSettings.DefaultTrainerDict):
+            # configure whether or not we should require all behavior names to be found in the config YAML
+            final_runoptions.behaviors.set_config_specified(_require_all_behaviors)
+
+        _non_default_args = DetectDefault.non_default_args
+
+        # Prioritize the deterministic mode from the cli for deterministic actions.
+        if "deterministic" in _non_default_args:
+            for behaviour in final_runoptions.behaviors.keys():
+                final_runoptions.behaviors[
+                    behaviour
+                ].network_settings.deterministic = argparse_args["deterministic"]
+
         return final_runoptions
 
     @staticmethod
-    def from_dict(options_dict: Dict[str, Any]) -> "RunOptions":
+    def from_dict(
+        options_dict: Dict[str, Any],
+    ) -> "RunOptions":
         # If a default settings was specified, set the TrainerSettings class override
         if (
             "default_settings" in options_dict.keys()

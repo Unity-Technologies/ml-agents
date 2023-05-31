@@ -1,4 +1,3 @@
-using UnityEngine;
 using UnityEditor;
 using Unity.MLAgents.Editor;
 using Unity.MLAgents.Extensions.Sensors;
@@ -17,6 +16,16 @@ namespace Unity.MLAgents.Extensions.Editor
             so.Update();
 
             var rbSensorComp = so.targetObject as RigidBodySensorComponent;
+            if (rbSensorComp.IsTrivial())
+            {
+                EditorGUILayout.HelpBox(
+                    "The Root Body has no Joints, and the Virtual Root is null or the same as the " +
+                    "Root Body's GameObject. This will not generate any useful observations; they will always " +
+                    "be the identity values. Consider removing this component since it won't help the Agent.",
+                    MessageType.Warning
+                );
+            }
+
             bool requireExtractorUpdate;
 
             EditorGUI.BeginDisabledGroup(!EditorUtilities.CanUpdateModelProperties());

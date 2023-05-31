@@ -3,8 +3,11 @@ import os
 import subprocess
 from sys import platform
 from typing import Optional, List
-from mlagents_envs.logging_util import get_logger
+from mlagents_envs.logging_util import get_logger, DEBUG
 from mlagents_envs.exception import UnityEnvironmentException
+
+
+logger = get_logger(__name__)
 
 
 def get_platform():
@@ -27,7 +30,7 @@ def validate_environment_path(env_path: str) -> Optional[str]:
         .replace(".x86", "")
     )
     true_filename = os.path.basename(os.path.normpath(env_path))
-    get_logger(__name__).debug(f"The true file name is {true_filename}")
+    logger.debug(f"The true file name is {true_filename}")
 
     if not (glob.glob(env_path) or glob.glob(env_path + ".*")):
         return None
@@ -43,6 +46,9 @@ def validate_environment_path(env_path: str) -> Optional[str]:
             candidates = glob.glob(env_path + ".x86_64")
         if len(candidates) == 0:
             candidates = glob.glob(env_path + ".x86")
+        if len(candidates) == 0:
+            if os.path.isfile(env_path):
+                candidates = [env_path]
         if len(candidates) > 0:
             launch_string = candidates[0]
 
@@ -96,9 +102,13 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
             f"Couldn't launch the {file_name} environment. Provided filename does not match any environments."
         )
     else:
-        get_logger(__name__).debug(f"This is the launch string {launch_string}")
+        logger.debug(f"The launch string is {launch_string}")
+        logger.debug(f"Running with args {args}")
         # Launch Unity environment
         subprocess_args = [launch_string] + args
+        # std_out_option = DEVNULL means the outputs will not be displayed on terminal.
+        # std_out_option = None is default behavior: the outputs are displayed on terminal.
+        std_out_option = subprocess.DEVNULL if logger.level > DEBUG else None
         try:
             return subprocess.Popen(
                 subprocess_args,
@@ -108,6 +118,8 @@ def launch_executable(file_name: str, args: List[str]) -> subprocess.Popen:
                 # but may be undesirable in come cases; if so, we'll add a command-line toggle.
                 # Note that on Windows, the CTRL_C signal will still be sent.
                 start_new_session=True,
+                stdout=std_out_option,
+                stderr=std_out_option,
             )
         except PermissionError as perm:
             # This is likely due to missing read or execute permissions on file.

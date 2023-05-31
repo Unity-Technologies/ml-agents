@@ -7,9 +7,10 @@ import cattr
 import yaml
 from typing import Dict, Any, Optional
 import argparse
-from mlagents.trainers.settings import TrainerSettings, NetworkSettings, TrainerType
+from mlagents.trainers.settings import TrainerSettings, NetworkSettings
 from mlagents.trainers.cli_utils import load_config
 from mlagents.trainers.exception import TrainerConfigError
+from mlagents.plugins import all_trainer_settings
 
 
 # Take an existing trainer config (e.g. trainer_config.yaml) and turn it into the new format.
@@ -32,7 +33,7 @@ def convert_behaviors(old_trainer_config: Dict[str, Any]) -> Dict[str, Any]:
                 )
             new_config = {}
             new_config["trainer_type"] = trainer_type
-            hyperparam_cls = TrainerType(trainer_type).to_settings()
+            hyperparam_cls = all_trainer_settings[trainer_type]
             # Try to absorb as much as possible into the hyperparam_cls
             new_config["hyperparameters"] = cattr.structure(config, hyperparam_cls)
 

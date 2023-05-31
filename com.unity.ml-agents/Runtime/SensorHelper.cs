@@ -1,4 +1,3 @@
-using UnityEngine;
 using Unity.Barracuda;
 
 namespace Unity.MLAgents.Sensors
@@ -38,7 +37,7 @@ namespace Unity.MLAgents.Sensors
             }
 
             ObservationWriter writer = new ObservationWriter();
-            writer.SetTarget(output, sensor.GetObservationShape(), 0);
+            writer.SetTarget(output, sensor.GetObservationSpec(), 0);
 
             // Make sure ObservationWriter didn't touch anything
             if (numExpected > 0)
@@ -95,7 +94,7 @@ namespace Unity.MLAgents.Sensors
             }
 
             ObservationWriter writer = new ObservationWriter();
-            writer.SetTarget(output, sensor.GetObservationShape(), 0);
+            writer.SetTarget(output, sensor.GetObservationSpec(), 0);
 
             // Make sure ObservationWriter didn't touch anything
             if (numExpected > 0)

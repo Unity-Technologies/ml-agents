@@ -3,10 +3,10 @@ namespace Unity.MLAgents.Actuators
     /// <summary>
     /// Abstraction that facilitates the execution of actions.
     /// </summary>
-    public interface IActuator : IActionReceiver
+    public interface IActuator : IActionReceiver, IHeuristicProvider
     {
         /// <summary>
-        /// The specification of the Action space for this IActuator.
+        /// The specification of the actions for this IActuator.
         /// </summary>
         /// <seealso cref="ActionSpec"/>
         ActionSpec ActionSpec { get; }

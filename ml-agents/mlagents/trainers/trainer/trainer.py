@@ -45,7 +45,7 @@ class Trainer(abc.ABC):
         self._reward_buffer: Deque[float] = deque(maxlen=reward_buff_cap)
         self.policy_queues: List[AgentManagerQueue[Policy]] = []
         self.trajectory_queues: List[AgentManagerQueue[Trajectory]] = []
-        self.step: int = 0
+        self._step: int = 0
         self.artifact_path = artifact_path
         self.summary_freq = self.trainer_settings.summary_freq
         self.policies: Dict[str, Policy] = {}
@@ -78,7 +78,7 @@ class Trainer(abc.ABC):
         Returns the number of steps the trainer has performed
         :return: the step count of the trainer
         """
-        return self.step
+        return self._step
 
     @property
     def threaded(self) -> bool:
@@ -128,10 +128,9 @@ class Trainer(abc.ABC):
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
     ) -> Policy:
         """
-        Creates policy
+        Creates a Policy object
         """
         pass
 
@@ -144,12 +143,13 @@ class Trainer(abc.ABC):
         """
         pass
 
-    @abc.abstractmethod
     def get_policy(self, name_behavior_id: str) -> Policy:
         """
-        Gets policy from trainer.
+        Gets policy associated with name_behavior_id
+        :param name_behavior_id: Fully qualified behavior name
+        :return: Policy associated with name_behavior_id
         """
-        pass
+        return self.policies[name_behavior_id]
 
     @abc.abstractmethod
     def advance(self) -> None:
@@ -177,3 +177,7 @@ class Trainer(abc.ABC):
         :param trajectory_queue: Trajectory queue to read from.
         """
         self.trajectory_queues.append(trajectory_queue)
+
+    @staticmethod
+    def get_trainer_name() -> str:
+        raise NotImplementedError

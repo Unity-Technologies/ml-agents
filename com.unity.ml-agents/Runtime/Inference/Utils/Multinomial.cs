@@ -32,10 +32,11 @@ namespace Unity.MLAgents.Inference.Utils
         /// to be monotonic (always increasing). If the CMF is scaled, then the last entry in
         /// the array will be 1.0.
         /// </param>
-        /// <returns>A sampled index from the CMF ranging from 0 to cmf.Length-1.</returns>
-        public int Sample(float[] cmf)
+        /// <param name="branchSize">The number of possible branches, i.e. the effective size of the cmf array.</param>
+        /// <returns>A sampled index from the CMF ranging from 0 to branchSize-1.</returns>
+        public int Sample(float[] cmf, int branchSize)
         {
-            var p = (float)m_Random.NextDouble() * cmf[cmf.Length - 1];
+            var p = (float)m_Random.NextDouble() * cmf[branchSize - 1];
             var cls = 0;
             while (cmf[cls] < p)
             {
@@ -43,6 +44,16 @@ namespace Unity.MLAgents.Inference.Utils
             }
 
             return cls;
+        }
+
+        /// <summary>
+        /// Samples from the Multinomial distribution defined by the provided cumulative
+        /// mass function.
+        /// </summary>
+        /// <returns>A sampled index from the CMF ranging from 0 to cmf.Length-1.</returns>
+        public int Sample(float[] cmf)
+        {
+            return Sample(cmf, cmf.Length);
         }
     }
 }

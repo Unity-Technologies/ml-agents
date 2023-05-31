@@ -1,6 +1,9 @@
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
-using Grpc.Core;
+#if UNITY_EDITOR || UNITY_STANDALONE
+#define MLA_SUPPORTED_TRAINING_PLATFORM
 #endif
+
+#if MLA_SUPPORTED_TRAINING_PLATFORM
+using Grpc.Core;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -11,14 +14,15 @@ using UnityEngine;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.CommunicatorObjects;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 using Google.Protobuf;
+
+using Unity.MLAgents.Analytics;
 
 namespace Unity.MLAgents
 {
     /// Responsible for communication with External using gRPC.
-    internal class RpcCommunicator : ICommunicator
+    public class RpcCommunicator : ICommunicator
     {
         public event QuitCommandHandler QuitCommandReceived;
         public event ResetCommandHandler ResetCommandReceived;
@@ -36,36 +40,40 @@ namespace Unity.MLAgents
         UnityRLOutputProto m_CurrentUnityRlOutput =
             new UnityRLOutputProto();
 
-        Dictionary<string, Dictionary<int, float[]>> m_LastActionsReceived =
-            new Dictionary<string, Dictionary<int, float[]>>();
+        Dictionary<string, Dictionary<int, ActionBuffers>> m_LastActionsReceived =
+            new Dictionary<string, Dictionary<int, ActionBuffers>>();
 
         // Brains that we have sent over the communicator with agents.
         HashSet<string> m_SentBrainKeys = new HashSet<string>();
         Dictionary<string, ActionSpec> m_UnsentBrainKeys = new Dictionary<string, ActionSpec>();
 
 
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
         /// The Unity to External client.
         UnityToExternalProto.UnityToExternalProtoClient m_Client;
-#endif
-        /// The communicator parameters sent at construction
-        CommunicatorInitParameters m_CommunicatorInitParameters;
+        Channel m_Channel;
 
         /// <summary>
         /// Initializes a new instance of the RPCCommunicator class.
         /// </summary>
-        /// <param name="communicatorInitParameters">Communicator parameters.</param>
-        public RpcCommunicator(CommunicatorInitParameters communicatorInitParameters)
+        protected RpcCommunicator()
         {
-            m_CommunicatorInitParameters = communicatorInitParameters;
         }
 
-        #region Initialization
+        public static RpcCommunicator Create()
+        {
+#if MLA_SUPPORTED_TRAINING_PLATFORM
+            return new RpcCommunicator();
+#else
+            return null;
+#endif
+        }
+
+#region Initialization
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
-            string pythonApiVersion,
-            string pythonLibraryVersion)
+            string pythonApiVersion
+            )
         {
             var unityVersion = new Version(unityCommunicationVersion);
             var pythonVersion = new Version(pythonApiVersion);
@@ -75,7 +83,6 @@ namespace Unity.MLAgents
                 {
                     return false;
                 }
-
             }
             else if (unityVersion.Major != pythonVersion.Major)
             {
@@ -83,16 +90,8 @@ namespace Unity.MLAgents
             }
             else if (unityVersion.Minor != pythonVersion.Minor)
             {
-                // Even if we initialize, we still want to check to make sure that we inform users of minor version
-                // changes.  This will surface any features that may not work due to minor version incompatibilities.
-                Debug.LogWarningFormat(
-                    "WARNING: The communication API versions between Unity and python differ at the minor version level. " +
-                    "Python API: {0}, Unity API: {1} Python Library Version: {2} .\n" +
-                    "This means that some features may not work unless you upgrade the package with the lower version." +
-                    "Please find the versions that work best together from our release page.\n" +
-                    "https://github.com/Unity-Technologies/ml-agents/releases",
-                    pythonApiVersion, unityCommunicationVersion, pythonLibraryVersion
-                );
+                // If a feature is used in Unity but not supported in the trainer,
+                // we will warn at the point it's used. Don't warn here to avoid noise.
             }
             return true;
         }
@@ -101,10 +100,12 @@ namespace Unity.MLAgents
         /// Sends the initialization parameters through the Communicator.
         /// Is used by the academy to send initialization parameters to the communicator.
         /// </summary>
-        /// <returns>The External Initialization Parameters received.</returns>
+        /// <returns>Whether the connection was successful.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        public UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters)
+        /// <param name="initParametersOut">The External Initialization Parameters received.</param>
+        public bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut)
         {
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             var academyParameters = new UnityRLInitializationOutputProto
             {
                 Name = initParameters.name,
@@ -118,71 +119,93 @@ namespace Unity.MLAgents
             try
             {
                 initializationInput = Initialize(
+                    initParameters.port,
                     new UnityOutputProto
                     {
                         RlInitializationOutput = academyParameters
                     },
-                    out input);
-
-                var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
-                var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
-                var unityCommunicationVersion = initParameters.unityCommunicationVersion;
-
-                var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(unityCommunicationVersion,
-                    pythonCommunicationVersion,
-                    pythonPackageVersion);
-
-                // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
-                // API strings, so log an explicit warning if that's the case.
-                if (initializationInput != null && input == null)
-                {
-                    if (!communicationIsCompatible)
-                    {
-                        Debug.LogWarningFormat(
-                            "Communication protocol between python ({0}) and Unity ({1}) have different " +
-                            "versions which make them incompatible. Python library version: {2}.",
-                            pythonCommunicationVersion, initParameters.unityCommunicationVersion,
-                            pythonPackageVersion
-                        );
-                    }
-                    else
-                    {
-                        Debug.LogWarningFormat(
-                            "Unknown communication error between Python. Python communication protocol: {0}, " +
-                            "Python library version: {1}.",
-                            pythonCommunicationVersion,
-                            pythonPackageVersion
-                        );
-                    }
-
-                    throw new UnityAgentsException("ICommunicator.Initialize() failed.");
-                }
+                    out input
+                );
             }
-            catch
+            catch (Exception ex)
             {
-                var exceptionMessage = "The Communicator was unable to connect. Please make sure the External " +
-                    "process is ready to accept communication with Unity.";
-
-                // Check for common error condition and add details to the exception message.
-                var httpProxy = Environment.GetEnvironmentVariable("HTTP_PROXY");
-                var httpsProxy = Environment.GetEnvironmentVariable("HTTPS_PROXY");
-                if (httpProxy != null || httpsProxy != null)
+                if (ex is RpcException rpcException)
                 {
-                    exceptionMessage += " Try removing HTTP_PROXY and HTTPS_PROXY from the" +
-                        "environment variables and try again.";
+
+                    switch (rpcException.Status.StatusCode)
+                    {
+                        case StatusCode.Unavailable:
+                            // This is the common case where there's no trainer to connect to.
+                            break;
+                        case StatusCode.DeadlineExceeded:
+                            // We don't currently set a deadline for connection, but likely will in the future.
+                            break;
+                        default:
+                            Debug.Log($"Unexpected gRPC exception when trying to initialize communication: {rpcException}");
+                            break;
+                    }
                 }
-                throw new UnityAgentsException(exceptionMessage);
+                else
+                {
+                    Debug.Log($"Unexpected exception when trying to initialize communication: {ex}");
+                }
+                initParametersOut = new UnityRLInitParameters();
+                NotifyQuitAndShutDownChannel();
+                return false;
+            }
+
+            var pythonPackageVersion = initializationInput.RlInitializationInput.PackageVersion;
+            var pythonCommunicationVersion = initializationInput.RlInitializationInput.CommunicationVersion;
+            TrainingAnalytics.SetTrainerInformation(pythonPackageVersion, pythonCommunicationVersion);
+
+            var communicationIsCompatible = CheckCommunicationVersionsAreCompatible(
+                initParameters.unityCommunicationVersion,
+                pythonCommunicationVersion
+            );
+
+            // Initialization succeeded part-way. The most likely cause is a mismatch between the communicator
+            // API strings, so log an explicit warning if that's the case.
+            if (initializationInput != null && input == null)
+            {
+                if (!communicationIsCompatible)
+                {
+                    Debug.LogWarningFormat(
+                        "Communication protocol between python ({0}) and Unity ({1}) have different " +
+                        "versions which make them incompatible. Python library version: {2}.",
+                        pythonCommunicationVersion, initParameters.unityCommunicationVersion,
+                        pythonPackageVersion
+                    );
+                }
+                else
+                {
+                    Debug.LogWarningFormat(
+                        "Unknown communication error between Python. Python communication protocol: {0}, " +
+                        "Python library version: {1}.",
+                        pythonCommunicationVersion,
+                        pythonPackageVersion
+                    );
+                }
+
+                initParametersOut = new UnityRLInitParameters();
+                return false;
             }
 
             UpdateEnvironmentWithInput(input.RlInput);
-            return initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+            initParametersOut = initializationInput.RlInitializationInput.ToUnityRLInitParameters();
+            // Be sure to shut down the grpc channel when the application is quitting.
+            Application.quitting += NotifyQuitAndShutDownChannel;
+            return true;
+#else
+            initParametersOut = new UnityRLInitParameters();
+            return false;
+#endif
         }
 
         /// <summary>
         /// Adds the brain to the list of brains which will be sending information to External.
         /// </summary>
         /// <param name="brainKey">Brain key.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         public void SubscribeBrain(string brainKey, ActionSpec actionSpec)
         {
             if (m_BehaviorNames.Contains(brainKey))
@@ -204,16 +227,12 @@ namespace Unity.MLAgents
             SendCommandEvent(rlInput.Command);
         }
 
-        UnityInputProto Initialize(UnityOutputProto unityOutput,
-            out UnityInputProto unityInput)
+        UnityInputProto Initialize(int port, UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             m_IsOpen = true;
-            var channel = new Channel(
-                "localhost:" + m_CommunicatorInitParameters.port,
-                ChannelCredentials.Insecure);
+            m_Channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
-            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(channel);
+            m_Client = new UnityToExternalProto.UnityToExternalProtoClient(m_Channel);
             var result = m_Client.Exchange(WrapMessage(unityOutput, 200));
             var inputMessage = m_Client.Exchange(WrapMessage(null, 200));
             unityInput = inputMessage.UnityInput;
@@ -223,25 +242,33 @@ namespace Unity.MLAgents
             if (result.Header.Status != 200 || inputMessage.Header.Status != 200)
             {
                 m_IsOpen = false;
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
             }
             return result.UnityInput;
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+        void NotifyQuitAndShutDownChannel()
+        {
+            QuitCommandReceived?.Invoke();
+            try
+            {
+                m_Channel.ShutdownAsync().Wait();
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
+        }
 
-        #region Destruction
+#endregion
+
+#region Destruction
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
         /// </summary>
         public void Dispose()
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return;
@@ -256,15 +283,11 @@ namespace Unity.MLAgents
             {
                 // ignored
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
-        #endregion
+#endregion
 
-        #region Sending Events
+#region Sending Events
 
         void SendCommandEvent(CommandProto command)
         {
@@ -272,7 +295,7 @@ namespace Unity.MLAgents
             {
                 case CommandProto.Quit:
                     {
-                        QuitCommandReceived?.Invoke();
+                        NotifyQuitAndShutDownChannel();
                         return;
                     }
                 case CommandProto.Reset:
@@ -291,9 +314,9 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+#endregion
 
-        #region Sending and retreiving data
+#region Sending and retreiving data
 
         public void DecideBatch()
         {
@@ -348,9 +371,9 @@ namespace Unity.MLAgents
             }
             if (!m_LastActionsReceived.ContainsKey(behaviorName))
             {
-                m_LastActionsReceived[behaviorName] = new Dictionary<int, float[]>();
+                m_LastActionsReceived[behaviorName] = new Dictionary<int, ActionBuffers>();
             }
-            m_LastActionsReceived[behaviorName][info.episodeId] = null;
+            m_LastActionsReceived[behaviorName][info.episodeId] = ActionBuffers.Empty;
             if (info.done)
             {
                 m_LastActionsReceived[behaviorName].Remove(info.episodeId);
@@ -423,7 +446,7 @@ namespace Unity.MLAgents
             }
         }
 
-        public float[] GetActions(string behaviorName, int agentId)
+        public ActionBuffers GetActions(string behaviorName, int agentId)
         {
             if (m_LastActionsReceived.ContainsKey(behaviorName))
             {
@@ -432,7 +455,7 @@ namespace Unity.MLAgents
                     return m_LastActionsReceived[behaviorName][agentId];
                 }
             }
-            return null;
+            return ActionBuffers.Empty;
         }
 
         /// <summary>
@@ -442,11 +465,11 @@ namespace Unity.MLAgents
         /// <param name="unityOutput">The UnityOutput to be sent.</param>
         UnityInputProto Exchange(UnityOutputProto unityOutput)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
             if (!m_IsOpen)
             {
                 return null;
             }
+
             try
             {
                 var message = m_Client.Exchange(WrapMessage(unityOutput, 200));
@@ -459,19 +482,41 @@ namespace Unity.MLAgents
                 // Not sure if the quit command is actually sent when a
                 // non 200 message is received.  Notify that we are indeed
                 // quitting.
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
                 return message.UnityInput;
             }
-            catch
+            catch (Exception ex)
             {
+                if (ex is RpcException rpcException)
+                {
+                    // Log more verbose errors if they're something the user can possibly do something about.
+                    switch (rpcException.Status.StatusCode)
+                    {
+                        case StatusCode.Unavailable:
+                            // This can happen when python disconnects. Ignore it to avoid noisy logs.
+                            break;
+                        case StatusCode.ResourceExhausted:
+                            // This happens is the message body is too large. There's no way to
+                            // gracefully handle this, but at least we can show the message and the
+                            // user can try to reduce the number of agents or observation sizes.
+                            Debug.LogError($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                            break;
+                        default:
+                            // Other unknown errors. Log at INFO level.
+                            Debug.Log($"GRPC Exception: {rpcException.Message}. Disconnecting from trainer.");
+                            break;
+                    }
+                }
+                else
+                {
+                    // Fall-through for other error types
+                    Debug.LogError($"Communication Exception: {ex.Message}. Disconnecting from trainer.");
+                }
+
                 m_IsOpen = false;
-                QuitCommandReceived?.Invoke();
+                NotifyQuitAndShutDownChannel();
                 return null;
             }
-#else
-            throw new UnityAgentsException(
-                "You cannot perform training on this platform.");
-#endif
         }
 
         /// <summary>
@@ -541,7 +586,7 @@ namespace Unity.MLAgents
             }
         }
 
-        #endregion
+#endregion
 
 #if UNITY_EDITOR
         /// <summary>
@@ -560,3 +605,4 @@ namespace Unity.MLAgents
 #endif
     }
 }
+#endif // UNITY_EDITOR || UNITY_STANDALONE

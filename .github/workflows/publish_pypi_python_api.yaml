@@ -1,0 +1,50 @@
+# Adapted from https://packaging.python.org/guides/publishing-package-distribution-releases-using-github-actions-ci-cd-workflows/
+name: Publish Python APIs to PyPI (or TestPyPI)
+
+on:
+  push:
+    tags:
+      - "api_release_[0-9]+_test[0-9]+"
+      - "api_release_[0-9]+"
+  workflow_dispatch:
+
+jobs:
+  build-and-publish:
+    name: publish to PyPI (or TestPyPI)
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            package-path: [ml-agents-envs]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.8
+    - name: Install dependencies
+      run: pip install setuptools wheel twine --user
+    - name: verify git tag vs. version
+      run: |
+        cd ${{ matrix.package-path }}
+        python setup.py verify
+    - name: Build package
+      run: |
+        cd ${{ matrix.package-path }}
+        python setup.py sdist
+        python setup.py bdist_wheel
+    - name: Publish distribution 📦 to Test PyPI
+      if: startsWith(github.ref, 'refs/tags') && contains(github.ref, 'test')
+      uses: actions/gh-action-pypi-publish@717ba43cfbb0387f6ce311b169a825772f54d295
+      with:
+        user: __token__
+        password: ${{ secrets.TEST_PYPI_PASSWORD }}
+        repository_url: https://test.pypi.org/legacy/
+        packages_dir: ${{ matrix.package-path }}/dist/
+    - name: Publish distribution 📦 to Production PyPI
+      if: startsWith(github.ref, 'refs/tags') && !contains(github.ref, 'test')
+      uses: actions/gh-action-pypi-publish@717ba43cfbb0387f6ce311b169a825772f54d295
+      with:
+        user: __token__
+        password: ${{ secrets.PYPI_PASSWORD }}
+        packages_dir: ${{ matrix.package-path }}/dist/

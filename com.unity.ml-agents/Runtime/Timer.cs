@@ -1,8 +1,12 @@
 // Compile with: csc CRefTest.cs -doc:Results.xml
+#if UNITY_EDITOR || UNITY_STANDALONE
+#define MLA_SUPPORTED_TRAINING_PLATFORM
+#endif
 using System;
 using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using UnityEngine.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
@@ -228,7 +232,32 @@ namespace Unity.MLAgents
             m_Metadata.Add("timer_format_version", k_TimerFormatVersion);
             m_Metadata.Add("start_time_seconds", $"{DateTimeOffset.Now.ToUnixTimeSeconds()}");
             m_Metadata.Add("unity_version", Application.unityVersion);
-            m_Metadata.Add("command_line_arguments", String.Join(" ", Environment.GetCommandLineArgs()));
+            m_Metadata.Add("command_line_arguments", String.Join(" ", GetCleanedCommandLineArguments()));
+        }
+        /// <summary>
+        /// Cleans Environment CommandLine Argument from license infos
+        /// </summary>
+        /// <returns>cleaned string list of commandLine </returns>
+        private static List<string> GetCleanedCommandLineArguments()
+        {
+            List<string> commandLineArgs = Environment.GetCommandLineArgs().ToList();
+            List<int> toRemoveIndices = new List<int> { };
+            for (var i = 0; i < commandLineArgs.Count; i++)
+            {
+                if (commandLineArgs[i].Contains("accessToken") ||
+                    commandLineArgs[i].Contains("hubSessionId") ||
+                    commandLineArgs[i].Contains("licensingIpc"))
+                {
+                    toRemoveIndices.Add(i);
+                    toRemoveIndices.Add(i + 1);
+                }
+            }
+            // remove in reverse order
+            for (var i = toRemoveIndices.Count() - 1; i >= 0; i--)
+            {
+                commandLineArgs.RemoveAt(toRemoveIndices[i]);
+            }
+            return commandLineArgs;
         }
 
         public void AddMetadata(string key, string value)
@@ -461,7 +490,7 @@ namespace Unity.MLAgents
         /// <param name="filename"></param>
         public void SaveJsonTimers(string filename = null)
         {
-#if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+#if MLA_SUPPORTED_TRAINING_PLATFORM
             try
             {
                 if (filename == null)
@@ -477,9 +506,9 @@ namespace Unity.MLAgents
                 SaveJsonTimers(fs);
                 fs.Close();
             }
-            catch (IOException)
+            catch (SystemException)
             {
-                // It's possible we don't have write access to the directory.
+                // We may not have write access to the directory.
                 Debug.LogWarning($"Unable to save timers to file {filename}");
             }
 #endif

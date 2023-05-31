@@ -4,5 +4,8 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/ML-Agents/Examples/Walker/Scenes/Walker.unity
+    guid: 2b839ee93e7a4467f9f8b4803c4a239b
   m_configObjects: {}

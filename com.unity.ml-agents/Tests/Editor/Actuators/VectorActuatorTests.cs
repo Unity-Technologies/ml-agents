@@ -1,8 +1,8 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using Assert = UnityEngine.Assertions.Assert;
 
 namespace Unity.MLAgents.Tests.Actuators
@@ -10,12 +10,13 @@ namespace Unity.MLAgents.Tests.Actuators
     [TestFixture]
     public class VectorActuatorTests
     {
-        class TestActionReceiver : IActionReceiver
+        class TestActionReceiver : IActionReceiver, IHeuristicProvider
         {
             public ActionBuffers LastActionBuffers;
             public int Branch;
             public IList<int> Mask;
             public ActionSpec ActionSpec { get; }
+            public bool HeuristicCalled;
 
             public void OnActionReceived(ActionBuffers actionBuffers)
             {
@@ -24,7 +25,15 @@ namespace Unity.MLAgents.Tests.Actuators
 
             public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
             {
-                actionMask.WriteMask(Branch, Mask);
+                foreach (var actionIndex in Mask)
+                {
+                    actionMask.SetActionEnabled(Branch, actionIndex, false);
+                }
+            }
+
+            public void Heuristic(in ActionBuffers actionBuffersOut)
+            {
+                HeuristicCalled = true;
             }
         }
 
@@ -32,13 +41,13 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestConstruct()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, new[] { 1, 2, 3 }, SpaceType.Discrete, "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             Assert.IsTrue(va.ActionSpec.NumDiscreteActions == 3);
             Assert.IsTrue(va.ActionSpec.SumOfDiscreteBranchSizes == 6);
             Assert.IsTrue(va.ActionSpec.NumContinuousActions == 0);
 
-            var va1 = new VectorActuator(ar, new[] { 4 }, SpaceType.Continuous, "name");
+            var va1 = new VectorActuator(ar, ActionSpec.MakeContinuous(4), "name");
 
             Assert.IsTrue(va1.ActionSpec.NumContinuousActions == 4);
             Assert.IsTrue(va1.ActionSpec.SumOfDiscreteBranchSizes == 0);
@@ -49,7 +58,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestOnActionReceived()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, new[] { 1, 2, 3 }, SpaceType.Discrete, "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             var discreteActions = new[] { 0, 1, 1 };
             var ab = new ActionBuffers(ActionSegment<float>.Empty,
@@ -67,7 +76,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestResetData()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, new[] { 1, 2, 3 }, SpaceType.Discrete, "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
 
             var discreteActions = new[] { 0, 1, 1 };
             var ab = new ActionBuffers(ActionSegment<float>.Empty,
@@ -80,7 +89,7 @@ namespace Unity.MLAgents.Tests.Actuators
         public void TestWriteDiscreteActionMask()
         {
             var ar = new TestActionReceiver();
-            var va = new VectorActuator(ar, new[] { 1, 2, 3 }, SpaceType.Discrete, "name");
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
             var bdam = new ActuatorDiscreteActionMask(new[] { va }, 6, 3);
 
             var groundTruthMask = new[] { false, true, false, false, true, true };
@@ -93,6 +102,16 @@ namespace Unity.MLAgents.Tests.Actuators
             va.WriteDiscreteActionMask(bdam);
 
             Assert.IsTrue(groundTruthMask.SequenceEqual(bdam.GetMask()));
+        }
+
+        [Test]
+        public void TestHeuristic()
+        {
+            var ar = new TestActionReceiver();
+            var va = new VectorActuator(ar, ActionSpec.MakeDiscrete(1, 2, 3), "name");
+
+            va.Heuristic(new ActionBuffers(Array.Empty<float>(), va.ActionSpec.BranchSizes));
+            Assert.IsTrue(ar.HeuristicCalled);
         }
     }
 }

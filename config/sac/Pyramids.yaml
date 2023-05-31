@@ -24,7 +24,6 @@ behaviors:
       gail:
         gamma: 0.99
         strength: 0.01
-        encoding_size: 128
         learning_rate: 0.0003
         use_actions: true
         use_vail: false
@@ -33,4 +32,3 @@ behaviors:
     max_steps: 3000000
     time_horizon: 128
     summary_freq: 30000
-    threaded: true

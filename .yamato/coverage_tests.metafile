@@ -1,0 +1,17 @@
+coverage_test_editors:
+    - version: 2021.3
+      testProject: DevProject
+
+coverage_test_platforms:
+    - name: linux
+      type: Unity::VM
+      image: ml-agents/ml-agents-ubuntu-18.04:latest
+      flavor: b1.medium
+
+coverage_test_packages:
+    - name: com.unity.ml-agents
+      assembly: Unity.ML-Agents
+      minCoveragePct: 72
+    - name: com.unity.ml-agents.extensions
+      assembly: Unity.ML-Agents.Extensions*
+      minCoveragePct: 75

@@ -1,0 +1,16 @@
+{
+    "param_1": {
+        "lesson_num": 2
+    },
+    "param_2": {
+        "lesson_num": 0
+    },
+    "param_3": {
+        "lesson_num": 0
+    },
+    "metadata": {
+        "stats_format_version": "0.3.0",
+        "mlagents_version": "0.29.0",
+        "torch_version": "1.8.1"
+    }
+}

@@ -23,7 +23,6 @@ behaviors:
     max_steps: 20000000
     time_horizon: 128
     summary_freq: 20000
-    threaded: true
   SmallWallJump:
     trainer_type: ppo
     hyperparameters:
@@ -48,4 +47,3 @@ behaviors:
     max_steps: 5000000
     time_horizon: 128
     summary_freq: 20000
-    threaded: true

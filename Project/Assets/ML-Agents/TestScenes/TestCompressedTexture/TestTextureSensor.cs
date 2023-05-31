@@ -1,12 +1,11 @@
 using UnityEngine;
 using Unity.MLAgents.Sensors;
-using Unity.MLAgents;
 
 public class TestTextureSensor : ISensor
 {
     Texture2D m_Texture;
     string m_Name;
-    int[] m_Shape;
+    private ObservationSpec m_ObservationSpec;
     SensorCompressionType m_CompressionType;
 
     /// <summary>
@@ -26,7 +25,7 @@ public class TestTextureSensor : ISensor
         var width = texture.width;
         var height = texture.height;
         m_Name = name;
-        m_Shape = new[] { height, width, 3 };
+        m_ObservationSpec = ObservationSpec.Visual(height, width, 3);
         m_CompressionType = compressionType;
     }
 
@@ -37,9 +36,9 @@ public class TestTextureSensor : ISensor
     }
 
     /// <inheritdoc/>
-    public int[] GetObservationShape()
+    public ObservationSpec GetObservationSpec()
     {
-        return m_Shape;
+        return m_ObservationSpec;
     }
 
     /// <inheritdoc/>
@@ -63,9 +62,9 @@ public class TestTextureSensor : ISensor
     public void Reset() { }
 
     /// <inheritdoc/>
-    public SensorCompressionType GetCompressionType()
+    public CompressionSpec GetCompressionSpec()
     {
-        return m_CompressionType;
+        return CompressionSpec.Default();
     }
 }
 

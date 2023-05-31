@@ -5,11 +5,10 @@ from mlagents_envs.logging_util import get_logger
 from mlagents.trainers.environment_parameter_manager import EnvironmentParameterManager
 from mlagents.trainers.exception import TrainerConfigError
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.ghost.trainer import GhostTrainer
 from mlagents.trainers.ghost.controller import GhostController
-from mlagents.trainers.settings import TrainerSettings, TrainerType, FrameworkType
+from mlagents.trainers.settings import TrainerSettings
+from mlagents.plugins import all_trainer_types
 
 
 logger = get_logger(__name__)
@@ -26,8 +25,6 @@ class TrainerFactory:
         param_manager: EnvironmentParameterManager,
         init_path: str = None,
         multi_gpu: bool = False,
-        force_torch: bool = False,
-        force_tensorflow: bool = False,
     ):
         """
         The TrainerFactory generates the Trainers based on the configuration passed as
@@ -45,10 +42,6 @@ class TrainerFactory:
         the EnvironmentParameters must change.
         :param init_path: Path from which to load model.
         :param multi_gpu: If True, multi-gpu will be used. (currently not available)
-        :param force_torch: If True, the Trainers will all use the PyTorch framework
-        instead of what is specified in the config YAML.
-        :param force_tensorflow: If True, thee Trainers will all use the TensorFlow
-        framework.
         """
         self.trainer_config = trainer_config
         self.output_path = output_path
@@ -59,30 +52,9 @@ class TrainerFactory:
         self.param_manager = param_manager
         self.multi_gpu = multi_gpu
         self.ghost_controller = GhostController()
-        self._force_torch = force_torch
-        self._force_tf = force_tensorflow
 
     def generate(self, behavior_name: str) -> Trainer:
-        if behavior_name not in self.trainer_config.keys():
-            logger.warning(
-                f"Behavior name {behavior_name} does not match any behaviors specified"
-                f"in the trainer configuration file: {sorted(self.trainer_config.keys())}"
-            )
         trainer_settings = self.trainer_config[behavior_name]
-        if self._force_torch:
-            trainer_settings.framework = FrameworkType.PYTORCH
-            logger.warning(
-                "Note that specifying --torch is not required anymore as PyTorch is the default framework."
-            )
-        if self._force_tf:
-            trainer_settings.framework = FrameworkType.TENSORFLOW
-            logger.warning(
-                "Setting the framework to TensorFlow. TensorFlow trainers will be deprecated in the future."
-            )
-            if self._force_torch:
-                logger.warning(
-                    "Both --torch and --tensorflow CLI options were specified. Using TensorFlow."
-                )
         return TrainerFactory._initialize_trainer(
             trainer_settings,
             behavior_name,
@@ -92,7 +64,6 @@ class TrainerFactory:
             self.ghost_controller,
             self.seed,
             self.param_manager,
-            self.init_path,
             self.multi_gpu,
         )
 
@@ -106,7 +77,6 @@ class TrainerFactory:
         ghost_controller: GhostController,
         seed: int,
         param_manager: EnvironmentParameterManager,
-        init_path: str = None,
         multi_gpu: bool = False,
     ) -> Trainer:
         """
@@ -122,20 +92,17 @@ class TrainerFactory:
         :param ghost_controller: The object that coordinates ghost trainers
         :param seed: The random seed to use
         :param param_manager: EnvironmentParameterManager, used to determine a reward buffer length for PPOTrainer
-        :param init_path: Path from which to load model, if different from model_path.
         :return:
         """
         trainer_artifact_path = os.path.join(output_path, brain_name)
-        if init_path is not None:
-            trainer_settings.init_path = os.path.join(init_path, brain_name)
 
         min_lesson_length = param_manager.get_minimum_reward_buffer_size(brain_name)
 
         trainer: Trainer = None  # type: ignore  # will be set to one of these, or raise
-        trainer_type = trainer_settings.trainer_type
 
-        if trainer_type == TrainerType.PPO:
-            trainer = PPOTrainer(
+        try:
+            trainer_type = all_trainer_types[trainer_settings.trainer_type]
+            trainer = trainer_type(
                 brain_name,
                 min_lesson_length,
                 trainer_settings,
@@ -144,19 +111,11 @@ class TrainerFactory:
                 seed,
                 trainer_artifact_path,
             )
-        elif trainer_type == TrainerType.SAC:
-            trainer = SACTrainer(
-                brain_name,
-                min_lesson_length,
-                trainer_settings,
-                train_model,
-                load_model,
-                seed,
-                trainer_artifact_path,
-            )
-        else:
+
+        except KeyError:
             raise TrainerConfigError(
-                f'The trainer config contains an unknown trainer type "{trainer_type}" for brain {brain_name}'
+                f"The trainer config contains an unknown trainer type "
+                f"{trainer_settings.trainer_type} for brain {brain_name}"
             )
 
         if trainer_settings.self_play is not None:

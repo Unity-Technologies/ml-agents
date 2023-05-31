@@ -14,8 +14,9 @@ namespace Unity.MLAgents.Editor
         // The height of a line in the Unity Inspectors
         const float k_LineHeight = 17f;
         const int k_VecObsNumLine = 3;
-        const string k_ActionSizePropName = "VectorActionSize";
-        const string k_ActionTypePropName = "VectorActionSpaceType";
+        const string k_ActionSpecName = "m_ActionSpec";
+        const string k_ContinuousActionSizeName = "m_NumContinuousActions";
+        const string k_DiscreteBranchSizeName = "BranchSizes";
         const string k_ActionDescriptionPropName = "VectorActionDescriptions";
         const string k_VecObsPropName = "VectorObservationSize";
         const string k_NumVecObsPropName = "NumStackedVectorObservations";
@@ -94,25 +95,13 @@ namespace Unity.MLAgents.Editor
         /// to make the custom GUI for.</param>
         static void DrawVectorAction(Rect position, SerializedProperty property)
         {
-            EditorGUI.LabelField(position, "Vector Action");
+            EditorGUI.LabelField(position, "Actions");
             position.y += k_LineHeight;
             EditorGUI.indentLevel++;
-            var bpVectorActionType = property.FindPropertyRelative(k_ActionTypePropName);
-            EditorGUI.PropertyField(
-                position,
-                bpVectorActionType,
-                new GUIContent("Space Type",
-                    "Corresponds to whether state vector contains  a single integer (Discrete) " +
-                    "or a series of real-valued floats (Continuous)."));
+            var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
+            DrawContinuousVectorAction(position, actionSpecProperty);
             position.y += k_LineHeight;
-            if (bpVectorActionType.enumValueIndex == 1)
-            {
-                DrawContinuousVectorAction(position, property);
-            }
-            else
-            {
-                DrawDiscreteVectorAction(position, property);
-            }
+            DrawDiscreteVectorAction(position, actionSpecProperty);
         }
 
         /// <summary>
@@ -123,21 +112,11 @@ namespace Unity.MLAgents.Editor
         /// to make the custom GUI for.</param>
         static void DrawContinuousVectorAction(Rect position, SerializedProperty property)
         {
-            var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
-
-            // This check is here due to:
-            // https://fogbugz.unity3d.com/f/cases/1246524/
-            // If this case has been resolved, please remove this if condition.
-            if (vecActionSize.arraySize != 1)
-            {
-                vecActionSize.arraySize = 1;
-            }
-            var continuousActionSize =
-                vecActionSize.GetArrayElementAtIndex(0);
+            var continuousActionSize = property.FindPropertyRelative(k_ContinuousActionSizeName);
             EditorGUI.PropertyField(
                 position,
                 continuousActionSize,
-                new GUIContent("Space Size", "Length of continuous action vector."));
+                new GUIContent("Continuous Actions", "Number of continuous actions."));
         }
 
         /// <summary>
@@ -148,27 +127,27 @@ namespace Unity.MLAgents.Editor
         /// to make the custom GUI for.</param>
         static void DrawDiscreteVectorAction(Rect position, SerializedProperty property)
         {
-            var vecActionSize = property.FindPropertyRelative(k_ActionSizePropName);
+            var branchSizes = property.FindPropertyRelative(k_DiscreteBranchSizeName);
             var newSize = EditorGUI.IntField(
-                position, "Branches Size", vecActionSize.arraySize);
+                position, "Discrete Branches", branchSizes.arraySize);
 
             // This check is here due to:
             // https://fogbugz.unity3d.com/f/cases/1246524/
             // If this case has been resolved, please remove this if condition.
-            if (newSize != vecActionSize.arraySize)
+            if (newSize != branchSizes.arraySize)
             {
-                vecActionSize.arraySize = newSize;
+                branchSizes.arraySize = newSize;
             }
 
             position.y += k_LineHeight;
             position.x += 20;
             position.width -= 20;
             for (var branchIndex = 0;
-                 branchIndex < vecActionSize.arraySize;
+                 branchIndex < branchSizes.arraySize;
                  branchIndex++)
             {
                 var branchActionSize =
-                    vecActionSize.GetArrayElementAtIndex(branchIndex);
+                    branchSizes.GetArrayElementAtIndex(branchIndex);
 
                 EditorGUI.PropertyField(
                     position,
@@ -185,12 +164,9 @@ namespace Unity.MLAgents.Editor
         /// <returns>The height of the drawer of the Vector Action.</returns>
         static float GetHeightDrawVectorAction(SerializedProperty property)
         {
-            var actionSize = 2 + property.FindPropertyRelative(k_ActionSizePropName).arraySize;
-            if (property.FindPropertyRelative(k_ActionTypePropName).enumValueIndex == 0)
-            {
-                actionSize += 1;
-            }
-            return actionSize * k_LineHeight;
+            var actionSpecProperty = property.FindPropertyRelative(k_ActionSpecName);
+            var numActionLines = 3 + actionSpecProperty.FindPropertyRelative(k_DiscreteBranchSizeName).arraySize;
+            return numActionLines * k_LineHeight;
         }
     }
 }

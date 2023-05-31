@@ -28,12 +28,19 @@ namespace Unity.MLAgentsExamples
         const string k_CommandLineModelOverrideDirectoryFlag = "--mlagents-override-model-directory";
         const string k_CommandLineModelOverrideExtensionFlag = "--mlagents-override-model-extension";
         const string k_CommandLineQuitAfterEpisodesFlag = "--mlagents-quit-after-episodes";
+        const string k_CommandLineQuitAfterSeconds = "--mlagents-quit-after-seconds";
         const string k_CommandLineQuitOnLoadFailure = "--mlagents-quit-on-load-failure";
 
         // The attached Agent
         Agent m_Agent;
 
+        // Whether or not the commandline args have already been processed.
+        // Used to make sure that HasOverrides doesn't spam the logs if it's called multiple times.
+        private bool m_HaveProcessedCommandLine;
+
         string m_BehaviorNameOverrideDirectory;
+
+        private string m_OriginalBehaviorName;
 
         private List<string> m_OverrideExtensions = new List<string>();
 
@@ -44,6 +51,9 @@ namespace Unity.MLAgentsExamples
         // Max episodes to run. Only used if > 0
         // Will default to 1 if override models are specified, otherwise 0.
         int m_MaxEpisodes;
+
+        // Deadline - exit if the time exceeds this
+        DateTime m_Deadline = DateTime.MaxValue;
 
         int m_NumSteps;
         int m_PreviousNumSteps;
@@ -77,6 +87,23 @@ namespace Unity.MLAgentsExamples
             }
         }
 
+        /// <summary>
+        /// The original behavior name of the agent. The actual behavior name will change when it is overridden.
+        /// </summary>
+        public string OriginalBehaviorName
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(m_OriginalBehaviorName))
+                {
+                    var bp = m_Agent.GetComponent<BehaviorParameters>();
+                    m_OriginalBehaviorName = bp.BehaviorName;
+                }
+
+                return m_OriginalBehaviorName;
+            }
+        }
+
         public static string GetOverrideBehaviorName(string originalBehaviorName)
         {
             return $"Override_{originalBehaviorName}";
@@ -84,11 +111,18 @@ namespace Unity.MLAgentsExamples
 
         /// <summary>
         /// Get the asset path to use from the commandline arguments.
+        /// Can be called multiple times - if m_HaveProcessedCommandLine is set, will have no effect.
         /// </summary>
         /// <returns></returns>
         void GetAssetPathFromCommandLine()
         {
+            if (m_HaveProcessedCommandLine)
+            {
+                return;
+            }
             var maxEpisodes = 0;
+            var timeoutSeconds = 0;
+
             string[] commandLineArgsOverride = null;
             if (!string.IsNullOrEmpty(debugCommandLineOverride) && Application.isEditor)
             {
@@ -120,6 +154,10 @@ namespace Unity.MLAgentsExamples
                 {
                     Int32.TryParse(args[i + 1], out maxEpisodes);
                 }
+                else if (args[i] == k_CommandLineQuitAfterSeconds && i < args.Length - 1)
+                {
+                    Int32.TryParse(args[i + 1], out timeoutSeconds);
+                }
                 else if (args[i] == k_CommandLineQuitOnLoadFailure)
                 {
                     m_QuitOnLoadFailure = true;
@@ -132,6 +170,14 @@ namespace Unity.MLAgentsExamples
                 m_MaxEpisodes = maxEpisodes > 0 ? maxEpisodes : 1;
                 Debug.Log($"setting m_MaxEpisodes to {maxEpisodes}");
             }
+
+            if (timeoutSeconds > 0)
+            {
+                m_Deadline = DateTime.Now + TimeSpan.FromSeconds(timeoutSeconds);
+                Debug.Log($"setting deadline to {timeoutSeconds} from now.");
+            }
+
+            m_HaveProcessedCommandLine = true;
         }
 
         void OnEnable()
@@ -174,7 +220,19 @@ namespace Unity.MLAgentsExamples
                     EditorApplication.isPlaying = false;
 #endif
                 }
+                else if (DateTime.Now >= m_Deadline)
+                {
+                    Debug.Log(
+                        $"Deadline exceeded. " +
+                        $"{TotalCompletedEpisodes}/{m_MaxEpisodes} episodes and " +
+                        $"{TotalNumSteps}/{m_MaxEpisodes * m_Agent.MaxStep} steps completed. Exiting.");
+                    Application.Quit(0);
+#if UNITY_EDITOR
+                    EditorApplication.isPlaying = false;
+#endif
+                }
             }
+
             m_NumSteps++;
         }
 
@@ -267,13 +325,11 @@ namespace Unity.MLAgentsExamples
             string overrideError = null;
 
             m_Agent.LazyInitialize();
-            var bp = m_Agent.GetComponent<BehaviorParameters>();
-            var behaviorName = bp.BehaviorName;
 
             NNModel nnModel = null;
             try
             {
-                nnModel = GetModelForBehaviorName(behaviorName);
+                nnModel = GetModelForBehaviorName(OriginalBehaviorName);
             }
             catch (Exception e)
             {
@@ -285,7 +341,7 @@ namespace Unity.MLAgentsExamples
                 if (string.IsNullOrEmpty(overrideError))
                 {
                     overrideError =
-                        $"Didn't find a model for behaviorName {behaviorName}. Make " +
+                        $"Didn't find a model for behaviorName {OriginalBehaviorName}. Make " +
                         "sure the behaviorName is set correctly in the commandline " +
                         "and that the model file exists";
                 }
@@ -293,10 +349,10 @@ namespace Unity.MLAgentsExamples
             else
             {
                 var modelName = nnModel != null ? nnModel.name : "<null>";
-                Debug.Log($"Overriding behavior {behaviorName} for agent with model {modelName}");
+                Debug.Log($"Overriding behavior {OriginalBehaviorName} for agent with model {modelName}");
                 try
                 {
-                    m_Agent.SetModel(GetOverrideBehaviorName(behaviorName), nnModel);
+                    m_Agent.SetModel(GetOverrideBehaviorName(OriginalBehaviorName), nnModel);
                     overrideOk = true;
                 }
                 catch (Exception e)

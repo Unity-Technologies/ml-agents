@@ -10,6 +10,22 @@ namespace Unity.MLAgents.Editor
 
         protected void OnRayPerceptionInspectorGUI(bool is3d)
         {
+#if !MLA_UNITY_PHYSICS_MODULE
+            if (is3d)
+            {
+                EditorGUILayout.HelpBox("The Physics Module is not currently present.  " +
+                "Please add it to your project in order to use the Ray Perception APIs in the " +
+                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+            }
+#endif
+#if !MLA_UNITY_PHYSICS2D_MODULE
+            if (!is3d)
+            {
+                EditorGUILayout.HelpBox("The Physics2D Module is not currently present.  " +
+                "Please add it to your project in order to use the Ray Perception APIs in the " +
+                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+            }
+#endif
             var so = serializedObject;
             so.Update();
 
@@ -47,6 +63,8 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_EndVerticalOffset"), true);
             }
 
+            EditorGUILayout.PropertyField(so.FindProperty("m_AlternatingRayOrder"), true);
+
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);
 
@@ -71,7 +89,7 @@ namespace Unity.MLAgents.Editor
         }
     }
 
-    [CustomEditor(typeof(RayPerceptionSensorComponent2D))]
+    [CustomEditor(typeof(RayPerceptionSensorComponent2D), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponent2DEditor : RayPerceptionSensorComponentBaseEditor
     {
@@ -81,7 +99,7 @@ namespace Unity.MLAgents.Editor
         }
     }
 
-    [CustomEditor(typeof(RayPerceptionSensorComponent3D))]
+    [CustomEditor(typeof(RayPerceptionSensorComponent3D), editorForChildClasses: true)]
     [CanEditMultipleObjects]
     internal class RayPerceptionSensorComponent3DEditor : RayPerceptionSensorComponentBaseEditor
     {

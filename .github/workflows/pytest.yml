@@ -5,26 +5,46 @@ on:
     paths:  # This action will only run if the PR modifies a file in one of these directories
     - 'ml-agents/**'
     - 'ml-agents-envs/**'
-    - 'gym-unity/**'
     - 'test_constraints*.txt'
     - 'test_requirements.txt'
     - '.github/workflows/pytest.yml'
   push:
-    branches: [master]
+    branches:
+     - main
+     - develop
+     - 'release/**'
+  workflow_dispatch:
+    inputs:
+      pytest_markers:
+        description: "Restrict which tests to run based on pytest markers"
+        required: false
+        default: "not slow"
+        type: string
+  workflow_call:
+    inputs:
+      pytest_markers:
+        required: false
+        # Hacky way to make sure we run all tests
+        default: "slow or not slow"
+        type: string
 
 jobs:
   pytest:
     runs-on: ubuntu-latest
+    env:
+        TEST_ENFORCE_BUFFER_KEY_TYPES: 1
     strategy:
+      # If one test in the matrix fails we still want to run the others.
+      fail-fast: false
       matrix:
-        python-version: [3.6.x, 3.7.x, 3.8.x]
+        python-version: [3.8.x, 3.9.x, 3.10.x]
         include:
-          - python-version: 3.6.x
-            pip_constraints: test_constraints_min_version.txt
-          - python-version: 3.7.x
-            pip_constraints: test_constraints_max_tf1_version.txt
           - python-version: 3.8.x
-            pip_constraints: test_constraints_max_tf2_version.txt
+            pip_constraints: test_constraints_min_version.txt
+          - python-version: 3.9.x
+            pip_constraints: test_constraints_mid_version.txt
+          - python-version: 3.10.x
+            pip_constraints: test_constraints_max_version.txt
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
@@ -37,7 +57,7 @@ jobs:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
         # Look to see if there is a cache hit for the corresponding requirements file
-        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'gym-unity/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
+        key: ${{ runner.os }}-pip-${{ hashFiles('ml-agents/setup.py', 'ml-agents-envs/setup.py', 'test_requirements.txt', matrix.pip_constraints) }}
         restore-keys: |
           ${{ runner.os }}-pip-
           ${{ runner.os }}-
@@ -45,19 +65,29 @@ jobs:
       run: python -c "import sys; print(sys.version)"
     - name: Install dependencies
       run: |
-        # pin pip to workaround https://github.com/pypa/pip/issues/9180
-        python -m pip install pip==20.2
+        python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
         python -m pip install --progress-bar=off -e ./ml-agents-envs -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -e ./ml-agents -c ${{ matrix.pip_constraints }}
         python -m pip install --progress-bar=off -r test_requirements.txt -c ${{ matrix.pip_constraints }}
-        python -m pip install --progress-bar=off -e ./gym-unity -c ${{ matrix.pip_constraints }}
+        python -m pip install --progress-bar=off -e ./ml-agents-plugin-examples -c ${{ matrix.pip_constraints }}
     - name: Save python dependencies
       run: |
         pip freeze > pip_versions-${{ matrix.python-version }}.txt
         cat pip_versions-${{ matrix.python-version }}.txt
+    - name: Get pytest marker
+      id: pytest_marker
+      run: |
+        if [ "${{ github.event.inputs.pytest_markers }}" != "" ]; then
+          echo "::set-output name=markers::${{ github.event.inputs.pytest_markers }}"
+        else
+          echo "::set-output name=markers::not slow"
+        fi
     - name: Run pytest
-      run: pytest --cov=ml-agents --cov=ml-agents-envs --cov=gym-unity --cov-report html --junitxml=junit/test-results-${{ matrix.python-version }}.xml -p no:warnings
+      run: |
+        pytest --cov=ml-agents --cov=ml-agents-envs \
+        --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
+        -p no:warnings -v -m "${{ steps.pytest_marker.outputs.markers }}" -n 8
     - name: Upload pytest test results
       uses: actions/upload-artifact@v2
       with:

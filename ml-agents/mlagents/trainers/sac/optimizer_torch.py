@@ -1,23 +1,44 @@
 import numpy as np
-from typing import Dict, List, Mapping, cast, Tuple, Optional
+from typing import Dict, List, NamedTuple, cast, Tuple, Optional
+import attr
+
 from mlagents.torch_utils import torch, nn, default_device
 
 from mlagents_envs.logging_util import get_logger
-from mlagents_envs.base_env import ActionSpec
 from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.settings import NetworkSettings
-from mlagents.trainers.torch.networks import ValueNetwork
-from mlagents.trainers.torch.utils import ModelUtils
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.torch_entities.networks import ValueNetwork, SharedActorCritic
+from mlagents.trainers.torch_entities.agent_action import AgentAction
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.utils import ModelUtils
+from mlagents.trainers.buffer import AgentBuffer, BufferKey, RewardSignalUtil
 from mlagents_envs.timers import timed
+from mlagents_envs.base_env import ActionSpec, ObservationSpec
 from mlagents.trainers.exception import UnityTrainerException
-from mlagents.trainers.settings import TrainerSettings, SACSettings
+from mlagents.trainers.settings import TrainerSettings, OffPolicyHyperparamSettings
 from contextlib import ExitStack
+from mlagents.trainers.trajectory import ObsUtil
 
 EPSILON = 1e-6  # Small value to avoid divide by zero
 
 logger = get_logger(__name__)
+
+
+@attr.s(auto_attribs=True)
+class SACSettings(OffPolicyHyperparamSettings):
+    batch_size: int = 128
+    buffer_size: int = 50000
+    buffer_init_steps: int = 0
+    tau: float = 0.005
+    steps_per_update: float = 1
+    save_replay_buffer: bool = False
+    init_entcoef: float = 1.0
+    reward_signal_steps_per_update: float = attr.ib()
+
+    @reward_signal_steps_per_update.default
+    def _reward_signal_steps_per_update_default(self):
+        return self.steps_per_update
 
 
 class TorchSACOptimizer(TorchOptimizer):
@@ -25,31 +46,24 @@ class TorchSACOptimizer(TorchOptimizer):
         def __init__(
             self,
             stream_names: List[str],
-            observation_shapes: List[Tuple[int, ...]],
+            observation_specs: List[ObservationSpec],
             network_settings: NetworkSettings,
             action_spec: ActionSpec,
         ):
             super().__init__()
-            self.action_spec = action_spec
-            if self.action_spec.is_continuous():
-                self.act_size = self.action_spec.continuous_size
-                num_value_outs = 1
-                num_action_ins = self.act_size
+            num_value_outs = max(sum(action_spec.discrete_branches), 1)
+            num_action_ins = int(action_spec.continuous_size)
 
-            else:
-                self.act_size = self.action_spec.discrete_branches
-                num_value_outs = sum(self.act_size)
-                num_action_ins = 0
             self.q1_network = ValueNetwork(
                 stream_names,
-                observation_shapes,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
             )
             self.q2_network = ValueNetwork(
                 stream_names,
-                observation_shapes,
+                observation_specs,
                 network_settings,
                 num_action_ins,
                 num_value_outs,
@@ -57,8 +71,7 @@ class TorchSACOptimizer(TorchOptimizer):
 
         def forward(
             self,
-            vec_inputs: List[torch.Tensor],
-            vis_inputs: List[torch.Tensor],
+            inputs: List[torch.Tensor],
             actions: Optional[torch.Tensor] = None,
             memories: Optional[torch.Tensor] = None,
             sequence_length: int = 1,
@@ -68,8 +81,7 @@ class TorchSACOptimizer(TorchOptimizer):
             """
             Performs a forward pass on the value network, which consists of a Q1 and Q2
             network. Optionally does not evaluate gradients for either the Q1, Q2, or both.
-            :param vec_inputs: List of vector observation tensors.
-            :param vis_input: List of visual observation tensors.
+            :param inputs: List of observation tensors.
             :param actions: For a continuous Q function (has actions), tensor of actions.
                 Otherwise, None.
             :param memories: Initial memories if using memory. Otherwise, None.
@@ -84,8 +96,7 @@ class TorchSACOptimizer(TorchOptimizer):
                 if not q1_grad:
                     stack.enter_context(torch.no_grad())
                 q1_out, _ = self.q1_network(
-                    vec_inputs,
-                    vis_inputs,
+                    inputs,
                     actions=actions,
                     memories=memories,
                     sequence_length=sequence_length,
@@ -94,22 +105,43 @@ class TorchSACOptimizer(TorchOptimizer):
                 if not q2_grad:
                     stack.enter_context(torch.no_grad())
                 q2_out, _ = self.q2_network(
-                    vec_inputs,
-                    vis_inputs,
+                    inputs,
                     actions=actions,
                     memories=memories,
                     sequence_length=sequence_length,
                 )
             return q1_out, q2_out
 
-    def __init__(self, policy: TorchPolicy, trainer_params: TrainerSettings):
-        super().__init__(policy, trainer_params)
-        hyperparameters: SACSettings = cast(SACSettings, trainer_params.hyperparameters)
+    class TargetEntropy(NamedTuple):
+
+        discrete: List[float] = []  # One per branch
+        continuous: float = 0.0
+
+    class LogEntCoef(nn.Module):
+        def __init__(self, discrete, continuous):
+            super().__init__()
+            self.discrete = discrete
+            self.continuous = continuous
+
+    def __init__(self, policy: TorchPolicy, trainer_settings: TrainerSettings):
+        super().__init__(policy, trainer_settings)
+        reward_signal_configs = trainer_settings.reward_signals
+        reward_signal_names = [key.value for key, _ in reward_signal_configs.items()]
+        if isinstance(policy.actor, SharedActorCritic):
+            raise UnityTrainerException("SAC does not support SharedActorCritic")
+        self._critic = ValueNetwork(
+            reward_signal_names,
+            policy.behavior_spec.observation_specs,
+            policy.network_settings,
+        )
+        hyperparameters: SACSettings = cast(
+            SACSettings, trainer_settings.hyperparameters
+        )
+
         self.tau = hyperparameters.tau
         self.init_entcoef = hyperparameters.init_entcoef
 
         self.policy = policy
-        self.act_size = policy.act_size
         policy_network_settings = policy.network_settings
 
         self.tau = hyperparameters.tau
@@ -121,49 +153,57 @@ class TorchSACOptimizer(TorchOptimizer):
 
         self.stream_names = list(self.reward_signals.keys())
         # Use to reduce "survivor bonus" when using Curiosity or GAIL.
-        self.gammas = [_val.gamma for _val in trainer_params.reward_signals.values()]
+        self.gammas = [_val.gamma for _val in trainer_settings.reward_signals.values()]
         self.use_dones_in_backup = {
             name: int(not self.reward_signals[name].ignore_done)
             for name in self.stream_names
         }
+        self._action_spec = self.policy.behavior_spec.action_spec
 
-        self.value_network = TorchSACOptimizer.PolicyValueNetwork(
+        self.q_network = TorchSACOptimizer.PolicyValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
-            self.policy.behavior_spec.action_spec,
+            self._action_spec,
         )
 
         self.target_network = ValueNetwork(
             self.stream_names,
-            self.policy.behavior_spec.observation_shapes,
+            self.policy.behavior_spec.observation_specs,
             policy_network_settings,
         )
-        ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.target_network, 1.0
-        )
+        ModelUtils.soft_update(self._critic, self.target_network, 1.0)
 
-        self._log_ent_coef = torch.nn.Parameter(
-            torch.log(torch.as_tensor([self.init_entcoef] * len(self.act_size))),
+        # We create one entropy coefficient per action, whether discrete or continuous.
+        _disc_log_ent_coef = torch.nn.Parameter(
+            torch.log(
+                torch.as_tensor(
+                    [self.init_entcoef] * len(self._action_spec.discrete_branches)
+                )
+            ),
             requires_grad=True,
         )
-        if self.policy.use_continuous_act:
-            self.target_entropy = torch.as_tensor(
-                -1
-                * self.continuous_target_entropy_scale
-                * np.prod(self.act_size[0]).astype(np.float32)
-            )
-        else:
-            self.target_entropy = [
-                self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
-                for i in self.act_size
-            ]
-
-        policy_params = list(self.policy.actor_critic.network_body.parameters()) + list(
-            self.policy.actor_critic.distribution.parameters()
+        _cont_log_ent_coef = torch.nn.Parameter(
+            torch.log(torch.as_tensor([self.init_entcoef])), requires_grad=True
         )
-        value_params = list(self.value_network.parameters()) + list(
-            self.policy.actor_critic.critic.parameters()
+        self._log_ent_coef = TorchSACOptimizer.LogEntCoef(
+            discrete=_disc_log_ent_coef, continuous=_cont_log_ent_coef
+        )
+        _cont_target = (
+            -1
+            * self.continuous_target_entropy_scale
+            * np.prod(self._action_spec.continuous_size).astype(np.float32)
+        )
+        _disc_target = [
+            self.discrete_target_entropy_scale * np.log(i).astype(np.float32)
+            for i in self._action_spec.discrete_branches
+        ]
+        self.target_entropy = TorchSACOptimizer.TargetEntropy(
+            continuous=_cont_target, discrete=_disc_target
+        )
+        policy_params = list(self.policy.actor.parameters())
+        value_params = list(self.q_network.parameters()) + list(
+            self._critic.parameters()
         )
 
         logger.debug("value_vars")
@@ -186,14 +226,19 @@ class TorchSACOptimizer(TorchOptimizer):
             value_params, lr=hyperparameters.learning_rate
         )
         self.entropy_optimizer = torch.optim.Adam(
-            [self._log_ent_coef], lr=hyperparameters.learning_rate
+            self._log_ent_coef.parameters(), lr=hyperparameters.learning_rate
         )
         self._move_to_device(default_device())
+
+    @property
+    def critic(self):
+        return self._critic
 
     def _move_to_device(self, device: torch.device) -> None:
         self._log_ent_coef.to(device)
         self.target_network.to(device)
-        self.value_network.to(device)
+        self._critic.to(device)
+        self.q_network.to(device)
 
     def sac_q_loss(
         self,
@@ -231,26 +276,28 @@ class TorchSACOptimizer(TorchOptimizer):
 
     def sac_value_loss(
         self,
-        log_probs: torch.Tensor,
+        log_probs: ActionLogProbs,
         values: Dict[str, torch.Tensor],
         q1p_out: Dict[str, torch.Tensor],
         q2p_out: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        discrete: bool,
     ) -> torch.Tensor:
         min_policy_qs = {}
         with torch.no_grad():
-            _ent_coef = torch.exp(self._log_ent_coef)
+            _cont_ent_coef = self._log_ent_coef.continuous.exp()
+            _disc_ent_coef = self._log_ent_coef.discrete.exp()
             for name in values.keys():
-                if not discrete:
+                if self._action_spec.discrete_size <= 0:
                     min_policy_qs[name] = torch.min(q1p_out[name], q2p_out[name])
                 else:
-                    action_probs = log_probs.exp()
+                    disc_action_probs = log_probs.all_discrete_tensor.exp()
                     _branched_q1p = ModelUtils.break_into_branches(
-                        q1p_out[name] * action_probs, self.act_size
+                        q1p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
                     )
                     _branched_q2p = ModelUtils.break_into_branches(
-                        q2p_out[name] * action_probs, self.act_size
+                        q2p_out[name] * disc_action_probs,
+                        self._action_spec.discrete_branches,
                     )
                     _q1p_mean = torch.mean(
                         torch.stack(
@@ -274,24 +321,26 @@ class TorchSACOptimizer(TorchOptimizer):
                     min_policy_qs[name] = torch.min(_q1p_mean, _q2p_mean)
 
         value_losses = []
-        if not discrete:
+        if self._action_spec.discrete_size <= 0:
             for name in values.keys():
                 with torch.no_grad():
                     v_backup = min_policy_qs[name] - torch.sum(
-                        _ent_coef * log_probs, dim=1
+                        _cont_ent_coef * log_probs.continuous_tensor, dim=1
                     )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup), loss_masks
                 )
                 value_losses.append(value_loss)
         else:
+            disc_log_probs = log_probs.all_discrete_tensor
             branched_per_action_ent = ModelUtils.break_into_branches(
-                log_probs * log_probs.exp(), self.act_size
+                disc_log_probs * disc_log_probs.exp(),
+                self._action_spec.discrete_branches,
             )
             # We have to do entropy bonus per action branch
             branched_ent_bonus = torch.stack(
                 [
-                    torch.sum(_ent_coef[i] * _lp, dim=1, keepdim=True)
+                    torch.sum(_disc_ent_coef[i] * _lp, dim=1, keepdim=True)
                     for i, _lp in enumerate(branched_per_action_ent)
                 ]
             )
@@ -300,6 +349,13 @@ class TorchSACOptimizer(TorchOptimizer):
                     v_backup = min_policy_qs[name] - torch.mean(
                         branched_ent_bonus, axis=0
                     )
+                    # Add continuous entropy bonus to minimum Q
+                    if self._action_spec.continuous_size > 0:
+                        v_backup += torch.sum(
+                            _cont_ent_coef * log_probs.continuous_tensor,
+                            dim=1,
+                            keepdim=True,
+                        )
                 value_loss = 0.5 * ModelUtils.masked_mean(
                     torch.nn.functional.mse_loss(values[name], v_backup.squeeze()),
                     loss_masks,
@@ -312,57 +368,71 @@ class TorchSACOptimizer(TorchOptimizer):
 
     def sac_policy_loss(
         self,
-        log_probs: torch.Tensor,
+        log_probs: ActionLogProbs,
         q1p_outs: Dict[str, torch.Tensor],
         loss_masks: torch.Tensor,
-        discrete: bool,
     ) -> torch.Tensor:
-        _ent_coef = torch.exp(self._log_ent_coef)
+        _cont_ent_coef, _disc_ent_coef = (
+            self._log_ent_coef.continuous,
+            self._log_ent_coef.discrete,
+        )
+        _cont_ent_coef = _cont_ent_coef.exp()
+        _disc_ent_coef = _disc_ent_coef.exp()
+
         mean_q1 = torch.mean(torch.stack(list(q1p_outs.values())), axis=0)
-        if not discrete:
-            mean_q1 = mean_q1.unsqueeze(1)
-            batch_policy_loss = torch.mean(_ent_coef * log_probs - mean_q1, dim=1)
-            policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
-        else:
-            action_probs = log_probs.exp()
+        batch_policy_loss = 0
+        if self._action_spec.discrete_size > 0:
+            disc_log_probs = log_probs.all_discrete_tensor
+            disc_action_probs = disc_log_probs.exp()
             branched_per_action_ent = ModelUtils.break_into_branches(
-                log_probs * action_probs, self.act_size
+                disc_log_probs * disc_action_probs, self._action_spec.discrete_branches
             )
             branched_q_term = ModelUtils.break_into_branches(
-                mean_q1 * action_probs, self.act_size
+                mean_q1 * disc_action_probs, self._action_spec.discrete_branches
             )
             branched_policy_loss = torch.stack(
                 [
-                    torch.sum(_ent_coef[i] * _lp - _qt, dim=1, keepdim=True)
+                    torch.sum(_disc_ent_coef[i] * _lp - _qt, dim=1, keepdim=False)
                     for i, (_lp, _qt) in enumerate(
                         zip(branched_per_action_ent, branched_q_term)
                     )
                 ],
                 dim=1,
             )
-            batch_policy_loss = torch.squeeze(branched_policy_loss)
-            policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
+            batch_policy_loss += torch.sum(branched_policy_loss, dim=1)
+            all_mean_q1 = torch.sum(disc_action_probs * mean_q1, dim=1)
+        else:
+            all_mean_q1 = mean_q1
+        if self._action_spec.continuous_size > 0:
+            cont_log_probs = log_probs.continuous_tensor
+            batch_policy_loss += (
+                _cont_ent_coef * torch.sum(cont_log_probs, dim=1) - all_mean_q1
+            )
+        policy_loss = ModelUtils.masked_mean(batch_policy_loss, loss_masks)
+
         return policy_loss
 
     def sac_entropy_loss(
-        self, log_probs: torch.Tensor, loss_masks: torch.Tensor, discrete: bool
+        self, log_probs: ActionLogProbs, loss_masks: torch.Tensor
     ) -> torch.Tensor:
-        if not discrete:
+        _cont_ent_coef, _disc_ent_coef = (
+            self._log_ent_coef.continuous,
+            self._log_ent_coef.discrete,
+        )
+        entropy_loss = 0
+        if self._action_spec.discrete_size > 0:
             with torch.no_grad():
-                target_current_diff = torch.sum(log_probs + self.target_entropy, dim=1)
-            entropy_loss = -1 * ModelUtils.masked_mean(
-                self._log_ent_coef * target_current_diff, loss_masks
-            )
-        else:
-            with torch.no_grad():
+                # Break continuous into separate branch
+                disc_log_probs = log_probs.all_discrete_tensor
                 branched_per_action_ent = ModelUtils.break_into_branches(
-                    log_probs * log_probs.exp(), self.act_size
+                    disc_log_probs * disc_log_probs.exp(),
+                    self._action_spec.discrete_branches,
                 )
                 target_current_diff_branched = torch.stack(
                     [
                         torch.sum(_lp, axis=1, keepdim=True) + _te
                         for _lp, _te in zip(
-                            branched_per_action_ent, self.target_entropy
+                            branched_per_action_ent, self.target_entropy.discrete
                         )
                     ],
                     axis=1,
@@ -370,8 +440,18 @@ class TorchSACOptimizer(TorchOptimizer):
                 target_current_diff = torch.squeeze(
                     target_current_diff_branched, axis=2
                 )
-            entropy_loss = -1 * ModelUtils.masked_mean(
-                torch.mean(self._log_ent_coef * target_current_diff, axis=1), loss_masks
+            entropy_loss += -1 * ModelUtils.masked_mean(
+                torch.mean(_disc_ent_coef * target_current_diff, axis=1), loss_masks
+            )
+        if self._action_spec.continuous_size > 0:
+            with torch.no_grad():
+                cont_log_probs = log_probs.continuous_tensor
+                target_current_diff = (
+                    torch.sum(cont_log_probs, dim=1) + self.target_entropy.continuous
+                )
+            # We update all the _cont_ent_coef as one block
+            entropy_loss += -1 * ModelUtils.masked_mean(
+                _cont_ent_coef * target_current_diff, loss_masks
             )
 
         return entropy_loss
@@ -380,9 +460,13 @@ class TorchSACOptimizer(TorchOptimizer):
         self, q_output: Dict[str, torch.Tensor], discrete_actions: torch.Tensor
     ) -> Dict[str, torch.Tensor]:
         condensed_q_output = {}
-        onehot_actions = ModelUtils.actions_to_onehot(discrete_actions, self.act_size)
+        onehot_actions = ModelUtils.actions_to_onehot(
+            discrete_actions, self._action_spec.discrete_branches
+        )
         for key, item in q_output.items():
-            branched_q = ModelUtils.break_into_branches(item, self.act_size)
+            branched_q = ModelUtils.break_into_branches(
+                item, self._action_spec.discrete_branches
+            )
             only_action_qs = torch.stack(
                 [
                     torch.sum(_act * _q, dim=1, keepdim=True)
@@ -406,132 +490,120 @@ class TorchSACOptimizer(TorchOptimizer):
         """
         rewards = {}
         for name in self.reward_signals:
-            rewards[name] = ModelUtils.list_to_tensor(batch[f"{name}_rewards"])
+            rewards[name] = ModelUtils.list_to_tensor(
+                batch[RewardSignalUtil.rewards_key(name)]
+            )
 
-        vec_obs = [ModelUtils.list_to_tensor(batch["vector_obs"])]
-        next_vec_obs = [ModelUtils.list_to_tensor(batch["next_vector_in"])]
-        act_masks = ModelUtils.list_to_tensor(batch["action_mask"])
-        if self.policy.use_continuous_act:
-            actions = ModelUtils.list_to_tensor(batch["actions"]).unsqueeze(-1)
-        else:
-            actions = ModelUtils.list_to_tensor(batch["actions"], dtype=torch.long)
+        n_obs = len(self.policy.behavior_spec.observation_specs)
+        current_obs = ObsUtil.from_buffer(batch, n_obs)
+        # Convert to tensors
+        current_obs = [ModelUtils.list_to_tensor(obs) for obs in current_obs]
+
+        next_obs = ObsUtil.from_buffer_next(batch, n_obs)
+        # Convert to tensors
+        next_obs = [ModelUtils.list_to_tensor(obs) for obs in next_obs]
+
+        act_masks = ModelUtils.list_to_tensor(batch[BufferKey.ACTION_MASK])
+        actions = AgentAction.from_buffer(batch)
 
         memories_list = [
-            ModelUtils.list_to_tensor(batch["memory"][i])
-            for i in range(0, len(batch["memory"]), self.policy.sequence_length)
+            ModelUtils.list_to_tensor(batch[BufferKey.MEMORY][i])
+            for i in range(0, len(batch[BufferKey.MEMORY]), self.policy.sequence_length)
         ]
         # LSTM shouldn't have sequence length <1, but stop it from going out of the index if true.
-        offset = 1 if self.policy.sequence_length > 1 else 0
-        next_memories_list = [
-            ModelUtils.list_to_tensor(
-                batch["memory"][i][self.policy.m_size // 2 :]
-            )  # only pass value part of memory to target network
-            for i in range(offset, len(batch["memory"]), self.policy.sequence_length)
+        value_memories_list = [
+            ModelUtils.list_to_tensor(batch[BufferKey.CRITIC_MEMORY][i])
+            for i in range(
+                0, len(batch[BufferKey.CRITIC_MEMORY]), self.policy.sequence_length
+            )
         ]
 
         if len(memories_list) > 0:
             memories = torch.stack(memories_list).unsqueeze(0)
-            next_memories = torch.stack(next_memories_list).unsqueeze(0)
+            value_memories = torch.stack(value_memories_list).unsqueeze(0)
         else:
             memories = None
-            next_memories = None
-        # Q network memories are 0'ed out, since we don't have them during inference.
-        q_memories = (
-            torch.zeros_like(next_memories) if next_memories is not None else None
-        )
+            value_memories = None
 
-        vis_obs: List[torch.Tensor] = []
-        next_vis_obs: List[torch.Tensor] = []
-        if self.policy.use_vis_obs:
-            vis_obs = []
-            for idx, _ in enumerate(
-                self.policy.actor_critic.network_body.visual_processors
-            ):
-                vis_ob = ModelUtils.list_to_tensor(batch["visual_obs%d" % idx])
-                vis_obs.append(vis_ob)
-                next_vis_ob = ModelUtils.list_to_tensor(
-                    batch["next_visual_obs%d" % idx]
-                )
-                next_vis_obs.append(next_vis_ob)
+        # Q and V network memories are 0'ed out, since we don't have them during inference.
+        q_memories = (
+            torch.zeros_like(value_memories) if value_memories is not None else None
+        )
 
         # Copy normalizers from policy
-        self.value_network.q1_network.network_body.copy_normalization(
-            self.policy.actor_critic.network_body
+        self.q_network.q1_network.network_body.copy_normalization(
+            self.policy.actor.network_body
         )
-        self.value_network.q2_network.network_body.copy_normalization(
-            self.policy.actor_critic.network_body
+        self.q_network.q2_network.network_body.copy_normalization(
+            self.policy.actor.network_body
         )
         self.target_network.network_body.copy_normalization(
-            self.policy.actor_critic.network_body
+            self.policy.actor.network_body
         )
-        (sampled_actions, _, log_probs, _, _) = self.policy.sample_actions(
-            vec_obs,
-            vis_obs,
+        self._critic.network_body.copy_normalization(self.policy.actor.network_body)
+        sampled_actions, run_out, _, = self.policy.actor.get_action_and_stats(
+            current_obs,
             masks=act_masks,
             memories=memories,
-            seq_len=self.policy.sequence_length,
-            all_log_probs=not self.policy.use_continuous_act,
+            sequence_length=self.policy.sequence_length,
         )
-        value_estimates, _ = self.policy.actor_critic.critic_pass(
-            vec_obs, vis_obs, memories, sequence_length=self.policy.sequence_length
+        log_probs = run_out["log_probs"]
+        value_estimates, _ = self._critic.critic_pass(
+            current_obs, value_memories, sequence_length=self.policy.sequence_length
         )
-        if self.policy.use_continuous_act:
-            squeezed_actions = actions.squeeze(-1)
-            # Only need grad for q1, as that is used for policy.
-            q1p_out, q2p_out = self.value_network(
-                vec_obs,
-                vis_obs,
-                sampled_actions,
-                memories=q_memories,
-                sequence_length=self.policy.sequence_length,
-                q2_grad=False,
-            )
-            q1_out, q2_out = self.value_network(
-                vec_obs,
-                vis_obs,
-                squeezed_actions,
-                memories=q_memories,
-                sequence_length=self.policy.sequence_length,
-            )
-            q1_stream, q2_stream = q1_out, q2_out
+
+        cont_sampled_actions = sampled_actions.continuous_tensor
+        cont_actions = actions.continuous_tensor
+        q1p_out, q2p_out = self.q_network(
+            current_obs,
+            cont_sampled_actions,
+            memories=q_memories,
+            sequence_length=self.policy.sequence_length,
+            q2_grad=False,
+        )
+        q1_out, q2_out = self.q_network(
+            current_obs,
+            cont_actions,
+            memories=q_memories,
+            sequence_length=self.policy.sequence_length,
+        )
+
+        if self._action_spec.discrete_size > 0:
+            disc_actions = actions.discrete_tensor
+            q1_stream = self._condense_q_streams(q1_out, disc_actions)
+            q2_stream = self._condense_q_streams(q2_out, disc_actions)
         else:
-            # For discrete, you don't need to backprop through the Q for the policy
-            q1p_out, q2p_out = self.value_network(
-                vec_obs,
-                vis_obs,
-                memories=q_memories,
-                sequence_length=self.policy.sequence_length,
-                q1_grad=False,
-                q2_grad=False,
-            )
-            q1_out, q2_out = self.value_network(
-                vec_obs,
-                vis_obs,
-                memories=q_memories,
-                sequence_length=self.policy.sequence_length,
-            )
-            q1_stream = self._condense_q_streams(q1_out, actions)
-            q2_stream = self._condense_q_streams(q2_out, actions)
+            q1_stream, q2_stream = q1_out, q2_out
 
         with torch.no_grad():
+            # Since we didn't record the next value memories, evaluate one step in the critic to
+            # get them.
+            if value_memories is not None:
+                # Get the first observation in each sequence
+                just_first_obs = [
+                    _obs[:: self.policy.sequence_length] for _obs in current_obs
+                ]
+                _, next_value_memories = self._critic.critic_pass(
+                    just_first_obs, value_memories, sequence_length=1
+                )
+            else:
+                next_value_memories = None
             target_values, _ = self.target_network(
-                next_vec_obs,
-                next_vis_obs,
-                memories=next_memories,
+                next_obs,
+                memories=next_value_memories,
                 sequence_length=self.policy.sequence_length,
             )
-        masks = ModelUtils.list_to_tensor(batch["masks"], dtype=torch.bool)
-        use_discrete = not self.policy.use_continuous_act
-        dones = ModelUtils.list_to_tensor(batch["done"])
+        masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
+        dones = ModelUtils.list_to_tensor(batch[BufferKey.DONE])
 
         q1_loss, q2_loss = self.sac_q_loss(
             q1_stream, q2_stream, target_values, dones, rewards, masks
         )
         value_loss = self.sac_value_loss(
-            log_probs, value_estimates, q1p_out, q2p_out, masks, use_discrete
+            log_probs, value_estimates, q1p_out, q2p_out, masks
         )
-        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks, use_discrete)
-        entropy_loss = self.sac_entropy_loss(log_probs, masks, use_discrete)
+        policy_loss = self.sac_policy_loss(log_probs, q1p_out, masks)
+        entropy_loss = self.sac_entropy_loss(log_probs, masks)
 
         total_value_loss = q1_loss + q2_loss + value_loss
 
@@ -552,31 +624,27 @@ class TorchSACOptimizer(TorchOptimizer):
         self.entropy_optimizer.step()
 
         # Update target network
-        ModelUtils.soft_update(
-            self.policy.actor_critic.critic, self.target_network, self.tau
-        )
+        ModelUtils.soft_update(self._critic, self.target_network, self.tau)
         update_stats = {
             "Losses/Policy Loss": policy_loss.item(),
             "Losses/Value Loss": value_loss.item(),
             "Losses/Q1 Loss": q1_loss.item(),
             "Losses/Q2 Loss": q2_loss.item(),
-            "Policy/Entropy Coeff": torch.mean(torch.exp(self._log_ent_coef)).item(),
+            "Policy/Discrete Entropy Coeff": torch.mean(
+                torch.exp(self._log_ent_coef.discrete)
+            ).item(),
+            "Policy/Continuous Entropy Coeff": torch.mean(
+                torch.exp(self._log_ent_coef.continuous)
+            ).item(),
             "Policy/Learning Rate": decay_lr,
         }
 
         return update_stats
 
-    def update_reward_signals(
-        self, reward_signal_minibatches: Mapping[str, AgentBuffer], num_sequences: int
-    ) -> Dict[str, float]:
-        update_stats: Dict[str, float] = {}
-        for name, update_buffer in reward_signal_minibatches.items():
-            update_stats.update(self.reward_signals[name].update(update_buffer))
-        return update_stats
-
     def get_modules(self):
         modules = {
-            "Optimizer:value_network": self.value_network,
+            "Optimizer:q_network": self.q_network,
+            "Optimizer:value_network": self._critic,
             "Optimizer:target_network": self.target_network,
             "Optimizer:policy_optimizer": self.policy_optimizer,
             "Optimizer:value_optimizer": self.value_optimizer,

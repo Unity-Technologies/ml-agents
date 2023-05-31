@@ -12,11 +12,12 @@ PluginImporter:
   validateReferences: 1
   platformData:
   - first:
-      '': Any
+      : Any
     second:
       enabled: 0
       settings:
         Exclude Android: 1
+        Exclude CloudRendering: 1
         Exclude Editor: 0
         Exclude Linux: 1
         Exclude Linux64: 1
@@ -24,16 +25,17 @@ PluginImporter:
         Exclude OSXIntel: 0
         Exclude OSXIntel64: 0
         Exclude OSXUniversal: 0
+        Exclude WebGL: 1
         Exclude Win: 1
         Exclude Win64: 1
         Exclude iOS: 1
   - first:
-      '': OSXIntel
+      : OSXIntel
     second:
       enabled: 1
       settings: {}
   - first:
-      '': OSXIntel64
+      : OSXIntel64
     second:
       enabled: 1
       settings: {}
@@ -45,6 +47,11 @@ PluginImporter:
         CPU: ARMv7
   - first:
       Any: 
+    second:
+      enabled: 0
+      settings: {}
+  - first:
+      CloudRendering: CloudRendering
     second:
       enabled: 0
       settings: {}
@@ -122,6 +129,7 @@ PluginImporter:
       enabled: 0
       settings:
         AddToEmbeddedBinaries: false
+        CPU: AnyCPU
         CompileFlags: 
         FrameworkDependencies: 
   userData: 

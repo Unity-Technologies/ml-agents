@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
@@ -30,7 +29,9 @@ namespace Unity.MLAgents.Tests.Actuators
             var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
             var mask = masker.GetMask();
             Assert.IsNull(mask);
-            masker.WriteMask(0, new[] { 1, 2, 3 });
+            masker.SetActionEnabled(0, 1, false);
+            masker.SetActionEnabled(0, 2, false);
+            masker.SetActionEnabled(0, 3, false);
             mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsTrue(mask[1]);
@@ -41,11 +42,26 @@ namespace Unity.MLAgents.Tests.Actuators
         }
 
         [Test]
+        public void CanOverwriteMask()
+        {
+            var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
+            var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
+            masker.SetActionEnabled(0, 1, false);
+            var mask = masker.GetMask();
+            Assert.IsTrue(mask[1]);
+
+            masker.SetActionEnabled(0, 1, true);
+            Assert.IsFalse(mask[1]);
+        }
+
+        [Test]
         public void SecondBranchMask()
         {
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
             var masker = new ActuatorDiscreteActionMask(new[] { actuator1 }, 15, 3);
-            masker.WriteMask(1, new[] { 1, 2, 3 });
+            masker.SetActionEnabled(1, 1, false);
+            masker.SetActionEnabled(1, 2, false);
+            masker.SetActionEnabled(1, 3, false);
             var mask = masker.GetMask();
             Assert.IsFalse(mask[0]);
             Assert.IsFalse(mask[4]);
@@ -61,7 +77,9 @@ namespace Unity.MLAgents.Tests.Actuators
         {
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
             var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
-            masker.WriteMask(1, new[] { 1, 2, 3 });
+            masker.SetActionEnabled(1, 1, false);
+            masker.SetActionEnabled(1, 2, false);
+            masker.SetActionEnabled(1, 3, false);
             masker.ResetMask();
             var mask = masker.GetMask();
             for (var i = 0; i < 15; i++)
@@ -76,15 +94,18 @@ namespace Unity.MLAgents.Tests.Actuators
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
             var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
             Assert.Catch<UnityAgentsException>(
-                () => masker.WriteMask(0, new[] { 5 }));
+                () => masker.SetActionEnabled(0, 5, false));
             Assert.Catch<UnityAgentsException>(
-                () => masker.WriteMask(1, new[] { 5 }));
-            masker.WriteMask(2, new[] { 5 });
+                () => masker.SetActionEnabled(1, 5, false));
+            masker.SetActionEnabled(2, 5, false);
             Assert.Catch<UnityAgentsException>(
-                () => masker.WriteMask(3, new[] { 1 }));
+                () => masker.SetActionEnabled(3, 1, false));
             masker.GetMask();
             masker.ResetMask();
-            masker.WriteMask(0, new[] { 0, 1, 2, 3 });
+            masker.SetActionEnabled(0, 0, false);
+            masker.SetActionEnabled(0, 1, false);
+            masker.SetActionEnabled(0, 2, false);
+            masker.SetActionEnabled(0, 3, false);
             Assert.Catch<UnityAgentsException>(
                 () => masker.GetMask());
         }
@@ -94,9 +115,10 @@ namespace Unity.MLAgents.Tests.Actuators
         {
             var actuator1 = new TestActuator(ActionSpec.MakeDiscrete(new[] { 4, 5, 6 }), "actuator1");
             var masker = new ActuatorDiscreteActionMask(new IActuator[] { actuator1 }, 15, 3);
-            masker.WriteMask(0, new[] { 0, 1 });
-            masker.WriteMask(0, new[] { 3 });
-            masker.WriteMask(2, new[] { 1 });
+            masker.SetActionEnabled(0, 0, false);
+            masker.SetActionEnabled(0, 1, false);
+            masker.SetActionEnabled(0, 3, false);
+            masker.SetActionEnabled(2, 1, false);
             var mask = masker.GetMask();
             for (var i = 0; i < 15; i++)
             {

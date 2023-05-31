@@ -19,11 +19,11 @@ if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
             # tb[-2] is the wrapper function, e.g. np_array_no_float64
             # we want the calling function, so use tb[-3]
             filename = tb[-3].filename
-            # Only raise if this came from mlagents code, not tensorflow
+            # Only raise if this came from mlagents code
             if (
                 "ml-agents/mlagents" in filename
                 or "ml-agents-envs/mlagents" in filename
-            ) and "tensorflow_to_barracuda.py" not in filename:
+            ):
                 raise ValueError(
                     f"float64 array created. Set dtype=np.float32 instead of current dtype={kwargs_dtype}. "
                     f"Run pytest with TEST_ENFORCE_NUMPY_FLOAT32=1 to confirm fix."
@@ -47,3 +47,9 @@ if os.getenv("TEST_ENFORCE_NUMPY_FLOAT32"):
     np.array = np_array_no_float64
     np.zeros = np_zeros_no_float64
     np.ones = np_ones_no_float64
+
+
+if os.getenv("TEST_ENFORCE_BUFFER_KEY_TYPES"):
+    from mlagents.trainers.buffer import AgentBuffer
+
+    AgentBuffer.CHECK_KEY_TYPES_AT_RUNTIME = True

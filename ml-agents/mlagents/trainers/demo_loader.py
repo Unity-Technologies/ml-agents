@@ -1,11 +1,11 @@
 import os
 from typing import List, Tuple
 import numpy as np
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.communicator_objects.agent_info_action_pair_pb2 import (
     AgentInfoActionPairProto,
 )
-from mlagents.trainers.trajectory import SplitObservations
+from mlagents.trainers.trajectory import ObsUtil
 from mlagents_envs.rpc_utils import behavior_spec_from_proto, steps_from_proto
 from mlagents_envs.base_env import BehaviorSpec
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
@@ -41,11 +41,15 @@ def make_demo_buffer(
             [next_pair_info.agent_info], behavior_spec
         )
         previous_action = (
-            np.array(pair_infos[idx].action_info.vector_actions, dtype=np.float32) * 0
+            np.array(
+                pair_infos[idx].action_info.vector_actions_deprecated, dtype=np.float32
+            )
+            * 0
         )
         if idx > 0:
             previous_action = np.array(
-                pair_infos[idx - 1].action_info.vector_actions, dtype=np.float32
+                pair_infos[idx - 1].action_info.vector_actions_deprecated,
+                dtype=np.float32,
             )
 
         next_done = len(next_terminal_step) == 1
@@ -60,14 +64,32 @@ def make_demo_buffer(
         else:
             current_obs = list(current_decision_step.values())[0].obs
 
-        demo_raw_buffer["done"].append(next_done)
-        demo_raw_buffer["rewards"].append(next_reward)
-        split_obs = SplitObservations.from_observations(current_obs)
-        for i, obs in enumerate(split_obs.visual_observations):
-            demo_raw_buffer["visual_obs%d" % i].append(obs)
-        demo_raw_buffer["vector_obs"].append(split_obs.vector_observations)
-        demo_raw_buffer["actions"].append(current_pair_info.action_info.vector_actions)
-        demo_raw_buffer["prev_action"].append(previous_action)
+        demo_raw_buffer[BufferKey.DONE].append(next_done)
+        demo_raw_buffer[BufferKey.ENVIRONMENT_REWARDS].append(next_reward)
+        for i, obs in enumerate(current_obs):
+            demo_raw_buffer[ObsUtil.get_name_at(i)].append(obs)
+        if (
+            len(current_pair_info.action_info.continuous_actions) == 0
+            and len(current_pair_info.action_info.discrete_actions) == 0
+        ):
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+            else:
+                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
+                    current_pair_info.action_info.vector_actions_deprecated
+                )
+        else:
+            if behavior_spec.action_spec.continuous_size > 0:
+                demo_raw_buffer[BufferKey.CONTINUOUS_ACTION].append(
+                    current_pair_info.action_info.continuous_actions
+                )
+            if behavior_spec.action_spec.discrete_size > 0:
+                demo_raw_buffer[BufferKey.DISCRETE_ACTION].append(
+                    current_pair_info.action_info.discrete_actions
+                )
+        demo_raw_buffer[BufferKey.PREV_ACTION].append(previous_action)
         if next_done:
             demo_raw_buffer.resequence_and_append(
                 demo_processed_buffer, batch_size=None, training_length=sequence_length
@@ -95,13 +117,13 @@ def demo_to_buffer(
         # check action dimensions in demonstration match
         if behavior_spec.action_spec != expected_behavior_spec.action_spec:
             raise RuntimeError(
-                "The action spaces {} in demonstration do not match the policy's {}.".format(
+                "The actions {} in demonstration do not match the policy's {}.".format(
                     behavior_spec.action_spec, expected_behavior_spec.action_spec
                 )
             )
         # check observations match
-        if len(behavior_spec.observation_shapes) != len(
-            expected_behavior_spec.observation_shapes
+        if len(behavior_spec.observation_specs) != len(
+            expected_behavior_spec.observation_specs
         ):
             raise RuntimeError(
                 "The demonstrations do not have the same number of observations as the policy."
@@ -109,11 +131,11 @@ def demo_to_buffer(
         else:
             for i, (demo_obs, policy_obs) in enumerate(
                 zip(
-                    behavior_spec.observation_shapes,
-                    expected_behavior_spec.observation_shapes,
+                    behavior_spec.observation_specs,
+                    expected_behavior_spec.observation_specs,
                 )
             ):
-                if demo_obs != policy_obs:
+                if demo_obs.shape != policy_obs.shape:
                     raise RuntimeError(
                         f"The shape {demo_obs} for observation {i} in demonstration \
                         do not match the policy's {policy_obs}."

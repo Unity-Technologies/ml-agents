@@ -1,15 +1,14 @@
-using System;
-
-using Unity.MLAgents.Policies;
+using UnityEngine.Profiling;
 
 namespace Unity.MLAgents.Actuators
 {
     /// <summary>
-    /// IActuator implementation that forwards to an <see cref="IActionReceiver"/>.
+    /// IActuator implementation that forwards calls to an <see cref="IActionReceiver"/> and an <see cref="IHeuristicProvider"/>.
     /// </summary>
-    internal class VectorActuator : IActuator
+    internal class VectorActuator : IActuator, IBuiltInActuator
     {
         IActionReceiver m_ActionReceiver;
+        IHeuristicProvider m_HeuristicProvider;
 
         ActionBuffers m_ActionBuffers;
         internal ActionBuffers ActionBuffers
@@ -21,33 +20,44 @@ namespace Unity.MLAgents.Actuators
         /// <summary>
         /// Create a VectorActuator that forwards to the provided IActionReceiver.
         /// </summary>
-        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
-        /// <param name="vectorActionSize">For discrete action spaces, the branch sizes for each action.
-        /// For continuous action spaces, the number of actions is the 0th element.</param>
-        /// <param name="spaceType"></param>
+        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.
+        /// If this parameter also implements <see cref="IHeuristicProvider"/> it will be cast and used to forward calls to
+        /// <see cref="IHeuristicProvider.Heuristic"/>.</param>
+        /// <param name="actionSpec"></param>
         /// <param name="name"></param>
-        /// <exception cref="ArgumentOutOfRangeException">Thrown for invalid <see cref="SpaceType"/></exception>
         public VectorActuator(IActionReceiver actionReceiver,
-                              int[] vectorActionSize,
-                              SpaceType spaceType,
+                              ActionSpec actionSpec,
+                              string name = "VectorActuator")
+            : this(actionReceiver, actionReceiver as IHeuristicProvider, actionSpec, name) { }
+
+        /// <summary>
+        /// Create a VectorActuator that forwards to the provided IActionReceiver.
+        /// </summary>
+        /// <param name="actionReceiver">The <see cref="IActionReceiver"/> used for OnActionReceived and WriteDiscreteActionMask.</param>
+        /// <param name="heuristicProvider">The <see cref="IHeuristicProvider"/> used to fill the <see cref="ActionBuffers"/>
+        /// for Heuristic Policies.</param>
+        /// <param name="actionSpec"></param>
+        /// <param name="name"></param>
+        public VectorActuator(IActionReceiver actionReceiver,
+                              IHeuristicProvider heuristicProvider,
+                              ActionSpec actionSpec,
                               string name = "VectorActuator")
         {
             m_ActionReceiver = actionReceiver;
+            m_HeuristicProvider = heuristicProvider;
+            ActionSpec = actionSpec;
             string suffix;
-            switch (spaceType)
+            if (actionSpec.NumContinuousActions == 0)
             {
-                case SpaceType.Continuous:
-                    ActionSpec = ActionSpec.MakeContinuous(vectorActionSize[0]);
-                    suffix = "-Continuous";
-                    break;
-                case SpaceType.Discrete:
-                    ActionSpec = ActionSpec.MakeDiscrete(vectorActionSize);
-                    suffix = "-Discrete";
-                    break;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(spaceType),
-                        spaceType,
-                        "Unknown enum value.");
+                suffix = "-Discrete";
+            }
+            else if (actionSpec.NumDiscreteActions == 0)
+            {
+                suffix = "-Continuous";
+            }
+            else
+            {
+                suffix = $"-Continuous-{actionSpec.NumContinuousActions}-Discrete-{actionSpec.NumDiscreteActions}";
             }
             Name = name + suffix;
         }
@@ -61,8 +71,17 @@ namespace Unity.MLAgents.Actuators
         /// <inheritdoc />
         public void OnActionReceived(ActionBuffers actionBuffers)
         {
-            ActionBuffers = actionBuffers;
-            m_ActionReceiver.OnActionReceived(ActionBuffers);
+            Profiler.BeginSample("VectorActuator.OnActionReceived");
+            m_ActionBuffers = actionBuffers;
+            m_ActionReceiver.OnActionReceived(m_ActionBuffers);
+            Profiler.EndSample();
+        }
+
+        public void Heuristic(in ActionBuffers actionBuffersOut)
+        {
+            Profiler.BeginSample("VectorActuator.Heuristic");
+            m_HeuristicProvider?.Heuristic(actionBuffersOut);
+            Profiler.EndSample();
         }
 
         /// <inheritdoc />
@@ -76,5 +95,11 @@ namespace Unity.MLAgents.Actuators
 
         /// <inheritdoc />
         public string Name { get; }
+
+        /// <inheritdoc />
+        public virtual BuiltInActuatorType GetBuiltInActuatorType()
+        {
+            return BuiltInActuatorType.VectorActuator;
+        }
     }
 }

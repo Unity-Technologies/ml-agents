@@ -1,3 +1,4 @@
+import datetime
 from typing import Dict, NamedTuple, List, Any, Optional, Callable, Set
 import cloudpickle
 import enum
@@ -16,6 +17,7 @@ from queue import Empty as EmptyQueueException
 from mlagents_envs.base_env import BaseEnv, BehaviorName, BehaviorSpec
 from mlagents_envs import logging_util
 from mlagents.trainers.env_manager import EnvManager, EnvironmentStep, AllStepResult
+from mlagents.trainers.settings import TrainerSettings
 from mlagents_envs.timers import (
     TimerNode,
     timed,
@@ -23,7 +25,7 @@ from mlagents_envs.timers import (
     reset_timers,
     get_timer_root,
 )
-from mlagents.trainers.settings import ParameterRandomizationSettings
+from mlagents.trainers.settings import ParameterRandomizationSettings, RunOptions
 from mlagents.trainers.action_info import ActionInfo
 from mlagents_envs.side_channel.environment_parameters_channel import (
     EnvironmentParametersChannel,
@@ -33,8 +35,11 @@ from mlagents_envs.side_channel.engine_configuration_channel import (
     EngineConfig,
 )
 from mlagents_envs.side_channel.stats_side_channel import (
-    StatsSideChannel,
     EnvironmentStats,
+    StatsSideChannel,
+)
+from mlagents.trainers.training_analytics_side_channel import (
+    TrainingAnalyticsSideChannel,
 )
 from mlagents_envs.side_channel.side_channel import SideChannel
 
@@ -51,6 +56,7 @@ class EnvironmentCommand(enum.Enum):
     CLOSE = 5
     ENV_EXITED = 6
     CLOSED = 7
+    TRAINING_STARTED = 8
 
 
 class EnvironmentRequest(NamedTuple):
@@ -112,17 +118,30 @@ def worker(
     step_queue: Queue,
     pickled_env_factory: str,
     worker_id: int,
-    engine_configuration: EngineConfig,
+    run_options: RunOptions,
     log_level: int = logging_util.INFO,
 ) -> None:
     env_factory: Callable[
         [int, List[SideChannel]], UnityEnvironment
     ] = cloudpickle.loads(pickled_env_factory)
     env_parameters = EnvironmentParametersChannel()
+
+    engine_config = EngineConfig(
+        width=run_options.engine_settings.width,
+        height=run_options.engine_settings.height,
+        quality_level=run_options.engine_settings.quality_level,
+        time_scale=run_options.engine_settings.time_scale,
+        target_frame_rate=run_options.engine_settings.target_frame_rate,
+        capture_frame_rate=run_options.engine_settings.capture_frame_rate,
+    )
     engine_configuration_channel = EngineConfigurationChannel()
-    engine_configuration_channel.set_configuration(engine_configuration)
+    engine_configuration_channel.set_configuration(engine_config)
+
     stats_channel = StatsSideChannel()
-    env: BaseEnv = None
+    training_analytics_channel: Optional[TrainingAnalyticsSideChannel] = None
+    if worker_id == 0:
+        training_analytics_channel = TrainingAnalyticsSideChannel()
+    env: UnityEnvironment = None
     # Set log level. On some platforms, the logger isn't common with the
     # main process, so we need to set it again.
     logging_util.set_log_level(log_level)
@@ -137,16 +156,28 @@ def worker(
         return all_step_result
 
     try:
-        env = env_factory(
-            worker_id, [env_parameters, engine_configuration_channel, stats_channel]
-        )
+        side_channels = [env_parameters, engine_configuration_channel, stats_channel]
+        if training_analytics_channel is not None:
+            side_channels.append(training_analytics_channel)
+
+        env = env_factory(worker_id, side_channels)
+        if (
+            not env.academy_capabilities
+            or not env.academy_capabilities.trainingAnalytics
+        ):
+            # Make sure we don't try to send training analytics if the environment doesn't know how to process
+            # them. This wouldn't be catastrophic, but would result in unknown SideChannel UUIDs being used.
+            training_analytics_channel = None
+        if training_analytics_channel:
+            training_analytics_channel.environment_initialized(run_options)
+
         while True:
             req: EnvironmentRequest = parent_conn.recv()
             if req.cmd == EnvironmentCommand.STEP:
                 all_action_info = req.payload
                 for brain_name, action_info in all_action_info.items():
-                    if len(action_info.action) != 0:
-                        env.set_actions(brain_name, action_info.action)
+                    if len(action_info.agent_ids) > 0:
+                        env.set_actions(brain_name, action_info.env_action)
                 env.step()
                 all_step_result = _generate_all_results()
                 # The timers in this process are independent from all the processes and the "main" process
@@ -170,6 +201,12 @@ def worker(
                 for k, v in req.payload.items():
                     if isinstance(v, ParameterRandomizationSettings):
                         v.apply(k, env_parameters)
+            elif req.cmd == EnvironmentCommand.TRAINING_STARTED:
+                behavior_name, trainer_config = req.payload
+                if training_analytics_channel:
+                    training_analytics_channel.training_started(
+                        behavior_name, trainer_config
+                    )
             elif req.cmd == EnvironmentCommand.RESET:
                 env.reset()
                 all_step_result = _generate_all_results()
@@ -183,13 +220,13 @@ def worker(
         UnityEnvironmentException,
         UnityCommunicatorStoppedException,
     ) as ex:
-        logger.info(f"UnityEnvironment worker {worker_id}: environment stopping.")
+        logger.debug(f"UnityEnvironment worker {worker_id}: environment stopping.")
         step_queue.put(
             EnvironmentResponse(EnvironmentCommand.ENV_EXITED, worker_id, ex)
         )
         _send_response(EnvironmentCommand.ENV_EXITED, ex)
     except Exception as ex:
-        logger.error(
+        logger.exception(
             f"UnityEnvironment worker {worker_id}: environment raised an unexpected exception."
         )
         step_queue.put(
@@ -210,17 +247,25 @@ class SubprocessEnvManager(EnvManager):
     def __init__(
         self,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
         n_env: int = 1,
     ):
         super().__init__()
         self.env_workers: List[UnityEnvWorker] = []
         self.step_queue: Queue = Queue()
         self.workers_alive = 0
+        self.env_factory = env_factory
+        self.run_options = run_options
+        self.env_parameters: Optional[Dict] = None
+        # Each worker is correlated with a list of times they restarted within the last time period.
+        self.recent_restart_timestamps: List[List[datetime.datetime]] = [
+            [] for _ in range(n_env)
+        ]
+        self.restart_counts: List[int] = [0] * n_env
         for worker_idx in range(n_env):
             self.env_workers.append(
                 self.create_worker(
-                    worker_idx, self.step_queue, env_factory, engine_configuration
+                    worker_idx, self.step_queue, env_factory, run_options
                 )
             )
             self.workers_alive += 1
@@ -230,7 +275,7 @@ class SubprocessEnvManager(EnvManager):
         worker_id: int,
         step_queue: Queue,
         env_factory: Callable[[int, List[SideChannel]], BaseEnv],
-        engine_configuration: EngineConfig,
+        run_options: RunOptions,
     ) -> UnityEnvWorker:
         parent_conn, child_conn = Pipe()
 
@@ -244,7 +289,7 @@ class SubprocessEnvManager(EnvManager):
                 step_queue,
                 pickled_env_factory,
                 worker_id,
-                engine_configuration,
+                run_options,
                 logger.level,
             ),
         )
@@ -259,6 +304,105 @@ class SubprocessEnvManager(EnvManager):
                 env_worker.send(EnvironmentCommand.STEP, env_action_info)
                 env_worker.waiting = True
 
+    def _restart_failed_workers(self, first_failure: EnvironmentResponse) -> None:
+        if first_failure.cmd != EnvironmentCommand.ENV_EXITED:
+            return
+        # Drain the step queue to make sure all workers are paused and we have found all concurrent errors.
+        # Pausing all training is needed since we need to reset all pending training steps as they could be corrupted.
+        other_failures: Dict[int, Exception] = self._drain_step_queue()
+        # TODO: Once we use python 3.9 switch to using the | operator to combine dicts.
+        failures: Dict[int, Exception] = {
+            **{first_failure.worker_id: first_failure.payload},
+            **other_failures,
+        }
+        for worker_id, ex in failures.items():
+            self._assert_worker_can_restart(worker_id, ex)
+            logger.warning(f"Restarting worker[{worker_id}] after '{ex}'")
+            self.recent_restart_timestamps[worker_id].append(datetime.datetime.now())
+            self.restart_counts[worker_id] += 1
+            self.env_workers[worker_id] = self.create_worker(
+                worker_id, self.step_queue, self.env_factory, self.run_options
+            )
+        # The restarts were successful, clear all the existing training trajectories so we don't use corrupted or
+        # outdated data.
+        self.reset(self.env_parameters)
+
+    def _drain_step_queue(self) -> Dict[int, Exception]:
+        """
+        Drains all steps out of the step queue and returns all exceptions from crashed workers.
+        This will effectively pause all workers so that they won't do anything until _queue_steps is called.
+        """
+        all_failures = {}
+        workers_still_pending = {w.worker_id for w in self.env_workers if w.waiting}
+        deadline = datetime.datetime.now() + datetime.timedelta(minutes=1)
+        while workers_still_pending and deadline > datetime.datetime.now():
+            try:
+                while True:
+                    step: EnvironmentResponse = self.step_queue.get_nowait()
+                    if step.cmd == EnvironmentCommand.ENV_EXITED:
+                        workers_still_pending.add(step.worker_id)
+                        all_failures[step.worker_id] = step.payload
+                    else:
+                        workers_still_pending.remove(step.worker_id)
+                        self.env_workers[step.worker_id].waiting = False
+            except EmptyQueueException:
+                pass
+        if deadline < datetime.datetime.now():
+            still_waiting = {w.worker_id for w in self.env_workers if w.waiting}
+            raise TimeoutError(f"Workers {still_waiting} stuck in waiting state")
+        return all_failures
+
+    def _assert_worker_can_restart(self, worker_id: int, exception: Exception) -> None:
+        """
+        Checks if we can recover from an exception from a worker.
+        If the restart limit is exceeded it will raise a UnityCommunicationException.
+        If the exception is not recoverable it re-raises the exception.
+        """
+        if (
+            isinstance(exception, UnityCommunicationException)
+            or isinstance(exception, UnityTimeOutException)
+            or isinstance(exception, UnityEnvironmentException)
+            or isinstance(exception, UnityCommunicatorStoppedException)
+        ):
+            if self._worker_has_restart_quota(worker_id):
+                return
+            else:
+                logger.error(
+                    f"Worker {worker_id} exceeded the allowed number of restarts."
+                )
+                raise exception
+        raise exception
+
+    def _worker_has_restart_quota(self, worker_id: int) -> bool:
+        self._drop_old_restart_timestamps(worker_id)
+        max_lifetime_restarts = self.run_options.env_settings.max_lifetime_restarts
+        max_limit_check = (
+            max_lifetime_restarts == -1
+            or self.restart_counts[worker_id] < max_lifetime_restarts
+        )
+
+        rate_limit_n = self.run_options.env_settings.restarts_rate_limit_n
+        rate_limit_check = (
+            rate_limit_n == -1
+            or len(self.recent_restart_timestamps[worker_id]) < rate_limit_n
+        )
+
+        return rate_limit_check and max_limit_check
+
+    def _drop_old_restart_timestamps(self, worker_id: int) -> None:
+        """
+        Drops environment restart timestamps that are outside of the current window.
+        """
+
+        def _filter(t: datetime.datetime) -> bool:
+            return t > datetime.datetime.now() - datetime.timedelta(
+                seconds=self.run_options.env_settings.restarts_rate_limit_period_s
+            )
+
+        self.recent_restart_timestamps[worker_id] = list(
+            filter(_filter, self.recent_restart_timestamps[worker_id])
+        )
+
     def _step(self) -> List[EnvironmentStep]:
         # Queue steps for any workers which aren't in the "waiting" state.
         self._queue_steps()
@@ -272,15 +416,18 @@ class SubprocessEnvManager(EnvManager):
                 while True:
                     step: EnvironmentResponse = self.step_queue.get_nowait()
                     if step.cmd == EnvironmentCommand.ENV_EXITED:
-                        env_exception: Exception = step.payload
-                        raise env_exception
-                    self.env_workers[step.worker_id].waiting = False
-                    if step.worker_id not in step_workers:
+                        # If even one env exits try to restart all envs that failed.
+                        self._restart_failed_workers(step)
+                        # Clear state and restart this function.
+                        worker_steps.clear()
+                        step_workers.clear()
+                        self._queue_steps()
+                    elif step.worker_id not in step_workers:
+                        self.env_workers[step.worker_id].waiting = False
                         worker_steps.append(step)
                         step_workers.add(step.worker_id)
             except EmptyQueueException:
                 pass
-
         step_infos = self._postprocess_steps(worker_steps)
         return step_infos
 
@@ -305,13 +452,31 @@ class SubprocessEnvManager(EnvManager):
         EnvironmentParametersSidehannel for each worker.
         :param config: Dict of environment parameter keys and values
         """
+        self.env_parameters = config
         for ew in self.env_workers:
             ew.send(EnvironmentCommand.ENVIRONMENT_PARAMETERS, config)
 
+    def on_training_started(
+        self, behavior_name: str, trainer_settings: TrainerSettings
+    ) -> None:
+        """
+        Handle traing starting for a new behavior type. Generally nothing is necessary here.
+        :param behavior_name:
+        :param trainer_settings:
+        :return:
+        """
+        for ew in self.env_workers:
+            ew.send(
+                EnvironmentCommand.TRAINING_STARTED, (behavior_name, trainer_settings)
+            )
+
     @property
     def training_behaviors(self) -> Dict[BehaviorName, BehaviorSpec]:
-        self.env_workers[0].send(EnvironmentCommand.BEHAVIOR_SPECS)
-        return self.env_workers[0].recv().payload
+        result: Dict[BehaviorName, BehaviorSpec] = {}
+        for worker in self.env_workers:
+            worker.send(EnvironmentCommand.BEHAVIOR_SPECS)
+            result.update(worker.recv().payload)
+        return result
 
     def close(self) -> None:
         logger.debug("SubprocessEnvManager closing.")

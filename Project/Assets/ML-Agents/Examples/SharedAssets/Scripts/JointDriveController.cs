@@ -11,7 +11,7 @@ namespace Unity.MLAgentsExamples
     [System.Serializable]
     public class BodyPart
     {
-        [Header("Body Part Info")] [Space(10)] public ConfigurableJoint joint;
+        [Header("Body Part Info")][Space(10)] public ConfigurableJoint joint;
         public Rigidbody rb;
         [HideInInspector] public Vector3 startingPos;
         [HideInInspector] public Quaternion startingRot;
@@ -108,7 +108,6 @@ namespace Unity.MLAgentsExamples
 
         public float jointDampen;
         public float maxJointForceLimit;
-        float m_FacingDot;
 
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 

@@ -24,7 +24,7 @@ public class WalkerAgent : Agent
     const float m_maxWalkingSpeed = 10; //The max walking speed
 
     //Should the agent sample a new goal velocity each episode?
-    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin() 
+    //If true, walkSpeed will be randomly set between zero and m_maxWalkingSpeed in OnEpisodeBegin()
     //If false, the goal velocity will be walkingSpeed
     public bool randomizeWalkSpeedEachEpisode;
 
@@ -84,8 +84,6 @@ public class WalkerAgent : Agent
         m_JdController.SetupBodyPart(handR);
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-
-        SetResetParameters();
     }
 
     /// <summary>
@@ -107,8 +105,6 @@ public class WalkerAgent : Agent
         //Set our goal walking speed
         MTargetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
-
-        SetResetParameters();
     }
 
     /// <summary>
@@ -146,7 +142,7 @@ public class WalkerAgent : Agent
         //ragdoll's avg vel
         var avgVel = GetAvgVelocity();
 
-        //current ragdoll velocity. normalized 
+        //current ragdoll velocity. normalized
         sensor.AddObservation(Vector3.Distance(velGoal, avgVel));
         //avg body vel relative to cube
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(avgVel));
@@ -240,7 +236,10 @@ public class WalkerAgent : Agent
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var headForward = head.forward;
+        headForward.y = 0;
+        // var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, headForward) + 1) * .5F;
 
         //Check for NaNs
         if (float.IsNaN(lookAtTargetReward))
@@ -261,17 +260,16 @@ public class WalkerAgent : Agent
     Vector3 GetAvgVelocity()
     {
         Vector3 velSum = Vector3.zero;
-        Vector3 avgVel = Vector3.zero;
 
         //ALL RBS
-        int numOfRB = 0;
+        int numOfRb = 0;
         foreach (var item in m_JdController.bodyPartsList)
         {
-            numOfRB++;
+            numOfRb++;
             velSum += item.rb.velocity;
         }
 
-        avgVel = velSum / numOfRB;
+        var avgVel = velSum / numOfRb;
         return avgVel;
     }
 
@@ -292,17 +290,5 @@ public class WalkerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-    }
-
-    public void SetTorsoMass()
-    {
-        m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
-        m_JdController.bodyPartsDict[spine].rb.mass = m_ResetParams.GetWithDefault("spine_mass", 8);
-        m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
-    }
-
-    public void SetResetParameters()
-    {
-        SetTorsoMass();
     }
 }

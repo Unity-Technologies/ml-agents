@@ -11,6 +11,7 @@ from mlagents_envs.base_env import BehaviorSpec
 from mlagents.trainers.policy import Policy
 
 from mlagents.trainers.trainer import Trainer
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
 from mlagents.trainers.trajectory import Trajectory
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.stats import StatsPropertyType
@@ -18,6 +19,7 @@ from mlagents.trainers.behavior_id_utils import (
     BehaviorIdentifiers,
     create_name_behavior_id,
 )
+from mlagents.trainers.training_status import GlobalTrainingStatus, StatusType
 
 
 logger = get_logger(__name__)
@@ -128,8 +130,11 @@ class GhostTrainer(Trainer):
         self.last_swap: int = 0
         self.last_team_change: int = 0
 
-        # Chosen because it is the initial ELO in Chess
-        self.initial_elo: float = self_play_parameters.initial_elo
+        self.initial_elo = GlobalTrainingStatus.get_parameter_state(
+            self.brain_name, StatusType.ELO
+        )
+        if self.initial_elo is None:
+            self.initial_elo = self_play_parameters.initial_elo
         self.policy_elos: List[float] = [self.initial_elo] * (
             self.window + 1
         )  # for learning policy
@@ -190,9 +195,15 @@ class GhostTrainer(Trainer):
         i.e. in asymmetric games. We assume the last reward determines the winner.
         :param trajectory: Trajectory.
         """
-        if trajectory.done_reached:
+        if (
+            trajectory.done_reached
+            and trajectory.all_group_dones_reached
+            and not trajectory.interrupted
+        ):
             # Assumption is that final reward is >0/0/<0 for win/draw/loss
-            final_reward = trajectory.steps[-1].reward
+            final_reward = (
+                trajectory.steps[-1].reward + trajectory.steps[-1].group_reward
+            )
             result = 0.5
             if final_reward > 0:
                 result = 1.0
@@ -247,16 +258,7 @@ class GhostTrainer(Trainer):
 
         next_learning_team = self.controller.get_learning_team
 
-        # CASE 1: Current learning team is managed by this GhostTrainer.
-        # If the learning team changes, the following loop over queues will push the
-        # new policy into the policy queue for the new learning agent if
-        # that policy is managed by this GhostTrainer. Otherwise, it will save the current snapshot.
-        # CASE 2: Current learning team is managed by a different GhostTrainer.
-        # If the learning team changes to a team managed by this GhostTrainer, this loop
-        # will push the current_snapshot into the correct queue.  Otherwise,
-        # it will continue skipping and swap_snapshot will continue to handle
-        # pushing fixed snapshots
-        # Case 3: No team change. The if statement just continues to push the policy
+        # Case 1: No team change. The if statement just continues to push the policy
         # into the correct queue (or not if not learning team).
         for brain_name in self._internal_policy_queues:
             internal_policy_queue = self._internal_policy_queues[brain_name]
@@ -264,8 +266,11 @@ class GhostTrainer(Trainer):
                 policy = internal_policy_queue.get_nowait()
                 self.current_policy_snapshot[brain_name] = policy.get_weights()
             except AgentManagerQueue.Empty:
-                pass
-            if next_learning_team in self._team_to_name_to_policy_queue:
+                continue
+            if (
+                self._learning_team == next_learning_team
+                and next_learning_team in self._team_to_name_to_policy_queue
+            ):
                 name_to_policy_queue = self._team_to_name_to_policy_queue[
                     next_learning_team
                 ]
@@ -276,6 +281,28 @@ class GhostTrainer(Trainer):
                     policy = self.get_policy(behavior_id)
                     policy.load_weights(self.current_policy_snapshot[brain_name])
                     name_to_policy_queue[brain_name].put(policy)
+
+        # CASE 2: Current learning team is managed by this GhostTrainer.
+        # If the learning team changes, the following loop over queues will push the
+        # new policy into the policy queue for the new learning agent if
+        # that policy is managed by this GhostTrainer. Otherwise, it will save the current snapshot.
+        # CASE 3: Current learning team is managed by a different GhostTrainer.
+        # If the learning team changes to a team managed by this GhostTrainer, this loop
+        # will push the current_snapshot into the correct queue.  Otherwise,
+        # it will continue skipping and swap_snapshot will continue to handle
+        # pushing fixed snapshots
+        if (
+            self._learning_team != next_learning_team
+            and next_learning_team in self._team_to_name_to_policy_queue
+        ):
+            name_to_policy_queue = self._team_to_name_to_policy_queue[
+                next_learning_team
+            ]
+            for brain_name in name_to_policy_queue:
+                behavior_id = create_name_behavior_id(brain_name, next_learning_team)
+                policy = self.get_policy(behavior_id)
+                policy.load_weights(self.current_policy_snapshot[brain_name])
+                name_to_policy_queue[brain_name].put(policy)
 
         # Note save and swap should be on different step counters.
         # We don't want to save unless the policy is learning.
@@ -301,13 +328,15 @@ class GhostTrainer(Trainer):
         """
         Forwarding call to wrapped trainers save_model.
         """
+        GlobalTrainingStatus.set_parameter_state(
+            self.brain_name, StatusType.ELO, self.current_elo
+        )
         self.trainer.save_model()
 
     def create_policy(
         self,
         parsed_behavior_id: BehaviorIdentifiers,
         behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
     ) -> Policy:
         """
         Creates policy with the wrapped trainer's create_policy function
@@ -316,9 +345,7 @@ class GhostTrainer(Trainer):
         team are grouped. All policies associated with this team are added to the
         wrapped trainer to be trained.
         """
-        policy = self.trainer.create_policy(
-            parsed_behavior_id, behavior_spec, create_graph=True
-        )
+        policy = self.trainer.create_policy(parsed_behavior_id, behavior_spec)
         team_id = parsed_behavior_id.team_id
         self.controller.subscribe_team_id(team_id, self)
 
@@ -343,6 +370,9 @@ class GhostTrainer(Trainer):
             )
         return policy
 
+    def create_optimizer(self) -> TorchOptimizer:
+        pass
+
     def add_policy(
         self, parsed_behavior_id: BehaviorIdentifiers, policy: Policy
     ) -> None:
@@ -354,14 +384,6 @@ class GhostTrainer(Trainer):
         name_behavior_id = parsed_behavior_id.behavior_id
         self._name_to_parsed_behavior_id[name_behavior_id] = parsed_behavior_id
         self.policies[name_behavior_id] = policy
-
-    def get_policy(self, name_behavior_id: str) -> Policy:
-        """
-        Gets policy associated with name_behavior_id
-        :param name_behavior_id: Fully qualified behavior name
-        :return: Policy associated with name_behavior_id
-        """
-        return self.policies[name_behavior_id]
 
     def _save_snapshot(self) -> None:
         """

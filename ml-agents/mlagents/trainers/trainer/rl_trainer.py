@@ -4,6 +4,9 @@ from collections import defaultdict
 import abc
 import time
 import attr
+import numpy as np
+from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
+
 from mlagents.trainers.policy.checkpoint_manager import (
     ModelCheckpoint,
     ModelCheckpointManager,
@@ -11,37 +14,25 @@ from mlagents.trainers.policy.checkpoint_manager import (
 from mlagents_envs.logging_util import get_logger
 from mlagents_envs.timers import timed
 from mlagents.trainers.optimizer import Optimizer
-from mlagents.trainers.buffer import AgentBuffer
+from mlagents.trainers.optimizer.torch_optimizer import TorchOptimizer
+from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents.trainers.trainer import Trainer
-from mlagents.trainers.torch.components.reward_providers.base_reward_provider import (
+from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
 )
 from mlagents_envs.timers import hierarchical_timer
-from mlagents_envs.base_env import BehaviorSpec
-from mlagents.trainers.policy.policy import Policy
-from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
-from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManagerQueue
 from mlagents.trainers.trajectory import Trajectory
-from mlagents.trainers.settings import TrainerSettings, FrameworkType
+from mlagents.trainers.settings import TrainerSettings
 from mlagents.trainers.stats import StatsPropertyType
 from mlagents.trainers.model_saver.model_saver import BaseModelSaver
 
-from mlagents.trainers.exception import UnityTrainerException
-from mlagents import tf_utils
-
-if tf_utils.is_available():
-    from mlagents.trainers.policy.tf_policy import TFPolicy
-    from mlagents.trainers.model_saver.tf_model_saver import TFModelSaver
-else:
-    TFPolicy = None  # type: ignore
-    TFModelSaver = None  # type: ignore
 
 logger = get_logger(__name__)
 
 
-class RLTrainer(Trainer):  # pylint: disable=abstract-method
+class RLTrainer(Trainer):
     """
     This class is the base class for trainers that use Reward Signals.
     """
@@ -59,19 +50,13 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         self._stats_reporter.add_property(
             StatsPropertyType.HYPERPARAMETERS, self.trainer_settings.as_dict()
         )
-        self.framework = self.trainer_settings.framework
-        if self.framework == FrameworkType.TENSORFLOW and not tf_utils.is_available():
-            raise UnityTrainerException(
-                "To use the TensorFlow backend, install the TensorFlow Python package first."
-            )
-
-        logger.debug(f"Using framework {self.framework.value}")
 
         self._next_save_step = 0
         self._next_summary_step = 0
         self.model_saver = self.create_model_saver(
-            self.framework, self.trainer_settings, self.artifact_path, self.load
+            self.trainer_settings, self.artifact_path, self.load
         )
+        self._has_warned_group_rewards = False
 
     def end_episode(self) -> None:
         """
@@ -86,7 +71,9 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         for name, rewards in self.collected_rewards.items():
             if name == "environment":
                 self.stats_reporter.add_stat(
-                    "Environment/Cumulative Reward", rewards.get(agent_id, 0)
+                    "Environment/Cumulative Reward",
+                    rewards.get(agent_id, 0),
+                    aggregation=StatsAggregationMethod.HISTOGRAM,
                 )
                 self.cumulative_returns_since_policy_update.append(
                     rewards.get(agent_id, 0)
@@ -120,56 +107,24 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         """
         return False
 
-    def create_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> Policy:
-        if self.framework == FrameworkType.PYTORCH:
-            return self.create_torch_policy(parsed_behavior_id, behavior_spec)
-        else:
-            return self.create_tf_policy(
-                parsed_behavior_id, behavior_spec, create_graph=create_graph
-            )
-
     @abc.abstractmethod
-    def create_torch_policy(
-        self, parsed_behavior_id: BehaviorIdentifiers, behavior_spec: BehaviorSpec
-    ) -> TorchPolicy:
+    def create_optimizer(self) -> TorchOptimizer:
         """
-        Create a Policy object that uses the PyTorch backend.
-        """
-        pass
-
-    @abc.abstractmethod
-    def create_tf_policy(
-        self,
-        parsed_behavior_id: BehaviorIdentifiers,
-        behavior_spec: BehaviorSpec,
-        create_graph: bool = False,
-    ) -> TFPolicy:
-        """
-        Create a Policy object that uses the TensorFlow backend.
+        Creates an Optimizer object
         """
         pass
 
     @staticmethod
     def create_model_saver(
-        framework: str, trainer_settings: TrainerSettings, model_path: str, load: bool
+        trainer_settings: TrainerSettings, model_path: str, load: bool
     ) -> BaseModelSaver:
-        if framework == FrameworkType.PYTORCH:
-            model_saver = TorchModelSaver(  # type: ignore
-                trainer_settings, model_path, load
-            )
-        else:
-            model_saver = TFModelSaver(  # type: ignore
-                trainer_settings, model_path, load
-            )
+        model_saver = TorchModelSaver(  # type: ignore
+            trainer_settings, model_path, load
+        )
         return model_saver
 
     def _policy_mean_reward(self) -> Optional[float]:
-        """ Returns the mean episode reward for the current policy. """
+        """Returns the mean episode reward for the current policy."""
         rewards = self.cumulative_returns_since_policy_update
         if len(rewards) == 0:
             return None
@@ -186,13 +141,15 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             logger.warning(
                 "Trainer has multiple policies, but default behavior only saves the first."
             )
-        checkpoint_path = self.model_saver.save_checkpoint(self.brain_name, self.step)
-        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
+        export_path, auxillary_paths = self.model_saver.save_checkpoint(
+            self.brain_name, self._step
+        )
         new_checkpoint = ModelCheckpoint(
-            int(self.step),
-            f"{checkpoint_path}.{export_ext}",
+            int(self._step),
+            export_path,
             self._policy_mean_reward(),
             time.time(),
+            auxillary_file_paths=auxillary_paths,
         )
         ModelCheckpointManager.add_checkpoint(
             self.brain_name, new_checkpoint, self.trainer_settings.keep_checkpoints
@@ -214,7 +171,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
 
         model_checkpoint = self._checkpoint()
         self.model_saver.copy_final_model(model_checkpoint.file_path)
-        export_ext = "nn" if self.framework == FrameworkType.TENSORFLOW else "onnx"
+        export_ext = "onnx"
         final_checkpoint = attr.evolve(
             model_checkpoint, file_path=f"{self.model_saver.model_path}.{export_ext}"
         )
@@ -233,7 +190,7 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         Increment the step count of the trainer
         :param n_steps: number of steps to increment the step count by
         """
-        self.step += n_steps
+        self._step += n_steps
         self._next_summary_step = self._get_next_interval_step(self.summary_freq)
         self._next_save_step = self._get_next_interval_step(
             self.trainer_settings.checkpoint_interval
@@ -241,13 +198,14 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         p = self.get_policy(name_behavior_id)
         if p:
             p.increment_step(n_steps)
+        self.stats_reporter.set_stat("Step", float(self.get_step))
 
     def _get_next_interval_step(self, interval: int) -> int:
         """
         Get the next step count that should result in an action.
         :param interval: The interval between actions.
         """
-        return self.step + (interval - self.step % interval)
+        return self._step + (interval - self._step % interval)
 
     def _write_summary(self, step: int) -> None:
         """
@@ -277,6 +235,21 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
         if step_after_process >= self._next_summary_step and self.get_step != 0:
             self._write_summary(self._next_summary_step)
 
+    def _append_to_update_buffer(self, agentbuffer_trajectory: AgentBuffer) -> None:
+        """
+        Append an AgentBuffer to the update buffer. If the trainer isn't training,
+        don't update to avoid a memory leak.
+        """
+        if self.should_still_train:
+            seq_len = (
+                self.trainer_settings.network_settings.memory.sequence_length
+                if self.trainer_settings.network_settings.memory is not None
+                else 1
+            )
+            agentbuffer_trajectory.resequence_and_append(
+                self.update_buffer, training_length=seq_len
+            )
+
     def _maybe_save_model(self, step_after_process: int) -> None:
         """
         If processing the trajectory will make the step exceed the next model write,
@@ -289,6 +262,18 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
             )
         if step_after_process >= self._next_save_step and self.get_step != 0:
             self._checkpoint()
+
+    def _warn_if_group_reward(self, buffer: AgentBuffer) -> None:
+        """
+        Warn if the trainer receives a Group Reward but isn't a multiagent trainer (e.g. POCA).
+        """
+        if not self._has_warned_group_rewards:
+            if np.any(buffer[BufferKey.GROUP_REWARD]):
+                logger.warning(
+                    "An agent recieved a Group Reward, but you are not using a multi-agent trainer. "
+                    "Please use the POCA trainer for best results."
+                )
+                self._has_warned_group_rewards = True
 
     def advance(self) -> None:
         """
@@ -318,5 +303,3 @@ class RLTrainer(Trainer):  # pylint: disable=abstract-method
                         for q in self.policy_queues:
                             # Get policies that correspond to the policy queue in question
                             q.put(self.get_policy(q.behavior_id))
-        else:
-            self._clear_update_buffer()

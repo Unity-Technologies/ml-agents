@@ -19,7 +19,18 @@ namespace Unity.MLAgents.Sensors
 
         TensorShape m_TensorShape;
 
-        internal ObservationWriter() { }
+        public ObservationWriter() { }
+
+        /// <summary>
+        /// Set the writer to write to an IList at the given channelOffset.
+        /// </summary>
+        /// <param name="data">Float array or list that will be written to.</param>
+        /// <param name="observationSpec">ObservationSpec of the observation to be written</param>
+        /// <param name="offset">Offset from the start of the float data to write to.</param>
+        internal void SetTarget(IList<float> data, ObservationSpec observationSpec, int offset)
+        {
+            SetTarget(data, observationSpec.Shape, offset);
+        }
 
         /// <summary>
         /// Set the writer to write to an IList at the given channelOffset.
@@ -27,7 +38,7 @@ namespace Unity.MLAgents.Sensors
         /// <param name="data">Float array or list that will be written to.</param>
         /// <param name="shape">Shape of the observations to be written.</param>
         /// <param name="offset">Offset from the start of the float data to write to.</param>
-        internal void SetTarget(IList<float> data, int[] shape, int offset)
+        internal void SetTarget(IList<float> data, InplaceArray<int> shape, int offset)
         {
             m_Data = data;
             m_Offset = offset;
@@ -40,7 +51,7 @@ namespace Unity.MLAgents.Sensors
             }
             else if (shape.Length == 2)
             {
-                m_TensorShape = new TensorShape(new int[] { m_Batch, 1, shape[0], shape[1] });
+                m_TensorShape = new TensorShape(new[] { m_Batch, 1, shape[0], shape[1] });
             }
             else
             {
@@ -64,7 +75,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// 1D write access at a specified index. Use AddRange if possible instead.
+        /// 1D write access at a specified index. Use AddList if possible instead.
         /// </summary>
         /// <param name="index">Index to write to.</param>
         public float this[int index]
@@ -118,28 +129,26 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <summary>
-        /// Write the range of floats
+        /// Write the list of floats.
         /// </summary>
-        /// <param name="data"></param>
-        /// <param name="writeOffset">Optional write offset.</param>
-        public void AddRange(IEnumerable<float> data, int writeOffset = 0)
+        /// <param name="data">The actual list of floats to write.</param>
+        /// <param name="writeOffset">Optional write offset to start writing from.</param>
+        public void AddList(IList<float> data, int writeOffset = 0)
         {
             if (m_Data != null)
             {
-                int index = 0;
-                foreach (var val in data)
+                for (var index = 0; index < data.Count; index++)
                 {
+                    var val = data[index];
                     m_Data[index + m_Offset + writeOffset] = val;
-                    index++;
                 }
             }
             else
             {
-                int index = 0;
-                foreach (var val in data)
+                for (var index = 0; index < data.Count; index++)
                 {
+                    var val = data[index];
                     m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
-                    index++;
                 }
             }
         }
@@ -237,6 +246,10 @@ namespace Unity.MLAgents.Sensors
             Texture2D texture,
             bool grayScale)
         {
+            if (texture.format == TextureFormat.RGB24)
+            {
+                return obsWriter.WriteTextureRGB24(texture, grayScale);
+            }
             var width = texture.width;
             var height = texture.height;
 
@@ -248,6 +261,7 @@ namespace Unity.MLAgents.Sensors
                 for (var w = 0; w < width; w++)
                 {
                     var currentPixel = texturePixels[(height - h - 1) * width + w];
+
                     if (grayScale)
                     {
                         obsWriter[h, w, 0] =
@@ -259,6 +273,44 @@ namespace Unity.MLAgents.Sensors
                         obsWriter[h, w, 0] = currentPixel.r / 255.0f;
                         obsWriter[h, w, 1] = currentPixel.g / 255.0f;
                         obsWriter[h, w, 2] = currentPixel.b / 255.0f;
+                    }
+                }
+            }
+
+            return height * width * (grayScale ? 1 : 3);
+        }
+
+        internal static int WriteTextureRGB24(
+            this ObservationWriter obsWriter,
+            Texture2D texture,
+            bool grayScale
+        )
+        {
+            var width = texture.width;
+            var height = texture.height;
+
+            var rawBytes = texture.GetRawTextureData<byte>();
+            // During training, we convert from Texture to PNG before sending to the trainer, which has the
+            // effect of flipping the image. We need another flip here at inference time to match this.
+            for (var h = height - 1; h >= 0; h--)
+            {
+                for (var w = 0; w < width; w++)
+                {
+                    var offset = (height - h - 1) * width + w;
+                    var r = rawBytes[3 * offset];
+                    var g = rawBytes[3 * offset + 1];
+                    var b = rawBytes[3 * offset + 2];
+
+                    if (grayScale)
+                    {
+                        obsWriter[h, w, 0] = (r + g + b) / 3f / 255.0f;
+                    }
+                    else
+                    {
+                        // For Color32, the r, g and b values are between 0 and 255.
+                        obsWriter[h, w, 0] = r / 255.0f;
+                        obsWriter[h, w, 1] = g / 255.0f;
+                        obsWriter[h, w, 2] = b / 255.0f;
                     }
                 }
             }

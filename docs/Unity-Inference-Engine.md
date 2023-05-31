@@ -19,19 +19,6 @@ Graphics Emulation is set to **OpenGL(ES) 3.0 or 2.0 emulation**. Also there
 might be non-fatal build time errors when target platform includes Graphics API
 that does not support **Unity Compute Shaders**.
 
-## Supported formats
-
-There are currently two supported model formats:
-
-- Barracuda (`.nn`) files use a proprietary format produced by the
-  [`tensorflow_to_barracuda.py`]() script.
-- ONNX (`.onnx`) files use an
-  [industry-standard open format](https://onnx.ai/about.html) produced by the
-  [tf2onnx package](https://github.com/onnx/tensorflow-onnx).
-
-Export to ONNX is used if using PyTorch (the default). To enable it
-while using TensorFlow, make sure `tf2onnx>=1.6.1` is installed in pip.
-
 ## Using the Unity Inference Engine
 
 When using a model, drag the model file into the **Model** field in the
@@ -48,15 +35,13 @@ The ML-Agents Toolkit only supports the models created with our trainers. Model
 loading expects certain conventions for constants and tensor names. While it is
 possible to construct a model that follows these conventions, we don't provide
 any additional help for this. More details can be found in
-[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
+[TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/com.unity.ml-agents/Runtime/Inference/TensorNames.cs)
 and
-[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_10_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
+[BarracudaModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/com.unity.ml-agents/Runtime/Inference/BarracudaModelParamLoader.cs).
 
 If you wish to run inference on an externally trained model, you should use
 Barracuda directly, instead of trying to run it through ML-Agents.
 
 ## Model inference outside of Unity
-We do not provide support for inference anywhere outside of Unity. The
-`frozen_graph_def.pb` and `.onnx` files produced by training are open formats
-for TensorFlow and ONNX respectively; if you wish to convert these to another
+We do not provide support for inference anywhere outside of Unity. The `.onnx` files produced by training use the open format ONNX; if you wish to convert a `.onnx` file to another
 format or run inference with them, refer to their documentation.

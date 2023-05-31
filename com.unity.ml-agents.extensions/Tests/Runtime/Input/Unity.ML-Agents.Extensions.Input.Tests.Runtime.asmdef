@@ -1,0 +1,31 @@
+{
+    "name": "Unity.ML-Agents.Extensions.Input.Tests.Runtime",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.ML-Agents.Extensions.Input",
+        "Unity.InputSystem.TestFramework",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.InputSystem",
+        "Unity.Barracuda"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "nunit.framework.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "UNITY_INCLUDE_TESTS"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.1.0-preview.3",
+            "define": "MLA_INPUT_TESTS"
+        }
+    ],
+    "noEngineReferences": false
+}

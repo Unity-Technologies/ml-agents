@@ -4,6 +4,8 @@ from mlagents.trainers.learn import run_cli
 from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.cli_utils import load_config
 
+from mlagents.plugins.trainer_type import register_trainer_plugins
+
 
 def parse_command_line(argv: Optional[List[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(
@@ -21,6 +23,7 @@ def main():
     """
     args = parse_command_line()
     expt_config = load_config(args.experiment_config_path)
+    _, _ = register_trainer_plugins()
     run_cli(RunOptions.from_dict(expt_config))
 
 

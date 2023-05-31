@@ -75,6 +75,17 @@ namespace Unity.MLAgents.Policies
         BrainParameters m_BrainParameters = new BrainParameters();
 
         /// <summary>
+        /// Delegate for receiving events about Policy Updates.
+        /// </summary>
+        /// <param name="isInHeuristicMode">Whether or not the current policy is running in heuristic mode.</param>
+        public delegate void PolicyUpdated(bool isInHeuristicMode);
+
+        /// <summary>
+        /// Event that fires when an Agent's policy is updated.
+        /// </summary>
+        internal event PolicyUpdated OnPolicyUpdated;
+
+        /// <summary>
         /// The associated <see cref="Policies.BrainParameters"/> for this behavior.
         /// </summary>
         public BrainParameters BrainParameters
@@ -98,7 +109,7 @@ namespace Unity.MLAgents.Policies
         }
 
         [HideInInspector, SerializeField]
-        InferenceDevice m_InferenceDevice;
+        InferenceDevice m_InferenceDevice = InferenceDevice.Default;
 
         /// <summary>
         /// How inference is performed for this Agent's model.
@@ -166,6 +177,20 @@ namespace Unity.MLAgents.Policies
             set { m_UseChildSensors = value; }
         }
 
+        [HideInInspector]
+        [SerializeField]
+        [Tooltip("Set action selection to deterministic, Only applies to inference from within unity.")]
+        private bool m_DeterministicInference = false;
+
+        /// <summary>
+        /// Whether to select actions deterministically during inference from the provided neural network.
+        /// </summary>
+        public bool DeterministicInference
+        {
+            get { return m_DeterministicInference; }
+            set { m_DeterministicInference = value; }
+        }
+
         /// <summary>
         /// Whether or not to use all the actuator components attached to child GameObjects of the agent.
         /// Note that changing this after the Agent has been initialized will not have any effect.
@@ -196,12 +221,17 @@ namespace Unity.MLAgents.Policies
             get { return m_BehaviorName + "?team=" + TeamId; }
         }
 
-        internal IPolicy GeneratePolicy(ActionSpec actionSpec, HeuristicPolicy.ActionGenerator heuristic)
+        void Awake()
+        {
+            OnPolicyUpdated += mode => { };
+        }
+
+        internal IPolicy GeneratePolicy(ActionSpec actionSpec, ActuatorManager actuatorManager)
         {
             switch (m_BehaviorType)
             {
                 case BehaviorType.HeuristicOnly:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(actuatorManager, actionSpec);
                 case BehaviorType.InferenceOnly:
                     {
                         if (m_Model == null)
@@ -212,24 +242,42 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
-                        return new RemotePolicy(actionSpec, FullyQualifiedBehaviorName);
+                        return new RemotePolicy(actionSpec, actuatorManager, FullyQualifiedBehaviorName);
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, m_Model, m_InferenceDevice);
+                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                     else
                     {
-                        return new HeuristicPolicy(heuristic, actionSpec);
+                        return new HeuristicPolicy(actuatorManager, actionSpec);
                     }
                 default:
-                    return new HeuristicPolicy(heuristic, actionSpec);
+                    return new HeuristicPolicy(actuatorManager, actionSpec);
             }
+        }
+
+        /// <summary>
+        /// Query the behavior parameters in order to see if the Agent is running in Heuristic Mode.
+        /// </summary>
+        /// <returns>true if the Agent is running in Heuristic mode.</returns>
+        public bool IsInHeuristicMode()
+        {
+            if (BehaviorType == BehaviorType.HeuristicOnly)
+            {
+                return true;
+            }
+
+            return BehaviorType == BehaviorType.Default &&
+                ReferenceEquals(Model, null) &&
+                (!Academy.IsInitialized ||
+                    Academy.IsInitialized &&
+                    !Academy.Instance.IsCommunicatorOn);
         }
 
         internal void UpdateAgentPolicy()
@@ -240,6 +288,7 @@ namespace Unity.MLAgents.Policies
                 return;
             }
             agent.ReloadPolicy();
+            OnPolicyUpdated?.Invoke(IsInHeuristicMode());
         }
     }
 }

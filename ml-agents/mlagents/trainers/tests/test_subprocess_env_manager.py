@@ -1,9 +1,10 @@
 from unittest import mock
-from unittest.mock import Mock, MagicMock
+from unittest.mock import Mock, MagicMock, call, ANY
 import unittest
 import pytest
 from queue import Empty as EmptyQueue
 
+from mlagents.trainers.settings import RunOptions
 from mlagents.trainers.subprocess_env_manager import (
     SubprocessEnvManager,
     EnvironmentResponse,
@@ -12,9 +13,11 @@ from mlagents.trainers.subprocess_env_manager import (
 )
 from mlagents.trainers.env_manager import EnvironmentStep
 from mlagents_envs.base_env import BaseEnv
-from mlagents_envs.side_channel.engine_configuration_channel import EngineConfig
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
-from mlagents_envs.exception import UnityEnvironmentException
+from mlagents_envs.exception import (
+    UnityEnvironmentException,
+    UnityCommunicationException,
+)
 from mlagents.trainers.tests.simple_test_envs import (
     SimpleEnvironment,
     UnexpectedExceptionEnvironment,
@@ -54,16 +57,13 @@ class SubprocessEnvManagerTest(unittest.TestCase):
     )
     def test_environments_are_created(self, mock_create_worker):
         mock_create_worker.side_effect = create_worker_mock
-        env = SubprocessEnvManager(mock_env_factory, EngineConfig.default_config(), 2)
+        run_options = RunOptions()
+        env = SubprocessEnvManager(mock_env_factory, run_options, 2)
         # Creates two processes
         env.create_worker.assert_has_calls(
             [
-                mock.call(
-                    0, env.step_queue, mock_env_factory, EngineConfig.default_config()
-                ),
-                mock.call(
-                    1, env.step_queue, mock_env_factory, EngineConfig.default_config()
-                ),
+                mock.call(0, env.step_queue, mock_env_factory, run_options),
+                mock.call(1, env.step_queue, mock_env_factory, run_options),
             ]
         )
         self.assertEqual(len(env.env_workers), 2)
@@ -73,9 +73,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
     )
     def test_reset_passes_reset_params(self, mock_create_worker):
         mock_create_worker.side_effect = create_worker_mock
-        manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig.default_config(), 1
-        )
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 1)
         params = {"test": "params"}
         manager._reset_env(params)
         manager.env_workers[0].send.assert_called_with(
@@ -87,9 +85,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
     )
     def test_reset_collects_results_from_all_envs(self, mock_create_worker):
         mock_create_worker.side_effect = create_worker_mock
-        manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig.default_config(), 4
-        )
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 4)
 
         params = {"test": "params"}
         res = manager._reset_env(params)
@@ -105,11 +101,34 @@ class SubprocessEnvManagerTest(unittest.TestCase):
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
     )
+    def test_training_behaviors_collects_results_from_all_envs(
+        self, mock_create_worker
+    ):
+        def create_worker_mock(worker_id, step_queue, env_factor, engine_c):
+            return MockEnvWorker(
+                worker_id,
+                EnvironmentResponse(
+                    EnvironmentCommand.RESET, worker_id, {f"key{worker_id}": worker_id}
+                ),
+            )
+
+        mock_create_worker.side_effect = create_worker_mock
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 4)
+
+        res = manager.training_behaviors
+        for env in manager.env_workers:
+            env.send.assert_called_with(EnvironmentCommand.BEHAVIOR_SPECS)
+            env.recv.assert_called()
+        for worker_id in range(4):
+            assert f"key{worker_id}" in res
+            assert res[f"key{worker_id}"] == worker_id
+
+    @mock.patch(
+        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
+    )
     def test_step_takes_steps_for_all_non_waiting_envs(self, mock_create_worker):
         mock_create_worker.side_effect = create_worker_mock
-        manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig.default_config(), 3
-        )
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 3)
         manager.step_queue = Mock()
         manager.step_queue.get_nowait.side_effect = [
             EnvironmentResponse(EnvironmentCommand.STEP, 0, StepResponse(0, None, {})),
@@ -137,6 +156,64 @@ class SubprocessEnvManagerTest(unittest.TestCase):
             manager.env_workers[1].previous_step,
         ]
 
+    @mock.patch(
+        "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.create_worker"
+    )
+    def test_crashed_env_restarts(self, mock_create_worker):
+        crashing_worker = MockEnvWorker(
+            0, EnvironmentResponse(EnvironmentCommand.RESET, 0, 0)
+        )
+        restarting_worker = MockEnvWorker(
+            0, EnvironmentResponse(EnvironmentCommand.RESET, 0, 0)
+        )
+        healthy_worker = MockEnvWorker(
+            1, EnvironmentResponse(EnvironmentCommand.RESET, 1, 1)
+        )
+        mock_create_worker.side_effect = [
+            crashing_worker,
+            healthy_worker,
+            restarting_worker,
+        ]
+        manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 2)
+        manager.step_queue = Mock()
+        manager.step_queue.get_nowait.side_effect = [
+            EnvironmentResponse(
+                EnvironmentCommand.ENV_EXITED,
+                0,
+                UnityCommunicationException("Test msg"),
+            ),
+            EnvironmentResponse(EnvironmentCommand.CLOSED, 0, None),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(0, None, {})),
+            EmptyQueue(),
+            EnvironmentResponse(EnvironmentCommand.STEP, 0, StepResponse(1, None, {})),
+            EnvironmentResponse(EnvironmentCommand.STEP, 1, StepResponse(2, None, {})),
+            EmptyQueue(),
+        ]
+        step_mock = Mock()
+        last_steps = [Mock(), Mock(), Mock()]
+        assert crashing_worker is manager.env_workers[0]
+        assert healthy_worker is manager.env_workers[1]
+        crashing_worker.previous_step = last_steps[0]
+        crashing_worker.waiting = True
+        healthy_worker.previous_step = last_steps[1]
+        healthy_worker.waiting = True
+        manager._take_step = Mock(return_value=step_mock)
+        manager._step()
+        healthy_worker.send.assert_has_calls(
+            [
+                call(EnvironmentCommand.ENVIRONMENT_PARAMETERS, ANY),
+                call(EnvironmentCommand.RESET, ANY),
+                call(EnvironmentCommand.STEP, ANY),
+            ]
+        )
+        restarting_worker.send.assert_has_calls(
+            [
+                call(EnvironmentCommand.ENVIRONMENT_PARAMETERS, ANY),
+                call(EnvironmentCommand.RESET, ANY),
+                call(EnvironmentCommand.STEP, ANY),
+            ]
+        )
+
     @mock.patch("mlagents.trainers.subprocess_env_manager.SubprocessEnvManager._step")
     @mock.patch(
         "mlagents.trainers.subprocess_env_manager.SubprocessEnvManager.training_behaviors",
@@ -149,9 +226,7 @@ class SubprocessEnvManagerTest(unittest.TestCase):
         brain_name = "testbrain"
         action_info_dict = {brain_name: MagicMock()}
         mock_create_worker.side_effect = create_worker_mock
-        env_manager = SubprocessEnvManager(
-            mock_env_factory, EngineConfig.default_config(), 3
-        )
+        env_manager = SubprocessEnvManager(mock_env_factory, RunOptions(), 3)
         training_behaviors_mock.return_value = [brain_name]
         agent_manager_mock = mock.Mock()
         mock_policy = mock.Mock()
@@ -189,12 +264,10 @@ class SubprocessEnvManagerTest(unittest.TestCase):
 @pytest.mark.parametrize("num_envs", [1, 4])
 def test_subprocess_env_endtoend(num_envs):
     def simple_env_factory(worker_id, config):
-        env = SimpleEnvironment(["1D"], use_discrete=True)
+        env = SimpleEnvironment(["1D"], action_sizes=(0, 1))
         return env
 
-    env_manager = SubprocessEnvManager(
-        simple_env_factory, EngineConfig.default_config(), num_envs
-    )
+    env_manager = SubprocessEnvManager(simple_env_factory, RunOptions(), num_envs)
     # Run PPO using env_manager
     check_environment_trains(
         simple_env_factory(0, []),
@@ -223,9 +296,7 @@ def test_subprocess_failing_step(num_envs):
         )
         return env
 
-    env_manager = SubprocessEnvManager(
-        failing_step_env_factory, EngineConfig.default_config()
-    )
+    env_manager = SubprocessEnvManager(failing_step_env_factory, RunOptions())
     # Expect the exception raised to be routed back up to the top level.
     with pytest.raises(CustomTestOnlyException):
         check_environment_trains(
@@ -245,12 +316,10 @@ def test_subprocess_env_raises_errors(num_envs):
         # Sleep momentarily to allow time for the EnvManager to be waiting for the
         # subprocess response.  We won't be able to capture failures from the subprocess
         # that cause it to close the pipe before we can send the first message.
-        time.sleep(0.1)
+        time.sleep(0.5)
         raise UnityEnvironmentException()
 
-    env_manager = SubprocessEnvManager(
-        failing_env_factory, EngineConfig.default_config(), num_envs
-    )
+    env_manager = SubprocessEnvManager(failing_env_factory, RunOptions(), num_envs)
     with pytest.raises(UnityEnvironmentException):
         env_manager.reset()
     env_manager.close()

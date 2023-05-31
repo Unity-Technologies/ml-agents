@@ -14,11 +14,12 @@ namespace Unity.MLAgents
     ///
     /// The DecisionRequester component provides a convenient and flexible way to
     /// trigger the agent decision making process. Without a DecisionRequester,
-    /// your <see cref="Agent"/> implmentation must manually call its
+    /// your <see cref="Agent"/> implementation must manually call its
     /// <seealso cref="Agent.RequestDecision"/> function.
     /// </remarks>
     [AddComponentMenu("ML Agents/Decision Requester", (int)MenuGroup.Default)]
     [RequireComponent(typeof(Agent))]
+    [DefaultExecutionOrder(-10)]
     public class DecisionRequester : MonoBehaviour
     {
         /// <summary>
@@ -42,6 +43,14 @@ namespace Unity.MLAgents
         [NonSerialized]
         Agent m_Agent;
 
+        /// <summary>
+        /// Get the Agent attached to the DecisionRequester.
+        /// </summary>
+        public Agent Agent
+        {
+            get => m_Agent;
+        }
+
         internal void Awake()
         {
             m_Agent = gameObject.GetComponent<Agent>();
@@ -58,20 +67,57 @@ namespace Unity.MLAgents
         }
 
         /// <summary>
+        /// Information about Academy step used to make decisions about whether to request a decision.
+        /// </summary>
+        public struct DecisionRequestContext
+        {
+            /// <summary>
+            /// The current step count of the Academy, equivalent to Academy.StepCount.
+            /// </summary>
+            public int AcademyStepCount;
+        }
+
+        /// <summary>
         /// Method that hooks into the Academy in order inform the Agent on whether or not it should request a
         /// decision, and whether or not it should take actions between decisions.
         /// </summary>
         /// <param name="academyStepCount">The current step count of the academy.</param>
         void MakeRequests(int academyStepCount)
         {
-            if (academyStepCount % DecisionPeriod == 0)
+            var context = new DecisionRequestContext
+            {
+                AcademyStepCount = academyStepCount
+            };
+
+            if (ShouldRequestDecision(context))
             {
                 m_Agent?.RequestDecision();
             }
-            if (TakeActionsBetweenDecisions)
+
+            if (ShouldRequestAction(context))
             {
                 m_Agent?.RequestAction();
             }
+        }
+
+        /// <summary>
+        /// Whether Agent.RequestDecision should be called on this update step.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldRequestDecision(DecisionRequestContext context)
+        {
+            return context.AcademyStepCount % DecisionPeriod == 0;
+        }
+
+        /// <summary>
+        /// Whether Agent.RequestAction should be called on this update step.
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        protected virtual bool ShouldRequestAction(DecisionRequestContext context)
+        {
+            return TakeActionsBetweenDecisions;
         }
     }
 }

@@ -9,13 +9,14 @@ namespace Unity.MLAgents.Actuators
     public abstract class ActuatorComponent : MonoBehaviour
     {
         /// <summary>
-        /// Create the IActuator.  This is called by the Agent when it is initialized.
+        /// Create a collection of <see cref="IActuator"/>s.  This is called by the <see cref="Agent"/> during
+        /// initialization.
         /// </summary>
-        /// <returns>Created IActuator object.</returns>
-        public abstract IActuator CreateActuator();
+        /// <returns>A collection of <see cref="IActuator"/>s</returns>
+        public abstract IActuator[] CreateActuators();
 
         /// <summary>
-        /// The specification of the Action space for this ActuatorComponent.
+        /// The specification of the possible actions for this ActuatorComponent.
         /// This must produce the same results as the corresponding IActuator's ActionSpec.
         /// </summary>
         /// <seealso cref="ActionSpec"/>

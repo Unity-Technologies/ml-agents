@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 
 
 namespace Unity.MLAgents.Inference
@@ -32,7 +31,7 @@ namespace Unity.MLAgents.Inference
             /// </param>
             /// <param name="actionIds"> List of Agents Ids that will be updated using the tensor's data</param>
             /// <param name="lastActions"> Dictionary of AgentId to Actions to be updated</param>
-            void Apply(TensorProxy tensorProxy, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions);
+            void Apply(TensorProxy tensorProxy, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions);
         }
 
         readonly Dictionary<string, IApplier> m_Dict = new Dictionary<string, IApplier>();
@@ -40,41 +39,51 @@ namespace Unity.MLAgents.Inference
         /// <summary>
         /// Returns a new TensorAppliers object.
         /// </summary>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
         /// <param name="barracudaModel"></param>
+        /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
+        /// deterministic.</param>
         public TensorApplier(
             ActionSpec actionSpec,
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null)
+            object barracudaModel = null,
+            bool deterministicInference = false)
         {
-            actionSpec.CheckNotHybrid();
+            // If model is null, no inference to run and exception is thrown before reaching here.
+            if (barracudaModel == null)
+            {
+                return;
+            }
 
+            var model = (Model)barracudaModel;
+            if (!model.SupportsContinuousAndDiscrete())
+            {
+                actionSpec.CheckAllContinuousOrDiscrete();
+            }
             if (actionSpec.NumContinuousActions > 0)
             {
-                m_Dict[TensorNames.ActionOutput] = new ContinuousActionOutputApplier();
+                var tensorName = model.ContinuousOutputName(deterministicInference);
+                m_Dict[tensorName] = new ContinuousActionOutputApplier(actionSpec);
             }
-            else
+            var modelVersion = model.GetVersion();
+            if (actionSpec.NumDiscreteActions > 0)
             {
-                m_Dict[TensorNames.ActionOutput] =
-                    new DiscreteActionOutputApplier(actionSpec.BranchSizes, seed, allocator);
-            }
-            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
-
-            if (barracudaModel != null)
-            {
-                var model = (Model)barracudaModel;
-
-                for (var i = 0; i < model?.memories.Count; i++)
+                var tensorName = model.DiscreteOutputName(deterministicInference);
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
-                    m_Dict[model.memories[i].output] =
-                        new BarracudaMemoryOutputApplier(model.memories.Count, i, memories);
+                    m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
+                }
+                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                {
+                    m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }
             }
+            m_Dict[TensorNames.RecurrentOutput] = new MemoryOutputApplier(memories);
         }
 
         /// <summary>
@@ -86,10 +95,11 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException"> One of the tensor does not have an
         /// associated applier.</exception>
         public void ApplyTensors(
-            IEnumerable<TensorProxy> tensors, IEnumerable<int> actionIds, Dictionary<int, float[]> lastActions)
+            IReadOnlyList<TensorProxy> tensors, IList<int> actionIds, Dictionary<int, ActionBuffers> lastActions)
         {
-            foreach (var tensor in tensors)
+            for (var tensorIndex = 0; tensorIndex < tensors.Count; tensorIndex++)
             {
+                var tensor = tensors[tensorIndex];
                 if (!m_Dict.ContainsKey(tensor.name))
                 {
                     throw new UnityAgentsException(

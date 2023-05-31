@@ -28,18 +28,26 @@ class UnityRLCapabilitiesProto(google___protobuf___message___Message):
     baseRLCapabilities = ... # type: builtin___bool
     concatenatedPngObservations = ... # type: builtin___bool
     compressedChannelMapping = ... # type: builtin___bool
+    hybridActions = ... # type: builtin___bool
+    trainingAnalytics = ... # type: builtin___bool
+    variableLengthObservation = ... # type: builtin___bool
+    multiAgentGroups = ... # type: builtin___bool
 
     def __init__(self,
         *,
         baseRLCapabilities : typing___Optional[builtin___bool] = None,
         concatenatedPngObservations : typing___Optional[builtin___bool] = None,
         compressedChannelMapping : typing___Optional[builtin___bool] = None,
+        hybridActions : typing___Optional[builtin___bool] = None,
+        trainingAnalytics : typing___Optional[builtin___bool] = None,
+        variableLengthObservation : typing___Optional[builtin___bool] = None,
+        multiAgentGroups : typing___Optional[builtin___bool] = None,
         ) -> None: ...
     @classmethod
     def FromString(cls, s: builtin___bytes) -> UnityRLCapabilitiesProto: ...
     def MergeFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     def CopyFrom(self, other_msg: google___protobuf___message___Message) -> None: ...
     if sys.version_info >= (3,):
-        def ClearField(self, field_name: typing_extensions___Literal[u"baseRLCapabilities",u"compressedChannelMapping",u"concatenatedPngObservations"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"baseRLCapabilities",u"compressedChannelMapping",u"concatenatedPngObservations",u"hybridActions",u"multiAgentGroups",u"trainingAnalytics",u"variableLengthObservation"]) -> None: ...
     else:
-        def ClearField(self, field_name: typing_extensions___Literal[u"baseRLCapabilities",b"baseRLCapabilities",u"compressedChannelMapping",b"compressedChannelMapping",u"concatenatedPngObservations",b"concatenatedPngObservations"]) -> None: ...
+        def ClearField(self, field_name: typing_extensions___Literal[u"baseRLCapabilities",b"baseRLCapabilities",u"compressedChannelMapping",b"compressedChannelMapping",u"concatenatedPngObservations",b"concatenatedPngObservations",u"hybridActions",b"hybridActions",u"multiAgentGroups",b"multiAgentGroups",u"trainingAnalytics",b"trainingAnalytics",u"variableLengthObservation",b"variableLengthObservation"]) -> None: ...

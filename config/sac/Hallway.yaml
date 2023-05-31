@@ -4,8 +4,8 @@ behaviors:
     hyperparameters:
       learning_rate: 0.0003
       learning_rate_schedule: constant
-      batch_size: 128
-      buffer_size: 50000
+      batch_size: 512
+      buffer_size: 200000
       buffer_init_steps: 0
       tau: 0.005
       steps_per_update: 10.0
@@ -18,14 +18,13 @@ behaviors:
       num_layers: 2
       vis_encode_type: simple
       memory:
-        sequence_length: 32
+        sequence_length: 64
         memory_size: 128
     reward_signals:
       extrinsic:
         gamma: 0.99
         strength: 1.0
     keep_checkpoints: 5
-    max_steps: 5000000
+    max_steps: 4000000
     time_horizon: 64
     summary_freq: 10000
-    threaded: true

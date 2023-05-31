@@ -1,5 +1,5 @@
 behaviors:
-  FoodCollector:
+  GridFoodCollector:
     trainer_type: ppo
     hyperparameters:
       batch_size: 1024
@@ -12,8 +12,8 @@ behaviors:
       learning_rate_schedule: linear
     network_settings:
       normalize: false
-      hidden_units: 128
-      num_layers: 2
+      hidden_units: 256
+      num_layers: 1
       vis_encode_type: simple
     reward_signals:
       extrinsic:
@@ -23,4 +23,3 @@ behaviors:
     max_steps: 2000000
     time_horizon: 64
     summary_freq: 10000
-    threaded: true

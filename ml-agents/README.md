@@ -4,7 +4,7 @@ The `mlagents` Python package is part of the
 [ML-Agents Toolkit](https://github.com/Unity-Technologies/ml-agents). `mlagents`
 provides a set of reinforcement and imitation learning algorithms designed to be
 used with Unity environments. The algorithms interface with the Python API
-provided by the `mlagents_envs` package. See [here](../docs/Python-API.md) for
+provided by the `mlagents_envs` package. See [here](../docs/Python-LLAPI.md) for
 more information on `mlagents_envs`.
 
 The algorithms can be accessed using the: `mlagents-learn` access point. See
@@ -16,7 +16,7 @@ package.
 Install the `mlagents` package with:
 
 ```sh
-pip3 install mlagents
+python -m pip install mlagents==0.30.0
 ```
 
 ## Usage & More Information
@@ -27,7 +27,5 @@ scene with the ML-Agents SDK, check out the main
 
 ## Limitations
 
-- `mlagents` does not yet explicitly support multi-agent scenarios so training
-  cooperative behavior among different agents is not stable.
 - Resuming self-play from a checkpoint resets the reported ELO to the default
   value.

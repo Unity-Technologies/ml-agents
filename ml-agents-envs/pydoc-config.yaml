@@ -1,0 +1,31 @@
+# config to specify which modules will be used to render api docs docs from ml-agents-env package
+folder: docs
+modules:
+    - name: mlagents_envs
+      file_name: Python-Gym-API-Documentation.md
+      submodules:
+        - envs.unity_gym_env
+    - name: mlagents_envs
+      file_name: Python-PettingZoo-API-Documentation.md
+      submodules:
+          - envs.pettingzoo_env_factory
+          - envs.unity_aec_env
+          - envs.unity_parallel_env
+          - envs.unity_pettingzoo_base_env
+    - name: mlagents_envs
+      file_name: Python-LLAPI-Documentation.md
+      submodules:
+        - base_env
+        - environment
+        - registry
+        - registry.unity_env_registry
+        - side_channel
+        - side_channel.raw_bytes_channel
+        - side_channel.outgoing_message
+        - side_channel.engine_configuration_channel
+        - side_channel.side_channel_manager
+        - side_channel.stats_side_channel
+        - side_channel.incoming_message
+        - side_channel.float_properties_channel
+        - side_channel.environment_parameters_channel
+        - side_channel.side_channel

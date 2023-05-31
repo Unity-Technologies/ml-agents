@@ -1,0 +1,3 @@
+# pip constraints to use the *highest* versions allowed in ml-agents/setup.py
+# For projects with upper bounds, we should periodically update this list to the latest
+torch==1.11.0

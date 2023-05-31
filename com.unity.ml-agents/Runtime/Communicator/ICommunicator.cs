@@ -1,12 +1,11 @@
 using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents
 {
-    internal struct CommunicatorInitParameters
+    public struct CommunicatorInitParameters
     {
         /// <summary>
         /// Port to listen for connections on.
@@ -33,12 +32,17 @@ namespace Unity.MLAgents
         /// </summary>
         public UnityRLCapabilities CSharpCapabilities;
     }
-    internal struct UnityRLInitParameters
+    public struct UnityRLInitParameters
     {
         /// <summary>
         /// A random number generator (RNG) seed sent from the python process to Unity.
         /// </summary>
         public int seed;
+
+        /// <summary>
+        /// The number of areas to replicate if Training Area Replication is used in the scene.
+        /// </summary>
+        public int numAreas;
 
         /// <summary>
         /// The library version of the python process.
@@ -66,12 +70,12 @@ namespace Unity.MLAgents
     /// <summary>
     /// Delegate for handling quit events sent back from the communicator.
     /// </summary>
-    internal delegate void QuitCommandHandler();
+    public delegate void QuitCommandHandler();
 
     /// <summary>
     /// Delegate for handling reset parameter updates sent from the communicator.
     /// </summary>
-    internal delegate void ResetCommandHandler();
+    public delegate void ResetCommandHandler();
 
     /// <summary>
     /// Delegate to handle UnityRLInputParameters updates from the communicator.
@@ -115,7 +119,7 @@ namespace Unity.MLAgents
     UnityOutput and UnityInput can be extended to provide functionalities beyond RL
     UnityRLOutput and UnityRLInput can be extended to provide new RL functionalities
      */
-    internal interface ICommunicator : IDisposable
+    public interface ICommunicator : IDisposable
     {
         /// <summary>
         /// Quit was received by the communicator.
@@ -131,15 +135,16 @@ namespace Unity.MLAgents
         /// Sends the academy parameters through the Communicator.
         /// Is used by the academy to send the AcademyParameters to the communicator.
         /// </summary>
-        /// <returns>The External Initialization Parameters received.</returns>
+        /// <returns>Whether the connection was successful.</returns>
         /// <param name="initParameters">The Unity Initialization Parameters to be sent.</param>
-        UnityRLInitParameters Initialize(CommunicatorInitParameters initParameters);
+        /// <param name="initParametersOut">The External Initialization Parameters received</param>
+        bool Initialize(CommunicatorInitParameters initParameters, out UnityRLInitParameters initParametersOut);
 
         /// <summary>
         /// Registers a new Brain to the Communicator.
         /// </summary>
         /// <param name="name">The name or key uniquely identifying the Brain.</param>
-        /// <param name="actionSpec"> Description of the action spaces for the Agent.</param>
+        /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         void SubscribeBrain(string name, ActionSpec actionSpec);
 
         /// <summary>
@@ -163,6 +168,6 @@ namespace Unity.MLAgents
         /// <param name="key">A key to identify which behavior actions to get.</param>
         /// <param name="agentId">A key to identify which Agent actions to get.</param>
         /// <returns></returns>
-        float[] GetActions(string key, int agentId);
+        ActionBuffers GetActions(string key, int agentId);
     }
 }

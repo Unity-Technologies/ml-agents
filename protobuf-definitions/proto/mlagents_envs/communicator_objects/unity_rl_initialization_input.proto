@@ -16,4 +16,7 @@ message UnityRLInitializationInputProto {
 
     // The RL Capabilities of the Python trainer.
     UnityRLCapabilitiesProto capabilities = 4;
+
+    // The number of training areas to instantiate
+    int32 num_areas = 5;
 }
