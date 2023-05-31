@@ -1,11 +1,11 @@
 # ELO Rating System
-In adversarial games, the cumulative environment reward may **not be a meaningful metric** by which to track 
-learning progress. 
+In adversarial games, the cumulative environment reward may **not be a meaningful metric** by which to track
+learning progress.
 
-This is because the cumulative reward is **entirely dependent on the skill of the opponent**. 
+This is because the cumulative reward is **entirely dependent on the skill of the opponent**.
 
-An agent at a particular skill level will get more or less reward against a worse or better agent, 
-respectively. 
+An agent at a particular skill level will get more or less reward against a worse or better agent,
+respectively.
 
 Instead, it's better to use ELO rating system, a method to calculate **the relative skill level between two players in a zero-sum game**.
 
@@ -24,7 +24,7 @@ Simply explained, we face a zero-sum game **when one agent gets +1.0, its oppone
 ## How works the ELO Rating System
 - Each player **has an initial ELO score**. It's defined in the `initial_elo` trainer config hyperparameter.
 
-- The **difference in rating between the two players** serves as the predictor of the outcomes of a match. 
+- The **difference in rating between the two players** serves as the predictor of the outcomes of a match.
 
 ![Example Elo](images/elo_example.png)
 *For instance, if player A has an Elo score of 2100 and player B has an ELO score of 1800 the chance that player A wins is 85% against 15% for player b.*
@@ -33,7 +33,7 @@ Simply explained, we face a zero-sum game **when one agent gets +1.0, its oppone
 
 ![Elo Expected Score Formula](images/elo_expected_score_formula.png)
 
-- At the end of the game, based on the outcome **we update the player’s actual Elo score**, we use a linear adjustment proportional to the amount by which the player over-performed or under-performed. 
+- At the end of the game, based on the outcome **we update the player’s actual Elo score**, we use a linear adjustment proportional to the amount by which the player over-performed or under-performed.
 The winning player takes points from the losing one:
   - If the *higher-rated player wins* → **a few points** will be taken from the lower-rated player.
   - If the *lower-rated player wins* → **a lot of points** will be taken from the high-rated player.
@@ -46,7 +46,7 @@ The winning player takes points from the losing one:
 ### The Tennis example
 ![Tennis](images/tennis.png)
 
-- We start to train our agents. 
+- We start to train our agents.
 - Both of them have the same skills. So ELO score for each of them that we defined using parameter `initial_elo = 1200.0`.
 
 We calculate the expected score E:
