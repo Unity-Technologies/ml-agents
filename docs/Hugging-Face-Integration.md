@@ -48,7 +48,7 @@ For instance, I want to upload my model trained with run-id "SnowballTarget1" to
 
 ## Visualize an agent playing
 
-You can watch your agent playing directly in your browser (if the environment is part of [ML-Agents official environments](Learning-Environment-Examples.md)
+You can watch your agent playing directly in your browser (if the environment is from the [ML-Agents official environments](Learning-Environment-Examples.md))
 
 - Step 1: Go to https://huggingface.co/unity and select the environment demo.
 - Step 2: Find your model_id in the list.
