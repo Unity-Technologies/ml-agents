@@ -1,18 +1,18 @@
 # The Hugging Face Integration
 
-The [Hugging Face Hub 🤗](https://huggingface.co/models?pipeline_tag=reinforcement-learning) is a central place **where anyone can share and download models**. 
+The [Hugging Face Hub 🤗](https://huggingface.co/models?pipeline_tag=reinforcement-learning) is a central place **where anyone can share and download models**.
 
 It allows you to:
 - **Host** your trained models.
 - **Download** trained models from the community.
 - Visualize your agents **playing directly on your browser**.
 
-You can see the list of ml-agents models [here](https://huggingface.co/models?library=ml-agents). 
+You can see the list of ml-agents models [here](https://huggingface.co/models?library=ml-agents).
 
 We wrote a **complete tutorial to learn to train your first agent using ML-Agents and publish it to the Hub**:
 
 - A short tutorial where you [teach **Huggy the Dog to fetch the stick** and then play with him directly in your browser](https://huggingface.co/learn/deep-rl-course/unitbonus1/introduction)
-- A [more in-depth tutorial](https://huggingface.co/learn/deep-rl-course/unit5/introduction) 
+- A [more in-depth tutorial](https://huggingface.co/learn/deep-rl-course/unit5/introduction)
 
 ## Download a model from the Hub
 
