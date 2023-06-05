@@ -277,7 +277,6 @@ behaviors:
       learning_rate_schedule: linear
 
       # PPO-specific hyperparameters
-      # Replaces the "PPO-specific hyperparameters" section above
       beta: 5.0e-3
       beta_schedule: constant
       epsilon: 0.2
