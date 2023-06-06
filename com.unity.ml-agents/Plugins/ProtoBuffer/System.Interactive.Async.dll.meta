@@ -8,7 +8,7 @@ PluginImporter:
   defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
-  isExplicitlyReferenced: 1
+  isExplicitlyReferenced: 0
   validateReferences: 1
   platformData:
   - first:
