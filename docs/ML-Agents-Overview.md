@@ -592,7 +592,8 @@ See our
 page for more information on setting up teams in your Unity scene. Also, read
 our
 [blog post on self-play](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
-for additional information.
+for additional information. Additionally, check [ELO Rating System](ELO-Rating-System.md) the method we use to calculate
+the relative skill level between two players.
 
 ### Training In Cooperative Multi-Agent Environments with MA-POCA
 
