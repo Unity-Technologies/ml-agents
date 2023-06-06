@@ -12,6 +12,7 @@ from mlagents.trainers.stats import (
     StatsSummary,
     GaugeWriter,
     ConsoleWriter,
+    WandbWriter,
     StatsPropertyType,
     StatsAggregationMethod,
 )
@@ -248,3 +249,20 @@ class ConsoleWriterTest(unittest.TestCase):
         self.assertIn(
             "Mean Reward: 1.000. Std of Reward: 0.000. Training.", cm.output[0]
         )
+
+
+class WandbWriterTest(unittest.TestCase):
+    def test_wandb_full(self):
+        category = "GeneralStuff"
+        config   = {"caller" : "ml-agents"}
+        wandb_writer = WandbWriter(config=config)
+        wandb_writer.write_stats(
+            category = category,
+            values = {
+                "Environment/Cumulative Reward": -15,
+                "Is Training": True,
+                "Self-play/ELO": 1.0,
+            },
+            step = 10,
+        )
+

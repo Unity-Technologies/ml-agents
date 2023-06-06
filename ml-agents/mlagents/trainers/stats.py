@@ -6,6 +6,7 @@ import abc
 import os
 import time
 from threading import RLock
+import wandb
 
 from mlagents_envs.side_channel.stats_side_channel import StatsAggregationMethod
 
@@ -284,6 +285,29 @@ class TensorboardWriter(StatsWriter):
             if summary is not None:
                 self.summary_writers[category].add_text("Hyperparameters", summary)
                 self.summary_writers[category].flush()
+
+
+class WandbWriter(StatsWriter):
+    def __init__(
+        self,
+        config: dict
+    ):
+        """
+        A Weights and Biases Wrapper that will add stats to your wandb.ai board.
+        """
+        wandb.init(reinit=True,
+                   config=config)
+
+    def write_stats(
+        self,
+        category : str,
+        values   : dict,
+        step     : int
+    ) -> None:
+        """
+        Write some stats for a given category and step
+        """
+        wandb.log({category : values}, step=step)
 
 
 class StatsReporter:
