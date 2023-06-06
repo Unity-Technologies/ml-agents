@@ -44,7 +44,6 @@ The winning player takes points from the losing one:
 ![Elo Score Update Formula](images/elo_score_update_formula.png)
 
 ### The Tennis example
-![Tennis](images/tennis.png)
 
 - We start to train our agents.
 - Both of them have the same skills. So ELO score for each of them that we defined using parameter `initial_elo = 1200.0`.
