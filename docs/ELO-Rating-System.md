@@ -11,15 +11,12 @@ Instead, it's better to use ELO rating system, a method to calculate **the relat
 
 If the training performs correctly, **this value should steadily increase**.
 
-
 ## What is a zero-sum game?
 A zero-sum game is a game where **each player's gain or loss of utility is exactly balanced by the gain or loss of the utility of the opponent**.
 
 Simply explained, we face a zero-sum game **when one agent gets +1.0, its opponent gets -1.0 reward**.
 
-![Tennis](images/tennis.png)
-*Tennis environment is a zero-sum game: if you win the point you get +1.0 and your opponent gets -1.0 reward.*
-
+For instance, Tennis is a zero-sum game: if you win the point you get +1.0 and your opponent gets -1.0 reward.
 
 ## How works the ELO Rating System
 - Each player **has an initial ELO score**. It's defined in the `initial_elo` trainer config hyperparameter.
