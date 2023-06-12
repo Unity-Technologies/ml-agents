@@ -3,7 +3,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-
     /// <summary>
     /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
     /// and child nodes are connect to their parents via Joints.
@@ -129,7 +128,20 @@ namespace Unity.MLAgents.Extensions.Sensors
                 // No velocity on the virtual root
                 return Vector3.zero;
             }
+
             return m_Bodies[index].velocity;
+        }
+
+        /// <inheritdoc/>
+        protected internal override Vector3 GetAngularVelocityAt(int index)
+        {
+            if (index == 0 && m_VirtualRoot != null)
+            {
+                // No velocity on the virtual root
+                return Vector3.zero;
+            }
+
+            return m_Bodies[index].angularVelocity;
         }
 
         /// <inheritdoc/>
@@ -156,6 +168,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 return m_VirtualRoot;
             }
+
             return m_Bodies[index];
         }
 
@@ -167,6 +180,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <returns></returns>
         internal Dictionary<Rigidbody, bool> GetBodyPosesEnabled()
         {
+            if (m_Bodies == null)
+            {
+                return new Dictionary<Rigidbody, bool>();
+            }
+
             var bodyPosesEnabled = new Dictionary<Rigidbody, bool>(m_Bodies.Length);
             for (var i = 0; i < m_Bodies.Length; i++)
             {
@@ -205,5 +223,4 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
     }
-
 }

@@ -19,6 +19,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             {
                 return Vector3.zero;
             }
+
+            protected internal override Vector3 GetAngularVelocityAt(int index)
+            {
+                return Vector3.zero;
+            }
         }
 
         class UselessPoseExtractor : BasicPoseExtractor
@@ -114,6 +119,10 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
                 return Vector3.zero;
             }
 
+            protected internal override Vector3 GetAngularVelocityAt(int index)
+            {
+                return Vector3.zero;
+            }
         }
 
         [Test]
