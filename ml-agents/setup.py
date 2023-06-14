@@ -48,9 +48,9 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
@@ -60,7 +60,7 @@ setup(
         "grpcio>=1.11.0",
         "h5py>=2.9.0",
         f"mlagents_envs=={VERSION}",
-        "numpy>=1.13.3,<2.0",
+        "numpy>=1.20.0,<2.0",
         "Pillow>=4.2.1",
         "protobuf>=3.6,<3.20",
         "pyyaml>=3.1.0",
@@ -68,19 +68,17 @@ setup(
         # https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Installation.md#windows-installing-pytorch
         # Torch only working on python 3.9 for 1.8.0 and above. Details see:
         # https://github.com/pytorch/pytorch/issues/50014
-        "torch>=1.8.0,<=1.11.0;(platform_system!='Windows' and python_version>='3.9')",
-        "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
+        # "torch>=1.8.0,<=2.0.1;(platform_system!='Windows' and python_version>='3.9')",
+        # "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
+        "torch>=1.9.1,<=2.0.1",
         "tensorboard>=1.15",
-        # cattrs 1.1.0 dropped support for python 3.6, but 1.0.0 doesn't work for python 3.9
-        # Since there's no version that supports both, we have to draw the line somwehere.
-        "cattrs<1.1.0; python_version<'3.8'",
-        "cattrs>=1.1.0,<1.7; python_version>='3.8'",
+        "cattrs>=1.1.0,<1.7",
         "attrs>=19.3.0",
         "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
-        "importlib_metadata==4.4; python_version<'3.8'",
+        "importlib_metadata>=4.4",
     ],
-    python_requires=">=3.8.13,<=3.10.12",
+    python_requires=">=3.9.0,<=3.11.4",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",

@@ -1,7 +1,7 @@
 import atexit
 from typing import Optional, List, Set, Dict, Any, Tuple
 import numpy as np
-from gym import error, spaces
+from gymnasium import error, spaces
 from mlagents_envs.base_env import BaseEnv, ActionTuple
 from mlagents_envs.envs.env_helpers import _agent_id_to_behavior, _unwrap_batch_steps
 
@@ -32,7 +32,8 @@ class UnityPettingzooBaseEnv:
         self._possible_agents: Set[str] = set()  # all agents that have ever appear
         self._agent_id_to_index: Dict[str, int] = {}  # agent_id: index in decision step
         self._observations: Dict[str, np.ndarray] = {}  # agent_id: obs
-        self._dones: Dict[str, bool] = {}  # agent_id: done
+        self.terminations: Dict[str, bool] = {}  # agent_id: done
+        self.truncations: Dict[str, bool] = {} # agent_id: done
         self._rewards: Dict[str, float] = {}  # agent_id: reward
         self._cumm_rewards: Dict[str, float] = {}  # agent_id: reward
         self._infos: Dict[str, Dict] = {}  # agent_id: info
@@ -41,13 +42,18 @@ class UnityPettingzooBaseEnv:
             str, spaces.Space
         ] = {}  # behavior_name: obs_space
         self._current_action: Dict[str, ActionTuple] = {}  # behavior_name: ActionTuple
+        self._options: Dict = {}
+
         # Take a single step so that the brain information will be sent over
         if not self._env.behavior_specs:
             self._env.step()
             for behavior_name in self._env.behavior_specs.keys():
-                _, _, _ = self._batch_update(behavior_name)
+                _, _, _, _ = self._batch_update(behavior_name)
         self._update_observation_spaces()
         self._update_action_spaces()
+        self.metadata = {
+            "name": f"mlagents_env_{self._env.name}_v0"
+        }
 
     def _assert_loaded(self) -> None:
         if self._env is None:
@@ -162,7 +168,7 @@ class UnityPettingzooBaseEnv:
             else:
                 action = ActionTuple(action, None)
 
-        if not self._dones[current_agent]:
+        if not self.terminations[current_agent]:
             current_behavior = _agent_id_to_behavior(current_agent)
             current_index = self._agent_id_to_index[current_agent]
             if action.continuous is not None:
@@ -176,7 +182,7 @@ class UnityPettingzooBaseEnv:
         else:
             self._live_agents.remove(current_agent)
             del self._observations[current_agent]
-            del self._dones[current_agent]
+            del self.terminations[current_agent]
             del self._rewards[current_agent]
             del self._cumm_rewards[current_agent]
             del self._infos[current_agent]
@@ -187,8 +193,9 @@ class UnityPettingzooBaseEnv:
         self._env.step()
         self._reset_states()
         for behavior_name in self._env.behavior_specs.keys():
-            dones, rewards, cumulative_rewards = self._batch_update(behavior_name)
-            self._dones.update(dones)
+            dones, truncated, rewards, cumulative_rewards = self._batch_update(behavior_name)
+            self.terminations.update(dones)
+            self.truncations.update(truncated)
             self._rewards.update(rewards)
             self._cumm_rewards.update(cumulative_rewards)
         self._agent_index = 0
@@ -226,13 +233,13 @@ class UnityPettingzooBaseEnv:
         self._live_agents = []
         self._agents = []
         self._observations = {}
-        self._dones = {}
+        self.terminations = {}
         self._rewards = {}
         self._cumm_rewards = {}
         self._infos = {}
         self._agent_id_to_index = {}
 
-    def reset(self):
+    def reset(self, seed: int | None = None, options: dict | None = None,):
         """
         Resets the environment.
         """
@@ -242,11 +249,14 @@ class UnityPettingzooBaseEnv:
         self._possible_agents = set()
         self._env.reset()
         for behavior_name in self._env.behavior_specs.keys():
-            _, _, _ = self._batch_update(behavior_name)
+            _, _, _, _ = self._batch_update(behavior_name)
         self._live_agents.sort()  # unnecessary, only for passing API test
-        self._dones = {agent: False for agent in self._agents}
+        self.terminations = {agent: False for agent in self._agents}
+        self.truncations = {agent: False for agent in self._agents}
         self._rewards = {agent: 0 for agent in self._agents}
         self._cumm_rewards = {agent: 0 for agent in self._agents}
+        self.seed(seed)
+        self._options = options
 
     def _batch_update(self, behavior_name):
         current_batch = self._env.get_steps(behavior_name)
@@ -257,6 +267,7 @@ class UnityPettingzooBaseEnv:
             agents,
             obs,
             dones,
+            truncated,
             rewards,
             cumulative_rewards,
             infos,
@@ -268,7 +279,7 @@ class UnityPettingzooBaseEnv:
         self._infos.update(infos)
         self._agent_id_to_index.update(id_map)
         self._possible_agents.update(agents)
-        return dones, rewards, cumulative_rewards
+        return dones, truncated, rewards, cumulative_rewards
 
     def seed(self, seed=None):
         """
@@ -290,7 +301,7 @@ class UnityPettingzooBaseEnv:
 
     @property
     def dones(self):
-        return dict(self._dones)
+        return dict(self.terminations)
 
     @property
     def agents(self):

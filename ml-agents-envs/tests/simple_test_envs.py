@@ -101,6 +101,7 @@ class SimpleEnvironment(BaseEnv):
         self.step_size = step_size  # defines the difficulty of the test
         # Allow to be used as a UnityEnvironment during tests
         self.academy_capabilities = None
+        self.name = "simple_env"
 
         for name in self.names:
             self.agent_id[name] = 0
@@ -337,6 +338,7 @@ class MultiAgentEnvironment(BaseEnv):
         self.action_spec = self.envs[name_and_num].action_spec
         self.num_agents = num_agents
         self._side_channel_manager = SideChannelManager([])
+        self.name = "multiagent_env"
 
     @property
     def all_done(self):

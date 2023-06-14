@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import gym
-from gym import error, spaces
+import gymnasium as gym
+from gymnasium import error, spaces
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps

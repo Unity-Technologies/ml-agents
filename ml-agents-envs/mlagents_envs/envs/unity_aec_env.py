@@ -53,7 +53,8 @@ class UnityAECEnv(UnityPettingzooBaseEnv, AECEnv):
         return (
             self._observations[agent_id],
             self._cumm_rewards[agent_id],
-            self._dones[agent_id],
+            self.terminations[agent_id],
+            self.truncations[agent_id],
             self._infos[agent_id],
         )
 
@@ -61,8 +62,8 @@ class UnityAECEnv(UnityPettingzooBaseEnv, AECEnv):
         """
         returns observation, cumulative reward, done, info for the current agent (specified by self.agent_selection)
         """
-        obs, reward, done, info = self.observe(self._agents[self._agent_index])
-        return obs if observe else None, reward, done, info
+        obs, reward, done, truncations, info = self.observe(self._agents[self._agent_index])
+        return obs if observe else None, reward, done, truncations, info
 
     @property
     def agent_selection(self):

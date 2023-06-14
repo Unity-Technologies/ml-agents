@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 import numpy as np
 
-from gym import spaces
+from gymnasium import spaces
 
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 from mlagents_envs.base_env import (

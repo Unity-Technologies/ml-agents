@@ -541,6 +541,8 @@ class BehaviorMapping(Mapping):
 
 
 class BaseEnv(ABC):
+    name: str
+
     @abstractmethod
     def step(self) -> None:
         """

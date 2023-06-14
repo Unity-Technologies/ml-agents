@@ -6,6 +6,7 @@ from typing import BinaryIO, DefaultDict, List, Tuple, Union, Optional
 
 import numpy as np
 import h5py
+from numpy import float32
 
 from mlagents_envs.exception import UnityException
 
@@ -207,7 +208,7 @@ class AgentBufferField(list):
         self[:] = []
 
     def padded_to_batch(
-        self, pad_value: np.float = 0, dtype: np.dtype = np.float32
+        self, pad_value: float = 0, dtype: np.dtype = float32
     ) -> Union[np.ndarray, List[np.ndarray]]:
         """
         Converts this AgentBufferField (which is a List[BufferEntry]) into a numpy array
