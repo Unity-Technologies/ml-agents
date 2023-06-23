@@ -106,9 +106,12 @@ intervals, add a `Decision Requester` component to the Agent's GameObject.
 Making decisions at regular step intervals is generally most appropriate for
 physics-based simulations. For example, an agent in a robotic simulator that
 must provide fine-control of joint torques should make its decisions every step
-of the simulation. On the other hand, an agent that only needs to make decisions
-when certain game or simulation events occur, such as in a turn-based game,
-should call `Agent.RequestDecision()` manually.
+of the simulation. In games such as real-time strategy, where many agents make
+their decisions at regular intervals, the decision timing for each agent can be
+staggered by setting the `DecisionStep` parameter in the `Decision Requester`
+component for each agent. On the other hand, an agent that only needs to make
+decisions when certain game or simulation events occur, such as in a turn-based
+game, should call `Agent.RequestDecision()` manually.
 
 ## Observations and Sensors
 In order for an agent to learn, the observations should include all the

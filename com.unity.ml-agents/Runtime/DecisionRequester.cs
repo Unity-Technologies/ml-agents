@@ -64,7 +64,7 @@ namespace Unity.MLAgents
 
         internal void Awake()
         {
-            Debug.Assert(DecisionStep < DecisionPeriod, "DecisionStep must be between 0 than DecisionPeriod - 1.");
+            Debug.Assert(DecisionStep < DecisionPeriod, "DecisionStep must be between 0 and DecisionPeriod - 1.");
             m_Agent = gameObject.GetComponent<Agent>();
             Debug.Assert(m_Agent != null, "Agent component was not found on this gameObject and is required.");
             Academy.Instance.AgentPreStep += MakeRequests;
