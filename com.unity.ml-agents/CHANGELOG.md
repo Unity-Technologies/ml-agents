@@ -14,6 +14,8 @@ and this project adheres to
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Added DecisionStep parameter to DecisionRequester (#)
+  - This will allow the staggering of execution timing when using multi-agents, leading to more stable performance.
 
 #### ml-agents / ml-agents-envs
 - Added training config feature to evenly distribute checkpoints throughout training. (#5842)

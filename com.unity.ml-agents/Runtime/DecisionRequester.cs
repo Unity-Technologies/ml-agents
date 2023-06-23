@@ -31,6 +31,17 @@ namespace Unity.MLAgents
         public int DecisionPeriod = 5;
 
         /// <summary>
+        /// Indicates when to requests a decision. By changing this value, the timing of decision
+        /// can be shifted even among agents with the same decision period. The value can be
+        /// from 0 to DecisionPeriod - 1. 
+        /// </summary>
+        [Range(0, 19)]
+        [Tooltip("Indicates when to requests a decision. By changing this value, the timing " +
+            "of decision can be shifted even among agents with the same decision period. " +
+            "The value can be from 0 to DecisionPeriod - 1.")]
+        public int DecisionStep = 0;
+
+        /// <summary>
         /// Indicates whether or not the agent will take an action during the Academy steps where
         /// it does not request a decision. Has no effect when DecisionPeriod is set to 1.
         /// </summary>
@@ -53,6 +64,7 @@ namespace Unity.MLAgents
 
         internal void Awake()
         {
+            Debug.Assert(DecisionStep < DecisionPeriod, "DecisionStep must be between 0 than DecisionPeriod - 1.");
             m_Agent = gameObject.GetComponent<Agent>();
             Debug.Assert(m_Agent != null, "Agent component was not found on this gameObject and is required.");
             Academy.Instance.AgentPreStep += MakeRequests;
@@ -107,7 +119,7 @@ namespace Unity.MLAgents
         /// <returns></returns>
         protected virtual bool ShouldRequestDecision(DecisionRequestContext context)
         {
-            return context.AcademyStepCount % DecisionPeriod == 0;
+            return context.AcademyStepCount % DecisionPeriod == DecisionStep;
         }
 
         /// <summary>
