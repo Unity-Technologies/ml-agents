@@ -189,7 +189,7 @@ The ML-Agents Toolkit contains five high-level components:
   algorithms.
 
 <p align="center">
-  <img src="../images/learning_environment_basic.png"
+  <img src="../docs/images/learning_environment_basic.png"
        alt="Simplified ML-Agents Scene Block Diagram"
        width="600"
        border="10" />
@@ -224,7 +224,7 @@ can have the same Behavior. This does not mean that at each instance they will
 have identical observation and action _values_.
 
 <p align="center">
-  <img src="../images/learning_environment_example.png"
+  <img src="../docs/images/learning_environment_example.png"
        alt="Example ML-Agents Scene Block Diagram"
        width="700"
        border="10" />
@@ -246,7 +246,7 @@ Channels_ is to exchange data with Python about _Environment Parameters_. The
 following diagram illustrates the above.
 
 <p align="center">
-  <img src="../images/learning_environment_full.png"
+  <img src="../docs/images/learning_environment_full.png"
        alt="More Complete Example ML-Agents Scene Block Diagram"
        border="10" />
 </p>
@@ -466,7 +466,7 @@ episodes of demonstrations can reduce training steps by more than 4 times. See
 Behavioral Cloning + GAIL + Curiosity + RL below.
 
 <p align="center">
-  <img src="../images/mlagents-ImitationAndRL.png"
+  <img src="../docs/images/mlagents-ImitationAndRL.png"
        alt="Using Demonstrations with Reinforcement Learning"
        width="700" border="0" />
 </p>
