@@ -12,14 +12,14 @@
         <meta name="author" content="Unity Technologies">
       
       
-        <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Python-PettingZoo-API/">
+        <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/ELO-Rating-System/">
       
       <link rel="icon" href="../images/unity-logo-black.png">
       <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-8.5.10">
     
     
       
-        <title>Getting started with the PettingZoo API - Unity ML-Agents Toolkit</title>
+        <title>ELO Rating System - Unity ML-Agents Toolkit</title>
       
     
     
@@ -74,7 +74,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#unity-ml-agents-pettingzoo-wrapper" class="md-skip">
+        <a href="#elo-rating-system" class="md-skip">
           Skip to content
         </a>
       
@@ -106,7 +106,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Getting started with the PettingZoo API
+              ELO Rating System
             
           </span>
         </div>
@@ -334,14 +334,12 @@
 
   
   
-    
-  
   
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--nested">
       
       
-        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" checked>
+        <input class="md-nav__toggle md-toggle" data-md-toggle="__nav_5" type="checkbox" id="__nav_5" >
       
       
       
@@ -376,66 +374,11 @@
               
   
   
-    
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" data-md-toggle="toc" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          Getting started with the PettingZoo API
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../Python-PettingZoo-API/" class="md-nav__link">
         Getting started with the PettingZoo API
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#installation-and-examples" class="md-nav__link">
-    Installation and Examples
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#api-interface" class="md-nav__link">
-    API interface
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -716,23 +659,29 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#installation-and-examples" class="md-nav__link">
-    Installation and Examples
+  <a href="#what-is-a-zero-sum-game" class="md-nav__link">
+    What is a zero-sum game?
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#api-interface" class="md-nav__link">
-    API interface
+  <a href="#how-works-the-elo-rating-system" class="md-nav__link">
+    How works the ELO Rating System
+  </a>
+  
+    <nav class="md-nav" aria-label="How works the ELO Rating System">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-tennis-example" class="md-nav__link">
+    The Tennis example
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#notes" class="md-nav__link">
-    Notes
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -750,60 +699,65 @@
                 
                   
 
-  <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/Python-PettingZoo-API.md" title="Edit this page" class="md-content__button md-icon">
+  <a href="https://github.com/Unity-Technologies/ml-agents/edit/main/docs/ELO-Rating-System.md" title="Edit this page" class="md-content__button md-icon">
     
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20.71 7.04c.39-.39.39-1.04 0-1.41l-2.34-2.34c-.37-.39-1.02-.39-1.41 0l-1.84 1.83 3.75 3.75M3 17.25V21h3.75L17.81 9.93l-3.75-3.75L3 17.25Z"/></svg>
   </a>
 
 
-<h1 id="unity-ml-agents-pettingzoo-wrapper">Unity ML-Agents PettingZoo Wrapper</h1>
-<p>With the increasing interest in multi-agent training with a gym-like API, we provide a
-PettingZoo Wrapper around the <a href="https://www.pettingzoo.ml/">Petting Zoo API</a>. Our wrapper
-provides interfaces on top of our <code>UnityEnvironment</code> class, which is the default way of
-interfacing with a Unity environment via Python.</p>
-<h2 id="installation-and-examples">Installation and Examples</h2>
-<p>The PettingZoo wrapper is part of the <code>mlgents_envs</code> package. Please refer to the
-<a href="../ML-Agents-Envs-README/">mlagents_envs installation instructions</a>.</p>
-<p><a href="https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/develop-python-api-ga/ml-agents-envs/colabs/Colab_PettingZoo.ipynb">[Colab] PettingZoo Wrapper Example</a></p>
-<p>This colab notebook demonstrates the example usage of the wrapper, including installation,
-basic usages, and an example with our
-<a href="https://github.com/Unity-Technologies/ml-agents/blob/main/docs/Learning-Environment-Examples.md#strikers-vs-goalie">Striker vs Goalie environment</a>
-which is a multi-agents environment with multiple different behavior names.</p>
-<h2 id="api-interface">API interface</h2>
-<p>This wrapper is compatible with PettingZoo API. Please check out
-<a href="https://www.pettingzoo.ml/api">PettingZoo API page</a> for more details.
-Here's an example of interacting with wrapped environment:</p>
-<pre><code class="language-python">from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.envs import UnityToPettingZooWrapper
-
-unity_env = UnityEnvironment(&quot;StrikersVsGoalie&quot;)
-env = UnityToPettingZooWrapper(unity_env)
-env.reset()
-for agent in env.agent_iter():
-    observation, reward, done, info = env.last()
-    action = policy(observation, agent)
-    env.step(action)
-</code></pre>
-<h2 id="notes">Notes</h2>
+<h1 id="elo-rating-system">ELO Rating System</h1>
+<p>In adversarial games, the cumulative environment reward may <strong>not be a meaningful metric</strong> by which to track
+learning progress.</p>
+<p>This is because the cumulative reward is <strong>entirely dependent on the skill of the opponent</strong>.</p>
+<p>An agent at a particular skill level will get more or less reward against a worse or better agent,
+respectively.</p>
+<p>Instead, it's better to use ELO rating system, a method to calculate <strong>the relative skill level between two players in a zero-sum game</strong>.</p>
+<p>If the training performs correctly, <strong>this value should steadily increase</strong>.</p>
+<h2 id="what-is-a-zero-sum-game">What is a zero-sum game?</h2>
+<p>A zero-sum game is a game where <strong>each player's gain or loss of utility is exactly balanced by the gain or loss of the utility of the opponent</strong>.</p>
+<p>Simply explained, we face a zero-sum game <strong>when one agent gets +1.0, its opponent gets -1.0 reward</strong>.</p>
+<p>For instance, Tennis is a zero-sum game: if you win the point you get +1.0 and your opponent gets -1.0 reward.</p>
+<h2 id="how-works-the-elo-rating-system">How works the ELO Rating System</h2>
 <ul>
-<li>There is support for both <a href="https://www.pettingzoo.ml/api#interacting-with-environments">AEC</a>
-  and <a href="https://www.pettingzoo.ml/api#parallel-api">Parallel</a> PettingZoo APIs.</li>
-<li>The AEC wrapper is compatible with PettingZoo (PZ) API interface but works in a slightly
-  different way under the hood. For the AEC API, Instead of stepping the environment in every <code>env.step(action)</code>,
-  the PZ wrapper will store the action, and will only perform environment stepping when all the
-  agents requesting for actions in the current step have been assigned an action. This is for
-  performance, considering that the communication between Unity and python is more efficient
-  when data are sent in batches.</li>
-<li>Since the actions for the AEC wrapper are stored without applying them to the environment until
-  all the actions are queued, some components of the API might behave in unexpected way. For example, a call
-  to <code>env.reward</code> should return the instantaneous reward for that particular step, but the true
-  reward would only be available when an actual environment step is performed. It's recommended that
-  you follow the API definition for training (access rewards from <code>env.last()</code> instead of
-  <code>env.reward</code>) and the underlying mechanism shouldn't affect training results.</li>
-<li>The environments will automatically reset when it's done, so <code>env.agent_iter(max_step)</code> will
-  keep going on until the specified max step is reached (default: <code>2**63</code>). There is no need to
-  call <code>env.reset()</code> except for the very beginning of instantiating an environment.</li>
+<li>
+<p>Each player <strong>has an initial ELO score</strong>. It's defined in the <code>initial_elo</code> trainer config hyperparameter.</p>
+</li>
+<li>
+<p>The <strong>difference in rating between the two players</strong> serves as the predictor of the outcomes of a match.</p>
+</li>
 </ul>
+<p><img alt="Example Elo" src="../images/elo_example.png" />
+<em>For instance, if player A has an Elo score of 2100 and player B has an ELO score of 1800 the chance that player A wins is 85% against 15% for player b.</em></p>
+<ul>
+<li>We calculate the <strong>expected score of each player</strong> using this formula:</li>
+</ul>
+<p><img alt="Elo Expected Score Formula" src="../images/elo_expected_score_formula.png" /></p>
+<ul>
+<li>At the end of the game, based on the outcome <strong>we update the player’s actual Elo score</strong>, we use a linear adjustment proportional to the amount by which the player over-performed or under-performed.
+The winning player takes points from the losing one:</li>
+<li>If the <em>higher-rated player wins</em> → <strong>a few points</strong> will be taken from the lower-rated player.</li>
+<li>If the <em>lower-rated player wins</em> → <strong>a lot of points</strong> will be taken from the high-rated player.</li>
+<li>
+<p>If it’s <em>a draw</em> → the lower-rated player gains <strong>a few points</strong> from higher.</p>
+</li>
+<li>
+<p>We update players rating using this formula:</p>
+</li>
+</ul>
+<p><img alt="Elo Score Update Formula" src="../images/elo_score_update_formula.png" /></p>
+<h3 id="the-tennis-example">The Tennis example</h3>
+<ul>
+<li>We start to train our agents.</li>
+<li>Both of them have the same skills. So ELO score for each of them that we defined using parameter <code>initial_elo = 1200.0</code>.</li>
+</ul>
+<p>We calculate the expected score E:
+Ea = 0.5
+Eb = 0.5</p>
+<p>So it means that each player has 50% chances of winning the point.</p>
+<p>If A wins, the new rating R would be:</p>
+<p>Ra = 1200 + 16 * (1 - 0.5) → 1208</p>
+<p>Rb = 1200 + 16 * (0 - 0.5) → 1192</p>
+<p>Player A has now an ELO score of 1208 and Player B an ELO score of 1192. Therefore, Player A is now a little bit <strong>better than Player B</strong>.</p>
 
 
 
@@ -819,42 +773,6 @@ for agent in env.agent_iter():
       </main>
       
         <footer class="md-footer">
-  
-    
-    <nav class="md-footer__inner md-grid" aria-label="Footer" >
-      
-        
-        <a href="../Python-Gym-API/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Getting started with the Gym API" rel="prev">
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
-          </div>
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Previous
-              </span>
-              Getting started with the Gym API
-            </div>
-          </div>
-        </a>
-      
-      
-        
-        <a href="../Python-LLAPI/" class="md-footer__link md-footer__link--next" aria-label="Next: Getting started with the LLAPI" rel="next">
-          <div class="md-footer__title">
-            <div class="md-ellipsis">
-              <span class="md-footer__direction">
-                Next
-              </span>
-              Getting started with the LLAPI
-            </div>
-          </div>
-          <div class="md-footer__button md-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M4 11v2h12l-5.5 5.5 1.42 1.42L19.84 12l-7.92-7.92L10.5 5.5 16 11H4Z"/></svg>
-          </div>
-        </a>
-      
-    </nav>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
