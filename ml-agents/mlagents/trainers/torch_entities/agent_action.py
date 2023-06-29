@@ -97,7 +97,7 @@ class AgentAction(NamedTuple):
                 ModelUtils.list_to_tensor(arr) for arr in padded_batch
             ]
         if disc_action_key in buff:
-            padded_batch = buff[disc_action_key].padded_to_batch(dtype=np.long)
+            padded_batch = buff[disc_action_key].padded_to_batch(dtype=int)
             discrete_tensors = [
                 ModelUtils.list_to_tensor(arr, dtype=torch.long) for arr in padded_batch
             ]

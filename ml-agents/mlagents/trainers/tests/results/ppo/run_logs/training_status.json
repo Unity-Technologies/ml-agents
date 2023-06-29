@@ -10,7 +10,7 @@
     },
     "metadata": {
         "stats_format_version": "0.3.0",
-        "mlagents_version": "0.29.0",
-        "torch_version": "1.8.1"
+        "mlagents_version": "0.31.0.dev0",
+        "torch_version": "2.0.1+cu117"
     }
 }

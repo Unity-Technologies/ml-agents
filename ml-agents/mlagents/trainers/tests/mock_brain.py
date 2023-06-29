@@ -43,7 +43,7 @@ def create_mock_steps(
         ]  # type: ignore
 
     reward = np.array(num_agents * [1.0], dtype=np.float32)
-    interrupted = np.array(num_agents * [False], dtype=np.bool)
+    interrupted = np.array(num_agents * [False], dtype=bool)
     if agent_ids is not None:
         agent_id = np.array(agent_ids, dtype=np.int32)
     else:
