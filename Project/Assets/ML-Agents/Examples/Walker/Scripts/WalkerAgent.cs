@@ -84,8 +84,6 @@ public class WalkerAgent : Agent
         m_JdController.SetupBodyPart(handR);
 
         m_ResetParams = Academy.Instance.EnvironmentParameters;
-
-        SetResetParameters();
     }
 
     /// <summary>
@@ -107,8 +105,6 @@ public class WalkerAgent : Agent
         //Set our goal walking speed
         MTargetWalkingSpeed =
             randomizeWalkSpeedEachEpisode ? Random.Range(0.1f, m_maxWalkingSpeed) : MTargetWalkingSpeed;
-
-        SetResetParameters();
     }
 
     /// <summary>
@@ -240,7 +236,10 @@ public class WalkerAgent : Agent
 
         // b. Rotation alignment with target direction.
         //This reward will approach 1 if it faces the target direction perfectly and approach zero as it deviates
-        var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var headForward = head.forward;
+        headForward.y = 0;
+        // var lookAtTargetReward = (Vector3.Dot(cubeForward, head.forward) + 1) * .5F;
+        var lookAtTargetReward = (Vector3.Dot(cubeForward, headForward) + 1) * .5F;
 
         //Check for NaNs
         if (float.IsNaN(lookAtTargetReward))
@@ -291,17 +290,5 @@ public class WalkerAgent : Agent
     public void TouchedTarget()
     {
         AddReward(1f);
-    }
-
-    public void SetTorsoMass()
-    {
-        m_JdController.bodyPartsDict[chest].rb.mass = m_ResetParams.GetWithDefault("chest_mass", 8);
-        m_JdController.bodyPartsDict[spine].rb.mass = m_ResetParams.GetWithDefault("spine_mass", 8);
-        m_JdController.bodyPartsDict[hips].rb.mass = m_ResetParams.GetWithDefault("hip_mass", 8);
-    }
-
-    public void SetResetParameters()
-    {
-        SetTorsoMass();
     }
 }

@@ -62,7 +62,7 @@ setup(
         f"mlagents_envs=={VERSION}",
         "numpy>=1.13.3,<2.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6",
+        "protobuf>=3.6,<3.20",
         "pyyaml>=3.1.0",
         # Windows ver. of PyTorch doesn't work from PyPi. Installation:
         # https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Installation.md#windows-installing-pytorch
@@ -76,14 +76,17 @@ setup(
         "cattrs<1.1.0; python_version<'3.8'",
         "cattrs>=1.1.0,<1.7; python_version>='3.8'",
         "attrs>=19.3.0",
+        "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata==4.4; python_version<'3.8'",
     ],
-    python_requires=">=3.8.13,<=3.10.8",
+    python_requires=">=3.8.13,<=3.10.12",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
             "mlagents-run-experiment=mlagents.trainers.run_experiment:main",
+            "mlagents-push-to-hf=mlagents.utils.push_to_hf:main",
+            "mlagents-load-from-hf=mlagents.utils.load_from_hf:main",
         ],
         # Plugins - each plugin type should have an entry here for the default behavior
         ML_AGENTS_STATS_WRITER: [

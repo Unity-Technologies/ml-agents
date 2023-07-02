@@ -35,6 +35,10 @@
 - [Creating Custom Side Channels](Custom-SideChannels.md)
 - [Creating Custom Samplers for Environment Parameter Randomization](Training-ML-Agents.md#defining-a-new-sampler-type)
 
+## Hugging Face Integration
+
+- [Using Hugging Face to download and upload trained models](Hugging-Face-Integration.md)
+
 ## Python Tutorial with Google Colab
 
 - [Using a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_20_docs/colab/Colab_UnityEnvironment_1_Run.ipynb)
