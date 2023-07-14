@@ -165,12 +165,12 @@ namespace Unity.MLAgents.Inference
             else
             {
                 bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.ContinuousActionOutput);
+                    model.outputs.Contains(TensorNames.ContinuousActionOutput);
                 bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput);
+                    model.outputs.Contains(TensorNames.DeterministicContinuousActionOutput);
 
                 return (hasStochasticOutput || hasDeterministicOutput) &&
-                       (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
+                    (int)model.GetTensorByName(TensorNames.ContinuousActionOutputShape)[0] > 0;
             }
         }
 
@@ -240,11 +240,11 @@ namespace Unity.MLAgents.Inference
             else
             {
                 bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.DiscreteActionOutput);
+                    model.outputs.Contains(TensorNames.DiscreteActionOutput);
                 bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
+                    model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
                 return (hasStochasticOutput || hasDeterministicOutput) &&
-                       model.DiscreteOutputSize() > 0;
+                    model.DiscreteOutputSize() > 0;
             }
         }
 
@@ -348,7 +348,7 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning($"Required constant \"{TensorNames.VersionNumber}\" was not found in the model file.")
-                    );
+                );
                 return false;
             }
 
@@ -358,7 +358,7 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning($"Required constant \"{TensorNames.MemorySize}\" was not found in the model file.")
-                    );
+                );
                 return false;
             }
 
@@ -371,7 +371,7 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning("The model does not contain any Action Output Node.")
-                    );
+                );
                 return false;
             }
 
@@ -382,16 +382,16 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain any Action Output Shape Node.")
-                        );
+                    );
                     return false;
                 }
                 if (model.GetTensorByName(TensorNames.IsContinuousControlDeprecated) == null)
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning($"Required constant \"{TensorNames.IsContinuousControlDeprecated}\" was " +
-                        "not found in the model file. " +
-                        "This is only required for model that uses a deprecated model format.")
-                        );
+                            "not found in the model file. " +
+                            "This is only required for model that uses a deprecated model format.")
+                    );
                     return false;
                 }
             }
@@ -406,7 +406,6 @@ namespace Unity.MLAgents.Inference
                         );
                         return false;
                     }
-
                     else if (!model.HasContinuousOutputs(deterministicInference))
                     {
                         var actionType = deterministicInference ? "deterministic" : "stochastic";
@@ -436,12 +435,7 @@ namespace Unity.MLAgents.Inference
                         );
                         return false;
                     }
-
                 }
-
-
-
-
             }
             return true;
         }

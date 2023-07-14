@@ -22,7 +22,6 @@ namespace Unity.MLAgents.Tests
             return duplicated;
         }
 
-
         /// <summary>
         /// Asserts that the sub-arrays of the total array are equal to specific subarrays at specific subarray indicies and equal to a default everywhere else.
         /// </summary>

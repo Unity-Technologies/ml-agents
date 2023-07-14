@@ -14,7 +14,6 @@ namespace Unity.MLAgents.Inference
     /// </summary>
     internal class BarracudaModelParamLoader
     {
-
         internal enum ModelApiVersion
         {
             /// <summary>
@@ -51,10 +50,12 @@ namespace Unity.MLAgents.Inference
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Info, Message = message };
             }
+
             public static FailedCheck Warning(string message)
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Warning, Message = message };
             }
+
             public static FailedCheck Error(string message)
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Error, Message = message };
@@ -103,10 +104,7 @@ namespace Unity.MLAgents.Inference
                 );
             }
             return null;
-
         }
-
-
 
         /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
@@ -133,7 +131,7 @@ namespace Unity.MLAgents.Inference
             int observableAttributeTotalSize = 0,
             BehaviorType behaviorType = BehaviorType.Default,
             bool deterministicInference = false
-            )
+        )
         {
             List<FailedCheck> failedModelChecks = new List<FailedCheck>();
             if (model == null)
@@ -168,7 +166,7 @@ namespace Unity.MLAgents.Inference
             if (memorySize == -1)
             {
                 failedModelChecks.Add(FailedCheck.Warning($"Missing node in the model provided : {TensorNames.MemorySize}"
-                    ));
+                ));
                 return failedModelChecks;
             }
 
@@ -190,7 +188,6 @@ namespace Unity.MLAgents.Inference
                     CheckInputTensorShape(model, brainParameters, sensors, observableAttributeTotalSize)
                 );
             }
-
 
 
             failedModelChecks.AddRange(
@@ -236,8 +233,8 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning("The model does not contain a Vector Observation Placeholder Input. " +
-                    "You must set the Vector Observation Space Size to 0.")
-                    );
+                        "You must set the Vector Observation Space Size to 0.")
+                );
             }
 
             // If there are not enough Visual Observation Input compared to what the
@@ -253,8 +250,8 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain a Visual Observation Placeholder Input " +
-                            $"for sensor component {visObsIndex} ({sensor.GetType().Name}).")
-                            );
+                                $"for sensor component {visObsIndex} ({sensor.GetType().Name}).")
+                        );
                     }
                     visObsIndex++;
                 }
@@ -265,11 +262,10 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
-                            $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
-                            );
+                                $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
+                        );
                     }
                 }
-
             }
 
             var expectedVisualObs = model.GetNumVisualInputs();
@@ -278,8 +274,8 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning($"The model expects {expectedVisualObs} visual inputs," +
-                    $" but only found {visObsIndex} visual sensors.")
-                    );
+                        $" but only found {visObsIndex} visual sensors.")
+                );
             }
 
             // If the model has a non-negative memory size but requires a recurrent input
@@ -301,7 +297,7 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control.")
-                        );
+                    );
                 }
             }
             return failedModelChecks;
@@ -345,7 +341,7 @@ namespace Unity.MLAgents.Inference
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
                             $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
-                        );
+                    );
                 }
             }
 
@@ -356,8 +352,8 @@ namespace Unity.MLAgents.Inference
                 if (!tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder))
                 {
                     failedModelChecks.Add(
-                            FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
-                            );
+                        FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
+                    );
                 }
             }
 
@@ -368,7 +364,7 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control.")
-                        );
+                    );
                 }
             }
             return failedModelChecks;
@@ -399,9 +395,8 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size.")
-                        );
+                    );
                 }
-
             }
             return failedModelChecks;
         }
@@ -544,7 +539,6 @@ namespace Unity.MLAgents.Inference
                 var sens = sensors[sensorIndex];
                 if (sens.GetObservationSpec().Shape.Length == 3)
                 {
-
                     tensorTester[TensorNames.GetVisualObservationName(visObsIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                     visObsIndex++;
@@ -565,7 +559,7 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("Model contains an unexpected input named : " + tensor.name)
-                            );
+                        );
                     }
                 }
                 else
@@ -643,7 +637,6 @@ namespace Unity.MLAgents.Inference
             return null;
         }
 
-
         /// <summary>
         /// Generates failed checks that correspond to inputs shapes incompatibilities between
         /// the model and the BrainParameters.
@@ -695,7 +688,6 @@ namespace Unity.MLAgents.Inference
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);
                 }
-
             }
 
             // If the model expects an input but it is not in this list
@@ -812,7 +804,6 @@ namespace Unity.MLAgents.Inference
         static FailedCheck CheckDiscreteActionOutputShape(
             BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, Tensor modelDiscreteBranches)
         {
-
             var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();
             foreach (var actuatorComponent in actuatorComponents)
             {
@@ -833,7 +824,7 @@ namespace Unity.MLAgents.Inference
                 if (modelDiscreteBranches != null && modelDiscreteBranches[i] != discreteActionBranches[i])
                 {
                     return FailedCheck.Warning($"The number of Discrete Actions of branch {i} does not match. " +
-                    $"Was expecting {discreteActionBranches[i]} but the model contains {modelDiscreteBranches[i]} "
+                        $"Was expecting {discreteActionBranches[i]} but the model contains {modelDiscreteBranches[i]} "
                     );
                 }
             }

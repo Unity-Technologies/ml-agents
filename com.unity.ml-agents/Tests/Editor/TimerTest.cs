@@ -79,8 +79,6 @@ namespace Unity.MLAgents.Tests
             // The older values are actually weighted more heavily, so we expect the
             // increasing series to have a lower moving average.
             Assert.Less(increasingNode.weightedAverage, decreasingNode.weightedAverage);
-
-
         }
     }
 }

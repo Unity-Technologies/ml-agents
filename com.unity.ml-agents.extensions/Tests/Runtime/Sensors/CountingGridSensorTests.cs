@@ -56,13 +56,15 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             protected override GridSensorBase[] GetGridSensors()
             {
-                return new GridSensorBase[] {
+                return new GridSensorBase[]
+                {
                     new CountingGridSensor(
                         "TestSensor",
                         CellScale,
                         GridSize,
                         DetectableTags,
-                        CompressionType) };
+                        CompressionType)
+                };
             }
         }
 

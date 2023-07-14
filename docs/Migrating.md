@@ -20,7 +20,7 @@ from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 
 ## Migrating the package to version 2.0
-- The official version of Unity ML-Agents supports is now 2021.3 LTS. If you run
+- The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These

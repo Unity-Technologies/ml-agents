@@ -60,7 +60,6 @@ namespace Unity.MLAgents.Extensions.Input
                 {
                     m_InputAdaptor.WriteToInputEventForAction(eventPtr, m_Action, m_Control, ActionSpec, actionBuffers);
                 }
-
             }
             Profiler.EndSample();
         }

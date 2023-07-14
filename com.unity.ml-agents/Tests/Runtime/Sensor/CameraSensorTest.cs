@@ -5,7 +5,6 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class CameraSensorTest
     {

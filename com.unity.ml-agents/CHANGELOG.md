@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- The minimum supported Unity version was updated to 2022.3. (#)
 
 #### ml-agents / ml-agents-envs
 

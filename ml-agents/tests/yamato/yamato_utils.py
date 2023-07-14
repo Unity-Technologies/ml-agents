@@ -45,7 +45,7 @@ def run_standalone_build(
     unity_exe = get_unity_executable_path()
     print(f"Running BuildStandalonePlayer via {unity_exe}")
 
-    # enum values from https://docs.unity3d.com/2021.3/Documentation/ScriptReference/BuildTarget.html
+    # enum values from https://docs.unity3d.com/2022.3/Documentation/ScriptReference/BuildTarget.html
     build_target_to_enum: Mapping[Optional[str], str] = {
         "mac": "StandaloneOSX",
         "osx": "StandaloneOSX",

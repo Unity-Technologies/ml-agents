@@ -16,7 +16,6 @@ namespace Unity.MLAgents.Extensions.Input
     /// </summary>
     public class InputActuatorEventContext : IDisposable
     {
-
         /// <summary>
         /// The number of times to allow the use of an event before queuing it in the InputSystem.
         /// </summary>
@@ -74,7 +73,6 @@ namespace Unity.MLAgents.Extensions.Input
                 InputSystem.QueueEvent(m_Ptr);
                 m_EventBuffer.Dispose();
             }
-
         }
     }
 }

@@ -22,7 +22,6 @@ namespace Unity.MLAgents.Tests.Actuators
 
         public void WriteDiscreteActionMask(IDiscreteActionMask actionMask)
         {
-
             for (var i = 0; i < Masks.Length; i++)
             {
                 foreach (var actionIndex in Masks[i])

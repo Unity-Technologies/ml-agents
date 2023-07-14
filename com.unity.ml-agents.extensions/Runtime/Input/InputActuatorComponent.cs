@@ -69,7 +69,6 @@ namespace Unity.MLAgents.Extensions.Input
                         null,
                         InputActuatorEventContext.s_EditorContext);
                     m_ActionSpec = CombineActuatorActionSpecs(actuators);
-
                 }
 #endif
                 return m_ActionSpec;

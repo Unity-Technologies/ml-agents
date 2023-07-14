@@ -7,7 +7,6 @@ using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class SensorUtilTests
     {
@@ -51,6 +50,5 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(sensor1, sensors[0]);
             Assert.AreEqual(sensor0, sensors[1]);
         }
-
     }
 }

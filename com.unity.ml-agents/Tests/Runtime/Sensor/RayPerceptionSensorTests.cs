@@ -440,6 +440,7 @@ namespace Unity.MLAgents.Tests
                 perception.CreateSensors();
             });
         }
+
 #endif
     }
 }

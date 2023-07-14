@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVectorObservations(bool fullBoard)
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -68,11 +68,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVectorObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -118,7 +118,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVisualObservations(bool fullBoard)
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -181,11 +181,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVisualObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -257,7 +257,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             Assert.IsNull(specialTexture);
         }
 
-
         [TestCase(true, false, TestName = "Full Board, No Special")]
         [TestCase(false, false, TestName = "Small Board, No Special")]
         [TestCase(true, true, TestName = "Full Board, Special")]
@@ -265,11 +264,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestCompressedVisualObservationsSpecial(bool fullBoard, bool useSpecial)
         {
             var boardString =
-                @"003
+@"003
                   000
                   010";
             var specialString =
-                @"014
+@"014
                   200
                   000";
 

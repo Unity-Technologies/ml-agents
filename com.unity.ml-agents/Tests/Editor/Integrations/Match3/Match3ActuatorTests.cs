@@ -163,7 +163,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             var board = gameObj.AddComponent<StringBoard>();
 
             var boardString =
-                @"0105
+@"0105
                   1024
                   0203
                   2022";
