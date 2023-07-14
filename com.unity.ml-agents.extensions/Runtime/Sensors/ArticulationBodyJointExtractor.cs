@@ -53,6 +53,11 @@ namespace Unity.MLAgents.Extensions.Sensors
                 totalCount += body.dofCount;
             }
 
+            if (settings.UseJointVelocities)
+            {
+                totalCount += body.dofCount;
+            }
+
             return totalCount;
         }
 
@@ -95,6 +100,14 @@ namespace Unity.MLAgents.Extensions.Sensors
                 {
                     // take tanh to keep in [-1, 1]
                     writer[currentOffset++] = (float) System.Math.Tanh(m_Body.jointForce[dofIndex]);
+                }
+            }
+
+            if (settings.UseJointVelocities)
+            {
+                for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
+                {
+                    writer[currentOffset++] = m_Body.jointVelocity[dofIndex];
                 }
             }
 

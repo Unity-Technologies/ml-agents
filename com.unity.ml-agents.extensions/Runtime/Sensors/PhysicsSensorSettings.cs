@@ -50,6 +50,11 @@ namespace Unity.MLAgents.Extensions.Sensors
         public bool UseJointForces;
 
         /// <summary>
+        /// Whether to use the joint velocities as observations.
+        /// </summary>
+        public bool UseJointVelocities;
+
+        /// <summary>
         /// Creates a PhysicsSensorSettings with reasonable default values.
         /// </summary>
         /// <returns></returns>
