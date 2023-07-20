@@ -400,20 +400,34 @@ namespace Unity.MLAgents.Sensors
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>
         /// <param name="input">Input defining the rays that will be cast.</param>
+        /// <param name="batched">Use batched raycasts.</param>
         /// <returns>Output struct containing the raycast results.</returns>
-        public static RayPerceptionOutput Perceive(RayPerceptionInput input)
+        public static RayPerceptionOutput Perceive(RayPerceptionInput input, bool batched)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
             output.RayOutputs = new RayPerceptionOutput.RayOutput[input.Angles.Count];
 
-            for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
+            if (batched)
             {
-                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
+                PerceiveBatchedRays(ref output.RayOutputs, input);
+            }
+            else
+            {
+                for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
+                {
+                    output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
+                }
             }
 
             return output;
         }
 
+        /// <summary>
+        /// Evaluate the raycast results of all the rays from the RayPerceptionInput as a batch.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="rayIndex"></param>
+        /// <returns></returns>
         internal static void PerceiveBatchedRays(ref RayPerceptionOutput.RayOutput[] batchedRaycastOutputs, RayPerceptionInput input)
         {
             var numRays = input.Angles.Count;
@@ -445,13 +459,15 @@ namespace Unity.MLAgents.Sensors
                 var queryParameters = QueryParameters.Default;
                 queryParameters.layerMask = input.LayerMask;
 
+                var rayDirectionNormalized = rayDirection.normalized;
+
                 if (scaledCastRadius > 0f)
                 {
-                    spherecastCommands[i] = new SpherecastCommand(startPositionWorld, scaledCastRadius, rayDirection, queryParameters, scaledRayLength);
+                    spherecastCommands[i] = new SpherecastCommand(startPositionWorld, scaledCastRadius, rayDirectionNormalized, queryParameters, scaledRayLength);
                 }
                 else
                 {
-                    raycastCommands[i] = new RaycastCommand(startPositionWorld, rayDirection, queryParameters, scaledRayLength);
+                    raycastCommands[i] = new RaycastCommand(startPositionWorld, rayDirectionNormalized, queryParameters, scaledRayLength);
                 }
 
                 batchedRaycastOutputs[i] = new RayPerceptionOutput.RayOutput
@@ -494,7 +510,7 @@ namespace Unity.MLAgents.Sensors
 
                 // hitFraction = castHit ? (scaledRayLength > 0 ? results[i].distance / scaledRayLength : 0.0f) : 1.0f;
                 // Debug.Log(results[i].distance);
-                hitFraction = castHit ? (scaledRayLength > 0 ? results[i].distance : 0.0f) : 1.0f;
+                hitFraction = castHit ? (scaledRayLength > 0 ? results[i].distance / scaledRayLength : 0.0f) : 1.0f;
                 hitObject = castHit ? results[i].collider.gameObject : null;
 
                 if (castHit)

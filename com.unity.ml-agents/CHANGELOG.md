@@ -10,6 +10,7 @@ and this project adheres to
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - The minimum supported Unity version was updated to 2022.3. (#)
+- Added batched raycast sensor option. (#)
 
 #### ml-agents / ml-agents-envs
 
@@ -47,7 +48,7 @@ versioned under `ml-agents-envs` package in the future (#)
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Added switch to RayPerceptionSensor to allow rays to be ordered left to right. (#26)
 	- Current alternating order is still the default but will be deprecated.
-- Added suppport for enabling/disabling camera object attached to camera sensor in order to improve performance. (#31)
+- Added support for enabling/disabling camera object attached to camera sensor in order to improve performance. (#31)
 
 #### ml-agents / ml-agents-envs
 - Renaming the path that shadows torch with "mlagents/trainers/torch_entities" and update respective imports (#)
