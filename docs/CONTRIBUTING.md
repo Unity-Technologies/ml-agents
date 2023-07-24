@@ -12,7 +12,7 @@ Browse the project's issue tracker or discussions to find an open issue or featu
 ## 4. Make your changes
 Create a new branch for your changes based on the main branch of the ML-Agents repository. Implement your code changes or add new features as necessary. Ensure that your code follows the project's coding style and conventions.
 
-* Example: Let's say you want to add support for a new type of reward function in the ML-Agents framework. You can create a new branch named feature/reward-function to implement this feature. 
+* Example: Let's say you want to add support for a new type of reward function in the ML-Agents framework. You can create a new branch named feature/reward-function to implement this feature.
 
 ## 5. Test your changes
 Run the appropriate tests to ensure your changes work as intended. If necessary, add new tests to cover your code and verify that it doesn't introduce regressions.
