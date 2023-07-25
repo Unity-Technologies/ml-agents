@@ -73,7 +73,7 @@ namespace Unity.MLAgents
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
             string pythonApiVersion
-            )
+        )
         {
             var unityVersion = new Version(unityCommunicationVersion);
             var pythonVersion = new Version(pythonApiVersion);
@@ -131,7 +131,6 @@ namespace Unity.MLAgents
             {
                 if (ex is RpcException rpcException)
                 {
-
                     switch (rpcException.Status.StatusCode)
                     {
                         case StatusCode.Unavailable:
@@ -294,23 +293,23 @@ namespace Unity.MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        NotifyQuitAndShutDownChannel();
-                        return;
-                    }
+                {
+                    NotifyQuitAndShutDownChannel();
+                    return;
+                }
                 case CommandProto.Reset:
+                {
+                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
-                        {
-                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
-                        }
-                        ResetCommandReceived?.Invoke();
-                        return;
+                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
                     }
+                    ResetCommandReceived?.Invoke();
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 

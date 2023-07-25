@@ -237,6 +237,7 @@ namespace Unity.MLAgents.Sensors
                 }
             }
         }
+
 #endif
 
         public void RegisterSensor(GridSensorBase sensor)

@@ -1,4 +1,4 @@
-{% capture editor_version %}2021.3{% endcapture %}
+{% capture editor_version %}2022.3{% endcapture %}
 test_webgl_standalone_{{ editor_version }}:
   name: Test WebGL Standalone {{ editor_version }}
   agent:

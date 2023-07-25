@@ -18,6 +18,5 @@ namespace Unity.MLAgents.Tests.Communicator
             Assert.True(caps.WarnOnPythonMissingBaseRLCapabilities());
             LogAssert.Expect(LogType.Warning, new Regex(".+"));
         }
-
     }
 }

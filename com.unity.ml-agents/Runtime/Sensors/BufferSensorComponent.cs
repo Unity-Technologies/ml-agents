@@ -2,14 +2,12 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
 {
-
     /// <summary>
     /// A SensorComponent that creates a <see cref="BufferSensor"/>.
     /// </summary>
     [AddComponentMenu("ML Agents/Buffer Sensor", (int)MenuGroup.Sensors)]
     public class BufferSensorComponent : SensorComponent
     {
-
         /// <summary>
         /// Name of the generated <see cref="BufferSensor"/> object.
         /// Note that changing this at runtime does not affect how the Agent sorts the sensors.

@@ -32,7 +32,6 @@ namespace Unity.MLAgents.SideChannels
         /// Samples a reset parameter from a MultiRangeUniform distribution.
         /// </summary>
         MultiRangeUniform = 2
-
     }
 
     /// <summary>

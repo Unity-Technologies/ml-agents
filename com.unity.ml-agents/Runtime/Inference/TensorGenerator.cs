@@ -146,7 +146,6 @@ namespace Unity.MLAgents.Inference
                     var obsGenName = TensorNames.GetObservationName(sensorIndex);
                     obsGen.AddSensorIndex(sensorIndex);
                     m_Dict[obsGenName] = obsGen;
-
                 }
             }
         }

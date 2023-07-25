@@ -37,7 +37,6 @@ namespace Unity.MLAgents.Extensions.Input
             continuousActions[0] = value.x;
             continuousActions[1] = value.y;
         }
-
     }
 }
 #endif // MLA_INPUT_SYSTEM

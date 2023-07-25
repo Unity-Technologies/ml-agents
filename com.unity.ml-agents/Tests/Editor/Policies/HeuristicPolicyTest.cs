@@ -38,7 +38,6 @@ namespace Unity.MLAgents.Tests.Policies
             }
         }
 
-
         class ActionClearedAgent : Agent
         {
             public int HeuristicCalls;
@@ -77,7 +76,6 @@ namespace Unity.MLAgents.Tests.Policies
 
             public void ResetData()
             {
-
             }
         }
 

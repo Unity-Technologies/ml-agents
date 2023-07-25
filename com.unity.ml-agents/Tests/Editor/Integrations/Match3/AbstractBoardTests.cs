@@ -75,7 +75,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                     NumSpecialTypes = Mathf.Max(NumSpecialTypes, GetSpecialType(r, c));
                 }
             }
-
         }
 
         public override bool MakeMove(Move m)
@@ -109,7 +108,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             var character = m_Special[m_Board.Length - 1 - row][col];
             return (character - '0');
         }
-
     }
 
     public class AbstractBoardTests
@@ -118,7 +116,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestBoardInit()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -174,7 +172,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             var board = gameObj.AddComponent<StringBoard>();
 
             var boardString =
-                @"0105
+@"0105
                   1024
                   0203
                   2022";

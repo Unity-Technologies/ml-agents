@@ -145,6 +145,20 @@ namespace Unity.MLAgents.Sensors
             set { m_AlternatingRayOrder = value; }
         }
 
+        [HideInInspector, SerializeField]
+        [Tooltip("Enable to use batched raycasts and the jobs system.")]
+        public bool m_UseBatchedRaycasts = false;
+
+        /// <summary>
+        /// Determines whether to use batched raycasts and the jobs system. Default = false.
+        /// </summary>
+        public bool UseBatchedRaycasts
+        {
+            get { return m_UseBatchedRaycasts; }
+            set { m_UseBatchedRaycasts = value; }
+        }
+
+
         /// <summary>
         /// Color to code a ray that hits another object.
         /// </summary>
@@ -289,6 +303,7 @@ namespace Unity.MLAgents.Sensors
             rayPerceptionInput.Transform = transform;
             rayPerceptionInput.CastType = GetCastType();
             rayPerceptionInput.LayerMask = RayLayerMask;
+            rayPerceptionInput.UseBatchedRaycasts = UseBatchedRaycasts;
 
             return rayPerceptionInput;
         }
@@ -334,10 +349,23 @@ namespace Unity.MLAgents.Sensors
                 // and there's no way to turn off the "Tag ... is not defined" error logs.
                 // So just don't use any tags here.
                 rayInput.DetectableTags = null;
-                for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
+                if (m_UseBatchedRaycasts && rayInput.CastType == RayPerceptionCastType.Cast3D)
                 {
-                    var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
-                    DrawRaycastGizmos(rayOutput);
+                    // TODO add call to PerceiveBatchedRays()
+                    var rayOutputs = new RayPerceptionOutput.RayOutput[rayInput.Angles.Count];
+                    RayPerceptionSensor.PerceiveBatchedRays(ref rayOutputs, rayInput);
+                    for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
+                    {
+                        DrawRaycastGizmos(rayOutputs[rayIndex]);
+                    }
+                }
+                else
+                {
+                    for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
+                    {
+                        var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
+                        DrawRaycastGizmos(rayOutput);
+                    }
                 }
             }
         }

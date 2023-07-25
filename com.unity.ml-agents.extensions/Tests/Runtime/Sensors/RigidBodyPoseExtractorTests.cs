@@ -178,8 +178,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var poseExtractor2 = new RigidBodyPoseExtractor(rb1, null, null, bodyPosesEnabled);
             Assert.IsTrue(poseExtractor2.IsPoseEnabled(0));
             Assert.IsFalse(poseExtractor2.IsPoseEnabled(1));
-
-
         }
     }
 }

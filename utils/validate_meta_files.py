@@ -22,13 +22,13 @@ def main():
             "com.unity.ml-agents.extensions/.gitignore",
             "com.unity.ml-agents.extensions/.npmignore",
             "com.unity.ml-agents.extensions/Tests/.tests.json",
+            "com.unity.ml-agents/Samples/3DBall/.sample.json",
         ]
     )
     ignored_dirs = {
         "Documentation~",
         ".github",
         ".yamato",
-        "Samples",
     }
 
     num_matched = 0

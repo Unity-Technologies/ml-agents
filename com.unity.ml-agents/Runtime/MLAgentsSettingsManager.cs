@@ -71,11 +71,13 @@ namespace Unity.MLAgents
             }
             Settings = settings;
         }
+
 #else
         internal static void InitializeInPlayer()
         {
             Settings = Resources.FindObjectsOfTypeAll<MLAgentsSettings>().FirstOrDefault() ?? ScriptableObject.CreateInstance<MLAgentsSettings>();
         }
+
 #endif
 
         internal static void ApplySettings()

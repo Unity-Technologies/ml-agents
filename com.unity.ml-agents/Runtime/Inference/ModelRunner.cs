@@ -77,8 +77,8 @@ namespace Unity.MLAgents.Inference
                 barracudaModel = ModelLoader.Load(model);
 
                 var failedCheck = BarracudaModelParamLoader.CheckModelVersion(
-                        barracudaModel
-                    );
+                    barracudaModel
+                );
                 if (failedCheck != null)
                 {
                     if (failedCheck.CheckType == BarracudaModelParamLoader.FailedCheck.CheckTypeEnum.Error)

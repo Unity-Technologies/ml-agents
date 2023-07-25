@@ -6,7 +6,6 @@ namespace Unity.MLAgents.Tests.Communicator
     [TestFixture]
     public class RpcCommunicatorTests
     {
-
         [Test]
         public void TestCheckCommunicationVersionsAreCompatible()
         {
@@ -36,7 +35,6 @@ namespace Unity.MLAgents.Tests.Communicator
             unityVerStr = "1.15.0";
             Assert.IsFalse(RpcCommunicator.CheckCommunicationVersionsAreCompatible(unityVerStr,
                 pythonVerStr));
-
         }
     }
 }

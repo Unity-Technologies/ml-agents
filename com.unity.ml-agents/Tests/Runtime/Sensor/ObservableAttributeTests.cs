@@ -169,7 +169,6 @@ namespace Unity.MLAgents.Tests
                 get => m_FlagProperty;
                 set => m_FlagProperty = value;
             }
-
         }
 
         [Test]
@@ -244,16 +243,16 @@ namespace Unity.MLAgents.Tests
             var testClass = new TestClass();
             var errors = new List<string>();
             var expectedObsSize = 2 * ( // two fields each of these
-                    1 // int
-                    + 1 // float
-                    + 1 // bool
-                    + 2 // vector2
-                    + 3 // vector3
-                    + 4 // vector4
-                    + 4 // quaternion
-                    + 3 // TestEnum - 3 values
-                    + 3 // TestFlags - 3 values
-                )
+                1     // int
+                + 1     // float
+                + 1     // bool
+                + 2     // vector2
+                + 3     // vector3
+                + 4     // vector4
+                + 4     // quaternion
+                + 3     // TestEnum - 3 values
+                + 3     // TestFlags - 3 values
+            )
                 + 3; // TestEnum with bad value
             Assert.AreEqual(expectedObsSize, ObservableAttribute.GetTotalObservationSize(testClass, false, errors));
             Assert.AreEqual(0, errors.Count);

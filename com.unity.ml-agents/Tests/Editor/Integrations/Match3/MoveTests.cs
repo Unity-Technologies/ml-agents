@@ -60,7 +60,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             {
                 Move.FromPositionAndDirection(row, col, dir, board10x10);
             });
-
         }
     }
 }

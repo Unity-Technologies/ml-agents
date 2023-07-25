@@ -14,14 +14,14 @@ ML-Agents Araç Seti birkaç bileşen içermektedir:
 
 ML-Agents Toolkit 'i kurmanız için gerekenler:
 
-- Unity yükleyin (2021.3 veya daha sonraki bir sürüm)
+- Unity yükleyin (2022.3 veya daha sonraki bir sürüm)
 - Python yükleyin (3.8.13 veya daha yüksek bir sürüm)
 - Bu depoyu klonlayın (İsteğe bağlı)
   - __Not:__ Depoyu klonlamazsanız, örnek ortamlara ve eğitim yapılandırmalarına erişemezsiniz. Ek olarak, [Başlangıç Rehberi](Getting-Started.md) depoyu klonladığınızı varsayar.
 - `com.unity.ml-agents` ML-Agents Unity paketini yükleyin.
 - `mlagents` Python paketini yüklemek.
 
-### **Unity 2021.3** veya Sonraki Bir Sürüm Yükleyin
+### **Unity 2022.3** veya Sonraki Bir Sürüm Yükleyin
 
 [İndir](https://unity3d.com/get-unity/download) ve Unity'i yükle. Şiddetli bir şekilde Unity Hub üzerinden kurmanızı ve bu şekilde birden fazla Unity sürümünü yönetmenizi öneriyoruz.
 

@@ -158,16 +158,20 @@ namespace Unity.MLAgents.Tests
             var sensor_8 = new Sensors.VectorSensor(8, "VectorSensor8");
             var info1 = new AgentInfo();
             info1.episodeId = 1;
-            modelRunner.PutObservations(info1, new[] {
+            modelRunner.PutObservations(info1, new[]
+            {
                 sensor_8,
                 sensor_21_20_3.CreateSensors()[0],
-                sensor_20_22_3.CreateSensors()[0] }.ToList());
+                sensor_20_22_3.CreateSensors()[0]
+            }.ToList());
             var info2 = new AgentInfo();
             info2.episodeId = 2;
-            modelRunner.PutObservations(info2, new[] {
+            modelRunner.PutObservations(info2, new[]
+            {
                 sensor_8,
                 sensor_21_20_3.CreateSensors()[0],
-                sensor_20_22_3.CreateSensors()[0] }.ToList());
+                sensor_20_22_3.CreateSensors()[0]
+            }.ToList());
 
             modelRunner.DecideBatch();
 
@@ -177,7 +181,6 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(actionSpec.NumDiscreteActions, modelRunner.GetAction(1).DiscreteActions.Length);
             modelRunner.Dispose();
         }
-
 
         [Test]
         public void TestRunModel_stochastic()
@@ -205,6 +208,7 @@ namespace Unity.MLAgents.Tests
             Assert.IsFalse(Enumerable.SequenceEqual(stochAction1, stochAction2, new FloatThresholdComparer(0.001f)));
             modelRunner.Dispose();
         }
+
         [Test]
         public void TestRunModel_deterministic()
         {

@@ -73,8 +73,9 @@ namespace Unity.MLAgentsExamples
             var sensor = sensorComponent.RaySensor;
             sensor.Update();
             var outputs = sensor.RayPerceptionOutput;
-            Assert.AreEqual(outputs.RayOutputs.Length, 2*sensorComponent.RaysPerDirection + 1);
+            Assert.AreEqual(outputs.RayOutputs.Length, 2 * sensorComponent.RaysPerDirection + 1);
         }
+
 #endif
 
         /// <summary>

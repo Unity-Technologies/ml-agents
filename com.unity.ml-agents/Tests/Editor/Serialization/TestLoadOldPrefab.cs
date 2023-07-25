@@ -21,6 +21,5 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(bp.BrainParameters.ActionSpec.NumContinuousActions, k_numContinuousActions);
             Assert.AreEqual(bp.BrainParameters.VectorObservationSize, k_numVecObs);
         }
-
     }
 }

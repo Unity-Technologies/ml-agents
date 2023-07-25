@@ -20,6 +20,7 @@ namespace Unity.MLAgents.Tests
                 SideChannelManager.RegisterSideChannel(m_Channel);
             }
         }
+
         [Test]
         public void UniformSamplerTest()
         {

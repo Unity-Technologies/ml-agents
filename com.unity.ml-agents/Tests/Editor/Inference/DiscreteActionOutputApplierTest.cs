@@ -6,7 +6,6 @@ using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Tests
 {
-
     public class DiscreteActionOutputApplierTest
     {
         [Test]

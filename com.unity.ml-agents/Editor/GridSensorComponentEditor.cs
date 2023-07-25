@@ -12,8 +12,8 @@ namespace Unity.MLAgents.Editor
         {
 #if !MLA_UNITY_PHYSICS_MODULE
             EditorGUILayout.HelpBox("The Physics Module is not currently present.  " +
-            "Please add it to your project in order to use the GridSensor APIs in the " +
-            $"{nameof(GridSensorComponent)}", MessageType.Warning);
+                "Please add it to your project in order to use the GridSensor APIs in the " +
+                $"{nameof(GridSensorComponent)}", MessageType.Warning);
 #endif
 
             var so = serializedObject;

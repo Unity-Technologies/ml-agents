@@ -109,7 +109,6 @@ namespace Unity.MLAgents.Editor
 
             var shapeLabel = $"Shapes: {string.Join(",  ", shapesLabels)}";
             EditorGUILayout.LabelField(shapeLabel);
-
         }
 
         public override void OnInspectorGUI()

@@ -110,5 +110,4 @@ namespace Unity.MLAgents.Extensions.Sensors
             return false;
         }
     }
-
 }

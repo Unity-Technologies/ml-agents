@@ -1,5 +1,5 @@
 test_editors:
-  - version: 2021.3
+  - version: 2022.3
 test_platforms:
   - name: win
     type: Unity::VM

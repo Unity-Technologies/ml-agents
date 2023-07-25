@@ -5,7 +5,6 @@ using Unity.MLAgents.Extensions.Sensors;
 
 namespace Unity.MLAgents.Extensions.Tests.Sensors
 {
-
     public static class SensorTestHelper
     {
         public static void CompareObservation(ISensor sensor, float[] expected)
@@ -139,7 +138,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             };
             SensorTestHelper.CompareObservation(sensor, expected);
             Assert.AreEqual(expected.Length, sensor.GetObservationSpec().Shape[0]);
-
         }
     }
 }
