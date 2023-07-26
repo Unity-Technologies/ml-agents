@@ -2,9 +2,9 @@
     "name": "Unity.ML-Agents",
     "rootNamespace": "",
     "references": [
-        "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
-        "Unity.Mathematics"
+        "Unity.Mathematics",
+        "Unity.Sentis"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

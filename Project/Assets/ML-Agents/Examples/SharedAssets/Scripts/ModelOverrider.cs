@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Barracuda;
+using Unity.Sentis;
 using System.IO;
-using Unity.Barracuda.ONNX;
+using Unity.Sentis.ONNX;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 #if UNITY_EDITOR

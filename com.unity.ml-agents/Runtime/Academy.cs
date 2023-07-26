@@ -8,7 +8,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
-using Unity.Barracuda;
+using Unity.Sentis;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -622,9 +622,9 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// Creates or retrieves an existing ModelRunner that uses the same
-        /// NNModel and the InferenceDevice as provided.
+        /// Model and the InferenceDevice as provided.
         /// </summary>
-        /// <param name="model">The NNModel the ModelRunner must use.</param>
+        /// <param name="model">The Model the ModelRunner must use.</param>
         /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
@@ -633,7 +633,7 @@ namespace Unity.MLAgents
         /// Deterministic. </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
+            Model model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)

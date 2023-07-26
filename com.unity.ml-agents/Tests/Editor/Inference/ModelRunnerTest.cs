@@ -3,7 +3,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
@@ -44,14 +44,14 @@ namespace Unity.MLAgents.Tests
         private const string k_deterministic_discreteNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterDiscrete1obs3action_v2_0.onnx";
         private const string k_deterministic_continuousNNPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/deterContinuous2vis8vec2action_v2_0.onnx";
 
-        NNModel hybridONNXModelV2;
-        NNModel continuousONNXModel;
-        NNModel discreteONNXModel;
-        NNModel hybridONNXModel;
-        // NNModel continuousNNModel;
-        // NNModel discreteNNModel;
-        NNModel deterministicDiscreteNNModel;
-        NNModel deterministicContinuousNNModel;
+        Model hybridONNXModelV2;
+        Model continuousONNXModel;
+        Model discreteONNXModel;
+        Model hybridONNXModel;
+        // Model continuousNNModel;
+        // Model discreteNNModel;
+        Model deterministicDiscreteNNModel;
+        Model deterministicContinuousNNModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -74,15 +74,15 @@ namespace Unity.MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            hybridONNXModelV2 = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(NNModel));
+            hybridONNXModelV2 = (Model)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(Model));
 
-            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
-            discreteONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(NNModel));
-            hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
-            // continuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
-            // discreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
-            deterministicDiscreteNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_discreteNNPath, typeof(NNModel));
-            deterministicContinuousNNModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_deterministic_continuousNNPath, typeof(NNModel));
+            continuousONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(Model));
+            discreteONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(Model));
+            hybridONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(Model));
+            // continuousNNModel = (Model)AssetDatabase.LoadAssetAtPath(k_continuousNNPath, typeof(NNModel));
+            // discreteNNModel = (Model)AssetDatabase.LoadAssetAtPath(k_discreteNNPath, typeof(NNModel));
+            deterministicDiscreteNNModel = (Model)AssetDatabase.LoadAssetAtPath(k_deterministic_discreteNNPath, typeof(Model));
+            deterministicContinuousNNModel = (Model)AssetDatabase.LoadAssetAtPath(k_deterministic_continuousNNPath, typeof(Model));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);

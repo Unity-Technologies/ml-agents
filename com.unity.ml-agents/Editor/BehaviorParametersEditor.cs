@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using UnityEditor;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
@@ -112,7 +112,7 @@ namespace Unity.MLAgents.Editor
             // Display all failed checks
             D.logEnabled = false;
             Model barracudaModel = null;
-            var model = (NNModel)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
+            var model = (Model)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
 
             // Grab the sensor components, since we need them to determine the observation sizes.

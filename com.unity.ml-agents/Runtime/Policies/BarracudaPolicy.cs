@@ -1,4 +1,4 @@
-using Unity.Barracuda;
+using Unity.Sentis;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.MLAgents.Actuators;
@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Policies
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
-            NNModel model,
+            Model model,
             InferenceDevice inferenceDevice,
             string behaviorName,
             bool deterministicInference = false

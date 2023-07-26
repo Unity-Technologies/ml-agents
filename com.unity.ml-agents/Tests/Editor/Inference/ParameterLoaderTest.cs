@@ -2,7 +2,7 @@ using System.Linq;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
@@ -89,11 +89,11 @@ namespace Unity.MLAgents.Tests
         // NN model with single action output (deprecated, does not support hybrid action).
         // Same BrainParameters settings as the corresponding ONNX model.
 
-        NNModel rank2ONNXModel;
-        NNModel hybridRecurrV2Model;
-        NNModel continuousONNXModel;
-        NNModel discreteONNXModel;
-        NNModel hybridONNXModel;
+        Model rank2ONNXModel;
+        Model hybridRecurrV2Model;
+        Model continuousONNXModel;
+        Model discreteONNXModel;
+        Model hybridONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
         BufferSensor sensor_23_20;
@@ -148,11 +148,11 @@ namespace Unity.MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
-            discreteONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(NNModel));
-            hybridONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(NNModel));
-            rank2ONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_discrete_ONNX_v2, typeof(NNModel));
-            hybridRecurrV2Model = (NNModel)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(NNModel));
+            continuousONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(Model));
+            discreteONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(Model));
+            hybridONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(Model));
+            rank2ONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_discrete_ONNX_v2, typeof(Model));
+            hybridRecurrV2Model = (Model)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(Model));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);

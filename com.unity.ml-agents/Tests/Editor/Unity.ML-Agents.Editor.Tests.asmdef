@@ -4,13 +4,13 @@
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Unity.Barracuda",
         "Unity.Mathematics",
         "Unity.ML-Agents.CommunicatorObjects",
         "Unity.ML-Agents.Runtime.Utils.Tests",
         "Unity.ML-Agents.Runtime.Sensor.Tests",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Unity.Sentis"
     ],
     "includePlatforms": [
         "Editor"

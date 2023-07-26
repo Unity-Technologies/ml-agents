@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
-        private static HashSet<NNModel> s_SentModels;
+        private static HashSet<Model> s_SentModels;
 #endif
 
         static bool EnableAnalytics()
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Analytics
             }
             if (s_EventRegistered && s_SentModels == null)
             {
-                s_SentModels = new HashSet<NNModel>();
+                s_SentModels = new HashSet<Model>();
             }
 
 #else  // no editor, no analytics
@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Analytics
         /// <returns></returns>
         [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void InferenceModelSet(
-            NNModel nnModel,
+            Model nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,
@@ -144,7 +144,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="actuators"></param>
         /// <returns></returns>
         internal static InferenceEvent GetEventForModel(
-            NNModel nnModel,
+            Model nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,

@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using UnityEngine.Profiling;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Inference
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
 
-        NNModel m_Model;
+        Model m_Model;
         string m_ModelName;
         InferenceDevice m_InferenceDevice;
         IWorker m_Engine;
@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
         public ModelRunner(
-            NNModel model,
+            Model model,
             ActionSpec actionSpec,
             InferenceDevice inferenceDevice,
             int seed = 0,
@@ -128,7 +128,7 @@ namespace Unity.MLAgents.Inference
             get { return m_InferenceDevice; }
         }
 
-        public NNModel Model
+        public Model Model
         {
             get { return m_Model; }
         }
@@ -236,7 +236,7 @@ namespace Unity.MLAgents.Inference
             m_OrderedAgentsRequestingDecisions.Clear();
         }
 
-        public bool HasModel(NNModel other, InferenceDevice otherInferenceDevice)
+        public bool HasModel(Model other, InferenceDevice otherInferenceDevice)
         {
             return m_Model == other && m_InferenceDevice == otherInferenceDevice;
         }

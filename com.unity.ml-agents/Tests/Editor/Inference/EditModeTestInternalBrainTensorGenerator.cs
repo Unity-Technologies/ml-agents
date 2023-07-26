@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Actuators;

@@ -3,10 +3,10 @@
     "rootNamespace": "",
     "references": [
         "Unity.ML-Agents",
-        "Unity.Barracuda",
         "Unity.ML-Agents.CommunicatorObjects",
         "UnityEngine.TestRunner",
-        "UnityEditor.TestRunner"
+        "UnityEditor.TestRunner",
+        "Unity.Sentis"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

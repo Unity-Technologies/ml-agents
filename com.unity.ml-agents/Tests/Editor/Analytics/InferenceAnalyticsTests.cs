@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Analytics;
@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Tests.Analytics
     public class InferenceAnalyticsTests
     {
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
-        NNModel continuousONNXModel;
+        Model continuousONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests.Analytics
                 Academy.Instance.Dispose();
             }
 
-            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
+            continuousONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(Model));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);

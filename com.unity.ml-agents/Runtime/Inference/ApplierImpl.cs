@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Actuators;
-using Unity.Barracuda;
+using Unity.Sentis;
 using UnityEngine;
 
 namespace Unity.MLAgents.Inference

@@ -1,11 +1,11 @@
 {
     "name": "Unity.ML-Agents.Editor",
+    "rootNamespace": "",
     "references": [
         "Unity.ML-Agents",
-        "Unity.Barracuda",
-        "Unity.ML-Agents.CommunicatorObjects"
+        "Unity.ML-Agents.CommunicatorObjects",
+        "Unity.Sentis"
     ],
-    "optionalUnityReferences": [],
     "includePlatforms": [
         "Editor"
     ],
@@ -26,5 +26,6 @@
             "expression": "1.0.0",
             "define": "MLA_UNITY_PHYSICS2D_MODULE"
         }
-    ]
+    ],
+    "noEngineReferences": false
 }

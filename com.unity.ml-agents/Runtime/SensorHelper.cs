@@ -1,4 +1,4 @@
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Sensors

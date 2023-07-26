@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Sensors

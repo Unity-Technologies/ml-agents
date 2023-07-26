@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference.Utils;
 
 namespace Unity.MLAgents.Inference
@@ -32,8 +32,8 @@ namespace Unity.MLAgents.Inference
         static readonly Dictionary<TensorType, DataType> k_DTypeMap =
             new Dictionary<TensorType, DataType>()
             {
-                { TensorType.FloatingPoint, Barracuda.DataType.Float },
-                { TensorType.Integer, Barracuda.DataType.Int }
+                { TensorType.FloatingPoint, Sentis.DataType.Float },
+                { TensorType.Integer, Sentis.DataType.Int }
             };
 
         public string name;

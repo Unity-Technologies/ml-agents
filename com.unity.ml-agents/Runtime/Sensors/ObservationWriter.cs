@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference;
 using UnityEngine;
 
