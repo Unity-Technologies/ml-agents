@@ -97,12 +97,16 @@ class TorchPolicy(Policy):
             0
         )
         with torch.no_grad():
-            action, run_out, memories = self.actor.get_action_and_stats(
+            action, run_out, memories= self.actor.get_action_and_stats(
                 tensor_obs, masks=masks, memories=memories
             )
         run_out["action"] = action.to_action_tuple()
         if "log_probs" in run_out:
             run_out["log_probs"] = run_out["log_probs"].to_log_probs_tuple()
+        if "mus" in run_out:
+            run_out["mus"] = run_out["mus"].to_mus_tuple()
+        if "sigmas" in run_out:
+            run_out["sigmas"] = run_out["sigmas"].to_sigmas_tuple()
         if "entropy" in run_out:
             run_out["entropy"] = ModelUtils.to_numpy(run_out["entropy"])
         if self.use_recurrent:

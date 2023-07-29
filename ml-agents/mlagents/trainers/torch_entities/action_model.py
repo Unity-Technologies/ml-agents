@@ -7,7 +7,7 @@ from mlagents.trainers.torch_entities.distributions import (
     MultiCategoricalDistribution,
 )
 from mlagents.trainers.torch_entities.agent_action import AgentAction
-from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs, ActionMus, ActionSigmas
 from mlagents_envs.base_env import ActionSpec
 
 
@@ -146,9 +146,23 @@ class ActionModel(nn.Module):
         entropies = torch.cat(entropies_list, dim=1)
         return action_log_probs, entropies
 
+    def _get_mus_and_sigmas(self, actions, dists):
+        continuous_mus: Optional[torch.Tensor] = None
+        continuous_sigmas: Optional[torch.Tensor] = None
+        discrete_mus: Optional[torch.Tensor] = None
+        discrete_sigmas: Optional[torch.Tensor] = None
+        all_discrete_mus: Optional[List[torch.Tensor]] = None
+        all_discrete_sigmas: Optional[List[torch.Tensor]] = None
+        if dists.continuous is not None:
+            continuous_mus = dists.continuous.mu()
+            continuous_sigmas = dists.continuous.sigma()
+        action_mus = ActionMus(continuous_mus, discrete_mus, all_discrete_mus)
+        action_sigmas = ActionSigmas(continuous_sigmas, discrete_sigmas, all_discrete_sigmas)
+        return action_mus, action_sigmas
+
     def evaluate(
         self, inputs: torch.Tensor, masks: torch.Tensor, actions: AgentAction
-    ) -> Tuple[ActionLogProbs, torch.Tensor, torch.Tensor]:
+    ) -> Tuple[ActionLogProbs, torch.Tensor, torch.Tensor, torch.Tensor]:
         """
         Given actions and encoding from the network body, gets the distributions and
         computes the log probabilites and entropies.
@@ -159,10 +173,12 @@ class ActionModel(nn.Module):
         """
         dists = self._get_dists(inputs, masks)
         log_probs, entropies = self._get_probs_and_entropy(actions, dists)
-        mus = dists.continuous.deterministic_sample()
+        # mus = dists.continuous.deterministic_sample()
+        mus = dists.continuous.mu()
+        sigmas = dists.continuous.sigma()
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return log_probs, entropy_sum, mus
+        return log_probs, entropy_sum, mus, sigmas
 
     def get_action_out(self, inputs: torch.Tensor, masks: torch.Tensor) -> torch.Tensor:
         """
@@ -215,7 +231,7 @@ class ActionModel(nn.Module):
 
     def forward(
         self, inputs: torch.Tensor, masks: torch.Tensor
-    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor]:
+    ) -> Tuple[AgentAction, ActionLogProbs, torch.Tensor, ActionMus, ActionSigmas]:
         """
         The forward method of this module. Outputs the action, log probs,
         and entropies given the encoding from the network body.
@@ -229,4 +245,5 @@ class ActionModel(nn.Module):
         log_probs, entropies = self._get_probs_and_entropy(actions, dists)
         # Use the sum of entropy across actions, not the mean
         entropy_sum = torch.sum(entropies, dim=1)
-        return (actions, log_probs, entropy_sum)
+        mus, sigmas = self._get_mus_and_sigmas(actions, dists)
+        return actions, log_probs, entropy_sum, mus, sigmas

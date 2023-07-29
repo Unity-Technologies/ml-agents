@@ -24,6 +24,14 @@ class DistInstance(nn.Module, abc.ABC):
         pass
 
     @abc.abstractmethod
+    def mu(self):
+        pass
+
+    @abc.abstractmethod
+    def sigma(self):
+        pass
+
+    @abc.abstractmethod
     def log_prob(self, value: torch.Tensor) -> torch.Tensor:
         """
         Returns the log probabilities of a particular value.
@@ -69,8 +77,14 @@ class GaussianDistInstance(DistInstance):
     def deterministic_sample(self):
         return self.mean
 
+    def mu(self):
+        return self.mean
+
+    def sigma(self):
+        return self.std
+
     def log_prob(self, value):
-        var = self.std**2
+        var = self.std ** 2
         log_scale = torch.log(self.std + EPSILON)
         return (
             -((value - self.mean) ** 2) / (2 * var + EPSILON)
@@ -84,7 +98,7 @@ class GaussianDistInstance(DistInstance):
 
     def entropy(self):
         return torch.mean(
-            0.5 * torch.log(2 * math.pi * math.e * self.std**2 + EPSILON),
+            0.5 * torch.log(2 * math.pi * math.e * self.std ** 2 + EPSILON),
             dim=1,
             keepdim=True,
         )  # Use equivalent behavior to TF

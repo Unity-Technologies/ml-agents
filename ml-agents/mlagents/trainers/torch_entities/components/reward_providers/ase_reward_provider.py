@@ -110,7 +110,7 @@ class DiscriminatorEncoder(nn.Module):
             self.encoder_network_body = self.discriminator_network_body
         else:
             self.encoder_network_body = NetworkBody(observation_specs, network_settings)
-        if network_settings.bottleneck:
+        if network_settings.bottleneck_last:
             self.encoding_size = network_settings.hidden_units // 2
         else:
             self.encoding_size = network_settings.hidden_units

@@ -8,7 +8,7 @@ from mlagents.trainers.buffer import (
     BufferKey,
 )
 from mlagents_envs.base_env import ActionTuple
-from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple, MusTuple, SigmasTuple
 
 
 class AgentStatus(NamedTuple):
@@ -35,6 +35,8 @@ class AgentExperience(NamedTuple):
     done: bool
     action: ActionTuple
     action_probs: LogProbsTuple
+    action_mus: MusTuple
+    action_sigmas: SigmasTuple
     action_mask: np.ndarray
     prev_action: np.ndarray
     interrupted: bool
@@ -266,6 +268,14 @@ class Trajectory(NamedTuple):
             )
             agent_buffer_trajectory[BufferKey.DISCRETE_LOG_PROBS].append(
                 exp.action_probs.discrete
+            )
+
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_MUS].append(
+                exp.action_mus.continuous
+            )
+
+            agent_buffer_trajectory[BufferKey.CONTINUOUS_SIGMAS].append(
+                exp.action_sigmas.continuous
             )
 
             # Store action masks if necessary. Note that 1 means active, while

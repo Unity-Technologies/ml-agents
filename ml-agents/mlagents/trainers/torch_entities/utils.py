@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple, Dict
+from typing import List, Optional, Tuple, Dict, Any
 from mlagents.torch_utils import torch, nn
 from mlagents.trainers.torch_entities.layers import LinearEncoder, Initialization
 import numpy as np
@@ -67,6 +67,8 @@ class ModelUtils:
             initial_value: float,
             min_value: float,
             max_step: int,
+            desired_kl: float = None,
+            max_value: float = None
         ):
             """
             Object that represnets value of a parameter that should be decayed, assuming it is a function of
@@ -80,10 +82,14 @@ class ModelUtils:
             """
             self.schedule = schedule
             self.initial_value = initial_value
+            self.current_value = initial_value
             self.min_value = min_value
             self.max_step = max_step
+            self.desired_kl = desired_kl
+            self.max_value = max_value
 
-        def get_value(self, global_step: int) -> float:
+        def get_value(self, global_step: int, mus: Any = None, old_mus: Any = None,
+                      sigmas: Any = None, old_sigmas: Any = None) -> float:
             """
             Get the value at a given global step.
             :param global_step: Step count.
@@ -95,6 +101,10 @@ class ModelUtils:
                 return ModelUtils.polynomial_decay(
                     self.initial_value, self.min_value, self.max_step, global_step
                 )
+            elif self.schedule == ScheduleType.ADAPTIVE:
+                self.current_value = ModelUtils.adaptive_decay(self.current_value, self.desired_kl, self.max_value,
+                                                               self.min_value, mus, old_mus, sigmas, old_sigmas)
+                return self.current_value
             else:
                 raise UnityTrainerException(f"The schedule {self.schedule} is invalid.")
 
@@ -120,6 +130,37 @@ class ModelUtils:
             1 - float(global_step) / max_step
         ) ** (power) + min_value
         return decayed_value
+
+    @staticmethod
+    def adaptive_decay(
+        current_value: float,
+        desired_kl: float,
+        max_value: float,
+        min_value: float,
+        mus: Any = None,
+        old_mus: Any = None,
+        sigmas: Any = None,
+        old_sigmas: Any = None
+    ):
+        if mus is None or old_mus is None or sigmas is None or old_sigmas is None:
+            return current_value
+        decayed_value = current_value
+        kl_star = desired_kl
+        with torch.no_grad():
+            kl = torch.sum(torch.log(sigmas / old_sigmas + 1.e-5) + (torch.square(old_sigmas) + torch.square(old_mus - mus)) / (2.0 * torch.square(sigmas)) - 0.5, dim=-1)
+            kl_mean = kl.mean()
+        # print(f"KL: {kl_mean}")
+        if kl_mean > kl_star * 2.0:
+            decayed_value = max(min_value, decayed_value / 1.5)
+        elif kl_star / 2.0 > kl_mean > 0.0:
+            decayed_value = min(max_value, 1.5 * decayed_value)
+        return decayed_value
+
+    @staticmethod
+    def convert_to_action_probs(actions):
+        mean = torch.mean(actions, dim=0)
+        std = torch.std(actions, dim=0)
+        return (1 / torch.sqrt(2 * np.pi * torch.square(std))) * torch.exp(-torch.square(actions - mean) / 2 * torch.square(std))
 
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
@@ -268,7 +309,7 @@ class ModelUtils:
         """
         action_idx = [0] + list(np.cumsum(action_size))
         branched_logits = [
-            concatenated_logits[:, action_idx[i] : action_idx[i + 1]]
+            concatenated_logits[:, action_idx[i]: action_idx[i + 1]]
             for i in range(len(action_size))
         ]
         return branched_logits

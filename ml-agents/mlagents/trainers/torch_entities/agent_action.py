@@ -80,6 +80,25 @@ class AgentAction(NamedTuple):
         return AgentAction(continuous, discrete)
 
     @staticmethod
+    def from_buffer_next(buff: AgentBuffer) -> "AgentAction":
+        """
+        A static method that accesses continuous and discrete action fields in an AgentBuffer
+        and constructs the corresponding AgentAction from the retrieved np arrays.
+        """
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None  # type: ignore
+        if BufferKey.NEXT_CONT_ACTION in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.NEXT_CONT_ACTION])
+        if BufferKey.NEXT_DISC_ACTION in buff:
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff[BufferKey.NEXT_DISC_ACTION], dtype=torch.long
+            )
+            discrete = [
+                discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
+            ]
+        return AgentAction(continuous, discrete)
+
+    @staticmethod
     def _group_agent_action_from_buffer(
         buff: AgentBuffer, cont_action_key: BufferKey, disc_action_key: BufferKey
     ) -> List["AgentAction"]:

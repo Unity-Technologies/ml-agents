@@ -15,7 +15,7 @@ from mlagents.trainers.settings import (
 )
 from mlagents.trainers.torch_entities.networks import ValueNetwork
 from mlagents.trainers.torch_entities.agent_action import AgentAction
-from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs
+from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs, ActionMus, ActionSigmas
 from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
 
@@ -66,8 +66,10 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.decay_learning_rate = ModelUtils.DecayedValue(
             self.hyperparameters.learning_rate_schedule,
             self.hyperparameters.learning_rate,
-            1e-10,
+            self.hyperparameters.lr_min,
             self.trainer_settings.max_steps,
+            self.hyperparameters.desired_lr_kl,
+            self.hyperparameters.lr_max,
         )
         self.decay_epsilon = ModelUtils.DecayedValue(
             self.hyperparameters.epsilon_schedule,
@@ -93,6 +95,8 @@ class TorchPPOOptimizer(TorchOptimizer):
         self.stream_names = list(self.reward_signals.keys())
 
         self.loss = torch.zeros(1, device=default_device())
+
+        self.last_actions = None
 
     @property
     def critic(self):
@@ -155,6 +159,8 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         log_probs = run_out["log_probs"]
         entropy = run_out["entropy"]
+        mus = run_out["mus"]
+        sigmas = run_out["sigmas"]
 
         values, _ = self.critic.critic_pass(
             current_obs,
@@ -162,6 +168,8 @@ class TorchPPOOptimizer(TorchOptimizer):
             sequence_length=self.policy.sequence_length,
         )
         old_log_probs = ActionLogProbs.from_buffer(batch).flatten()
+        old_mus = ActionMus.from_buffer(batch).flatten()
+        old_sigmas = ActionSigmas.from_buffer(batch).flatten()
         log_probs = log_probs.flatten()
         loss_masks = ModelUtils.list_to_tensor(batch[BufferKey.MASKS], dtype=torch.bool)
         value_loss = ModelUtils.trust_region_value_loss(
@@ -179,6 +187,11 @@ class TorchPPOOptimizer(TorchOptimizer):
             + 0.5 * value_loss
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
+
+        # adaptive learning rate
+        if self.hyperparameters.learning_rate_schedule == ScheduleType.ADAPTIVE:
+            decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step(), mus, old_mus, sigmas,
+                                                          old_sigmas)
 
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)

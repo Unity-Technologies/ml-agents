@@ -27,7 +27,7 @@ from mlagents.trainers.behavior_id_utils import (
     GlobalAgentId,
     GlobalGroupId,
 )
-from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple
+from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple, MusTuple, SigmasTuple
 from mlagents.trainers.torch_entities.utils import ModelUtils
 
 T = TypeVar("T")
@@ -251,6 +251,24 @@ class AgentProcessor:
             except KeyError:
                 log_probs_tuple = LogProbsTuple.empty_log_probs()
 
+            try:
+                stored_action_mus = stored_take_action_outputs["mus"]
+                if not isinstance(stored_action_mus, MusTuple):
+                    stored_action_mus = stored_action_mus.to_mus_tuple()
+                mus_tuple = MusTuple(continuous=stored_action_mus.continuous[idx],
+                                     discrete=stored_action_mus.discrete[idx])
+            except KeyError:
+                mus_tuple = MusTuple.empty_mus()
+
+            try:
+                stored_action_sigmas = stored_take_action_outputs["sigmas"]
+                if not isinstance(stored_action_sigmas, SigmasTuple):
+                    stored_action_sigmas = stored_action_sigmas.to_sigmas_tuple()
+                sigmas_tuple = SigmasTuple(continuous=stored_action_sigmas.continuous[idx],
+                                           discrete=stored_action_sigmas.discrete[idx])
+            except KeyError:
+                sigmas_tuple = MusTuple.empty_mus()
+
             action_mask = stored_decision_step.action_mask
             prev_action = self.policy.retrieve_previous_action([global_agent_id])[0, :]
 
@@ -266,6 +284,8 @@ class AgentProcessor:
                 done=done,
                 action=action_tuple,
                 action_probs=log_probs_tuple,
+                action_mus=mus_tuple,
+                action_sigmas=sigmas_tuple,
                 action_mask=action_mask,
                 prev_action=prev_action,
                 interrupted=interrupted,

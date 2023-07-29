@@ -107,7 +107,7 @@ namespace Unity.MLAgents.Extensions.Sensors
             {
                 for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
                 {
-                    writer[currentOffset++] = m_Body.jointVelocity[dofIndex];
+                    writer[currentOffset++] = (float) System.Math.Tanh(m_Body.jointVelocity[dofIndex]);
                 }
             }
 

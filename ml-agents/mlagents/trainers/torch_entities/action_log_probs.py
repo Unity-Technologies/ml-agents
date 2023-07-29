@@ -7,6 +7,26 @@ from mlagents.trainers.buffer import AgentBuffer, BufferKey
 from mlagents_envs.base_env import _ActionTupleBase
 
 
+class MusTuple(_ActionTupleBase):
+    @property
+    def discrete_dtype(self) -> np.dtype:
+        return np.float32
+
+    @staticmethod
+    def empty_mus() -> "MusTuple":
+        return MusTuple()
+
+
+class SigmasTuple(_ActionTupleBase):
+    @property
+    def discrete_dtype(self) -> np.dtype:
+        return np.float32
+
+    @staticmethod
+    def empty_sigmas() -> "SigmasTuple":
+        return SigmasTuple()
+
+
 class LogProbsTuple(_ActionTupleBase):
     """
     An object whose fields correspond to the log probs of actions of different types.
@@ -116,3 +136,145 @@ class ActionLogProbs(NamedTuple):
                     discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
                 ]
         return ActionLogProbs(continuous, discrete, None)
+
+
+class ActionMus(NamedTuple):
+    continuous_tensor: torch.Tensor
+    discrete_list: Optional[List[torch.Tensor]]
+    all_discrete_list: Optional[List[torch.Tensor]]
+
+    @property
+    def discrete_tensor(self):
+        """
+        Returns the discrete log probs list as a stacked tensor
+        """
+        return torch.stack(self.discrete_list, dim=-1)
+
+    @property
+    def all_discrete_tensor(self):
+        """
+        Returns the discrete log probs of each branch as a tensor
+        """
+        return torch.cat(self.all_discrete_list, dim=1)
+
+    def to_mus_tuple(self) -> MusTuple:
+        mus_tuple = MusTuple()
+        if self.continuous_tensor is not None:
+            continuous = ModelUtils.to_numpy(self.continuous_tensor)
+            mus_tuple.add_continuous(continuous)
+        if self.discrete_list is not None:
+            discrete = ModelUtils.to_numpy(self.discrete_tensor)
+            mus_tuple.add_discrete(discrete)
+        return mus_tuple
+
+    def _to_tensor_list(self) -> List[torch.Tensor]:
+        """
+        Returns the tensors in the ActionLogProbs as a flat List of torch Tensors. This
+        is private and serves as a utility for self.flatten()
+        """
+        tensor_list: List[torch.Tensor] = []
+        if self.continuous_tensor is not None:
+            tensor_list.append(self.continuous_tensor)
+        if self.discrete_list is not None:
+            tensor_list.append(self.discrete_tensor)
+        return tensor_list
+
+    def flatten(self) -> torch.Tensor:
+        """
+        A utility method that returns all log probs in ActionLogProbs as a flattened tensor.
+        This is useful for algorithms like PPO which can treat all log probs in the same way.
+        """
+        return torch.cat(self._to_tensor_list(), dim=1)
+
+    @staticmethod
+    def from_buffer(buff: AgentBuffer) -> "ActionMus":
+        """
+        A static method that accesses continuous and discrete log probs fields in an AgentBuffer
+        and constructs the corresponding ActionLogProbs from the retrieved np arrays.
+        """
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None  # type: ignore
+
+        if BufferKey.CONTINUOUS_MUS in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_MUS])
+        if BufferKey.DISCRETE_MUS in buff:
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff[BufferKey.DISCRETE_MUS]
+            )
+            # This will keep discrete_list = None which enables flatten()
+            if discrete_tensor.shape[1] > 0:
+                discrete = [
+                    discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
+                ]
+        return ActionMus(continuous, discrete, None)
+
+
+class ActionSigmas(NamedTuple):
+    continuous_tensor: torch.Tensor
+    discrete_list: Optional[List[torch.Tensor]]
+    all_discrete_list: Optional[List[torch.Tensor]]
+
+    @property
+    def discrete_tensor(self):
+        """
+        Returns the discrete log probs list as a stacked tensor
+        """
+        return torch.stack(self.discrete_list, dim=-1)
+
+    @property
+    def all_discrete_tensor(self):
+        """
+        Returns the discrete log probs of each branch as a tensor
+        """
+        return torch.cat(self.all_discrete_list, dim=1)
+
+    def to_sigmas_tuple(self) -> SigmasTuple:
+        sigmas_tuple = SigmasTuple()
+        if self.continuous_tensor is not None:
+            continuous = ModelUtils.to_numpy(self.continuous_tensor)
+            sigmas_tuple.add_continuous(continuous)
+        if self.discrete_list is not None:
+            discrete = ModelUtils.to_numpy(self.discrete_tensor)
+            sigmas_tuple.add_discrete(discrete)
+        return sigmas_tuple
+
+    def _to_tensor_list(self) -> List[torch.Tensor]:
+        """
+        Returns the tensors in the ActionLogProbs as a flat List of torch Tensors. This
+        is private and serves as a utility for self.flatten()
+        """
+        tensor_list: List[torch.Tensor] = []
+        if self.continuous_tensor is not None:
+            tensor_list.append(self.continuous_tensor)
+        if self.discrete_list is not None:
+            tensor_list.append(self.discrete_tensor)
+        return tensor_list
+
+    def flatten(self) -> torch.Tensor:
+        """
+        A utility method that returns all log probs in ActionLogProbs as a flattened tensor.
+        This is useful for algorithms like PPO which can treat all log probs in the same way.
+        """
+        return torch.cat(self._to_tensor_list(), dim=1)
+
+    @staticmethod
+    def from_buffer(buff: AgentBuffer) -> "ActionSigmas":
+        """
+        A static method that accesses continuous and discrete log probs fields in an AgentBuffer
+        and constructs the corresponding ActionLogProbs from the retrieved np arrays.
+        """
+        continuous: torch.Tensor = None
+        discrete: List[torch.Tensor] = None  # type: ignore
+
+        if BufferKey.CONTINUOUS_SIGMAS in buff:
+            continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_SIGMAS])
+        if BufferKey.DISCRETE_SIGMAS in buff:
+            discrete_tensor = ModelUtils.list_to_tensor(
+                buff[BufferKey.DISCRETE_SIGMAS]
+            )
+            # This will keep discrete_list = None which enables flatten()
+            if discrete_tensor.shape[1] > 0:
+                discrete = [
+                    discrete_tensor[..., i] for i in range(discrete_tensor.shape[-1])
+                ]
+        return ActionSigmas(continuous, discrete, None)

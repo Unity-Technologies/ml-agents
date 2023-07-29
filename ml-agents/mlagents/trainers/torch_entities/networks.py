@@ -223,6 +223,7 @@ class NetworkBody(nn.Module):
                 network_settings.num_layers,
                 self.h_size,
                 network_settings.bottleneck,
+                network_settings.bottleneck_last
             )
 
         if self.use_lstm:
@@ -484,6 +485,8 @@ class ValueNetwork(nn.Module, Critic):
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
         elif network_settings.bottleneck:
+            encoding_size = network_settings.hidden_units // (2 ** (network_settings.num_layers - 1))
+        elif network_settings.bottleneck_last:
             encoding_size = network_settings.hidden_units // 2
         else:
             encoding_size = network_settings.hidden_units
@@ -630,6 +633,8 @@ class SimpleActor(nn.Module, Actor):
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
         elif network_settings.bottleneck:
+            self.encoding_size = network_settings.hidden_units // (2 ** (network_settings.num_layers - 1))
+        elif network_settings.bottleneck_last:
             self.encoding_size = network_settings.hidden_units // 2
         else:
             self.encoding_size = network_settings.hidden_units
@@ -663,7 +668,7 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies, mus, sigmas = self.action_model(encoding, masks)
         run_out = {}
         # This is the clipped action which is not saved to the buffer
         # but is exclusively sent to the environment.
@@ -672,6 +677,8 @@ class SimpleActor(nn.Module, Actor):
         )
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies
+        run_out["mus"] = mus
+        run_out["sigmas"] = sigmas
 
         return action, run_out, memories
 
@@ -703,11 +710,12 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
 
-        log_probs, entropies, mus = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies, mus, sigmas = self.action_model.evaluate(encoding, masks, actions)
         run_out = {}
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies
         run_out["mus"] = mus
+        run_out["sigmas"] = sigmas
 
         return run_out
 
