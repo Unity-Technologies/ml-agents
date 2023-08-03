@@ -36,6 +36,17 @@ theme:
   palette:
     primary: blue
     accent: light blue
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 extra_css:
   - extra.css
 markdown_extensions:
