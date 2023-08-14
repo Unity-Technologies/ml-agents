@@ -95,14 +95,14 @@ namespace Unity.MLAgents.Policies
         }
 
         [HideInInspector, SerializeField]
-        Model m_Model;
+        ModelAsset m_Model;
 
         /// <summary>
         /// The neural network model used when in inference mode.
         /// This should not be set at runtime; use <see cref="Agent.SetModel(string,Model,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
-        public Model Model
+        public ModelAsset Model
         {
             get { return m_Model; }
             set { m_Model = value; UpdateAgentPolicy(); }

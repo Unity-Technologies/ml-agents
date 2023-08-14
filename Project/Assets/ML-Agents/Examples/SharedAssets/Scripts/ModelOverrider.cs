@@ -13,7 +13,7 @@ using UnityEditor;
 namespace Unity.MLAgentsExamples
 {
     /// <summary>
-    /// Utility class to allow the NNModel file for an agent to be overriden during inference.
+    /// Utility class to allow the ModelAsset file for an agent to be overriden during inference.
     /// This is used internally to validate the file after training is done.
     /// The behavior name to override and file path are specified on the commandline, e.g.
     /// player.exe --mlagents-override-model-directory /path/to/models
@@ -44,8 +44,8 @@ namespace Unity.MLAgentsExamples
 
         private List<string> m_OverrideExtensions = new List<string>();
 
-        // Cached loaded NNModels, with the behavior name as the key.
-        Dictionary<string, NNModel> m_CachedModels = new Dictionary<string, NNModel>();
+        // Cached loaded ModelAssets, with the behavior name as the key.
+        Dictionary<string, ModelAsset> m_CachedModels = new Dictionary<string, ModelAsset>();
 
 
         // Max episodes to run. Only used if > 0
@@ -236,7 +236,7 @@ namespace Unity.MLAgentsExamples
             m_NumSteps++;
         }
 
-        public NNModel GetModelForBehaviorName(string behaviorName)
+        public ModelAsset GetModelForBehaviorName(string behaviorName)
         {
             if (m_CachedModels.ContainsKey(behaviorName))
             {
@@ -281,43 +281,43 @@ namespace Unity.MLAgentsExamples
                 return null;
             }
 
-            var asset = isOnnx ? LoadOnnxModel(rawModel) : LoadBarracudaModel(rawModel);
+            var asset = isOnnx ? LoadOnnxModel(rawModel) : LoadSentisModel(rawModel);
             asset.name = assetName;
             m_CachedModels[behaviorName] = asset;
             return asset;
         }
 
-        NNModel LoadBarracudaModel(byte[] rawModel)
+        ModelAsset LoadSentisModel(byte[] rawModel)
         {
-            var asset = ScriptableObject.CreateInstance<NNModel>();
-            asset.modelData = ScriptableObject.CreateInstance<NNModelData>();
-            asset.modelData.Value = rawModel;
+            var asset = ScriptableObject.CreateInstance<ModelAsset>();
+            asset.modelAssetData = ScriptableObject.CreateInstance<ModelAssetData>();
+            asset.modelAssetData.value = rawModel;
             return asset;
         }
 
-        NNModel LoadOnnxModel(byte[] rawModel)
+        ModelAsset LoadOnnxModel(byte[] rawModel)
         {
             var converter = new ONNXModelConverter(true);
             var onnxModel = converter.Convert(rawModel);
 
-            NNModelData assetData = ScriptableObject.CreateInstance<NNModelData>();
+            ModelAssetData assetData = ScriptableObject.CreateInstance<ModelAssetData>();
             using (var memoryStream = new MemoryStream())
             using (var writer = new BinaryWriter(memoryStream))
             {
                 ModelWriter.Save(writer, onnxModel);
-                assetData.Value = memoryStream.ToArray();
+                assetData.value = memoryStream.ToArray();
             }
             assetData.name = "Data";
             assetData.hideFlags = HideFlags.HideInHierarchy;
 
-            var asset = ScriptableObject.CreateInstance<NNModel>();
-            asset.modelData = assetData;
+            var asset = ScriptableObject.CreateInstance<ModelAsset>();
+            asset.modelAssetData = assetData;
             return asset;
         }
 
 
         /// <summary>
-        /// Load the NNModel file from the specified path, and give it to the attached agent.
+        /// Load the ModelAsset file from the specified path, and give it to the attached agent.
         /// </summary>
         void OverrideModel()
         {
@@ -326,17 +326,17 @@ namespace Unity.MLAgentsExamples
 
             m_Agent.LazyInitialize();
 
-            NNModel nnModel = null;
+            ModelAsset ModelAsset = null;
             try
             {
-                nnModel = GetModelForBehaviorName(OriginalBehaviorName);
+                ModelAsset = GetModelForBehaviorName(OriginalBehaviorName);
             }
             catch (Exception e)
             {
                 overrideError = $"Exception calling GetModelForBehaviorName: {e}";
             }
 
-            if (nnModel == null)
+            if (ModelAsset == null)
             {
                 if (string.IsNullOrEmpty(overrideError))
                 {
@@ -348,11 +348,11 @@ namespace Unity.MLAgentsExamples
             }
             else
             {
-                var modelName = nnModel != null ? nnModel.name : "<null>";
+                var modelName = ModelAsset != null ? ModelAsset.name : "<null>";
                 Debug.Log($"Overriding behavior {OriginalBehaviorName} for agent with model {modelName}");
                 try
                 {
-                    m_Agent.SetModel(GetOverrideBehaviorName(OriginalBehaviorName), nnModel);
+                    m_Agent.SetModel(GetOverrideBehaviorName(OriginalBehaviorName), ModelAsset);
                     overrideOk = true;
                 }
                 catch (Exception e)

@@ -653,7 +653,7 @@ namespace Unity.MLAgents
         /// will be run.</param>
         public void SetModel(
             string behaviorName,
-            Model model,
+            ModelAsset model,
             InferenceDevice inferenceDevice = InferenceDevice.Default)
         {
             if (behaviorName == m_PolicyFactory.BehaviorName &&

@@ -1,6 +1,8 @@
 #if UNITY_CLOUD_BUILD
 using UnityEditor;
 
+// TODO do we still need this?
+
 public class DisableBurstFromMenu
 {
     /// This method is needed to disable Burst compilation on windows for our cloudbuild tests.

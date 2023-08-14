@@ -83,7 +83,7 @@ namespace Unity.MLAgents.Policies
         public BarracudaPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
-            Model model,
+            ModelAsset model,
             InferenceDevice inferenceDevice,
             string behaviorName,
             bool deterministicInference = false

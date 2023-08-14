@@ -23,7 +23,7 @@ namespace Unity.MLAgents.Inference
         TensorGenerator m_TensorGenerator;
         TensorApplier m_TensorApplier;
 
-        Model m_Model;
+        ModelAsset m_Model;
         string m_ModelName;
         InferenceDevice m_InferenceDevice;
         IWorker m_Engine;
@@ -54,7 +54,7 @@ namespace Unity.MLAgents.Inference
         /// <exception cref="UnityAgentsException">Throws an error when the model is null
         /// </exception>
         public ModelRunner(
-            Model model,
+            ModelAsset model,
             ActionSpec actionSpec,
             InferenceDevice inferenceDevice,
             int seed = 0,
@@ -72,7 +72,8 @@ namespace Unity.MLAgents.Inference
                 m_Verbose = true;
 #endif
 
-                D.logEnabled = m_Verbose;
+                // TODO check w/Alex about verbosity level
+                // D.logEnabled = m_Verbose;
 
                 barracudaModel = ModelLoader.Load(model);
 
@@ -87,21 +88,22 @@ namespace Unity.MLAgents.Inference
                     }
                 }
 
-                WorkerFactory.Type executionDevice;
+                BackendType executionDevice;
+                // WorkerFactory.Type executionDevice;
                 switch (inferenceDevice)
                 {
                     case InferenceDevice.ComputeShader:
-                        executionDevice = WorkerFactory.Type.ComputeShader;
+                        executionDevice = BackendType.GPUCompute;
                         break;
                     case InferenceDevice.PixelShader:
-                        executionDevice = WorkerFactory.Type.PixelShader;
+                        executionDevice = BackendType.GPUPixel;
                         break;
                     case InferenceDevice.Burst:
-                        executionDevice = WorkerFactory.Type.CSharpBurst;
+                        executionDevice = BackendType.CPU;
                         break;
                     case InferenceDevice.Default: // fallthrough
                     default:
-                        executionDevice = WorkerFactory.Type.CSharpBurst;
+                        executionDevice = BackendType.CPU;
                         break;
                 }
                 m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
@@ -128,7 +130,7 @@ namespace Unity.MLAgents.Inference
             get { return m_InferenceDevice; }
         }
 
-        public Model Model
+        public ModelAsset Model
         {
             get { return m_Model; }
         }
@@ -236,7 +238,7 @@ namespace Unity.MLAgents.Inference
             m_OrderedAgentsRequestingDecisions.Clear();
         }
 
-        public bool HasModel(Model other, InferenceDevice otherInferenceDevice)
+        public bool HasModel(ModelAsset other, InferenceDevice otherInferenceDevice)
         {
             return m_Model == other && m_InferenceDevice == otherInferenceDevice;
         }

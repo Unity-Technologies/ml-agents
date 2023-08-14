@@ -633,7 +633,7 @@ namespace Unity.MLAgents
         /// Deterministic. </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            Model model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
+            ModelAsset model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)
