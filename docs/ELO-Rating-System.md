@@ -18,7 +18,7 @@ Simply explained, we face a zero-sum game **when one agent gets +1.0, its oppone
 
 For instance, Tennis is a zero-sum game: if you win the point you get +1.0 and your opponent gets -1.0 reward.
 
-## How works the ELO Rating System
+## How does the ELO Rating System work?
 - Each player **has an initial ELO score**. It's defined in the `initial_elo` trainer config hyperparameter.
 
 - The **difference in rating between the two players** serves as the predictor of the outcomes of a match.
