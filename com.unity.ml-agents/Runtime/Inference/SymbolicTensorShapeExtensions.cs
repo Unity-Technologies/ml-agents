@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Inference
         {
             var shapeOut = new long[shape.rank];
 
-            Assert.IsTrue(shape.IsFullyKnown(), "ValueError: Cannot convert tensor of unknown rank to TensorShape");
+            Assert.IsTrue(shape.hasRank, "ValueError: Cannot convert tensor of unknown rank to TensorShape");
 
             for (var i = 0; i < shape.rank; i++)
             {

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Unity.Sentis;
 using Unity.MLAgents.Inference.Utils;
+using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Inference
 {
@@ -73,8 +74,18 @@ namespace Unity.MLAgents.Inference
 
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
-            tensor.data = allocator.Alloc(
-                new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType);
+            // tensor.data = allocator.Alloc(
+                // new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType, DeviceType.CPU);
+            var newTensorShape = new TensorShape(tensor.shape.Select(i => (int)i).ToArray());
+            switch (tensor.DType)
+            {
+                case DataType.Float:
+                    tensor.data = TensorFloat.Zeros(newTensorShape);
+                    break;
+                case DataType.Int:
+                    tensor.data = TensorInt.Zeros(newTensorShape);
+                    break;
+            }
         }
 
         internal static long[] TensorShapeFromBarracuda(TensorShape src)
@@ -97,7 +108,8 @@ namespace Unity.MLAgents.Inference
             var shape = TensorShapeFromBarracuda(src.shape);
             return new TensorProxy
             {
-                name = nameOverride ?? src.name,
+                // name = nameOverride ?? src.name,
+                name = nameOverride ?? "",
                 valueType = src.dataType == DataType.Float ? TensorProxy.TensorType.FloatingPoint : TensorProxy.TensorType.Integer,
                 shape = shape,
                 data = src

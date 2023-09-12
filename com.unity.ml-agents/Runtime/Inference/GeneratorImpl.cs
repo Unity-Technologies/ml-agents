@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Inference
         public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
         {
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType);
+            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType, DeviceType.CPU);
             ((TensorInt)tensorProxy.data)[0] = batchSize;
         }
     }
@@ -67,7 +67,7 @@ namespace Unity.MLAgents.Inference
         {
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType);
+            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType, DeviceType.CPU);
             ((TensorInt)tensorProxy.data)[0] = 1;
         }
     }

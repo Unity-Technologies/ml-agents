@@ -281,7 +281,8 @@ namespace Unity.MLAgentsExamples
                 return null;
             }
 
-            var asset = isOnnx ? LoadOnnxModel(rawModel) : LoadSentisModel(rawModel);
+            // var asset = isOnnx ? LoadOnnxModel(rawModel) : LoadSentisModel(rawModel);
+            var asset = LoadSentisModel(rawModel);
             asset.name = assetName;
             m_CachedModels[behaviorName] = asset;
             return asset;
@@ -295,25 +296,26 @@ namespace Unity.MLAgentsExamples
             return asset;
         }
 
-        ModelAsset LoadOnnxModel(byte[] rawModel)
-        {
-            var converter = new ONNXModelConverter(true);
-            var onnxModel = converter.Convert(rawModel);
-
-            ModelAssetData assetData = ScriptableObject.CreateInstance<ModelAssetData>();
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new BinaryWriter(memoryStream))
-            {
-                ModelWriter.Save(writer, onnxModel);
-                assetData.value = memoryStream.ToArray();
-            }
-            assetData.name = "Data";
-            assetData.hideFlags = HideFlags.HideInHierarchy;
-
-            var asset = ScriptableObject.CreateInstance<ModelAsset>();
-            asset.modelAssetData = assetData;
-            return asset;
-        }
+        // TODO this should probably be deprecated since Sentis does not support direct conversion from byte arrays
+        // ModelAsset LoadOnnxModel(byte[] rawModel)
+        // {
+        //     var converter = new ONNXModelConverter(true);
+        //     var onnxModel = converter.Convert(rawModel);
+        //
+        //     ModelAssetData assetData = ScriptableObject.CreateInstance<ModelAssetData>();
+        //     using (var memoryStream = new MemoryStream())
+        //     using (var writer = new BinaryWriter(memoryStream))
+        //     {
+        //         ModelWriter.Save(writer, onnxModel);
+        //         assetData.value = memoryStream.ToArray();
+        //     }
+        //     assetData.name = "Data";
+        //     assetData.hideFlags = HideFlags.HideInHierarchy;
+        //
+        //     var asset = ScriptableObject.CreateInstance<ModelAsset>();
+        //     asset.modelAssetData = assetData;
+        //     return asset;
+        // }
 
 
         /// <summary>
