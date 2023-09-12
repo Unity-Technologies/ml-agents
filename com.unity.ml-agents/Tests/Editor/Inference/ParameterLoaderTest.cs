@@ -89,11 +89,11 @@ namespace Unity.MLAgents.Tests
         // NN model with single action output (deprecated, does not support hybrid action).
         // Same BrainParameters settings as the corresponding ONNX model.
 
-        Model rank2ONNXModel;
-        Model hybridRecurrV2Model;
-        Model continuousONNXModel;
-        Model discreteONNXModel;
-        Model hybridONNXModel;
+        ModelAsset rank2ONNXModel;
+        ModelAsset hybridRecurrV2Model;
+        ModelAsset continuousONNXModel;
+        ModelAsset discreteONNXModel;
+        ModelAsset hybridONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
         BufferSensor sensor_23_20;
@@ -148,11 +148,11 @@ namespace Unity.MLAgents.Tests
         [SetUp]
         public void SetUp()
         {
-            continuousONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(Model));
-            discreteONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(Model));
-            hybridONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(Model));
-            rank2ONNXModel = (Model)AssetDatabase.LoadAssetAtPath(k_discrete_ONNX_v2, typeof(Model));
-            hybridRecurrV2Model = (Model)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(Model));
+            continuousONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(ModelAsset));
+            discreteONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_discreteONNXPath, typeof(ModelAsset));
+            hybridONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_hybridONNXPath, typeof(ModelAsset));
+            rank2ONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_discrete_ONNX_v2, typeof(ModelAsset));
+            hybridRecurrV2Model = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_hybrid_ONNX_recurr_v2, typeof(ModelAsset));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);

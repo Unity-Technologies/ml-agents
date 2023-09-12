@@ -110,7 +110,7 @@ namespace Unity.MLAgents.Editor
                 m_TimeSinceModelReload = 0;
             }
             // Display all failed checks
-            D.logEnabled = false;
+            // D.logEnabled = false;
             Model barracudaModel = null;
             var model = (ModelAsset)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;

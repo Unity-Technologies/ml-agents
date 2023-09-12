@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Tests
             bp.BehaviorType = BehaviorType.Default;
             Assert.IsTrue(bp.IsInHeuristicMode());
 
-            bp.Model = ScriptableObject.CreateInstance<Model>();
+            bp.Model = ScriptableObject.CreateInstance<ModelAsset>();
             Assert.IsFalse(bp.IsInHeuristicMode());
         }
 
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Tests
                 bp.BehaviorType = BehaviorType.InferenceOnly;
             });
 
-            bp.Model = AssetDatabase.LoadAssetAtPath<Model>(k_continuousONNXPath);
+            bp.Model = AssetDatabase.LoadAssetAtPath<ModelAsset>(k_continuousONNXPath);
             LogAssert.Expect(LogType.Log, $"OnPolicyChanged:{false}");
 
             bp.BehaviorType = BehaviorType.HeuristicOnly;
