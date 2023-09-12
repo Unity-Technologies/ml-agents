@@ -58,7 +58,12 @@ namespace Unity.MLAgents.Inference
 
         public long Channels
         {
-            get { return shape.Length >= 4 ? shape[^3] : shape.Length == 3 ? shape[^2] : shape.Length == 2 ? shape[^1] : 1; }
+            get
+            {
+                return shape.Length >= 4 ? shape[^3] :
+                    shape.Length == 3 ? shape[^2] :
+                    shape.Length == 2 ? shape[^1] : 1;
+            }
         }
     }
 
@@ -75,17 +80,25 @@ namespace Unity.MLAgents.Inference
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
             // tensor.data = allocator.Alloc(
-                // new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType, DeviceType.CPU);
+            // new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType, DeviceType.CPU);
             var newTensorShape = new TensorShape(tensor.shape.Select(i => (int)i).ToArray());
-            switch (tensor.DType)
+            tensor.data = CreateEmptyTensor(newTensorShape, tensor.DType);
+        }
+
+        public static Tensor CreateEmptyTensor(TensorShape shape, DataType dataType)
+        {
+            Tensor tensor = null;
+            switch (dataType)
             {
                 case DataType.Float:
-                    tensor.data = TensorFloat.Zeros(newTensorShape);
+                    tensor = TensorFloat.Zeros(shape);
                     break;
                 case DataType.Int:
-                    tensor.data = TensorInt.Zeros(newTensorShape);
+                    tensor = TensorInt.Zeros(shape);
                     break;
             }
+
+            return tensor;
         }
 
         internal static long[] TensorShapeFromBarracuda(TensorShape src)
@@ -110,7 +123,9 @@ namespace Unity.MLAgents.Inference
             {
                 // name = nameOverride ?? src.name,
                 name = nameOverride ?? "",
-                valueType = src.dataType == DataType.Float ? TensorProxy.TensorType.FloatingPoint : TensorProxy.TensorType.Integer,
+                valueType = src.dataType == DataType.Float
+                    ? TensorProxy.TensorType.FloatingPoint
+                    : TensorProxy.TensorType.Integer,
                 shape = shape,
                 data = src
             };
