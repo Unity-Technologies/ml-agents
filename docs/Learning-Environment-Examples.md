@@ -1,6 +1,6 @@
 # Example Learning Environments
 
-<img src="../images/example-envs.png" align="middle" width="3000"/>
+<img src="./images/example-envs.png" align="middle" width="3000"/>
 
 The Unity ML-Agents Toolkit includes an expanding set of example environments
 that highlight the various features of the toolkit. These environments can also
