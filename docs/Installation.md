@@ -101,11 +101,11 @@ project by:
 1. Select the `package.json` file.
 
 <p align="center">
-  <img src="../images/unity_package_manager_window.png"
+  <img src="./images/unity_package_manager_window.png"
        alt="Unity Package Manager Window"
        height="150"
        border="10" />
-  <img src="../images/unity_package_json.png"
+  <img src="./images/unity_package_json.png"
      alt="package.json"
      height="150"
      border="10" />
