@@ -9,7 +9,9 @@ namespace Unity.MLAgents.Inference
         {
             var shapeOut = new long[shape.rank];
 
-            Assert.IsTrue(shape.hasRank, "ValueError: Cannot convert tensor of unknown rank to TensorShape");
+            // TODO investigate how critical this is and if we can just remove this assert. the alternative is to expose this again in Sentis.
+
+            // Assert.IsTrue(shape.hasRank, "ValueError: Cannot convert tensor of unknown rank to TensorShape");
 
             for (var i = 0; i < shape.rank; i++)
             {

@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests.Analytics
                 Academy.Instance.Dispose();
             }
 
-            continuousONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(Model));
+            continuousONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(ModelAsset));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
