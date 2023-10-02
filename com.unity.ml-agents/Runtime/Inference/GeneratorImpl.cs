@@ -43,9 +43,13 @@ namespace Unity.MLAgents.Inference
         public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
         {
             tensorProxy.data?.Dispose();
-            // tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType, DeviceType.CPU);
             var newTensorShape = new TensorShape(1, 1);
             tensorProxy.data = TensorUtils.CreateEmptyTensor(newTensorShape, tensorProxy.DType);
+            if (tensorProxy.Device == DeviceType.GPU)
+            {
+                tensorProxy.data.MakeReadable();
+            }
+
             ((TensorInt)tensorProxy.data)[0] = batchSize;
         }
     }
@@ -69,7 +73,6 @@ namespace Unity.MLAgents.Inference
         {
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
-            // tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1), tensorProxy.DType, DeviceType.CPU);
             var newTensorShape = new TensorShape(1, 1);
             tensorProxy.data = TensorUtils.CreateEmptyTensor(newTensorShape, tensorProxy.DType);
             ((TensorInt)tensorProxy.data)[0] = 1;
@@ -116,6 +119,11 @@ namespace Unity.MLAgents.Inference
 
                 if (!m_Memories.TryGetValue(info.episodeId, out memory))
                 {
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
+                    }
+
                     for (var j = 0; j < memorySize; j++)
                     {
                         ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = 0;
@@ -130,6 +138,11 @@ namespace Unity.MLAgents.Inference
                     if (j >= memory.Count)
                     {
                         break;
+                    }
+
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
                     }
 
                     ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = memory[j];
@@ -205,6 +218,11 @@ namespace Unity.MLAgents.Inference
                 var infoSensorPair = infos[infoIndex];
                 var agentInfo = infoSensorPair.agentInfo;
                 var maskList = agentInfo.discreteActionMasks;
+                if (tensorProxy.Device == DeviceType.GPU)
+                {
+                    tensorProxy.data.MakeReadable();
+                }
+
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;

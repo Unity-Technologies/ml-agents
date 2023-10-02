@@ -4,6 +4,7 @@ using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Actuators;
 using Unity.Sentis;
 using UnityEngine;
+using DeviceType = Unity.Sentis.DeviceType;
 
 namespace Unity.MLAgents.Inference
 {
@@ -35,12 +36,19 @@ namespace Unity.MLAgents.Inference
                         actionBuffer = new ActionBuffers(m_ActionSpec);
                         lastActions[agentId] = actionBuffer;
                     }
+
                     var continuousBuffer = actionBuffer.ContinuousActions;
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
+                    }
+
                     for (var j = 0; j < actionSize; j++)
                     {
                         continuousBuffer[j] = ((TensorFloat)tensorProxy.data)[agentIndex, j];
                     }
                 }
+
                 agentIndex++;
             }
         }
@@ -52,7 +60,6 @@ namespace Unity.MLAgents.Inference
     internal class DiscreteActionOutputApplier : TensorApplier.IApplier
     {
         readonly ActionSpec m_ActionSpec;
-
 
         public DiscreteActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
         {
@@ -74,17 +81,24 @@ namespace Unity.MLAgents.Inference
                         actionBuffer = new ActionBuffers(m_ActionSpec);
                         lastActions[agentId] = actionBuffer;
                     }
+
                     var discreteBuffer = actionBuffer.DiscreteActions;
+
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
+                    }
+
                     for (var j = 0; j < actionSize; j++)
                     {
                         discreteBuffer[j] = ((TensorInt)tensorProxy.data)[agentIndex, j];
                     }
                 }
+
                 agentIndex++;
             }
         }
     }
-
 
     /// <summary>
     /// The Applier for the Discrete Action output tensor. Uses multinomial to sample discrete
@@ -97,7 +111,6 @@ namespace Unity.MLAgents.Inference
         readonly ActionSpec m_ActionSpec;
         readonly int[] m_StartActionIndices;
         readonly float[] m_CdfBuffer;
-
 
         public LegacyDiscreteActionOutputApplier(ActionSpec actionSpec, int seed, ITensorAllocator allocator)
         {
@@ -126,6 +139,7 @@ namespace Unity.MLAgents.Inference
                         actionBuffer = new ActionBuffers(m_ActionSpec);
                         lastActions[agentId] = actionBuffer;
                     }
+
                     var discreteBuffer = actionBuffer.DiscreteActions;
                     for (var j = 0; j < m_ActionSize.Length; j++)
                     {
@@ -133,6 +147,7 @@ namespace Unity.MLAgents.Inference
                         discreteBuffer[j] = m_Multinomial.Sample(m_CdfBuffer, m_ActionSize[j]);
                     }
                 }
+
                 agentIndex++;
             }
         }
@@ -150,6 +165,11 @@ namespace Unity.MLAgents.Inference
         {
             // Find the class maximum
             var maxProb = float.NegativeInfinity;
+            if (logProbs.Device == DeviceType.GPU)
+            {
+                logProbs.data.MakeReadable();
+            }
+
             for (var cls = 0; cls < branchSize; ++cls)
             {
                 maxProb = Mathf.Max(((TensorFloat)logProbs.data)[batch, cls + channelOffset], maxProb);
@@ -157,6 +177,11 @@ namespace Unity.MLAgents.Inference
 
             // Sum the log probabilities and compute CDF
             var sumProb = 0.0f;
+            if (logProbs.Device == DeviceType.GPU)
+            {
+                logProbs.data.MakeReadable();
+            }
+
             for (var cls = 0; cls < branchSize; ++cls)
             {
                 sumProb += Mathf.Exp(((TensorFloat)logProbs.data)[batch, cls + channelOffset] - maxProb);
@@ -192,6 +217,11 @@ namespace Unity.MLAgents.Inference
                 {
                     memory = new List<float>();
                     memory.AddRange(Enumerable.Repeat(0f, memorySize));
+                }
+
+                if (tensorProxy.Device == DeviceType.GPU)
+                {
+                    tensorProxy.data.MakeReadable();
                 }
 
                 for (var j = 0; j < memorySize; j++)

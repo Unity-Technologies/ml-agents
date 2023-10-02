@@ -45,6 +45,7 @@ namespace Unity.MLAgents.Inference
         public DataType DType => k_DTypeMap[valueType];
         public long[] shape;
         public Tensor data;
+        public DeviceType Device => data.tensorOnDevice.deviceType;
 
         public long Height
         {
@@ -65,6 +66,11 @@ namespace Unity.MLAgents.Inference
                     shape.Length == 2 ? shape[^1] : 1;
             }
         }
+
+        ~TensorProxy()
+        {
+            data?.Dispose();
+        }
     }
 
     internal static class TensorUtils
@@ -79,8 +85,6 @@ namespace Unity.MLAgents.Inference
 
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
-            // tensor.data = allocator.Alloc(
-            // new TensorShape(tensor.shape.Select(i => (int)i).ToArray()), tensor.DType, DeviceType.CPU);
             var newTensorShape = new TensorShape(tensor.shape.Select(i => (int)i).ToArray());
             tensor.data = CreateEmptyTensor(newTensorShape, tensor.DType);
         }

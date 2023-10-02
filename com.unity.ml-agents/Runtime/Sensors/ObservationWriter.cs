@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.Sentis;
 using Unity.MLAgents.Inference;
 using UnityEngine;
+using DeviceType = Unity.Sentis.DeviceType;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -88,6 +89,11 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
                     ((TensorFloat)m_Proxy.data)[m_Batch, index + m_Offset] = value;
                 }
             }
@@ -103,9 +109,13 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
                     ((TensorFloat)m_Proxy.data)[m_Batch, ch, w] = value;
                 }
-
             }
         }
 
@@ -125,10 +135,12 @@ namespace Unity.MLAgents.Sensors
                     {
                         throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.Height() - 1}]");
                     }
+
                     if (w < 0 || w >= m_TensorShape.Width())
                     {
                         throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.Width() - 1}]");
                     }
+
                     if (ch < 0 || ch >= m_TensorShape.Channels())
                     {
                         throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.Channels() - 1}]");
@@ -139,6 +151,11 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
                     ((TensorFloat)m_Proxy.data)[m_Batch, ch + m_Offset, h, w] = value;
                 }
             }
@@ -161,6 +178,11 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
                 for (var index = 0; index < data.Count; index++)
                 {
                     var val = data[index];
@@ -184,6 +206,11 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
@@ -206,6 +233,11 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
@@ -229,6 +261,11 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = quat.x;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = quat.y;
                 ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = quat.z;
@@ -265,6 +302,7 @@ namespace Unity.MLAgents.Sensors
             {
                 return obsWriter.WriteTextureRGB24(texture, grayScale);
             }
+
             var width = texture.width;
             var height = texture.height;
 

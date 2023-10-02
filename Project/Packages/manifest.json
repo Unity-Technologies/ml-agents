@@ -23,6 +23,5 @@
     "com.unity.ml-agents",
     "com.unity.ml-agents.extensions",
     "com.unity.inputsystem"
-  ],
-  "registry": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
+  ]
 }
