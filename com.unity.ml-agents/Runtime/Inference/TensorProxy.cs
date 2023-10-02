@@ -49,21 +49,21 @@ namespace Unity.MLAgents.Inference
 
         public long Height
         {
-            get { return shape.Length >= 4 ? shape[^ 2] : 1; }
+            get { return shape.Length >= 4 ? shape[^2] : 1; }
         }
 
         public long Width
         {
-            get { return shape.Length >= 3 ? shape[^ 1] : 1; }
+            get { return shape.Length >= 3 ? shape[^1] : 1; }
         }
 
         public long Channels
         {
             get
             {
-                return shape.Length >= 4 ? shape[^ 3] :
-                    shape.Length == 3 ? shape[^ 2] :
-                    shape.Length == 2 ? shape[^ 1] : 1;
+                return shape.Length >= 4 ? shape[^3] :
+                    shape.Length == 3 ? shape[^2] :
+                    shape.Length == 2 ? shape[^1] : 1;
             }
         }
 

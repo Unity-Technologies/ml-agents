@@ -387,7 +387,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             while (stack.Count != 0)
             {
-                var(current, depth) = stack.Pop();
+                var (current, depth) = stack.Pop();
                 var obj = GetObjectAt(current);
 
                 var node = new DisplayNode

@@ -116,7 +116,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()

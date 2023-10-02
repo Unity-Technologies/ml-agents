@@ -85,10 +85,10 @@ namespace Unity.MLAgents.Sensors.Reflection
         }
 
         /// <inheritdoc/>
-        public void Update() {}
+        public void Update() { }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()

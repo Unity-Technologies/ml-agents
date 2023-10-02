@@ -56,8 +56,8 @@ namespace Unity.MLAgents.Tests
             return new byte[0];
         }
 
-        public void Update() {}
-        public void Reset() {}
+        public void Update() { }
+        public void Reset() { }
 
         public CompressionSpec GetCompressionSpec()
         {
@@ -416,7 +416,7 @@ namespace Unity.MLAgents.Tests
             brainParameters.VectorObservationSize = 9; // Invalid observation
             var errors = SentisModelParamLoader.CheckModel(
                 model, brainParameters,
-                new ISensor[] {}, new ActuatorComponent[0]
+                new ISensor[] { }, new ActuatorComponent[0]
             );
             Assert.Greater(errors.Count(), 0);
 
@@ -424,7 +424,7 @@ namespace Unity.MLAgents.Tests
             brainParameters.NumStackedVectorObservations = 2;// Invalid stacking
             errors = SentisModelParamLoader.CheckModel(
                 model, brainParameters,
-                new ISensor[] {}, new ActuatorComponent[0]
+                new ISensor[] { }, new ActuatorComponent[0]
             );
             Assert.Greater(errors.Count(), 0);
         }

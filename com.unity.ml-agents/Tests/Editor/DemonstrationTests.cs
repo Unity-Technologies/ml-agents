@@ -122,11 +122,11 @@ namespace Unity.MLAgents.Tests
             var agentSendInfo = typeof(Agent).GetMethod("SendInfo",
                 BindingFlags.Instance | BindingFlags.NonPublic);
 
-            agentEnableMethod?.Invoke(agent1, new object[] {});
+            agentEnableMethod?.Invoke(agent1, new object[] { });
 
             // Step the agent
             agent1.RequestDecision();
-            agentSendInfo?.Invoke(agent1, new object[] {});
+            agentSendInfo?.Invoke(agent1, new object[] { });
 
             demoRecorder.Close();
 

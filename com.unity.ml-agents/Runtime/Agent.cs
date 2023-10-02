@@ -91,7 +91,7 @@ namespace Unity.MLAgents
                                    ActionSpec actionSpec,
                                    string name = "VectorActuator"
         ) : base(actionReceiver, heuristicProvider, actionSpec, name)
-        {}
+        { }
 
         public override BuiltInActuatorType GetBuiltInActuatorType()
         {
@@ -904,7 +904,7 @@ namespace Unity.MLAgents
         ///
         /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
         /// </remarks>
-        public virtual void Initialize() {}
+        public virtual void Initialize() { }
 
         /// <summary>
         /// Implement <see cref="Heuristic"/> to choose an action for this agent using a custom heuristic.
@@ -1241,7 +1241,7 @@ namespace Unity.MLAgents
         /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Learning-Environment-Design-Agents.md#actions
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
-        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask) {}
+        public virtual void WriteDiscreteActionMask(IDiscreteActionMask actionMask) { }
 
         /// <summary>
         /// Implement `OnActionReceived()` to specify agent behavior at every step, based
@@ -1309,7 +1309,7 @@ namespace Unity.MLAgents
         /// <param name="actions">
         /// Struct containing the buffers of actions to be executed at this step.
         /// </param>
-        public virtual void OnActionReceived(ActionBuffers actions) {}
+        public virtual void OnActionReceived(ActionBuffers actions) { }
 
         /// <summary>
         /// Implement `OnEpisodeBegin()` to set up an Agent instance at the beginning
@@ -1317,7 +1317,7 @@ namespace Unity.MLAgents
         /// </summary>
         /// <seealso cref="Initialize"/>
         /// <seealso cref="EndEpisode"/>
-        public virtual void OnEpisodeBegin() {}
+        public virtual void OnEpisodeBegin() { }
 
         /// <summary>
         /// Gets the most recent ActionBuffer for this agent.

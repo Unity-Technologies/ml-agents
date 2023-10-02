@@ -47,8 +47,8 @@ namespace Unity.MLAgents.Tests
             return this.ObservationSize();
         }
 
-        public void Update() {}
-        public void Reset() {}
+        public void Update() { }
+        public void Reset() { }
 
         public CompressionSpec GetCompressionSpec()
         {

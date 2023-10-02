@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Sensors
             var startPositionWorld = Transform.TransformPoint(startPositionLocal);
             var endPositionWorld = Transform.TransformPoint(endPositionLocal);
 
-            return (StartPositionWorld : startPositionWorld, EndPositionWorld : endPositionWorld);
+            return (StartPositionWorld: startPositionWorld, EndPositionWorld: endPositionWorld);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace Unity.MLAgents.Sensors
                 // For each ray, write the information to the observation buffer
                 for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
                 {
-                    m_RayPerceptionOutput.RayOutputs ? [rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
+                    m_RayPerceptionOutput.RayOutputs?[rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
 
                 // Finally, add the observations to the ObservationWriter
@@ -364,7 +364,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() {}
+        public void Reset() { }
 
         /// <inheritdoc/>
         public ObservationSpec GetObservationSpec()

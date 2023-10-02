@@ -41,7 +41,7 @@ namespace Unity.MLAgents.Tests
             gridSize,
             detectableTags,
             compression)
-        {}
+        { }
 
         protected override int GetCellObservationSize()
         {

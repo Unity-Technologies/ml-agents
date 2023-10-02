@@ -28,7 +28,7 @@ namespace Unity.MLAgents.Actuators
         public VectorActuator(IActionReceiver actionReceiver,
                               ActionSpec actionSpec,
                               string name = "VectorActuator")
-            : this(actionReceiver, actionReceiver as IHeuristicProvider, actionSpec, name) {}
+            : this(actionReceiver, actionReceiver as IHeuristicProvider, actionSpec, name) { }
 
         /// <summary>
         /// Create a VectorActuator that forwards to the provided IActionReceiver.
