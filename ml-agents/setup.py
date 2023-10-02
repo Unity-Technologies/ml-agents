@@ -70,7 +70,7 @@ setup(
         # https://github.com/pytorch/pytorch/issues/50014
         "torch>=1.8.0,<=1.11.0;(platform_system!='Windows' and python_version>='3.9')",
         "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
-        "tensorboard>=2.14",
+        "tensorboard>=1.15",
         # cattrs 1.1.0 dropped support for python 3.6, but 1.0.0 doesn't work for python 3.9
         # Since there's no version that supports both, we have to draw the line somwehere.
         "cattrs<1.1.0; python_version<'3.8'",
@@ -80,7 +80,7 @@ setup(
         'pypiwin32==223;platform_system=="Windows"',
         "importlib_metadata==4.4; python_version<'3.8'",
     ],
-    python_requires=">=3.8.13,<=3.10.13",
+    python_requires=">=3.8.13,<=3.10.12",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
