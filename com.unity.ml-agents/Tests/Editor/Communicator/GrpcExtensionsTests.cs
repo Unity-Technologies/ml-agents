@@ -172,9 +172,9 @@ namespace Unity.MLAgents.Tests
                 return new byte[] { 13, 37 };
             }
 
-            public void Update() { }
+            public void Update() {}
 
-            public void Reset() { }
+            public void Reset() {}
 
             public CompressionSpec GetCompressionSpec()
             {
@@ -205,7 +205,7 @@ namespace Unity.MLAgents.Tests
                 (new[] {4, 4, 4}, SensorCompressionType.PNG, true, true), // Supported compressed
             };
 
-            foreach (var (shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
+            foreach (var(shape, compressionType, supportsMultiPngObs, expectCompressed) in variants)
             {
                 var inplaceShape = InplaceArray<int>.FromList(shape);
                 var dummySensor = new DummySensor();

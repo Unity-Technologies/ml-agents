@@ -8,7 +8,7 @@ namespace Unity.MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorApplier
     {
-        class TestAgent : Agent { }
+        class TestAgent : Agent {}
 
         [Test]
         public void Construction()

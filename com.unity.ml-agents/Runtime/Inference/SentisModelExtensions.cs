@@ -2,20 +2,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Sentis;
-using FailedCheck = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck;
+using FailedCheck = Unity.MLAgents.Inference.SentisModelParamLoader.FailedCheck;
 
 namespace Unity.MLAgents.Inference
 {
     /// <summary>
-    /// Barracuda Model extension methods.
+    /// Sentis Model extension methods.
     /// </summary>
-    internal static class BarracudaModelExtensions
+    internal static class SentisModelExtensions
     {
         /// <summary>
         /// Get array of the input tensor names of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>Array of the input tensor names of the model</returns>
         public static string[] GetInputNames(this Model model)
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Inference
         /// Get the version of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>The api version of the model</returns>
         public static int GetVersion(this Model model)
@@ -65,7 +65,7 @@ namespace Unity.MLAgents.Inference
         /// Generates the Tensor inputs that are expected to be present in the Model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>TensorProxy IEnumerable with the expected Tensor inputs.</returns>
         public static IReadOnlyList<TensorProxy> GetInputTensors(this Model model)
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Inference
         /// Get number of visual observation inputs to the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>Number of visual observation inputs to the model</returns>
         public static int GetNumVisualInputs(this Model model)
@@ -119,7 +119,7 @@ namespace Unity.MLAgents.Inference
         /// Get array of the output tensor names of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
@@ -158,7 +158,7 @@ namespace Unity.MLAgents.Inference
         /// Check if the model has continuous action outputs.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
@@ -184,7 +184,7 @@ namespace Unity.MLAgents.Inference
         /// Continuous action output size of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>Size of continuous action output.</returns>
         public static int ContinuousOutputSize(this Model model)
@@ -206,7 +206,7 @@ namespace Unity.MLAgents.Inference
         /// Continuous action output tensor name of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
@@ -226,7 +226,7 @@ namespace Unity.MLAgents.Inference
         /// Check if the model has discrete action outputs.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
@@ -242,11 +242,11 @@ namespace Unity.MLAgents.Inference
             else
             {
                 bool hasStochasticOutput = !deterministicInference &&
-                                           model.outputs.Contains(TensorNames.DiscreteActionOutput);
+                    model.outputs.Contains(TensorNames.DiscreteActionOutput);
                 bool hasDeterministicOutput = deterministicInference &&
-                                              model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
+                    model.outputs.Contains(TensorNames.DeterministicDiscreteActionOutput);
                 return (hasStochasticOutput || hasDeterministicOutput) &&
-                       model.DiscreteOutputSize() > 0;
+                    model.DiscreteOutputSize() > 0;
             }
         }
 
@@ -262,7 +262,7 @@ namespace Unity.MLAgents.Inference
         /// will be the same on both 1.X and 2.X.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>Size of discrete action output.</returns>
         public static int DiscreteOutputSize(this Model model)
@@ -290,7 +290,7 @@ namespace Unity.MLAgents.Inference
         /// Discrete action output tensor name of the model.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
@@ -314,7 +314,7 @@ namespace Unity.MLAgents.Inference
         /// If not, the model should be handled differently and use the deprecated fields.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <returns>True if the model supports both continuous and discrete actions.</returns>
         public static bool SupportsContinuousAndDiscrete(this Model model)
@@ -328,7 +328,7 @@ namespace Unity.MLAgents.Inference
         /// Check if the model contains all the expected input/output tensors.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters.
+        /// The Sentis engine model for loading static parameters.
         /// </param>
         /// <param name="failedModelChecks">Output list of failure messages</param>
         ///<param name="deterministicInference"> Inference only: set to true if the action selection from model should be

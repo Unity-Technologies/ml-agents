@@ -31,7 +31,7 @@ class MultiHeadAttention(torch.nn.Module):
     def __init__(self, embedding_size: int, num_heads: int):
         """
         Multi Head Attention module. We do not use the regular Torch implementation since
-        Barracuda does not support some operators it uses.
+        Sentis does not support some operators it uses.
         Takes as input to the forward method 3 tensors:
         - query: of dimensions (batch_size, number_of_queries, embedding_size)
         - key: of dimensions (batch_size, number_of_keys, embedding_size)
@@ -72,7 +72,7 @@ class MultiHeadAttention(torch.nn.Module):
         query = query.permute([0, 2, 1, 3])  # (b, h, n_q, emb / h)
         # The next few lines are equivalent to : key.permute([0, 2, 3, 1])
         # This is a hack, ONNX will compress two permute operations and
-        # Barracuda will not like seeing `permute([0,2,3,1])`
+        # Sentis will not like seeing `permute([0,2,3,1])`
         key = key.permute([0, 2, 1, 3])  # (b, h, emb / h, n_k)
         key -= 1
         key += 1
@@ -120,7 +120,7 @@ class EntityEmbedding(torch.nn.Module):
         :param x_self_size: Size of "self" entity.
         :param entity_size: Size of other entities.
         :param entity_num_max_elements: Maximum elements for a given entity, None for unrestricted.
-            Needs to be assigned in order for model to be exportable to ONNX and Barracuda.
+            Needs to be assigned in order for model to be exportable to ONNX and Sentis.
         :param embedding_size: Embedding size for the entity encoder.
         :param concat_self: Whether to concatenate x_self to entities. Set True for ego-centric
             self-attention.
@@ -193,7 +193,7 @@ class ResidualSelfAttention(torch.nn.Module):
         :param entity_num_max_elements: A List of ints representing the maximum number
             of elements in an entity sequence. Should be of length num_entities. Pass None to
             not restrict the number of elements; however, this will make the module
-            unexportable to ONNX/Barracuda.
+            unexportable to ONNX/Sentis.
         :param num_heads: Number of heads for Multi Head Self-Attention
         """
         super().__init__()

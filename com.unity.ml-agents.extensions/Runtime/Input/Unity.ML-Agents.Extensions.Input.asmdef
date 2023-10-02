@@ -2,7 +2,7 @@
     "name": "Unity.ML-Agents.Extensions.Input",
     "references": [
         "Unity.ML-Agents",
-        "Unity.Barracuda",
+        "Unity.Sentis",
         "Unity.InputSystem"
     ],
     "includePlatforms": [],

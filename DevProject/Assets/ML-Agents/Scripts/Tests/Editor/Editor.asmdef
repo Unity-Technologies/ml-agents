@@ -3,7 +3,7 @@
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Unity.Barracuda",
+        "Unity.Sentis",
         "Unity.ML-Agents.CommunicatorObjects",
         "Unity.PerformanceTesting"
     ],

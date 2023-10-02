@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Tests
             {
                 get
                 {
-                    return (Action<Agent>)typeof(Agent).GetField("OnAgentDisabled", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+                    return (Action<Agent>) typeof(Agent).GetField("OnAgentDisabled", BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
                 }
             }
         }

@@ -5,7 +5,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
-using CheckTypeEnum = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck.CheckTypeEnum;
+using CheckTypeEnum = Unity.MLAgents.Inference.SentisModelParamLoader.FailedCheck.CheckTypeEnum;
 
 namespace Unity.MLAgents.Editor
 {
@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Editor
             }
             // Display all failed checks
             // D.logEnabled = false;
-            Model barracudaModel = null;
+            Model sentisModel = null;
             var model = (ModelAsset)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
 
@@ -152,12 +152,12 @@ namespace Unity.MLAgents.Editor
             var brainParameters = behaviorParameters.BrainParameters;
             if (model != null)
             {
-                barracudaModel = ModelLoader.Load(model);
+                sentisModel = ModelLoader.Load(model);
             }
             if (brainParameters != null)
             {
-                var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensors, actuatorComponents,
+                var failedChecks = Inference.SentisModelParamLoader.CheckModel(
+                    sentisModel, brainParameters, sensors, actuatorComponents,
                     observableAttributeSensorTotalSize, behaviorParameters.BehaviorType, behaviorParameters.DeterministicInference
                 );
                 foreach (var check in failedChecks)

@@ -79,7 +79,7 @@ namespace Unity.MLAgents
         public double TotalSeconds
         {
             get { return CurrentTicks * s_TicksToSeconds; }
-            set { }   // Serialization needs this, but unused.
+            set {}    // Serialization needs this, but unused.
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Unity.MLAgents
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
-            set { }   // Serialization needs this, but unused.
+            set {}    // Serialization needs this, but unused.
         }
 
         public IReadOnlyDictionary<string, TimerNode> Children
@@ -242,7 +242,7 @@ namespace Unity.MLAgents
         private static List<string> GetCleanedCommandLineArguments()
         {
             List<string> commandLineArgs = Environment.GetCommandLineArgs().ToList();
-            List<int> toRemoveIndices = new List<int> { };
+            List<int> toRemoveIndices = new List<int> {};
             for (var i = 0; i < commandLineArgs.Count; i++)
             {
                 if (commandLineArgs[i].Contains("accessToken") ||

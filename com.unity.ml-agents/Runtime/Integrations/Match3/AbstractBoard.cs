@@ -38,7 +38,7 @@ namespace Unity.MLAgents.Integrations.Match3
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>True if all fields are less than or equal.</returns>
-        public static bool operator <=(BoardSize lhs, BoardSize rhs)
+        public static bool operator<=(BoardSize lhs, BoardSize rhs)
         {
             return lhs.Rows <= rhs.Rows && lhs.Columns <= rhs.Columns && lhs.NumCellTypes <= rhs.NumCellTypes &&
                 lhs.NumSpecialTypes <= rhs.NumSpecialTypes;
@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Integrations.Match3
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>True if all fields are greater than or equal.</returns>
-        public static bool operator >=(BoardSize lhs, BoardSize rhs)
+        public static bool operator>=(BoardSize lhs, BoardSize rhs)
         {
             return lhs.Rows >= rhs.Rows && lhs.Columns >= rhs.Columns && lhs.NumCellTypes >= rhs.NumCellTypes &&
                 lhs.NumSpecialTypes >= rhs.NumSpecialTypes;
@@ -200,7 +200,7 @@ namespace Unity.MLAgents.Integrations.Match3
             using (TimerStack.Instance.Scoped("SimpleIsMoveValid"))
             {
                 var moveVal = GetCellType(move.Row, move.Column);
-                var (otherRow, otherCol) = move.OtherCell();
+                var(otherRow, otherCol) = move.OtherCell();
                 var oppositeVal = GetCellType(otherRow, otherCol);
 
                 // Simple check - if the values are the same, don't match

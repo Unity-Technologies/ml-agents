@@ -212,7 +212,7 @@ namespace Unity.MLAgents.Integrations.Match3
         /// <returns></returns>
         public bool InRangeForBoard(BoardSize boardSize)
         {
-            var (otherRow, otherCol) = OtherCell();
+            var(otherRow, otherCol) = OtherCell();
             // Get the maximum row and column this move would affect.
             var maxMoveRow = Mathf.Max(Row, otherRow);
             var maxMoveCol = Mathf.Max(Column, otherCol);

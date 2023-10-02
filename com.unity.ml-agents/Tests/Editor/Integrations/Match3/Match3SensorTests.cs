@@ -151,8 +151,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                     1, 0, /**/ 1, 0, /**/ 1, 0,
                 };
 
-                expectedObs3D = new float[,,]
-                    { { { 1, 0, 1 }, {1, 1, 1}, {1, 1, 1} }, { {0, 1, 0}, {0, 0, 0}, {0, 0, 0} } };
+                expectedObs3D = new float[, , ]
+                { { { 1, 0, 1 }, {1, 1, 1}, {1, 1, 1} }, { {0, 1, 0}, {0, 0, 0}, {0, 0, 0} } };
             }
             else
             {
@@ -163,7 +163,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                     0, 0, /* empty */ 0, 0, /* empty */ 0, 0, /* empty */
                 };
 
-                expectedObs3D = new float[,,]
+                expectedObs3D = new float[, , ]
                 { { {1, 0, 0}, {1, 1, 0}, {0, 0, 0} }, { {0, 1, 0}, {0, 0, 0}, {0, 0, 0} } };
             }
             SensorTestHelper.CompareObservation(sensor, expectedObs);
@@ -214,19 +214,19 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                 //     {{1, 0}, {1, 0}, {1, 0}},
                 // };
 
-                var expectedObs3D = new float[,,]
+                var expectedObs3D = new float[, , ]
+                {
                     {
-                        {
-                            {1, 0, 1},
-                            {1, 1, 1},
-                            {1, 1, 1}
-                        },
-                        {
-                            {0, 1, 0},
-                            {0, 0, 0},
-                            {0, 0, 0}
-                        }
-                    };
+                        {1, 0, 1},
+                        {1, 1, 1},
+                        {1, 1, 1}
+                    },
+                    {
+                        {0, 1, 0},
+                        {0, 0, 0},
+                        {0, 0, 0}
+                    }
+                };
 
                 SensorTestHelper.CompareObservation(cellSensor, expectedObs3D);
             }
@@ -251,7 +251,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                 //     {{1, 0, 0}, {0, 1, 0}, {1, 0, 0}},
                 // };
 
-                var expectedObs3D = new float[,,]
+                var expectedObs3D = new float[, , ]
                 {
                     {
                         {1, 1, 1},
@@ -268,7 +268,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                         {1, 0, 0},
                         {0, 0, 0}
                     }
-
                 };
 
                 SensorTestHelper.CompareObservation(specialSensor, expectedObs3D);

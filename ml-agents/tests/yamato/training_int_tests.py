@@ -168,7 +168,7 @@ def run_inference(env_path: str, output_path: str, model_extension: str) -> bool
     max_reward = rewards.get("max")
     if max_reward is None:
         print(
-            "Unable to find rewards in timer file. This usually indicates a problem with Barracuda or inference."
+            "Unable to find rewards in timer file. This usually indicates a problem with Sentis or inference."
         )
         return False
     # We could check that the rewards are over a threshold, but since we train for so short a time,

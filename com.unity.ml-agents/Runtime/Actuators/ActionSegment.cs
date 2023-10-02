@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Actuators
         /// </summary>
         /// <param name="actionArray">The action array to use for the this segment.</param>
         public ActionSegment(T[] actionArray)
-            : this(actionArray ?? System.Array.Empty<T>(), 0, actionArray?.Length ?? 0) { }
+            : this(actionArray ?? System.Array.Empty<T>(), 0, actionArray?.Length ?? 0) {}
 
         /// <summary>
         /// Construct an <see cref="ActionSegment{T}"/> with an underlying array

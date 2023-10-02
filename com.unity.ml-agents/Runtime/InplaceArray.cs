@@ -195,7 +195,7 @@ namespace Unity.MLAgents
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>Whether the arrays are equivalent.</returns>
-        public static bool operator ==(InplaceArray<T> lhs, InplaceArray<T> rhs)
+        public static bool operator==(InplaceArray<T> lhs, InplaceArray<T> rhs)
         {
             return lhs.Equals(rhs);
         }
@@ -206,7 +206,7 @@ namespace Unity.MLAgents
         /// <param name="lhs"></param>
         /// <param name="rhs"></param>
         /// <returns>Whether the arrays are not equivalent</returns>
-        public static bool operator !=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !lhs.Equals(rhs);
+        public static bool operator!=(InplaceArray<T> lhs, InplaceArray<T> rhs) => !lhs.Equals(rhs);
 
         /// <summary>
         /// Check that the arrays are equivalent.

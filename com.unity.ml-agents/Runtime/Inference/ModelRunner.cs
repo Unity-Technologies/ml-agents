@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Inference
         /// Initializes the Brain with the Model that it will use when selecting actions for
         /// the agents
         /// </summary>
-        /// <param name="model"> The Barracuda model to load </param>
+        /// <param name="model"> The Sentis model to load </param>
         /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice"> Inference execution device. CPU is the fastest
         /// option for most of ML Agents models. </param>
@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Inference
             int seed = 0,
             bool deterministicInference = false)
         {
-            Model barracudaModel;
+            Model sentisModel;
             m_Model = model;
             m_ModelName = model?.name;
             m_InferenceDevice = inferenceDevice;
@@ -68,21 +68,21 @@ namespace Unity.MLAgents.Inference
             m_TensorAllocator = new TensorCachingAllocator();
             if (model != null)
             {
-#if BARRACUDA_VERBOSE
+#if SENTIS_VERBOSE
                 m_Verbose = true;
 #endif
 
                 // TODO check w/Alex about verbosity level
                 // D.logEnabled = m_Verbose;
 
-                barracudaModel = ModelLoader.Load(model);
+                sentisModel = ModelLoader.Load(model);
 
-                var failedCheck = BarracudaModelParamLoader.CheckModelVersion(
-                    barracudaModel
+                var failedCheck = SentisModelParamLoader.CheckModelVersion(
+                    sentisModel
                 );
                 if (failedCheck != null)
                 {
-                    if (failedCheck.CheckType == BarracudaModelParamLoader.FailedCheck.CheckTypeEnum.Error)
+                    if (failedCheck.CheckType == SentisModelParamLoader.FailedCheck.CheckTypeEnum.Error)
                     {
                         throw new UnityAgentsException(failedCheck.Message);
                     }
@@ -106,21 +106,21 @@ namespace Unity.MLAgents.Inference
                         executionDevice = BackendType.CPU;
                         break;
                 }
-                m_Engine = WorkerFactory.CreateWorker(executionDevice, barracudaModel, m_Verbose);
+                m_Engine = WorkerFactory.CreateWorker(executionDevice, sentisModel, m_Verbose);
             }
             else
             {
-                barracudaModel = null;
+                sentisModel = null;
                 m_Engine = null;
             }
 
-            m_InferenceInputs = barracudaModel.GetInputTensors();
-            m_OutputNames = barracudaModel.GetOutputNames(m_DeterministicInference);
+            m_InferenceInputs = sentisModel.GetInputTensors();
+            m_OutputNames = sentisModel.GetOutputNames(m_DeterministicInference);
 
             m_TensorGenerator = new TensorGenerator(
-                seed, m_TensorAllocator, m_Memories, barracudaModel, m_DeterministicInference);
+                seed, m_TensorAllocator, m_Memories, sentisModel, m_DeterministicInference);
             m_TensorApplier = new TensorApplier(
-                actionSpec, seed, m_TensorAllocator, m_Memories, barracudaModel, m_DeterministicInference);
+                actionSpec, seed, m_TensorAllocator, m_Memories, sentisModel, m_DeterministicInference);
             m_InputsByName = new Dictionary<string, Tensor>();
             m_InferenceOutputs = new List<TensorProxy>();
         }
@@ -135,7 +135,7 @@ namespace Unity.MLAgents.Inference
             get { return m_Model; }
         }
 
-        void PrepareBarracudaInputs(IReadOnlyList<TensorProxy> infInputs)
+        void PrepareSentisInputs(IReadOnlyList<TensorProxy> infInputs)
         {
             m_InputsByName.Clear();
             for (var i = 0; i < infInputs.Count; i++)
@@ -152,13 +152,13 @@ namespace Unity.MLAgents.Inference
             m_TensorAllocator?.Reset(false);
         }
 
-        void FetchBarracudaOutputs(string[] names)
+        void FetchSentisOutputs(string[] names)
         {
             m_InferenceOutputs.Clear();
             foreach (var n in names)
             {
                 var output = m_Engine.PeekOutput(n);
-                m_InferenceOutputs.Add(TensorUtils.TensorProxyFromBarracuda(output, n));
+                m_InferenceOutputs.Add(TensorUtils.TensorProxyFromSentis(output, n));
             }
         }
 
@@ -212,8 +212,8 @@ namespace Unity.MLAgents.Inference
             m_TensorGenerator.GenerateTensors(m_InferenceInputs, currentBatchSize, m_Infos);
             Profiler.EndSample();
 
-            Profiler.BeginSample($"PrepareBarracudaInputs");
-            PrepareBarracudaInputs(m_InferenceInputs);
+            Profiler.BeginSample($"PrepareSentisInputs");
+            PrepareSentisInputs(m_InferenceInputs);
             Profiler.EndSample();
 
             // Execute the Model
@@ -221,8 +221,8 @@ namespace Unity.MLAgents.Inference
             m_Engine.Execute(m_InputsByName);
             Profiler.EndSample();
 
-            Profiler.BeginSample($"FetchBarracudaOutputs");
-            FetchBarracudaOutputs(m_OutputNames);
+            Profiler.BeginSample($"FetchSentisOutputs");
+            FetchSentisOutputs(m_OutputNames);
             Profiler.EndSample();
 
             Profiler.BeginSample($"ApplyTensors");

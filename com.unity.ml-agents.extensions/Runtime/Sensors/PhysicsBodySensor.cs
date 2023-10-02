@@ -108,7 +108,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <inheritdoc/>
         public CompressionSpec GetCompressionSpec()

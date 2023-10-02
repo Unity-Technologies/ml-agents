@@ -223,7 +223,7 @@ namespace Unity.MLAgents.Policies
 
         void Awake()
         {
-            OnPolicyUpdated += mode => { };
+            OnPolicyUpdated += mode => {};
         }
 
         internal IPolicy GeneratePolicy(ActionSpec actionSpec, ActuatorManager actuatorManager)
@@ -233,17 +233,17 @@ namespace Unity.MLAgents.Policies
                 case BehaviorType.HeuristicOnly:
                     return new HeuristicPolicy(actuatorManager, actionSpec);
                 case BehaviorType.InferenceOnly:
+                {
+                    if (m_Model == null)
                     {
-                        if (m_Model == null)
-                        {
-                            var behaviorType = BehaviorType.InferenceOnly.ToString();
-                            throw new UnityAgentsException(
-                                $"Can't use Behavior Type {behaviorType} without a model. " +
-                                "Either assign a model, or change to a different Behavior Type."
-                            );
-                        }
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        var behaviorType = BehaviorType.InferenceOnly.ToString();
+                        throw new UnityAgentsException(
+                            $"Can't use Behavior Type {behaviorType} without a model. " +
+                            "Either assign a model, or change to a different Behavior Type."
+                        );
                     }
+                    return new SentisPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
                     {
@@ -251,7 +251,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        return new SentisPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                     else
                     {

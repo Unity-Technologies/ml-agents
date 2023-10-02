@@ -84,13 +84,13 @@ namespace Unity.MLAgents.Tests.Analytics
         }
 
         [Test]
-        public void TestBarracudaPolicy()
+        public void TestSentisPolicy()
         {
             // Explicitly request decisions for a policy so we get code coverage on the event sending
             using (new AnalyticsUtils.DisableAnalyticsSending())
             {
                 var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
-                var policy = new BarracudaPolicy(
+                var policy = new SentisPolicy(
                     GetContinuous2vis8vec2actionActionSpec(),
                     Array.Empty<IActuator>(),
                     continuousONNXModel,

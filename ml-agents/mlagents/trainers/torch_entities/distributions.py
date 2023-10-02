@@ -186,10 +186,10 @@ class GaussianDistribution(nn.Module):
             log_sigma = torch.clamp(self.log_sigma(inputs), min=-20, max=2)
         else:
             # Expand so that entropy matches batch size. Note that we're using
-            # mu*0 here to get the batch size implicitly since Barracuda 1.2.1
+            # mu*0 here to get the batch size implicitly since Sentis
             # throws error on runtime broadcasting due to unknown reason. We
-            # use this to replace torch.expand() becuase it is not supported in
-            # the verified version of Barracuda (1.0.X).
+            # use this to replace torch.expand() because it is not supported in
+            # the verified version of Sentis (1.2.0-exp.2).
             log_sigma = mu * 0 + self.log_sigma
         if self.tanh_squash:
             return TanhGaussianDistInstance(mu, torch.exp(log_sigma))
@@ -219,11 +219,11 @@ class MultiCategoricalDistribution(nn.Module):
     def _mask_branch(
         self, logits: torch.Tensor, allow_mask: torch.Tensor
     ) -> torch.Tensor:
-        # Zero out masked logits, then subtract a large value. Technique mentionend here:
-        # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Barracuda-friendly.
+        # Zero out masked logits, then subtract a large value. Technique mentioned here:
+        # https://arxiv.org/abs/2006.14171. Our implementation is ONNX and Sentis-friendly.
         block_mask = -1.0 * allow_mask + 1.0
         # We do -1 * tensor + constant instead of constant - tensor because it seems
-        # Barracuda might swap the inputs of a "Sub" operation
+        # Sentis might swap the inputs of a "Sub" operation
         logits = logits * allow_mask - 1e8 * block_mask
 
         return logits

@@ -103,7 +103,7 @@ mode if training is not supported or is not currently running.
 ### Inference
 
 Inference is executed via the
-[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html).
+[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html).
 
 **CPU**
 
@@ -152,7 +152,7 @@ Please refer to "Information that is passively collected by Unity" in the
 [Unity Privacy Policy](https://unity3d.com/legal/privacy-policy).
 
 [unity ML-Agents Toolkit]: https://github.com/Unity-Technologies/ml-agents
-[unity inference engine]: https://docs.unity3d.com/Packages/com.unity.barracuda@latest/index.html
+[unity inference engine]: https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html
 [package manager documentation]: https://docs.unity3d.com/Manual/upm-ui-install.html
 [installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Installation.md
 [github repository]: https://github.com/Unity-Technologies/ml-agents

@@ -12,7 +12,7 @@ namespace Unity.MLAgents.Inference
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
     /// and BrainParameters are incompatible.
     /// </summary>
-    internal class BarracudaModelParamLoader
+    internal class SentisModelParamLoader
     {
         internal enum ModelApiVersion
         {
@@ -20,7 +20,7 @@ namespace Unity.MLAgents.Inference
             /// ML-Agents model version for versions 1.x.y
             /// The observations are split between vector and visual observations
             /// There are legacy action outputs for discrete and continuous actions
-            /// LSTM inputs and outputs are handled by Barracuda
+            /// LSTM inputs and outputs are handled by Sentis
             /// </summary>
             MLAgents1_0 = 2,
 
@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Inference
             /// the sensor index
             /// Legacy "action" output is no longer present
             /// LSTM inputs and outputs are treated like regular inputs and outputs
-            /// and no longer managed by Barracuda
+            /// and no longer managed by Sentis
             /// </summary>
             MLAgents2_0 = 3,
             MinSupportedVersion = MLAgents1_0,
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Inference
         /// Checks that a model has the appropriate version.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <returns>A FailedCheck containing the error message if the version of the model does not mach, else null</returns>
         public static FailedCheck CheckModelVersion(Model model)
@@ -95,8 +95,8 @@ namespace Unity.MLAgents.Inference
             if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0 && memorySize > 0)
             {
                 // This block is to make sure that models that are trained with MLAgents version 1.x and have
-                // an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
-                // 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
+                // an LSTM (i.e. use the Sentis _c and _h inputs and outputs) will not work with MLAgents version
+                // 2.x. This is because Sentis version 2.x will eventually drop support for the _c and _h inputs
                 // and only ML-Agents 2.x models will be compatible.
                 return FailedCheck.Error(
                     "Models from com.unity.ml-agents 1.x that use recurrent neural networks are not supported in newer versions. " +
@@ -111,7 +111,7 @@ namespace Unity.MLAgents.Inference
         /// on it.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -205,7 +205,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -308,7 +308,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -375,7 +375,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="memory">The memory size that the model is expecting/</param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
@@ -504,7 +504,7 @@ namespace Unity.MLAgents.Inference
         /// the model and the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -642,7 +642,7 @@ namespace Unity.MLAgents.Inference
         /// the model and the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -743,7 +743,7 @@ namespace Unity.MLAgents.Inference
         /// the model and the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine

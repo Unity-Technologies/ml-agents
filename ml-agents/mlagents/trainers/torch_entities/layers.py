@@ -211,7 +211,7 @@ class LSTM(MemoryModule):
             # instead of (batch, sequence_len, memory_size)
             memories = torch.transpose(memories, 0, 1)
 
-        # We don't use torch.split here since it is not supported by Barracuda
+        # We don't use torch.split here since it is not supported by Sentis
         h0 = memories[:, :, : self.hidden_size].contiguous()
         c0 = memories[:, :, self.hidden_size :].contiguous()
 

@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         /// <inheritdoc/>
-        public void Reset() { }
+        public void Reset() {}
 
         /// <summary>
         /// Clears the perception buffer before loading in new data.

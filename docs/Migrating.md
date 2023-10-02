@@ -531,9 +531,9 @@ vector observations to be used simultaneously.
 - `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.
-- The official version of Unity ML-Agents supports is now 2018.4 LTS. If you run
+- The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
   into issues, please consider deleting your library folder and reponening your
-  projects. You will need to install the Barracuda package into your project in
+  projects. You will need to install the Sentis package into your project in
   order to ML-Agents to compile correctly.
 
 ### Steps to Migrate
@@ -565,8 +565,7 @@ vector observations to be used simultaneously.
   - `Heuristic Only` means the Agent will always use the `Heuristic()` method.
     This corresponds to having "Use Heuristic" selected in 0.11.0.
   - `Inference Only` means the Agent will always perform inference.
-- Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package
-  Manager.
+- ML-Agents was upgraded to use Sentis 1.2.0-exp.2 and is installed via the package manager.
 
 ### Steps to Migrate
 
@@ -586,9 +585,9 @@ vector observations to be used simultaneously.
   observations that RayPerceptionSensorComponent3D produces are different from
   the old behavior.
 - If you see messages such as
-  `The type or namespace 'Barracuda' could not be found` or
+  `The type or namespace 'Sentis' could not be found` or
   `The type or namespace 'Google' could not be found`, you will need to
-  [install the Barracuda preview package](Installation.md#package-installation).
+  [install the Sentis preview package](Installation.md#package-installation).
 
 ## Migrating from ML-Agents Toolkit v0.10 to v0.11.0
 

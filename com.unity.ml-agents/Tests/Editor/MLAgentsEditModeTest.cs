@@ -664,7 +664,7 @@ namespace Unity.MLAgents.Tests
                 (ObservableAttributeOptions.ExamineAll, 2)
             };
 
-            foreach (var (behavior, expectedNumSensors) in variants)
+            foreach (var(behavior, expectedNumSensors) in variants)
             {
                 var go = new GameObject();
                 var agent = go.AddComponent<DerivedObservableAgent>();

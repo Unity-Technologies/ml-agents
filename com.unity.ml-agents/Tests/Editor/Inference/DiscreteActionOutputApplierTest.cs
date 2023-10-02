@@ -56,7 +56,7 @@ namespace Unity.MLAgents.Tests
             {
                 data = new TensorFloat(
                     new TensorShape(2, 5),
-                new[]
+                    new[]
                     {
                         smallLogProb, smallLogProb, largeLogProb, // Agent 0, branch 0
                         smallLogProb, largeLogProb,               // Agent 0, branch 1
