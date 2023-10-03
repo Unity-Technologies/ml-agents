@@ -15,7 +15,7 @@ def test_min_visual_size():
 
     for encoder_type in EncoderType:
         good_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type]
-        vis_input = torch.ones((1, good_size, good_size, 3))
+        vis_input = torch.ones((1, 3, good_size, good_size))
         ModelUtils._check_resolution_for_encoder(good_size, good_size, encoder_type)
         enc_func = ModelUtils.get_encoder_for_type(encoder_type)
         enc = enc_func(good_size, good_size, 3, 1)
@@ -24,7 +24,7 @@ def test_min_visual_size():
         # Anything under the min size should raise an exception. If not, decrease the min size!
         with pytest.raises(Exception):
             bad_size = ModelUtils.MIN_RESOLUTION_FOR_ENCODER[encoder_type] - 1
-            vis_input = torch.ones((1, bad_size, bad_size, 3))
+            vis_input = torch.ones((1, 3, bad_size, bad_size))
 
             with pytest.raises(UnityTrainerException):
                 # Make sure we'd hit a friendly error during model setup time.
@@ -65,7 +65,7 @@ def test_invalid_visual_input_size(encoder_type):
 @pytest.mark.parametrize("encoder_type", [EncoderType.SIMPLE, EncoderType.NATURE_CNN])
 def test_create_inputs(encoder_type, normalize, num_vector, num_visual):
     vec_obs_shape = (5,)
-    vis_obs_shape = (84, 84, 3)
+    vis_obs_shape = (3, 84, 84)
     obs_shapes = []
     for _ in range(num_vector):
         obs_shapes.append(vec_obs_shape)

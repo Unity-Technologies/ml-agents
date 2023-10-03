@@ -93,7 +93,7 @@ def test_var_len_obs_and_goal_poca(num_vis, num_vector, num_var_len, conditionin
         POCA_TORCH_CONFIG,
         hyperparameters=new_hyperparams,
         network_settings=new_network,
-        max_steps=5000,
+        max_steps=20000,
     )
     check_environment_trains(env, {BRAIN_NAME: config})
 
@@ -207,7 +207,7 @@ def test_visual_advanced_ppo(vis_encode_type, num_visual):
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
-        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
+        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (3, 36, 36),
     )
     new_networksettings = attr.evolve(
         SAC_TORCH_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)
@@ -311,7 +311,7 @@ def test_visual_advanced_sac(vis_encode_type, num_visual):
         num_visual=num_visual,
         num_vector=0,
         step_size=0.5,
-        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (36, 36, 3),
+        vis_obs_size=(5, 5, 5) if vis_encode_type == "match3" else (3, 36, 36),
     )
     new_networksettings = attr.evolve(
         SAC_TORCH_CONFIG.network_settings, vis_encode_type=EncoderType(vis_encode_type)

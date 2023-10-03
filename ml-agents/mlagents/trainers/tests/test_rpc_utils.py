@@ -69,7 +69,7 @@ def generate_compressed_data(in_array: np.ndarray) -> bytes:
     num_images = (num_channels + 2) // 3
     # Split the input image into batches of 3 channels.
     for i in range(num_images):
-        sub_image = image_arr[3 * i: 3 * i + 3, ...]
+        sub_image = image_arr[3 * i : 3 * i + 3, ...]
         if (i == num_images - 1) and (num_channels % 3) != 0:
             # Pad zeros
             zero_shape = list(in_array.shape)

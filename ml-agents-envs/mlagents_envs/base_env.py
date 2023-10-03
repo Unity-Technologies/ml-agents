@@ -446,6 +446,15 @@ class ActionSpec(NamedTuple):
         """
         return ActionSpec(0, discrete_branches)
 
+    @staticmethod
+    def create_hybrid(
+        continuous_size: int, discrete_branches: Tuple[int]
+    ) -> "ActionSpec":
+        """
+        Creates a hybrid ActionSpace
+        """
+        return ActionSpec(continuous_size, discrete_branches)
+
 
 class DimensionProperty(IntFlag):
     """

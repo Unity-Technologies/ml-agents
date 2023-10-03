@@ -47,11 +47,11 @@ def test_construction(behavior_spec: BehaviorSpec) -> None:
             create_observation_specs_with_shapes([(10,)]), ACTIONSPEC_CONTINUOUS
         ),
         BehaviorSpec(
-            create_observation_specs_with_shapes([(10,), (64, 66, 3), (84, 86, 1)]),
+            create_observation_specs_with_shapes([(10,), (3, 64, 66), (1, 84, 86)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(
-            create_observation_specs_with_shapes([(10,), (64, 66, 1)]),
+            create_observation_specs_with_shapes([(10,), (1, 64, 66)]),
             ACTIONSPEC_TWODISCRETE,
         ),
         BehaviorSpec(
@@ -72,7 +72,7 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     "behavior_spec",
     [
         BehaviorSpec(
-            create_observation_specs_with_shapes([(10,), (64, 66, 3), (24, 26, 1)]),
+            create_observation_specs_with_shapes([(10,), (3, 64, 66), (1, 24, 26)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(
@@ -125,7 +125,7 @@ def test_continuous_action_prediction(behavior_spec: BehaviorSpec, seed: int) ->
     "behavior_spec",
     [
         BehaviorSpec(
-            create_observation_specs_with_shapes([(10,), (64, 66, 3), (24, 26, 1)]),
+            create_observation_specs_with_shapes([(10,), (3, 64, 66), (1, 24, 26)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(

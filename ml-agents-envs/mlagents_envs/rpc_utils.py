@@ -122,7 +122,9 @@ def process_pixels(
             image = Image.open(image_fp)
             # Normally Image loads lazily, load() forces it to do loading in the timer scope.
             image.load()
-        image_arrays.append(np.moveaxis(np.array(image, dtype=np.float32) / 255.0, -1, 0))
+        image_arrays.append(
+            np.moveaxis(np.array(image, dtype=np.float32) / 255.0, -1, 0)
+        )
 
         # Look for the next header, starting from the current stream location
         try:
