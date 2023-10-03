@@ -3,13 +3,13 @@ behaviors:
     trainer_type: poca
     hyperparameters:
       batch_size: 2048
-      buffer_size: 20480
+      buffer_size: 10240
       learning_rate: 0.0003
       beta: 0.005
       epsilon: 0.2
       lambd: 0.95
       num_epoch: 3
-      learning_rate_schedule: constant
+      learning_rate_schedule: linear
     network_settings:
       normalize: false
       hidden_units: 512
@@ -22,7 +22,7 @@ behaviors:
     keep_checkpoints: 5
     max_steps: 50000000
     time_horizon: 1000
-    summary_freq: 10000
+    summary_freq: 50000
     self_play:
       save_steps: 50000
       team_change: 200000
