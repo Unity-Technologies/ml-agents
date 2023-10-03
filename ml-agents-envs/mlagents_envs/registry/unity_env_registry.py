@@ -121,5 +121,5 @@ class UnityEnvRegistry(Mapping):
 
 default_registry = UnityEnvRegistry()
 default_registry.register_from_yaml(
-    "https://storage.googleapis.com/mlagents-test-environments/1.0.0/manifest.yaml"
+    "https://storage.googleapis.com/mlagents-test-environments/1.1.0/manifest.yaml"
 )  # noqa E501
