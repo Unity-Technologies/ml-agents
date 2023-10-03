@@ -9,6 +9,7 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Deprecated support for Python 3.8.x and 3.9.x
 - Upgraded ML-Agents to Sentis 1.2.0-exp.2 (#)
 - The minimum supported Unity version was updated to 2022.3. (#)
 - Added batched raycast sensor option. (#)
