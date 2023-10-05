@@ -1,16 +1,16 @@
 {
     "name": "Unity.ML-Agents.Editor.Tests",
+    "rootNamespace": "",
     "references": [
         "Unity.ML-Agents.Editor",
         "Unity.ML-Agents",
-        "Unity.Barracuda",
         "Unity.Mathematics",
         "Unity.ML-Agents.CommunicatorObjects",
         "Unity.ML-Agents.Runtime.Utils.Tests",
-        "Unity.ML-Agents.Runtime.Sensor.Tests"
-    ],
-    "optionalUnityReferences": [
-        "TestAssemblies"
+        "Unity.ML-Agents.Runtime.Sensor.Tests",
+        "UnityEngine.TestRunner",
+        "UnityEditor.TestRunner",
+        "Unity.Sentis"
     ],
     "includePlatforms": [
         "Editor"
@@ -21,10 +21,12 @@
     "precompiledReferences": [
         "System.IO.Abstractions.dll",
         "System.IO.Abstractions.TestingHelpers.dll",
-        "Google.Protobuf.dll"
+        "nunit.framework.dll",
+        "Google.Protobuf_Packed.dll"
     ],
     "autoReferenced": false,
     "defineConstraints": [
+        "UNITY_INCLUDE_TESTS",
         "UNITY_INCLUDE_TESTS"
     ],
     "versionDefines": [
@@ -43,5 +45,6 @@
             "expression": "1.0.0",
             "define": "MLA_UNITY_PHYSICS2D_MODULE"
         }
-    ]
+    ],
+    "noEngineReferences": false
 }

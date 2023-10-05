@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using Unity.MLAgents.Policies;
@@ -44,7 +44,7 @@ namespace Unity.MLAgents.Tests
             bp.BehaviorType = BehaviorType.Default;
             Assert.IsTrue(bp.IsInHeuristicMode());
 
-            bp.Model = ScriptableObject.CreateInstance<NNModel>();
+            bp.Model = ScriptableObject.CreateInstance<ModelAsset>();
             Assert.IsFalse(bp.IsInHeuristicMode());
         }
 
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Tests
                 bp.BehaviorType = BehaviorType.InferenceOnly;
             });
 
-            bp.Model = AssetDatabase.LoadAssetAtPath<NNModel>(k_continuousONNXPath);
+            bp.Model = AssetDatabase.LoadAssetAtPath<ModelAsset>(k_continuousONNXPath);
             LogAssert.Expect(LogType.Log, $"OnPolicyChanged:{false}");
 
             bp.BehaviorType = BehaviorType.HeuristicOnly;

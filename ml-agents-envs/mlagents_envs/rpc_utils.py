@@ -122,7 +122,9 @@ def process_pixels(
             image = Image.open(image_fp)
             # Normally Image loads lazily, load() forces it to do loading in the timer scope.
             image.load()
-        image_arrays.append(np.array(image, dtype=np.float32) / 255.0)
+        image_arrays.append(
+            np.moveaxis(np.array(image, dtype=np.float32) / 255.0, -1, 0)
+        )
 
         # Look for the next header, starting from the current stream location
         try:
@@ -142,7 +144,7 @@ def _process_images_mapping(image_arrays, mappings):
     """
     Helper function for processing decompressed images with compressed channel mappings.
     """
-    image_arrays = np.concatenate(image_arrays, axis=2).transpose((2, 0, 1))
+    image_arrays = np.concatenate(image_arrays, axis=0).transpose((0, 1, 2))
 
     if len(mappings) != len(image_arrays):
         raise UnityObservationException(
@@ -167,7 +169,7 @@ def _process_images_mapping(image_arrays, mappings):
 
     for i, img_array in enumerate(processed_image_arrays):
         processed_image_arrays[i] = np.mean(img_array, axis=0)
-    img = np.stack(processed_image_arrays, axis=2)
+    img = np.stack(processed_image_arrays, axis=0)
     return img
 
 
@@ -178,15 +180,15 @@ def _process_images_num_channels(image_arrays, expected_channels):
     """
     if expected_channels == 1:
         # Convert to grayscale
-        img = np.mean(image_arrays[0], axis=2)
-        img = np.reshape(img, [img.shape[0], img.shape[1], 1])
+        img = np.mean(image_arrays[0], axis=0)
+        img = np.reshape(img, [1, img.shape[0], img.shape[1]])
     else:
-        img = np.concatenate(image_arrays, axis=2)
+        img = np.concatenate(image_arrays, axis=0)
         # We can drop additional channels since they may need to be added to include
         # numbers of observation channels not divisible by 3.
-        actual_channels = list(img.shape)[2]
+        actual_channels = list(img.shape)[0]
         if actual_channels > expected_channels:
-            img = img[..., 0:expected_channels]
+            img = img[0:expected_channels, ...]
     return img
 
 
@@ -225,7 +227,7 @@ def _observation_to_np_array(
             raise UnityObservationException(
                 f"Observation did not have the expected shape - got {obs.shape} but expected {expected_shape}"
             )
-    expected_channels = obs.shape[2]
+    expected_channels = obs.shape[0]
     if obs.compression_type == COMPRESSION_TYPE_NONE:
         img = np.array(obs.float_data.data, dtype=np.float32)
         img = np.reshape(img, obs.shape)

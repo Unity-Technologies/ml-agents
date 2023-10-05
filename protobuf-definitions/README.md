@@ -4,8 +4,8 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Requirements
 
-* protobuf 3.6.0
-* grpcio-tools 1.11.1
+* protobuf 3.19.6
+* grpcio-tools 1.48.2
 * Grpc.Tools 1.14.1
 
 ## Set-up & Installation
@@ -14,9 +14,9 @@ First we will follow these steps once install protobuf and grpcio-tools via your
 Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-`pip install protobuf==3.6.0 --force`
+`pip install protobuf==3.19.6 --force`
 
-`pip install grpcio-tools==1.11.1`
+`pip install grpcio-tools==1.28.1`
 
 `pip install mypy-protobuf==1.16.0`
 
@@ -49,7 +49,7 @@ Whenever you change the fields of a message, you must follow the steps below to 
 5. In the generated `UnityToExternalGrpc.cs` file in the `$MLAGENTS_ROOT/com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects` folder, check to see if you need to add the following to the beginning of the file:
 
 ```csharp
-# if UNITY_EDITOR || UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+# if UNITY_EDITOR || UNITY_STANDALONE
 ```
  and the following line to the end
 

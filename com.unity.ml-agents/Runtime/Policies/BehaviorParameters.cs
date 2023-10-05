@@ -1,4 +1,4 @@
-using Unity.Barracuda;
+using Unity.Sentis;
 using System;
 using UnityEngine;
 using UnityEngine.Serialization;
@@ -95,14 +95,14 @@ namespace Unity.MLAgents.Policies
         }
 
         [HideInInspector, SerializeField]
-        NNModel m_Model;
+        ModelAsset m_Model;
 
         /// <summary>
         /// The neural network model used when in inference mode.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,Model,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
-        public NNModel Model
+        public ModelAsset Model
         {
             get { return m_Model; }
             set { m_Model = value; UpdateAgentPolicy(); }
@@ -113,7 +113,7 @@ namespace Unity.MLAgents.Policies
 
         /// <summary>
         /// How inference is performed for this Agent's model.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,Model,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
         public InferenceDevice InferenceDevice
@@ -140,7 +140,7 @@ namespace Unity.MLAgents.Policies
         /// <summary>
         /// The name of this behavior, which is used as a base name. See
         /// <see cref="FullyQualifiedBehaviorName"/> for the full name.
-        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,NNModel,Policies.InferenceDevice)"/>
+        /// This should not be set at runtime; use <see cref="Agent.SetModel(string,Model,Policies.InferenceDevice)"/>
         /// to set it instead.
         /// </summary>
         public string BehaviorName
@@ -242,7 +242,7 @@ namespace Unity.MLAgents.Policies
                                 "Either assign a model, or change to a different Behavior Type."
                             );
                         }
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        return new SentisPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                 case BehaviorType.Default:
                     if (Academy.Instance.IsCommunicatorOn)
@@ -251,7 +251,7 @@ namespace Unity.MLAgents.Policies
                     }
                     if (m_Model != null)
                     {
-                        return new BarracudaPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
+                        return new SentisPolicy(actionSpec, actuatorManager, m_Model, m_InferenceDevice, m_BehaviorName, m_DeterministicInference);
                     }
                     else
                     {

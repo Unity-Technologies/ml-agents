@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Actuators;
@@ -82,7 +82,7 @@ namespace Unity.MLAgents.Tests
             var generator = new BatchSizeGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0], batchSize);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[0], batchSize);
             alloc.Dispose();
         }
 
@@ -95,7 +95,7 @@ namespace Unity.MLAgents.Tests
             var generator = new SequenceLengthGenerator(alloc);
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0], 1);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[0], 1);
             alloc.Dispose();
         }
 
@@ -104,6 +104,7 @@ namespace Unity.MLAgents.Tests
         {
             var inputTensor = new TensorProxy
             {
+                valueType = TensorProxy.TensorType.FloatingPoint,
                 shape = new long[] { 2, 4 }
             };
             const int batchSize = 4;
@@ -118,15 +119,15 @@ namespace Unity.MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair { agentInfo = agent0._Info, sensors = agent0.sensors },
+                new AgentInfoSensorsPair { agentInfo = agent1._Info, sensors = agent1.sensors },
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 1], 1);
-            Assert.AreEqual(inputTensor.data[0, 3], 3);
-            Assert.AreEqual(inputTensor.data[1, 1], 4);
-            Assert.AreEqual(inputTensor.data[1, 3], 6);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[0, 1], 1);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[0, 3], 3);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[1, 1], 4);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[1, 3], 6);
             alloc.Dispose();
         }
 
@@ -146,15 +147,15 @@ namespace Unity.MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair { agentInfo = agent0._Info, sensors = agent0.sensors },
+                new AgentInfoSensorsPair { agentInfo = agent1._Info, sensors = agent1.sensors },
             };
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 1);
-            Assert.AreEqual(inputTensor.data[0, 1], 2);
-            Assert.AreEqual(inputTensor.data[1, 0], 3);
-            Assert.AreEqual(inputTensor.data[1, 1], 4);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[0, 0], 1);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[0, 1], 2);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[1, 0], 3);
+            Assert.AreEqual(((TensorInt)inputTensor.data)[1, 1], 4);
             alloc.Dispose();
         }
 
@@ -175,16 +176,16 @@ namespace Unity.MLAgents.Tests
             var agent1 = agentInfos[1];
             var inputs = new List<AgentInfoSensorsPair>
             {
-                new AgentInfoSensorsPair {agentInfo = agent0._Info, sensors = agent0.sensors},
-                new AgentInfoSensorsPair {agentInfo = agent1._Info, sensors = agent1.sensors},
+                new AgentInfoSensorsPair { agentInfo = agent0._Info, sensors = agent0.sensors },
+                new AgentInfoSensorsPair { agentInfo = agent1._Info, sensors = agent1.sensors },
             };
 
             generator.Generate(inputTensor, batchSize, inputs);
             Assert.IsNotNull(inputTensor.data);
-            Assert.AreEqual(inputTensor.data[0, 0], 1);
-            Assert.AreEqual(inputTensor.data[0, 4], 1);
-            Assert.AreEqual(inputTensor.data[1, 0], 0);
-            Assert.AreEqual(inputTensor.data[1, 4], 1);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[0, 0], 1);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[0, 4], 1);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[1, 0], 0);
+            Assert.AreEqual((int)((TensorFloat)inputTensor.data)[1, 4], 1);
             alloc.Dispose();
         }
     }

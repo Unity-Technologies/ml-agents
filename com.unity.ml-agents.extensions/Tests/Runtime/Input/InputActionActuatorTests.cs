@@ -1,9 +1,9 @@
 #if MLA_INPUT_TESTS
 using NUnit.Framework;
-using Unity.Barracuda;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
+using Unity.Sentis;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;
@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             Assert.IsFalse(m_Adaptor.eventWritten);
             m_Adaptor.Reset();
 
-            m_BehaviorParameters.Model = ScriptableObject.CreateInstance<NNModel>();
+            m_BehaviorParameters.Model = ScriptableObject.CreateInstance<ModelAsset>();
             m_Actuator.OnActionReceived(new ActionBuffers());
             Assert.IsTrue(m_Adaptor.eventWritten);
             m_Adaptor.Reset();

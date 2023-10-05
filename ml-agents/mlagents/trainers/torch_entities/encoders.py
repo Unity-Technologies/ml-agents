@@ -1,9 +1,7 @@
 from typing import Tuple, Optional, Union
 
-from mlagents.trainers.torch_entities.layers import linear_layer, Initialization, Swish
-
 from mlagents.torch_utils import torch, nn
-from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
+from mlagents.trainers.torch_entities.layers import linear_layer, Initialization, Swish
 
 
 class Normalizer(nn.Module):
@@ -129,8 +127,6 @@ class FullyConnectedVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
-        if not exporting_to_onnx.is_exporting():
-            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = visual_obs.reshape(-1, self.input_size)
         return self.dense(hidden)
 
@@ -167,8 +163,6 @@ class SmallVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
-        if not exporting_to_onnx.is_exporting():
-            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
         hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
@@ -201,8 +195,6 @@ class SimpleVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
-        if not exporting_to_onnx.is_exporting():
-            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
         hidden = hidden.reshape(-1, self.final_flat)
         return self.dense(hidden)
@@ -238,8 +230,6 @@ class NatureVisualEncoder(nn.Module):
         )
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
-        if not exporting_to_onnx.is_exporting():
-            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.conv_layers(visual_obs)
         hidden = hidden.reshape([-1, self.final_flat])
         return self.dense(hidden)
@@ -291,8 +281,6 @@ class ResNetVisualEncoder(nn.Module):
         self.sequential = nn.Sequential(*layers)
 
     def forward(self, visual_obs: torch.Tensor) -> torch.Tensor:
-        if not exporting_to_onnx.is_exporting():
-            visual_obs = visual_obs.permute([0, 3, 1, 2])
         hidden = self.sequential(visual_obs)
         before_out = hidden.reshape(-1, self.final_flat_size)
         return torch.relu(self.dense(before_out))

@@ -37,14 +37,10 @@ jobs:
       # If one test in the matrix fails we still want to run the others.
       fail-fast: false
       matrix:
-        python-version: [3.8.x, 3.9.x, 3.10.x]
+        python-version: [3.10.x]
         include:
-          - python-version: 3.8.x
-            pip_constraints: test_constraints_min_version.txt
-          - python-version: 3.9.x
-            pip_constraints: test_constraints_mid_version.txt
           - python-version: 3.10.x
-            pip_constraints: test_constraints_max_version.txt
+            pip_constraints: test_constraints_version.txt
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python

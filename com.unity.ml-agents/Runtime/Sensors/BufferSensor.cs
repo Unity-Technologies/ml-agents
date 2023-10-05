@@ -67,10 +67,19 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public int Write(ObservationWriter writer)
         {
-            for (int i = 0; i < m_ObsSize * m_MaxNumObs; i++)
+            // for (int i = 0; i < m_ObsSize * m_MaxNumObs; i++)
+            // {
+            //     writer[i] = m_ObservationBuffer[i];
+            // }
+
+            for (int i = 0; i < m_MaxNumObs; i++)
             {
-                writer[i] = m_ObservationBuffer[i];
+                for (int j = 0; j < m_ObsSize; j++)
+                {
+                    writer[i, j] = m_ObservationBuffer[i * m_ObsSize + j];
+                }
             }
+
             return m_ObsSize * m_MaxNumObs;
         }
 

@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Inference.Utils;
 
@@ -17,17 +17,16 @@ namespace Unity.MLAgents.Tests
             var width = 84;
             var channels = 3;
 
-            // Set shape to {1, ..., height, width, channels}
+            // Set shape to {1, ..., channels, height, width}
             // For 8D, the ... are all 1's
             var shape = new long[dimension];
             for (var i = 0; i < dimension; i++)
             {
                 shape[i] = 1;
             }
-
-            shape[dimension - 3] = height;
-            shape[dimension - 2] = width;
-            shape[dimension - 1] = channels;
+            shape[dimension - 3] = channels;
+            shape[dimension - 2] = height;
+            shape[dimension - 1] = width;
 
             var intShape = new int[dimension];
             for (var i = 0; i < dimension; i++)
@@ -38,24 +37,25 @@ namespace Unity.MLAgents.Tests
             var tensorProxy = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.Integer,
-                data = new Tensor(intShape),
+                data = TensorFloat.Zeros(new TensorShape(intShape)),
                 shape = shape,
             };
 
             // These should be invariant after the resize.
-            Assert.AreEqual(height, tensorProxy.data.shape.height);
-            Assert.AreEqual(width, tensorProxy.data.shape.width);
-            Assert.AreEqual(channels, tensorProxy.data.shape.channels);
+            Assert.AreEqual(height, tensorProxy.data.shape.Height());
+            Assert.AreEqual(width, tensorProxy.data.shape.Width());
+            Assert.AreEqual(channels, tensorProxy.data.shape.Channels());
 
+            // TODO this resize is changing the tensor dimensions.need fix.
             TensorUtils.ResizeTensor(tensorProxy, 42, alloc);
 
-            Assert.AreEqual(height, tensorProxy.shape[dimension - 3]);
-            Assert.AreEqual(width, tensorProxy.shape[dimension - 2]);
-            Assert.AreEqual(channels, tensorProxy.shape[dimension - 1]);
+            Assert.AreEqual(height, tensorProxy.shape[dimension - 2]);
+            Assert.AreEqual(width, tensorProxy.shape[dimension - 1]);
+            Assert.AreEqual(channels, tensorProxy.shape[dimension - 3]);
 
-            Assert.AreEqual(height, tensorProxy.data.shape.height);
-            Assert.AreEqual(width, tensorProxy.data.shape.width);
-            Assert.AreEqual(channels, tensorProxy.data.shape.channels);
+            Assert.AreEqual(height, tensorProxy.data.shape.Height());
+            Assert.AreEqual(width, tensorProxy.data.shape.Width());
+            Assert.AreEqual(channels, tensorProxy.data.shape.Channels());
 
             alloc.Dispose();
         }
@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Tests
             var t = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(1, 3, 4, 2)
+                data = TensorFloat.Zeros(new TensorShape(1, 3, 4, 2))
             };
 
             TensorUtils.FillTensorWithRandomNormal(t, rn);
@@ -126,9 +126,9 @@ namespace Unity.MLAgents.Tests
                 -1.177194f,
             };
 
-            for (var i = 0; i < t.data.length; i++)
+            for (var i = 0; i < t.data.Length(); i++)
             {
-                Assert.AreEqual(t.data[i], reference[i], 0.0001);
+                Assert.AreEqual(((TensorFloat)t.data)[i], reference[i], 0.0001);
             }
         }
     }

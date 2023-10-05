@@ -68,7 +68,7 @@ namespace Unity.MLAgents
 #endif
         }
 
-#region Initialization
+        #region Initialization
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
@@ -259,9 +259,9 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
-#region Destruction
+        #region Destruction
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
@@ -284,9 +284,9 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
-#region Sending Events
+        #region Sending Events
 
         void SendCommandEvent(CommandProto command)
         {
@@ -313,9 +313,9 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
-#region Sending and retreiving data
+        #region Sending and retreiving data
 
         public void DecideBatch()
         {
@@ -585,7 +585,7 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
 #if UNITY_EDITOR
         /// <summary>

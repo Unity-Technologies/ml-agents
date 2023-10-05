@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
+using System.Linq;
+using Unity.Sentis;
 using Unity.MLAgents.Inference.Utils;
+using Unity.MLAgents.Policies;
 
 namespace Unity.MLAgents.Inference
 {
@@ -24,8 +26,15 @@ namespace Unity.MLAgents.Inference
         static readonly Dictionary<TensorType, Type> k_TypeMap =
             new Dictionary<TensorType, Type>()
         {
-            {TensorType.FloatingPoint, typeof(float)},
-            {TensorType.Integer, typeof(int)}
+            { TensorType.FloatingPoint, typeof(float) },
+            { TensorType.Integer, typeof(int) }
+        };
+
+        static readonly Dictionary<TensorType, DataType> k_DTypeMap =
+            new Dictionary<TensorType, DataType>()
+        {
+            { TensorType.FloatingPoint, Sentis.DataType.Float },
+            { TensorType.Integer, Sentis.DataType.Int }
         };
 
         public string name;
@@ -33,22 +42,34 @@ namespace Unity.MLAgents.Inference
 
         // Since Type is not serializable, we use the DisplayType for the Inspector
         public Type DataType => k_TypeMap[valueType];
+        public DataType DType => k_DTypeMap[valueType];
         public long[] shape;
         public Tensor data;
+        public DeviceType Device => data.tensorOnDevice.deviceType;
 
         public long Height
         {
-            get { return shape.Length == 4 ? shape[1] : shape[5]; }
+            get { return shape.Length >= 4 ? shape[^2] : 1; }
         }
 
         public long Width
         {
-            get { return shape.Length == 4 ? shape[2] : shape[6]; }
+            get { return shape.Length >= 3 ? shape[^1] : 1; }
         }
 
         public long Channels
         {
-            get { return shape.Length == 4 ? shape[3] : shape[7]; }
+            get
+            {
+                return shape.Length >= 4 ? shape[^3] :
+                    shape.Length == 3 ? shape[^2] :
+                    shape.Length == 2 ? shape[^1] : 1;
+            }
+        }
+
+        ~TensorProxy()
+        {
+            data?.Dispose();
         }
     }
 
@@ -57,49 +78,58 @@ namespace Unity.MLAgents.Inference
         public static void ResizeTensor(TensorProxy tensor, int batch, ITensorAllocator allocator)
         {
             if (tensor.shape[0] == batch &&
-                tensor.data != null && tensor.data.batch == batch)
+                tensor.data != null && tensor.data.Batch() == batch)
             {
                 return;
             }
 
             tensor.data?.Dispose();
             tensor.shape[0] = batch;
-
-            if (tensor.shape.Length == 4 || tensor.shape.Length == 8)
-            {
-                tensor.data = allocator.Alloc(
-                    new TensorShape(
-                        batch,
-                        (int)tensor.Height,
-                        (int)tensor.Width,
-                        (int)tensor.Channels));
-            }
-            else
-            {
-                tensor.data = allocator.Alloc(
-                    new TensorShape(
-                        batch,
-                        (int)tensor.shape[tensor.shape.Length - 1]));
-            }
+            var newTensorShape = new TensorShape(tensor.shape.Select(i => (int)i).ToArray());
+            tensor.data = CreateEmptyTensor(newTensorShape, tensor.DType);
         }
 
-        internal static long[] TensorShapeFromBarracuda(TensorShape src)
+        public static Tensor CreateEmptyTensor(TensorShape shape, DataType dataType)
         {
-            if (src.height == 1 && src.width == 1)
+            Tensor tensor = null;
+            switch (dataType)
             {
-                return new long[] { src.batch, src.channels };
+                case DataType.Float:
+                    tensor = TensorFloat.Zeros(shape);
+                    break;
+                case DataType.Int:
+                    tensor = TensorInt.Zeros(shape);
+                    break;
             }
 
-            return new long[] { src.batch, src.height, src.width, src.channels };
+            return tensor;
         }
 
-        public static TensorProxy TensorProxyFromBarracuda(Tensor src, string nameOverride = null)
+        internal static long[] TensorShapeFromSentis(TensorShape src)
         {
-            var shape = TensorShapeFromBarracuda(src.shape);
+            if (src.rank == 2)
+            {
+                return new long[] { src.Batch(), src.Channels() };
+            }
+
+            if (src.Height() == 1 && src.Width() == 1)
+            {
+                return new long[] { src.Batch(), src.Channels() };
+            }
+
+            return new long[] { src.Batch(), src.Channels(), src.Height(), src.Width() };
+        }
+
+        public static TensorProxy TensorProxyFromSentis(Tensor src, string nameOverride = null)
+        {
+            var shape = TensorShapeFromSentis(src.shape);
             return new TensorProxy
             {
-                name = nameOverride ?? src.name,
-                valueType = TensorProxy.TensorType.FloatingPoint,
+                // name = nameOverride ?? src.name,
+                name = nameOverride ?? "",
+                valueType = src.dataType == DataType.Float
+                    ? TensorProxy.TensorType.FloatingPoint
+                    : TensorProxy.TensorType.Integer,
                 shape = shape,
                 data = src
             };
@@ -113,16 +143,16 @@ namespace Unity.MLAgents.Inference
         /// <param name="fillValue"></param>
         public static void FillTensorBatch(TensorProxy tensorProxy, int batch, float fillValue)
         {
-            var height = tensorProxy.data.height;
-            var width = tensorProxy.data.width;
-            var channels = tensorProxy.data.channels;
+            var height = tensorProxy.data.Height();
+            var width = tensorProxy.data.Width();
+            var channels = tensorProxy.data.Channels();
             for (var h = 0; h < height; h++)
             {
                 for (var w = 0; w < width; w++)
                 {
                     for (var c = 0; c < channels; c++)
                     {
-                        tensorProxy.data[batch, h, w, c] = fillValue;
+                        ((TensorFloat)tensorProxy.data)[batch, c, h, w] = fillValue;
                     }
                 }
             }
@@ -152,9 +182,9 @@ namespace Unity.MLAgents.Inference
                 throw new ArgumentNullException();
             }
 
-            for (var i = 0; i < tensorProxy.data.length; i++)
+            for (var i = 0; i < tensorProxy.data.Length(); i++)
             {
-                tensorProxy.data[i] = (float)randomNormal.NextDouble();
+                ((TensorFloat)tensorProxy.data)[i] = (float)randomNormal.NextDouble();
             }
         }
     }

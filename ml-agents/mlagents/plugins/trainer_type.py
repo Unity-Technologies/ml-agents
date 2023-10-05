@@ -1,23 +1,15 @@
-import sys
+import importlib.metadata as importlib_metadata  # pylint: disable=E0611
 from typing import Dict, Tuple, Any
 
-# importlib.metadata is new in python3.8
-# We use the backport for older python versions.
-if sys.version_info < (3, 8):
-    import importlib_metadata
-else:
-    import importlib.metadata as importlib_metadata  # pylint: disable=E0611
-
-
-from mlagents_envs import logging_util
+from mlagents import plugins as mla_plugins
 from mlagents.plugins import ML_AGENTS_TRAINER_TYPE
-from mlagents.trainers.ppo.trainer import PPOTrainer
-from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents.trainers.poca.optimizer_torch import POCASettings
 from mlagents.trainers.poca.trainer import POCATrainer
 from mlagents.trainers.ppo.optimizer_torch import PPOSettings
+from mlagents.trainers.ppo.trainer import PPOTrainer
 from mlagents.trainers.sac.optimizer_torch import SACSettings
-from mlagents.trainers.poca.optimizer_torch import POCASettings
-from mlagents import plugins as mla_plugins
+from mlagents.trainers.sac.trainer import SACTrainer
+from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
 

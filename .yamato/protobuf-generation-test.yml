@@ -11,10 +11,10 @@ test_linux_protobuf_generation:
     - |
       sudo apt-get update && sudo apt-get install -y nuget
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
-      conda activate python3.8
+      conda activate python3.10
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python3 -m pip install grpcio==1.28.1 grpcio-tools==1.13.0 protobuf==3.11.3 six==1.14.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python3 -m pip install grpcio==1.48.2 grpcio-tools==1.48.2 protobuf==3.19.6 six==1.16.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       pushd protobuf-definitions
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/protoc
       chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/grpc_csharp_plugin

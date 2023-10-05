@@ -478,7 +478,6 @@ namespace Unity.MLAgents.Sensors
                     EndPositionWorld = endPositionWorld,
                     ScaledCastRadius = scaledCastRadius
                 };
-
             }
 
             if (unscaledCastRadius > 0f)
@@ -543,7 +542,6 @@ namespace Unity.MLAgents.Sensors
                 batchedRaycastOutputs[i].HasHit = castHit;
                 batchedRaycastOutputs[i].HitFraction = hitFraction;
                 batchedRaycastOutputs[i].HitGameObject = hitObject;
-
             }
 
             results.Dispose();

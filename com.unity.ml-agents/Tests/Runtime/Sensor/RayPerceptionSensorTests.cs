@@ -428,7 +428,7 @@ namespace Unity.MLAgents.Tests
             }
         }
 
-                [Test]
+        [Test]
         public void TestStaticBatchedPerceive()
         {
             SetupScene();

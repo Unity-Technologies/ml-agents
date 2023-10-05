@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
@@ -653,7 +653,7 @@ namespace Unity.MLAgents
         /// will be run.</param>
         public void SetModel(
             string behaviorName,
-            NNModel model,
+            ModelAsset model,
             InferenceDevice inferenceDevice = InferenceDevice.Default)
         {
             if (behaviorName == m_PolicyFactory.BehaviorName &&

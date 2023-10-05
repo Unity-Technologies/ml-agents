@@ -21,6 +21,7 @@
     * [random\_action](#mlagents_envs.base_env.ActionSpec.random_action)
     * [create\_continuous](#mlagents_envs.base_env.ActionSpec.create_continuous)
     * [create\_discrete](#mlagents_envs.base_env.ActionSpec.create_discrete)
+    * [create\_hybrid](#mlagents_envs.base_env.ActionSpec.create_hybrid)
   * [DimensionProperty](#mlagents_envs.base_env.DimensionProperty)
     * [UNSPECIFIED](#mlagents_envs.base_env.DimensionProperty.UNSPECIFIED)
     * [NONE](#mlagents_envs.base_env.DimensionProperty.NONE)
@@ -411,6 +412,16 @@ Creates an ActionSpec that is homogenously continuous
 ```
 
 Creates an ActionSpec that is homogenously discrete
+
+<a name="mlagents_envs.base_env.ActionSpec.create_hybrid"></a>
+#### create\_hybrid
+
+```python
+ | @staticmethod
+ | create_hybrid(continuous_size: int, discrete_branches: Tuple[int]) -> "ActionSpec"
+```
+
+Creates a hybrid ActionSpace
 
 <a name="mlagents_envs.base_env.DimensionProperty"></a>
 ## DimensionProperty Objects

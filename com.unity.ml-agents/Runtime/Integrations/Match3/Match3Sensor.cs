@@ -80,7 +80,7 @@ namespace Unity.MLAgents.Integrations.Match3
             m_ObservationType = obsType;
             m_ObservationSpec = obsType == Match3ObservationType.Vector
                 ? ObservationSpec.Vector(maxBoardSize.Rows * maxBoardSize.Columns * oneHotSize)
-                : ObservationSpec.Visual(maxBoardSize.Rows, maxBoardSize.Columns, oneHotSize);
+                : ObservationSpec.Visual(oneHotSize, maxBoardSize.Rows, maxBoardSize.Columns);
         }
 
         /// <summary>
@@ -315,7 +315,7 @@ namespace Unity.MLAgents.Integrations.Match3
             {
                 for (var i = 0; i < oneHotSize; i++)
                 {
-                    writer[row, col, i] = (i == value) ? 1.0f : 0.0f;
+                    writer[i, row, col] = (i == value) ? 1.0f : 0.0f;
                 }
             }
             else
@@ -334,7 +334,7 @@ namespace Unity.MLAgents.Integrations.Match3
             {
                 for (var i = 0; i < oneHotSize; i++)
                 {
-                    writer[row, col, i] = 0.0f;
+                    writer[i, row, col] = 0.0f;
                 }
             }
             else

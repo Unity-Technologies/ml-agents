@@ -1,4 +1,4 @@
-using Unity.Barracuda;
+using Unity.Sentis;
 using System.Collections.Generic;
 using System.Diagnostics;
 using Unity.MLAgents.Actuators;
@@ -18,28 +18,28 @@ namespace Unity.MLAgents.Policies
         Default = 0,
 
         /// <summary>
-        /// GPU inference. Corresponds to WorkerFactory.Type.ComputePrecompiled in Barracuda.
+        /// GPU inference with the Compute Shader backend. Corresponds to WorkerFactory.Type.ComputeShader in Sentis.
         /// </summary>
-        GPU = 1,
+        ComputeShader = 1,
 
         /// <summary>
-        /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Barracuda.
+        /// CPU inference using Burst. Corresponds to WorkerFactory.Type.CSharpBurst in Sentis.
         /// </summary>
         Burst = 2,
 
         /// <summary>
-        /// CPU inference. Corresponds to in WorkerFactory.Type.CSharp Barracuda.
+        /// GPU inference with the Pixel Shader backend. Corresponds to in WorkerFactory.Type.PixelShader Sentis.
         /// Burst is recommended instead; this is kept for legacy compatibility.
         /// </summary>
-        CPU = 3,
+        PixelShader = 3,
     }
 
     /// <summary>
-    /// The Barracuda Policy uses a Barracuda Model to make decisions at
+    /// The Sentis Policy uses a Sentis Model to make decisions at
     /// every step. It uses a ModelRunner that is shared across all
-    /// Barracuda Policies that use the same model and inference devices.
+    /// Sentis Policies that use the same model and inference devices.
     /// </summary>
-    internal class BarracudaPolicy : IPolicy
+    internal class SentisPolicy : IPolicy
     {
         protected ModelRunner m_ModelRunner;
         ActionBuffers m_LastActionBuffer;
@@ -71,19 +71,19 @@ namespace Unity.MLAgents.Policies
         private bool m_AnalyticsSent;
 
         /// <summary>
-        /// Instantiate a BarracudaPolicy with the necessary objects for it to run.
+        /// Instantiate a SentisPolicy with the necessary objects for it to run.
         /// </summary>
         /// <param name="actionSpec">The action spec of the behavior.</param>
         /// <param name="actuators">The actuators used for this behavior.</param>
         /// <param name="model">The Neural Network to use.</param>
-        /// <param name="inferenceDevice">Which device Barracuda will run on.</param>
+        /// <param name="inferenceDevice">Which device Sentis will run on.</param>
         /// <param name="behaviorName">The name of the behavior.</param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
-        public BarracudaPolicy(
+        public SentisPolicy(
             ActionSpec actionSpec,
             IList<IActuator> actuators,
-            NNModel model,
+            ModelAsset model,
             InferenceDevice inferenceDevice,
             string behaviorName,
             bool deterministicInference = false

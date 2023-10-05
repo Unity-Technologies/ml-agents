@@ -212,7 +212,24 @@ def setup_test_behavior_specs(
         action_spec = ActionSpec.create_discrete(tuple(vector_action_space))
     else:
         action_spec = ActionSpec.create_continuous(vector_action_space)
-    observation_shapes = [(84, 84, 3)] * int(use_visual) + [(vector_obs_space,)]
+    observation_shapes = [(3, 84, 84)] * int(use_visual) + [(vector_obs_space,)]
+    obs_spec = create_observation_specs_with_shapes(observation_shapes)
+    behavior_spec = BehaviorSpec(obs_spec, action_spec)
+    return behavior_spec
+
+
+def setup_test_hybrid_behavior_specs(
+    use_visual=False,
+    continuous_action_space=3,
+    discrete_action_space=None,
+    vector_obs_space=1,
+):
+    if discrete_action_space is None:
+        discrete_action_space = [2]
+    action_spec = ActionSpec.create_hybrid(
+        continuous_action_space, tuple(discrete_action_space)
+    )
+    observation_shapes = [(3, 84, 84)] * int(use_visual) + [(vector_obs_space,)]
     obs_spec = create_observation_specs_with_shapes(observation_shapes)
     behavior_spec = BehaviorSpec(obs_spec, action_spec)
     return behavior_spec
@@ -233,4 +250,10 @@ def create_mock_pushblock_behavior_specs():
 def create_mock_banana_behavior_specs():
     return setup_test_behavior_specs(
         True, True, vector_action_space=[3, 3, 3, 2], vector_obs_space=0
+    )
+
+
+def create_visual_food_collector_specs():
+    return setup_test_hybrid_behavior_specs(
+        True, continuous_action_space=3, discrete_action_space=[2], vector_obs_space=1
     )

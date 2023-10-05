@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Analytics;
@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Tests.Analytics
     public class InferenceAnalyticsTests
     {
         const string k_continuousONNXPath = "Packages/com.unity.ml-agents/Tests/Editor/TestModels/continuous2vis8vec2action_v1_0.onnx";
-        NNModel continuousONNXModel;
+        ModelAsset continuousONNXModel;
         Test3DSensorComponent sensor_21_20_3;
         Test3DSensorComponent sensor_20_22_3;
 
@@ -33,7 +33,7 @@ namespace Unity.MLAgents.Tests.Analytics
                 Academy.Instance.Dispose();
             }
 
-            continuousONNXModel = (NNModel)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(NNModel));
+            continuousONNXModel = (ModelAsset)AssetDatabase.LoadAssetAtPath(k_continuousONNXPath, typeof(ModelAsset));
             var go = new GameObject("SensorA");
             sensor_21_20_3 = go.AddComponent<Test3DSensorComponent>();
             sensor_21_20_3.Sensor = new Test3DSensor("SensorA", 21, 20, 3);
@@ -53,7 +53,7 @@ namespace Unity.MLAgents.Tests.Analytics
 
             var continuousEvent = InferenceAnalytics.GetEventForModel(
                 continuousONNXModel, behaviorName,
-                InferenceDevice.CPU, sensors, actionSpec,
+                InferenceDevice.Burst, sensors, actionSpec,
                 actuators
             );
 
@@ -64,10 +64,10 @@ namespace Unity.MLAgents.Tests.Analytics
             Assert.AreEqual(0, continuousEvent.ActionSpec.NumDiscreteActions);
             Assert.AreEqual(2, continuousEvent.ObservationSpecs.Count);
             Assert.AreEqual(3, continuousEvent.ObservationSpecs[0].DimensionInfos.Length);
-            Assert.AreEqual(20, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Size);
+            Assert.AreEqual(20, continuousEvent.ObservationSpecs[0].DimensionInfos[1].Size);
             Assert.AreEqual(0, continuousEvent.ObservationSpecs[0].ObservationType);
-            Assert.AreEqual((int)DimensionProperty.TranslationalEquivariance, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Flags);
-            Assert.AreEqual((int)DimensionProperty.None, continuousEvent.ObservationSpecs[0].DimensionInfos[2].Flags);
+            Assert.AreEqual((int)DimensionProperty.TranslationalEquivariance, continuousEvent.ObservationSpecs[0].DimensionInfos[1].Flags);
+            Assert.AreEqual((int)DimensionProperty.None, continuousEvent.ObservationSpecs[0].DimensionInfos[0].Flags);
             Assert.AreEqual("None", continuousEvent.ObservationSpecs[0].CompressionType);
             Assert.AreEqual(Test3DSensor.k_BuiltInSensorType, continuousEvent.ObservationSpecs[0].BuiltInSensorType);
             Assert.AreEqual((int)BuiltInActuatorType.VectorActuator, continuousEvent.ActuatorInfos[0].BuiltInActuatorType);
@@ -84,17 +84,17 @@ namespace Unity.MLAgents.Tests.Analytics
         }
 
         [Test]
-        public void TestBarracudaPolicy()
+        public void TestSentisPolicy()
         {
             // Explicitly request decisions for a policy so we get code coverage on the event sending
             using (new AnalyticsUtils.DisableAnalyticsSending())
             {
                 var sensors = new List<ISensor> { sensor_21_20_3.Sensor, sensor_20_22_3.Sensor };
-                var policy = new BarracudaPolicy(
+                var policy = new SentisPolicy(
                     GetContinuous2vis8vec2actionActionSpec(),
                     Array.Empty<IActuator>(),
                     continuousONNXModel,
-                    InferenceDevice.CPU,
+                    InferenceDevice.Burst,
                     "testBehavior"
                 );
                 policy.RequestDecision(new AgentInfo(), sensors);

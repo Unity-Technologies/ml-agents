@@ -1,20 +1,11 @@
-import sys
+import importlib.metadata as importlib_metadata  # pylint: disable=E0611
 from typing import List
 
-# importlib.metadata is new in python3.8
-# We use the backport for older python versions.
-if sys.version_info < (3, 8):
-    import importlib_metadata
-else:
-    import importlib.metadata as importlib_metadata  # pylint: disable=E0611
-
-from mlagents.trainers.stats import StatsWriter
-
-from mlagents_envs import logging_util
 from mlagents.plugins import ML_AGENTS_STATS_WRITER
 from mlagents.trainers.settings import RunOptions
+from mlagents.trainers.stats import StatsWriter
 from mlagents.trainers.stats import TensorboardWriter, GaugeWriter, ConsoleWriter
-
+from mlagents_envs import logging_util
 
 logger = logging_util.get_logger(__name__)
 
