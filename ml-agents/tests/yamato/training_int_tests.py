@@ -105,12 +105,14 @@ def run_training(python_version: str, csharp_version: str) -> bool:
         subprocess.run(["cat", log_output_path])
         return False
 
-    if csharp_version is None and python_version is None:
-        # Use abs path so that loading doesn't get confused
-        model_path = os.path.abspath(os.path.dirname(onnx_file_expected))
-        inference_ok = run_inference(env_path, model_path, "onnx")
-        if not inference_ok:
-            return False
+    # TODO re-enable when Sentis model byte loading has been added
+    # disabling inference tests for now due to Sentis deprecation of loading onnx from byte array.
+    # if csharp_version is None and python_version is None:
+    #     # Use abs path so that loading doesn't get confused
+    #     model_path = os.path.abspath(os.path.dirname(onnx_file_expected))
+    #     inference_ok = run_inference(env_path, model_path, "onnx")
+    #     if not inference_ok:
+    #         return False
 
     print("mlagents-learn run SUCCEEDED!")
     return True
