@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Sentis;
 using System.IO;
-using Unity.Sentis.ONNX;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 #if UNITY_EDITOR
@@ -46,7 +45,6 @@ namespace Unity.MLAgentsExamples
 
         // Cached loaded ModelAssets, with the behavior name as the key.
         Dictionary<string, ModelAsset> m_CachedModels = new Dictionary<string, ModelAsset>();
-
 
         // Max episodes to run. Only used if > 0
         // Will default to 1 if override models are specified, otherwise 0.
@@ -120,6 +118,7 @@ namespace Unity.MLAgentsExamples
             {
                 return;
             }
+
             var maxEpisodes = 0;
             var timeoutSeconds = 0;
 
@@ -148,6 +147,7 @@ namespace Unity.MLAgentsExamples
                         EditorApplication.isPlaying = false;
 #endif
                     }
+
                     m_OverrideExtensions.Add(overrideExtension);
                 }
                 else if (args[i] == k_CommandLineQuitAfterEpisodesFlag && i < args.Length - 1)
@@ -276,11 +276,23 @@ namespace Unity.MLAgentsExamples
             if (rawModel == null)
             {
                 Debug.Log($"Couldn't load model file(s) for {behaviorName} in {m_BehaviorNameOverrideDirectory} (full path: {Path.GetFullPath(m_BehaviorNameOverrideDirectory)}");
+
                 // Cache the null so we don't repeatedly try to load a missing file
                 m_CachedModels[behaviorName] = null;
                 return null;
             }
 
+            // TODO enable this when we have a decision on supporting loading/converting an ONNX model directly into a ModelAsset
+            // ModelAsset asset;
+            // if (isOnnx)
+            // {
+            //     var modelName = Path.Combine(m_BehaviorNameOverrideDirectory, $"{behaviorName}.onnx");
+            //     asset = LoadOnnxModel(modelName);
+            // }
+            // else
+            // {
+            //     asset = LoadSentisModel(rawModel);
+            // }
             // var asset = isOnnx ? LoadOnnxModel(rawModel) : LoadSentisModel(rawModel);
             var asset = LoadSentisModel(rawModel);
             asset.name = assetName;
@@ -295,6 +307,41 @@ namespace Unity.MLAgentsExamples
             asset.modelAssetData.value = rawModel;
             return asset;
         }
+
+        // TODO enable this when we have a decision on supporting loading/converting an ONNX model directly into a ModelAsset
+        // ModelAsset LoadOnnxModel(string modelName)
+        // {
+        //     Debug.Log($"Loading model for override: {modelName}");
+        //     var converter = new ONNXModelConverter(true);
+        //     var directoryName = Path.GetDirectoryName(modelName);
+        //     var model = converter.Convert(modelName, directoryName);
+        //     var asset = ScriptableObject.CreateInstance<ModelAsset>();
+        //     var assetData = ScriptableObject.CreateInstance<ModelAssetData>();
+        //     var descStream = new MemoryStream();
+        //     ModelWriter.SaveModelDesc(descStream, model);
+        //     assetData.value = descStream.ToArray();
+        //     assetData.name = "Data";
+        //     assetData.hideFlags = HideFlags.HideInHierarchy;
+        //     descStream.Close();
+        //     descStream.Dispose();
+        //     asset.modelAssetData = assetData;
+        //     var weightStreams = new List<MemoryStream>();
+        //     ModelWriter.SaveModelWeights(weightStreams, model);
+        //
+        //     asset.modelWeightsChunks = new ModelAssetWeightsData[weightStreams.Count];
+        //     for (int i = 0; i < weightStreams.Count; i++)
+        //     {
+        //         var stream = weightStreams[i];
+        //         asset.modelWeightsChunks[i] = ScriptableObject.CreateInstance<ModelAssetWeightsData>();
+        //         asset.modelWeightsChunks[i].value = stream.ToArray();
+        //         asset.modelWeightsChunks[i].name = "Data";
+        //         asset.modelWeightsChunks[i].hideFlags = HideFlags.HideInHierarchy;
+        //         stream.Close();
+        //         stream.Dispose();
+        //     }
+        //
+        //     return asset;
+        // }
 
         // TODO this should probably be deprecated since Sentis does not support direct conversion from byte arrays
         // ModelAsset LoadOnnxModel(byte[] rawModel)
@@ -316,7 +363,6 @@ namespace Unity.MLAgentsExamples
         //     asset.modelAssetData = assetData;
         //     return asset;
         // }
-
 
         /// <summary>
         /// Load the ModelAsset file from the specified path, and give it to the attached agent.
@@ -369,12 +415,12 @@ namespace Unity.MLAgentsExamples
                 {
                     Debug.LogWarning(overrideError);
                 }
+
                 Application.Quit(1);
 #if UNITY_EDITOR
                 EditorApplication.isPlaying = false;
 #endif
             }
-
         }
     }
 }
