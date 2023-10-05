@@ -40,7 +40,7 @@ jobs:
         python-version: [3.10.x]
         include:
           - python-version: 3.10.x
-            pip_constraints: test_constraints_max_version.txt
+            pip_constraints: test_constraints_version.txt
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python
