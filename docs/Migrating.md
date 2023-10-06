@@ -4,7 +4,7 @@
 <!---
 TODO: update ml-agents-env package version before release
 --->
-## Migrating to the ml-agents-envs 0.29.0 package
+## Migrating to the ml-agents-envs 0.30.0 package
 - Python 3.10 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
   Please update your python installation to 3.10.12 or higher.
 - The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
@@ -19,7 +19,7 @@ from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 ```
 
 
-## Migrating the package to version 2.0
+## Migrating the package to version 2.x
 - The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
   project.

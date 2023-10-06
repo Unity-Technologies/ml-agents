@@ -42,7 +42,7 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.
 
-### Install **Python 3.7.2** or Higher
+### Install **Python 3.10.12** or Higher
 
 We recommend [installing](https://www.python.org/downloads/) Python 3.7.
 If you are using Windows, please install the x86-64 version and not x86.
@@ -139,7 +139,7 @@ On Windows, you'll have to install the PyTorch package separately prior to
 installing ML-Agents. Activate your virtual environment and run from the command line:
 
 ```sh
-pip3 install torch~=1.7.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install torch~=1.13.1 -f https://download.pytorch.org/whl/torch_stable.html
 ```
 
 Note that on Windows, you may also need Microsoft's

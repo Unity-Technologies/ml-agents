@@ -164,15 +164,15 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 
 ### More from Unity
 
-- [Unity Robotics](https://github.com/Unity-Technologies/Unity-Robotics-Hub)
-- [Unity Computer Vision](https://github.com/Unity-Technologies/com.unity.perception)
+- [Unity Sentis](https://unity.com/products/sentis)
+- [Introductin Unity Muse and Sentis](https://blog.unity.com/engine-platform/introducing-unity-muse-and-unity-sentis-ai)
 
 ## Community and Feedback
 
 The ML-Agents Toolkit is an open-source project and we encourage and welcome
 contributions. If you wish to contribute, be sure to review our
 [contribution guidelines](CONTRIBUTING.md) and
-[code of conduct](../CODE_OF_CONDUCT.md).
+[code of conduct](CODE_OF_CONDUCT.md).
 
 For problems with the installation and setup of the ML-Agents Toolkit, or
 discussions about how to best setup or train your agents, please create a new
