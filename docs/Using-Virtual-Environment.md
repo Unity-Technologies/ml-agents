@@ -21,6 +21,10 @@ from dependencies of other projects. This has a few advantages:
 This guide has been tested with Python 3.10.12. Newer versions might not
 have support for the dependent libraries, so are not recommended.
 
+## Use Conda (or Mamba)
+
+While there are many options for setting up virtual environments for python, by far the most
+
 ## Installing Pip (Required)
 
 1. Download the `get-pip.py` file using the command

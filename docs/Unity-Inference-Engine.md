@@ -10,7 +10,7 @@ run the neural network within Unity.
 ## Supported devices
 
 See the Unity Inference Engine documentation for a list of the
-[supported platforms](https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html#supported-platforms).
+[supported platforms](https://docs.unity3d.com/Manual/PlatformSpecific.html).
 
 Scripting Backends : The Unity Inference Engine is generally faster with
 **IL2CPP** than with **Mono** for Standalone builds. In the Editor, It is not

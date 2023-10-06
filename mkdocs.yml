@@ -13,6 +13,7 @@ nav:
     - Machine Learning: Background-Machine-Learning.md
     - PyTorch: Background-PyTorch.md
     - Unity: Background-Unity.md
+    - ELO: ELO-Rating-System.md
 - Interfacing with Unity Builds:
     - Getting started with the Gym API: Python-Gym-API.md
     - Getting started with the PettingZoo API: Python-PettingZoo-API.md
@@ -23,7 +24,9 @@ nav:
     - LLAPI Documentation: Python-LLAPI-Documentation.md
     - On/Off Policy Trainer: Python-On-Off-Policy-Trainer-Documentation.md
 - Tutorials:
+    - Customizing Training via Plugins: Training-Plugins.md
     - Custom Trainer Plugin: Tutorial-Custom-Trainer-Plugin.md
+    - HuggingFace: Hugging-Face-Integration.md
 - About:
     - FAQs: FAQ.md
     - Limitations: Limitations.md

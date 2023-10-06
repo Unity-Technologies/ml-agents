@@ -1,3 +1,7 @@
+# Custom Trainer Plugin
+
+## How to write a custom trainer plugin
+
 ### Step 1: Write your custom trainer class
 Before you start writing your code, make sure to use your favorite environment management tool(e.g. `venv` or `conda`) to create and activate a Python virtual environment. The following command uses `conda`, but other tools work similarly:
 ```shell
