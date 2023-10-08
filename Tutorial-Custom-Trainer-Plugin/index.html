@@ -15,10 +15,10 @@
         <link rel="canonical" href="https://unity-technologies.github.io/ml-agents/Tutorial-Custom-Trainer-Plugin/">
       
       
-        <link rel="prev" href="../Python-On-Off-Policy-Trainer-Documentation/">
+        <link rel="prev" href="../Training-Plugins/">
       
       
-        <link rel="next" href="../FAQ/">
+        <link rel="next" href="../Hugging-Face-Integration/">
       
       
       <link rel="icon" href="../images/unity-logo-black.png">
@@ -79,7 +79,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#step-1-write-your-custom-trainer-class" class="md-skip">
+        <a href="#custom-trainer-plugin" class="md-skip">
           Skip to content
         </a>
       
@@ -375,6 +375,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ELO-Rating-System/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ELO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -650,6 +670,26 @@
                 
   
   
+  
+    <li class="md-nav__item">
+      <a href="../Training-Plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Customizing Training via Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -657,6 +697,8 @@
       
       <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
       
+      
+        
       
       
         <label class="md-nav__link md-nav__link--active" for="__toc">
@@ -686,6 +728,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -694,37 +738,50 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-to-write-a-custom-trainer-plugin" class="md-nav__link">
+    How to write a custom trainer plugin
+  </a>
+  
+    <nav class="md-nav" aria-label="How to write a custom trainer plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#step-1-write-your-custom-trainer-class" class="md-nav__link">
     Step 1: Write your custom trainer class
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-2-implement-your-custom-optimizer-for-the-trainer" class="md-nav__link">
     Step 2: implement your custom optimizer for the trainer.
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-3-integrate-your-custom-trainer-into-the-plugin-system" class="md-nav__link">
     Step 3: Integrate your custom trainer into the plugin system
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-4-install-your-custom-trainer-and-run-training" class="md-nav__link">
     Step 4: Install your custom trainer and run training:
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#validate-your-implementations" class="md-nav__link">
     Validate your implementations:
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -732,6 +789,26 @@
   
 </nav>
       
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Hugging-Face-Integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HuggingFace
+  </span>
+  
+
+      </a>
     </li>
   
 
@@ -884,6 +961,8 @@
   
   
   
+    
+  
   
     <label class="md-nav__title" for="__toc">
       <span class="md-nav__icon md-icon"></span>
@@ -892,37 +971,50 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#how-to-write-a-custom-trainer-plugin" class="md-nav__link">
+    How to write a custom trainer plugin
+  </a>
+  
+    <nav class="md-nav" aria-label="How to write a custom trainer plugin">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#step-1-write-your-custom-trainer-class" class="md-nav__link">
     Step 1: Write your custom trainer class
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-2-implement-your-custom-optimizer-for-the-trainer" class="md-nav__link">
     Step 2: implement your custom optimizer for the trainer.
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-3-integrate-your-custom-trainer-into-the-plugin-system" class="md-nav__link">
     Step 3: Integrate your custom trainer into the plugin system
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#step-4-install-your-custom-trainer-and-run-training" class="md-nav__link">
     Step 4: Install your custom trainer and run training:
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
+        
+          <li class="md-nav__item">
   <a href="#validate-your-implementations" class="md-nav__link">
     Validate your implementations:
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -944,8 +1036,8 @@
   
 
 
-  <h1>Custom Trainer Plugin</h1>
-
+<h1 id="custom-trainer-plugin">Custom Trainer Plugin</h1>
+<h2 id="how-to-write-a-custom-trainer-plugin">How to write a custom trainer plugin</h2>
 <h3 id="step-1-write-your-custom-trainer-class">Step 1: Write your custom trainer class</h3>
 <p>Before you start writing your code, make sure to use your favorite environment management tool(e.g. <code>venv</code> or <code>conda</code>) to create and activate a Python virtual environment. The following command uses <code>conda</code>, but other tools work similarly:</p>
 <pre><code class="language-shell">conda create -n trainer-env python=3.10.12

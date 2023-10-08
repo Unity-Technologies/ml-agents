@@ -371,6 +371,26 @@
 
               
             
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../ELO-Rating-System/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    ELO
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -646,11 +666,51 @@
   
   
     <li class="md-nav__item">
+      <a href="../Training-Plugins/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Customizing Training via Plugins
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../Tutorial-Custom-Trainer-Plugin/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     Custom Trainer Plugin
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../Hugging-Face-Integration/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    HuggingFace
   </span>
   
 
@@ -824,18 +884,31 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#install-python-372-or-higher" class="md-nav__link">
-    Install Python 3.7.2 or Higher
+  <a href="#install-python-31012-or-higher" class="md-nav__link">
+    Install Python 3.10.12 or Higher
   </a>
+  
+    <nav class="md-nav" aria-label="Install Python 3.10.12 or Higher">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#conda-python-setup" class="md-nav__link">
+    Conda python setup
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#clone-the-ml-agents-toolkit-repository-optional" class="md-nav__link">
-    Clone the ML-Agents Toolkit Repository (Optional)
+  <a href="#clone-the-ml-agents-toolkit-repository-recommended" class="md-nav__link">
+    Clone the ML-Agents Toolkit Repository (Recommended)
   </a>
   
-    <nav class="md-nav" aria-label="Clone the ML-Agents Toolkit Repository (Optional)">
+    <nav class="md-nav" aria-label="Clone the ML-Agents Toolkit Repository (Recommended)">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
@@ -970,7 +1043,7 @@
 <ul>
 <li>Install Unity (2022.3 or later)</li>
 <li>Install Python (3.10.12 or higher)</li>
-<li>Clone this repository (Optional)</li>
+<li>Clone this repository (Recommended for the latest version and bug fixes)</li>
 <li><strong>Note:</strong> If you do not clone the repository, then you will not be
   able to access the example environments and training configurations or the
   <code>com.unity.ml-agents.extensions</code> package. Additionally, the
@@ -978,19 +1051,25 @@
   repository.</li>
 <li>Install the <code>com.unity.ml-agents</code> Unity package</li>
 <li>Install the <code>com.unity.ml-agents.extensions</code> Unity package (Optional)</li>
+<li>Install the <code>mlagents-envs</code></li>
 <li>Install the <code>mlagents</code> Python package</li>
 </ul>
 <h3 id="install-unity-20223-or-later">Install <strong>Unity 2022.3</strong> or Later</h3>
 <p><a href="https://unity3d.com/get-unity/download">Download</a> and install Unity. We
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.</p>
-<h3 id="install-python-372-or-higher">Install <strong>Python 3.7.2</strong> or Higher</h3>
-<p>We recommend <a href="https://www.python.org/downloads/">installing</a> Python 3.7.
+<h3 id="install-python-31012-or-higher">Install <strong>Python 3.10.12</strong> or Higher</h3>
+<p>We recommend <a href="https://www.python.org/downloads/">installing</a> Python 3.10.
 If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include <code>pip3</code>, see these
 <a href="https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers">instructions</a>
-on installing it.</p>
-<h3 id="clone-the-ml-agents-toolkit-repository-optional">Clone the ML-Agents Toolkit Repository (Optional)</h3>
+on installing it. We also recommend using <a href="https://docs.conda.io/en/latest/">conda</a> or <a href="https://github.com/mamba-org/mamba">mamba</a> to manage your python virtual environments.</p>
+<h4 id="conda-python-setup">Conda python setup</h4>
+<p>Once conda has been installed in your system, open a terminal and execute the following commands to setup a python 3.10 virtual environment
+and activate it.</p>
+<pre><code class="language-shell">conda create -n mlagents python=3.10 &amp;&amp; conda activate mlagents
+</code></pre>
+<h3 id="clone-the-ml-agents-toolkit-repository-recommended">Clone the ML-Agents Toolkit Repository (Recommended)</h3>
 <p>Now that you have installed Unity and Python, you can now install the Unity and
 Python packages. You do not need to clone the repository to install those
 packages, but you may choose to clone the repository if you'd like download our
@@ -1059,7 +1138,7 @@ offer a dedicated <a href="../Using-Virtual-Environment/">guide on Virtual Envir
 <h4 id="windows-installing-pytorch">(Windows) Installing PyTorch</h4>
 <p>On Windows, you'll have to install the PyTorch package separately prior to
 installing ML-Agents. Activate your virtual environment and run from the command line:</p>
-<pre><code class="language-sh">pip3 install torch~=1.7.1 -f https://download.pytorch.org/whl/torch_stable.html
+<pre><code class="language-sh">pip3 install torch~=1.13.1 -f https://download.pytorch.org/whl/torch_stable.html
 </code></pre>
 <p>Note that on Windows, you may also need Microsoft's
 <a href="https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads">Visual C++ Redistributable</a>
@@ -1068,15 +1147,23 @@ for more installation options and versions.</p>
 <h4 id="installing-mlagents">Installing <code>mlagents</code></h4>
 <p>To install the <code>mlagents</code> Python package, activate your virtual environment and
 run from the command line:</p>
-<pre><code class="language-sh">python -m pip install mlagents==0.30.0
+<pre><code class="language-sh">cd /path/to/ml-agents
+python -m pip install ./ml-agents-envs
+python -m pip install ./ml-agents
 </code></pre>
-<p>Note that this will install <code>mlagents</code> from PyPi, <em>not</em> from the cloned
+<p>Note that this will install <code>mlagents</code> from the cloned repository, <em>not</em> from the PyPi
 repository. If you installed this correctly, you should be able to run
 <code>mlagents-learn --help</code>, after which you will see the command
 line parameters you can use with <code>mlagents-learn</code>.</p>
+<p><strong>NOTE:</strong> Since ML-Agents development has slowed, PyPi releases will be less frequent. However, you can install from PyPi by executing
+the following command:</p>
+<pre><code class="language-shell">python -m pip install mlagents
+</code></pre>
+<p>which will install the latest version of ML-Agents and associated dependencies available on PyPi. Note, you need to have the matching version of
+the Unity packages with the particular release of the python packages. You can find the release history <a href="https://github.com/Unity-Technologies/ml-agents/releases">here</a></p>
 <p>By installing the <code>mlagents</code> package, the dependencies listed in the
 <a href="../ml-agents/setup.py">setup.py file</a> are also installed. These include
-<a href="../Background-PyTorch/">PyTorch</a> (Requires a CPU w/ AVX support).</p>
+<a href="../Background-PyTorch/">PyTorch</a>.</p>
 <h4 id="advanced-local-installation-for-development_2">Advanced: Local Installation for Development</h4>
 <p>If you intend to make modifications to <code>mlagents</code> or <code>mlagents_envs</code>, you should
 install the packages from the cloned repository rather than from PyPi. To do
