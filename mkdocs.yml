@@ -8,6 +8,7 @@ copyright: com.unity.ml-agents copyright © 2017 - 2022 Unity Technologies
 nav:
 - Home: index.md
 - ML-Agents Overview: ML-Agents-Overview.md
+- Installation: Installation.md
 - Toolkit Documentation: ML-Agents-Toolkit-Documentation.md
 - Background:
     - Machine Learning: Background-Machine-Learning.md
