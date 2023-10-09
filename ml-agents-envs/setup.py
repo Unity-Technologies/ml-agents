@@ -29,10 +29,16 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 
+# Get the long description from the README file
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
+
 setup(
     name="mlagents_envs",
     version=VERSION,
     description="Unity Machine Learning Agents Interface",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/Unity-Technologies/ml-agents",
     author="Unity Technologies",
     author_email="ML-Agents@unity3d.com",
