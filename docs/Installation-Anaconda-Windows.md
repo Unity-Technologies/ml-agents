@@ -123,10 +123,10 @@ commands in an Anaconda Prompt _(if you open a new prompt, be sure to activate
 the ml-agents Conda environment by typing `activate ml-agents`)_:
 
 ```sh
-git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_21 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_19` option will switch to the tag of the latest stable
+The `--branch release_21` option will switch to the tag of the latest stable
 release. Omitting that will get the `main` branch which is potentially
 unstable.
 
@@ -151,7 +151,7 @@ config files in this directory when running `mlagents-learn`. Make sure you are
 connected to the Internet and then type in the Anaconda Prompt:
 
 ```console
-python -m pip install mlagents==0.30.0
+python -m pip install mlagents==1.0.0
 ```
 
 This will complete the installation of all the required Python packages to run
@@ -162,7 +162,7 @@ pip will get stuck when trying to read the cache of the package. If you see
 this, you can try:
 
 ```console
-python -m pip install mlagents==0.30.0 --no-cache-dir
+python -m pip install mlagents==1.0.0 --no-cache-dir
 ```
 
 This `--no-cache-dir` tells the pip to disable the cache.
