@@ -6,29 +6,30 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [3.0.0-exp.1] - 2023-10-09
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Upgraded ML-Agents to Sentis 1.2.0-exp.2 (#)
-- The minimum supported Unity version was updated to 2022.3. (#)
-- Added batched raycast sensor option. (#)
+- Upgraded ML-Agents to Sentis 1.2.0-exp.2 and deprecated Barracuda. (#5979)
+- The minimum supported Unity version was updated to 2022.3. (#5950)
+- Added batched raycast sensor option. (#5950)
 
 #### ml-agents / ml-agents-envs
-- Updated to PyTorch 1.13.1
-- Deprecated support for Python 3.8.x and 3.9.x
+- Updated to PyTorch 1.13.1 (#5982)
+- Deprecated support for Python 3.8.x and 3.9.x (#5981)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Added DecisionStep parameter to DecisionRequester (#)
+- Added DecisionStep parameter to DecisionRequester (#5940)
   - This will allow the staggering of execution timing when using multi-agents, leading to more stable performance.
 
 #### ml-agents / ml-agents-envs
-- Added timeout cli and yaml config file support for specifying environment timeout.
+- Added timeout cli and yaml config file support for specifying environment timeout. (#5991)
 - Added training config feature to evenly distribute checkpoints throughout training. (#5842)
 - Updated training area replicator to add a condition to only replicate training areas when running a build. (#5842)
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Compiler errors when using IAsyncEnumerable<T> with .NET Standard 2.1 enabled (#5951)
 #### ml-agents / ml-agents-envs
 
 
