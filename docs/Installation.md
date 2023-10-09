@@ -72,17 +72,17 @@ of our tutorials / guides assume you have access to our example environments).
 the repository if you would like to explore more examples.
 
 ```sh
-git clone --branch release_20 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release_21 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release_20` option will switch to the tag of the latest stable
+The `--branch release_21` option will switch to the tag of the latest stable
 release. Omitting that will get the `main` branch which is potentially unstable.
 
 #### Advanced: Local Installation for Development
 
 You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the `develop` branch (by omitting `--branch release_20`
+back, make sure to clone the `develop` branch (by omitting `--branch release_21`
 from the command above). See our
 [Contributions Guidelines](../com.unity.ml-agents/CONTRIBUTING.md) for more
 information on contributing to the ML-Agents Toolkit.
@@ -177,7 +177,7 @@ line parameters you can use with `mlagents-learn`.
 the following command:
 
 ```shell
-python -m pip install mlagents
+python -m pip install mlagents==1.0.0
 ```
 
 which will install the latest version of ML-Agents and associated dependencies available on PyPi. Note, you need to have the matching version of
