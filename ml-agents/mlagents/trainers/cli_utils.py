@@ -233,6 +233,13 @@ def _create_parser() -> argparse.ArgumentParser:
         help="Results base directory",
     )
 
+    argparser.add_argument(
+        "--timeout-wait",
+        default=60,
+        help="The period of time to wait on a Unity environment to startup for training.",
+        action=DetectDefault,
+    )
+
     eng_conf = argparser.add_argument_group(title="Engine Configuration")
     eng_conf.add_argument(
         "--width",
