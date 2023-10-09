@@ -213,6 +213,7 @@ env_settings:
   env_args: null
   base_port: 5005
   num_envs: 1
+  timeout_wait: 10
   seed: -1
   max_lifetime_restarts: 10
   restarts_rate_limit_n: 1
