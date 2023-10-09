@@ -9,13 +9,13 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Updated to PyTorch 1.13.1
-- Deprecated support for Python 3.8.x and 3.9.x
 - Upgraded ML-Agents to Sentis 1.2.0-exp.2 (#)
 - The minimum supported Unity version was updated to 2022.3. (#)
 - Added batched raycast sensor option. (#)
 
 #### ml-agents / ml-agents-envs
+- Updated to PyTorch 1.13.1
+- Deprecated support for Python 3.8.x and 3.9.x
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -23,6 +23,7 @@ and this project adheres to
   - This will allow the staggering of execution timing when using multi-agents, leading to more stable performance.
 
 #### ml-agents / ml-agents-envs
+- Added timeout cli and yaml config file support for specifying environment timeout.
 - Added training config feature to evenly distribute checkpoints throughout training. (#5842)
 - Updated training area replicator to add a condition to only replicate training areas when running a build. (#5842)
 
