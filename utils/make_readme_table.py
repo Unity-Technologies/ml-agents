@@ -20,7 +20,7 @@ def table_line(version_info, bold=False):
         f"{bold_str}[docs]({version_info.doc_link}){bold_str}",
         f"{bold_str}[download]({version_info.download_link}){bold_str}",
     ]
-    if version_info.is_main:
+    if version_info.is_develop:
         cells.append("--")  # python
         cells.append("--")  # Unity
     else:
@@ -46,12 +46,12 @@ class ReleaseInfo(NamedTuple):
         return LooseVersion(self.python_verion)
 
     @property
-    def is_main(self) -> bool:
-        return self.release_tag == "main"
+    def is_develop(self) -> bool:
+        return self.release_tag == "develop"
 
     @property
     def release_datetime(self) -> datetime:
-        if self.is_main:
+        if self.is_develop:
             return datetime.today()
         return datetime.strptime(self.release_date, "%B %d, %Y")
 
@@ -71,8 +71,8 @@ class ReleaseInfo(NamedTuple):
         """
         if self.is_verified:
             return f"Verified Package {self.csharp_version}"
-        elif self.is_main:
-            return "main (unstable)"
+        elif self.is_develop:
+            return "develop (unstable)"
         else:
             return self.release_tag.replace("_", " ").title()
 
@@ -96,12 +96,14 @@ class ReleaseInfo(NamedTuple):
         if self.is_verified:
             return "https://github.com/Unity-Technologies/ml-agents/blob/release_2_verified_docs/docs/Readme.md"
 
-        # For release_X branches, docs are on a separate tag.
-        if self.release_tag.startswith("release"):
-            docs_name = self.release_tag + "_docs"
-        else:
-            docs_name = self.release_tag
-        return f"https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md"
+        # TODO remove in favor of webdocs. commenting out for now.
+        # # For release_X branches, docs are on a separate tag.
+        # if self.release_tag.startswith("release"):
+        #     docs_name = self.release_tag + "_docs"
+        # else:
+        #     docs_name = self.release_tag
+        # return f"https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md"
+        return "https://unity-technologies.github.io/ml-agents/"
 
     @property
     def package_link(self):
@@ -117,7 +119,7 @@ class ReleaseInfo(NamedTuple):
 
 
 versions = [
-    ReleaseInfo("main", "main", "main", "--"),
+    ReleaseInfo("develop", "develop", "develop", "--"),
     ReleaseInfo("release_1", "1.0.0", "0.16.0", "April 30, 2020"),
     ReleaseInfo("release_2", "1.0.2", "0.16.1", "May 20, 2020"),
     ReleaseInfo("release_3", "1.1.0", "0.17.0", "June 10, 2020"),
@@ -138,22 +140,26 @@ versions = [
     ReleaseInfo("release_18", "2.1.0", "0.27.0", "June 9, 2021"),
     ReleaseInfo("release_19", "2.2.1", "0.28.0", "January 14, 2022"),
     ReleaseInfo("release_20", "2.3.0", "0.30.0", "November 21, 2022"),
+    ReleaseInfo("release_21", "3.0.0", "1.0.0", "October 9, 2023"),
     # Verified releases
-    ReleaseInfo("", "1.0.8", "0.16.1", "May 26, 2021", is_verified=True),
-    ReleaseInfo("", "1.0.7", "0.16.1", "March 8, 2021", is_verified=True),
-    ReleaseInfo("", "1.0.6", "0.16.1", "November 16, 2020", is_verified=True),
-    ReleaseInfo("", "1.0.5", "0.16.1", "September 23, 2020", is_verified=True),
-    ReleaseInfo("", "1.0.4", "0.16.1", "August 20, 2020", is_verified=True),
+    # ReleaseInfo("", "1.0.8", "0.16.1", "May 26, 2021", is_verified=True),
+    # ReleaseInfo("", "1.0.7", "0.16.1", "March 8, 2021", is_verified=True),
+    # ReleaseInfo("", "1.0.6", "0.16.1", "November 16, 2020", is_verified=True),
+    # ReleaseInfo("", "1.0.5", "0.16.1", "September 23, 2020", is_verified=True),
+    # ReleaseInfo("", "1.0.4", "0.16.1", "August 20, 2020", is_verified=True),
 ]
 
 sorted_versions = sorted(versions, key=lambda x: x.release_datetime, reverse=True)
 
 highlight_versions = set()
 # Highlight the most recent verified version
-highlight_versions.add([v for v in sorted_versions if v.is_verified][0])
+# disabling verified versions.
+# TODO replace this table entry with released version according to
+#  https://docs.unity3d.com/2022.3/Documentation/Manual/pack-safe.html
+# highlight_versions.add([v for v in sorted_versions if v.is_verified][0])
 # Highlight the most recent regular version
 highlight_versions.add(
-    [v for v in sorted_versions if (not v.is_verified and not v.is_main)][0]
+    [v for v in sorted_versions if (not v.is_verified and not v.is_develop)][0]
 )
 
 count_by_verified = Counter()
