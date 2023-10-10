@@ -1090,9 +1090,9 @@ local computer. You can do this using Git
 (<a href="https://git-scm.com/download/win">download here</a>) and running the following
 commands in an Anaconda Prompt <em>(if you open a new prompt, be sure to activate
 the ml-agents Conda environment by typing <code>activate ml-agents</code>)</em>:</p>
-<pre><code class="language-sh">git clone --branch release_19 https://github.com/Unity-Technologies/ml-agents.git
+<pre><code class="language-sh">git clone --branch release_21 https://github.com/Unity-Technologies/ml-agents.git
 </code></pre>
-<p>The <code>--branch release_19</code> option will switch to the tag of the latest stable
+<p>The <code>--branch release_21</code> option will switch to the tag of the latest stable
 release. Omitting that will get the <code>main</code> branch which is potentially
 unstable.</p>
 <p>If you don't want to use Git, you can find download links on the
@@ -1109,14 +1109,14 @@ which the <code>ml-agents</code> package depends on.</p>
 <p>Keep in mind where the files were downloaded, as you will need the trainer
 config files in this directory when running <code>mlagents-learn</code>. Make sure you are
 connected to the Internet and then type in the Anaconda Prompt:</p>
-<pre><code class="language-console">python -m pip install mlagents==0.30.0
+<pre><code class="language-console">python -m pip install mlagents==1.0.0
 </code></pre>
 <p>This will complete the installation of all the required Python packages to run
 the ML-Agents Toolkit.</p>
 <p>Sometimes on Windows, when you use pip to install certain Python packages, the
 pip will get stuck when trying to read the cache of the package. If you see
 this, you can try:</p>
-<pre><code class="language-console">python -m pip install mlagents==0.30.0 --no-cache-dir
+<pre><code class="language-console">python -m pip install mlagents==1.0.0 --no-cache-dir
 </code></pre>
 <p>This <code>--no-cache-dir</code> tells the pip to disable the cache.</p>
 <h3 id="installing-for-development">Installing for Development</h3>

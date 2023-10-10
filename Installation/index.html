@@ -1262,14 +1262,14 @@ example environments and training configurations to experiment with them (some
 of our tutorials / guides assume you have access to our example environments).</p>
 <p><strong>NOTE:</strong> There are samples shipped with the Unity Package.  You only need to clone
 the repository if you would like to explore more examples.</p>
-<pre><code class="language-sh">git clone --branch release_20 https://github.com/Unity-Technologies/ml-agents.git
+<pre><code class="language-sh">git clone --branch release_21 https://github.com/Unity-Technologies/ml-agents.git
 </code></pre>
-<p>The <code>--branch release_20</code> option will switch to the tag of the latest stable
+<p>The <code>--branch release_21</code> option will switch to the tag of the latest stable
 release. Omitting that will get the <code>main</code> branch which is potentially unstable.</p>
 <h4 id="advanced-local-installation-for-development">Advanced: Local Installation for Development</h4>
 <p>You will need to clone the repository if you plan to modify or extend the
 ML-Agents Toolkit for your purposes. If you plan to contribute those changes
-back, make sure to clone the <code>develop</code> branch (by omitting <code>--branch release_20</code>
+back, make sure to clone the <code>develop</code> branch (by omitting <code>--branch release_21</code>
 from the command above). See our
 <a href="../com.unity.ml-agents/CONTRIBUTING.md">Contributions Guidelines</a> for more
 information on contributing to the ML-Agents Toolkit.</p>
@@ -1342,7 +1342,7 @@ repository. If you installed this correctly, you should be able to run
 line parameters you can use with <code>mlagents-learn</code>.</p>
 <p><strong>NOTE:</strong> Since ML-Agents development has slowed, PyPi releases will be less frequent. However, you can install from PyPi by executing
 the following command:</p>
-<pre><code class="language-shell">python -m pip install mlagents
+<pre><code class="language-shell">python -m pip install mlagents==1.0.0
 </code></pre>
 <p>which will install the latest version of ML-Agents and associated dependencies available on PyPi. Note, you need to have the matching version of
 the Unity packages with the particular release of the python packages. You can find the release history <a href="https://github.com/Unity-Technologies/ml-agents/releases">here</a></p>
