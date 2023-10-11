@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
@@ -7,15 +9,16 @@ namespace Unity.MLAgents.Extensions.Sensors
     /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
     /// and child nodes are connect to their parents via Joints.
     /// </summary>
+    [Serializable]
     public class RigidBodyPoseExtractor : PoseExtractor
     {
-        Rigidbody[] m_Bodies;
+        [SerializeField] Rigidbody[] m_Bodies;
 
         /// <summary>
         /// Optional game object used to determine the root of the poses, separate from the actual Rigidbodies
         /// in the hierarchy. For locomotion
         /// </summary>
-        GameObject m_VirtualRoot;
+        [SerializeField] GameObject m_VirtualRoot;
 
         /// <summary>
         /// Initialize given a root RigidBody.

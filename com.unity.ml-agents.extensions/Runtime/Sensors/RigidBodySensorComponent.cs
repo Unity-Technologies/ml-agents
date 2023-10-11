@@ -94,7 +94,7 @@ namespace Unity.MLAgents.Extensions.Sensors
 
         internal bool IsTrivial()
         {
-            if (ReferenceEquals(RootBody, null))
+            if (ReferenceEquals(RootBody, null) || !RootBody)
             {
                 // It *is* trivial, but this will happen when the sensor is being set up, so don't warn then.
                 return false;

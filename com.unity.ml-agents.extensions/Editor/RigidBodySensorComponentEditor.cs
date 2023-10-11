@@ -1,11 +1,10 @@
-using UnityEditor;
 using Unity.MLAgents.Editor;
 using Unity.MLAgents.Extensions.Sensors;
+using UnityEditor;
 
 namespace Unity.MLAgents.Extensions.Editor
 {
     [CustomEditor(typeof(RigidBodySensorComponent))]
-    [CanEditMultipleObjects]
     internal class RigidBodySensorComponentEditor : UnityEditor.Editor
     {
         bool ShowHierarchy = true;
@@ -47,13 +46,13 @@ namespace Unity.MLAgents.Extensions.Editor
                 {
                     var treeNodes = rbSensorComp.GetDisplayNodes();
                     var originalIndent = EditorGUI.indentLevel;
+                    var poseEnabled = so.FindProperty("m_PoseExtractor").FindPropertyRelative("m_PoseEnabled");
                     foreach (var node in treeNodes)
                     {
                         var obj = node.NodeObject;
                         var objContents = EditorGUIUtility.ObjectContent(obj, obj.GetType());
                         EditorGUI.indentLevel = originalIndent + node.Depth;
-                        var enabled = EditorGUILayout.Toggle(objContents, node.Enabled);
-                        rbSensorComp.SetPoseEnabled(node.OriginalIndex, enabled);
+                        EditorGUILayout.PropertyField(poseEnabled.GetArrayElementAtIndex(node.OriginalIndex), objContents);
                     }
 
                     EditorGUI.indentLevel = originalIndent;
