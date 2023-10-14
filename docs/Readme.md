@@ -34,7 +34,7 @@ developer communities.
 - Train robust agents using environment randomization
 - Flexible agent control with On Demand Decision Making
 - Train using multiple concurrent Unity environment instances
-- Utilizes the [Unity Inference Engine](Unity-Inference-Engine.md) to
+- Utilizes the [Sentis](Sentis.md) to
   provide native cross-platform support
 - Unity environment [control from Python](Python-LLAPI.md)
 - Wrap Unity learning environments as a [gym](Python-Gym-API.md) environment

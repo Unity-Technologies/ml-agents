@@ -29,7 +29,7 @@
 - Rastgele ortamlar kullanarak kararlı ajanlar eğitin
 - İsteğe Bağlı Karar Verme ile esnek ajan kontrolü
 - Birden çok eş zamanlı Unity ortamı örneği kullanarak eğitim
-- [Unity Inference Engine](docs/Unity-Inference-Engine.md) desteği
+- [Sentis](docs/Unity-Inference-Engine.md) desteği
 - [Python API ile](docs/Python-API.md) Unity ortamını kontrol etme
 - Unity - [gym](gym-unity/README.md) desteği
 

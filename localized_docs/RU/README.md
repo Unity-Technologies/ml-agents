@@ -49,7 +49,7 @@ Proximal Policy Optimization (PPO) и Soft Actor-Critic (SAC). Первый ал
 - Обучение агента сразу на множестве сцен одновременно. Представьте, как он играет в футбол сразу
 на десяти стадионах, набираясь опыта одновременно на них всех. Выглядит это в Unity также,
 как и представляется.
-- Использование [Unity Inference Engine](docs/Unity-Inference-Engine.md) для поддержки кроссплатформенности.
+- Использование [Sentis](docs/Unity-Inference-Engine.md) для поддержки кроссплатформенности.
 - Контроль через [Python API](docs/Python-API.md) сцен.
 - Возможность обернуть Unity среду для обучения как [gym](gym-unity/README.md).
 
