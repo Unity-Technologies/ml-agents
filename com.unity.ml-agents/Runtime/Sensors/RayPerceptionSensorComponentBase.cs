@@ -145,8 +145,9 @@ namespace Unity.MLAgents.Sensors
             set { m_AlternatingRayOrder = value; }
         }
 
+#if UNITY_2022_3_OR_NEWER
         [HideInInspector, SerializeField]
-        [Tooltip("Enable to use batched raycasts and the jobs system.")]
+        [Tooltip("Enable to use batched raycasts and the jobs system. Only available in Unity 2022.3 LTS or newer.")]
         public bool m_UseBatchedRaycasts = false;
 
         /// <summary>
@@ -157,7 +158,7 @@ namespace Unity.MLAgents.Sensors
             get { return m_UseBatchedRaycasts; }
             set { m_UseBatchedRaycasts = value; }
         }
-
+#endif
 
         /// <summary>
         /// Color to code a ray that hits another object.
@@ -303,8 +304,9 @@ namespace Unity.MLAgents.Sensors
             rayPerceptionInput.Transform = transform;
             rayPerceptionInput.CastType = GetCastType();
             rayPerceptionInput.LayerMask = RayLayerMask;
+#if UNITY_2022_3_OR_NEWER
             rayPerceptionInput.UseBatchedRaycasts = UseBatchedRaycasts;
-
+#endif
             return rayPerceptionInput;
         }
 
@@ -349,6 +351,7 @@ namespace Unity.MLAgents.Sensors
                 // and there's no way to turn off the "Tag ... is not defined" error logs.
                 // So just don't use any tags here.
                 rayInput.DetectableTags = null;
+#if UNITY_2022_3_OR_NEWER
                 if (m_UseBatchedRaycasts && rayInput.CastType == RayPerceptionCastType.Cast3D)
                 {
                     // TODO add call to PerceiveBatchedRays()
@@ -361,12 +364,15 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
-                    for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
-                    {
-                        var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
-                        DrawRaycastGizmos(rayOutput);
-                    }
+#endif
+                for (var rayIndex = 0; rayIndex < rayInput.Angles.Count; rayIndex++)
+                {
+                    var rayOutput = RayPerceptionSensor.PerceiveSingleRay(rayInput, rayIndex);
+                    DrawRaycastGizmos(rayOutput);
                 }
+#if UNITY_2022_3_OR_NEWER
+                }
+#endif
             }
         }
 

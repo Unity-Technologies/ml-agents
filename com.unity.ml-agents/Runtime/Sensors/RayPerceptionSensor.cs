@@ -74,10 +74,12 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         public int LayerMask;
 
+#if UNITY_2022_3_OR_NEWER
         /// <summary>
         ///  Whether to use batched raycasts.
         /// </summary>
         public bool UseBatchedRaycasts;
+#endif
 
         /// <summary>
         /// Returns the expected number of floats in the output.
@@ -252,7 +254,9 @@ namespace Unity.MLAgents.Sensors
         RayPerceptionInput m_RayPerceptionInput;
         RayPerceptionOutput m_RayPerceptionOutput;
 
+#if UNITY_2022_3_OR_NEWER
         bool m_UseBatchedRaycasts;
+#endif
 
         /// <summary>
         /// Time.frameCount at the last time Update() was called. This is only used for display in gizmos.
@@ -273,8 +277,9 @@ namespace Unity.MLAgents.Sensors
         {
             m_Name = name;
             m_RayPerceptionInput = rayInput;
+#if UNITY_2022_3_OR_NEWER
             m_UseBatchedRaycasts = rayInput.UseBatchedRaycasts;
-
+#endif
             SetNumObservations(rayInput.OutputSize());
 
             m_DebugLastFrameCount = Time.frameCount;
@@ -348,19 +353,22 @@ namespace Unity.MLAgents.Sensors
             {
                 m_RayPerceptionOutput.RayOutputs = new RayPerceptionOutput.RayOutput[numRays];
             }
-
+#if UNITY_2022_3_OR_NEWER
             if (m_UseBatchedRaycasts && m_RayPerceptionInput.CastType == RayPerceptionCastType.Cast3D)
             {
                 PerceiveBatchedRays(ref m_RayPerceptionOutput.RayOutputs, m_RayPerceptionInput);
             }
             else
             {
-                // For each ray, do the casting and save the results.
-                for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
-                {
-                    m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
-                }
+#endif
+            // For each ray, do the casting and save the results.
+            for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+            {
+                m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
             }
+#if UNITY_2022_3_OR_NEWER
+            }
+#endif
         }
 
         /// <inheritdoc/>
@@ -406,22 +414,25 @@ namespace Unity.MLAgents.Sensors
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
             output.RayOutputs = new RayPerceptionOutput.RayOutput[input.Angles.Count];
-
+#if UNITY_2022_3_OR_NEWER
             if (batched)
             {
                 PerceiveBatchedRays(ref output.RayOutputs, input);
             }
             else
             {
-                for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
-                {
-                    output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
-                }
+#endif
+            for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
+            {
+                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
             }
-
+#if UNITY_2022_3_OR_NEWER
+            }
+#endif
             return output;
         }
 
+#if UNITY_2022_3_OR_NEWER
         /// <summary>
         /// Evaluate the raycast results of all the rays from the RayPerceptionInput as a batch.
         /// </summary>
@@ -548,6 +559,7 @@ namespace Unity.MLAgents.Sensors
             raycastCommands.Dispose();
             spherecastCommands.Dispose();
         }
+#endif
 
         /// <summary>
         /// Evaluate the raycast results of a single ray from the RayPerceptionInput.

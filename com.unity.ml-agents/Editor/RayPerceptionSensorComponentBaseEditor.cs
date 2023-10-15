@@ -64,10 +64,12 @@ namespace Unity.MLAgents.Editor
             }
 
             EditorGUILayout.PropertyField(so.FindProperty("m_AlternatingRayOrder"), true);
+#if UNITY_2022_3_OR_NEWER
             if (is3d)
             {
                 EditorGUILayout.PropertyField(so.FindProperty("m_UseBatchedRaycasts"), true);
             }
+#endif
 
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);
