@@ -1,25 +1,25 @@
-# Unity Inference Engine
+# Sentis
 
 The ML-Agents Toolkit allows you to use pre-trained neural network models inside
 your Unity games. This support is possible thanks to the
-[Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html)
-(codenamed Sentis). The Unity Inference Engine uses
+[Sentis](https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html)
+(codenamed Sentis). Sentis uses
 [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html) to
 run the neural network within Unity.
 
 ## Supported devices
 
-See the Unity Inference Engine documentation for a list of the
+See the Sentis documentation for a list of the
 [supported platforms](https://docs.unity3d.com/Manual/PlatformSpecific.html).
 
-Scripting Backends : The Unity Inference Engine is generally faster with
+Scripting Backends : Sentis is generally faster with
 **IL2CPP** than with **Mono** for Standalone builds. In the Editor, It is not
-possible to use the Unity Inference Engine with GPU device selected when Editor
+possible to use Sentis with GPU device selected when Editor
 Graphics Emulation is set to **OpenGL(ES) 3.0 or 2.0 emulation**. Also there
 might be non-fatal build time errors when target platform includes Graphics API
 that does not support **Unity Compute Shaders**.
 
-## Using the Unity Inference Engine
+## Using Sentis
 
 When using a model, drag the model file into the **Model** field in the
 Inspector of the Agent. Select the **Inference Device** : CPU or GPU you want to

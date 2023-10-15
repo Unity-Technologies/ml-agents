@@ -49,7 +49,7 @@ ML-Agent Toolkit, eylemleri iki türe sınıflandırır: sürekli ve ayrık(cont
 
 ## Önceden eğitilmiş modeli çalıştırma
 
-Ajanlarımız (`.nn` dosyaları) için önceden eğitilmiş modeller ortamımıza ekliyoruz  ve bu modelleri Unity içinde çalıştırmak için [Unity Inference Engine]([Unity Inference Engine](Unity-Inference-Engine.md)'i kullanıyoruz. Bu bölümde, 3D Ball örneği için önceden eğitilmiş modeli bir sinir ağı kullanacağız.
+Ajanlarımız (`.nn` dosyaları) için önceden eğitilmiş modeller ortamımıza ekliyoruz  ve bu modelleri Unity içinde çalıştırmak için [Sentis]([Sentis](Unity-Inference-Engine.md)'i kullanıyoruz. Bu bölümde, 3D Ball örneği için önceden eğitilmiş modeli bir sinir ağı kullanacağız.
 
 1. **Project** penceresinde `Assets/ML-Agents/Examples/3DBall/Prefabs` klasörüne gidin. `3DBall`'ın içerisini genişletin ve `Agent` hazır yapısına tıklayın. `Agent` hazır yapısını **Inspector** penceresinde görmelisiniz.
 
