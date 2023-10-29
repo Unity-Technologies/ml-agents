@@ -38,8 +38,8 @@ theme:
   logo: images/unity-logo.png
   favicon: images/unity-logo-black.png
   palette:
-    primary: blue
-    accent: light blue
+    - primary: blue
+    - accent: light blue
     # Palette toggle for light mode
     - scheme: default
       toggle:
