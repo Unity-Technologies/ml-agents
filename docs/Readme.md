@@ -44,7 +44,7 @@ See our [ML-Agents Overview](ML-Agents-Overview.md) page for detailed
 descriptions of all these features. Or go straight to our [web docs](https://unity-technologies.github.io/ml-agents/).
 ## Releases & Documentation
 
-**Our latest, stable release is `Release 20`. Click
+**Our latest, stable release is `Release 21`. Click
 [here](Getting-Started.md)
 to get started with the latest release of ML-Agents.**
 
