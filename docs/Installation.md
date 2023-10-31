@@ -43,7 +43,7 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.
 
-### Install **Python 3.10.12** or Higher
+### Install **Python 3.10.12**
 
 We recommend [installing](https://www.python.org/downloads/) Python 3.10.
 If you are using Windows, please install the x86-64 version and not x86.
