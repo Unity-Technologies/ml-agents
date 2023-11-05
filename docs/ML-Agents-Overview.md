@@ -385,7 +385,7 @@ your agent's behavior:
 
 ML-Agents provide an implementation of two reinforcement learning algorithms:
 
-- [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/)
+- [Proximal Policy Optimization (PPO)](https://openai.com/research/openai-baselines-ppo/)
 - [Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/)
 
 The default algorithm is PPO. This is a method that has been shown to be more
