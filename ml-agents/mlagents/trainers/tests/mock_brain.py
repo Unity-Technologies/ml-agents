@@ -142,6 +142,8 @@ def make_fake_trajectory(
             memory=memory,
             group_status=group_status,
             group_reward=group_reward,
+            action_mus=None,
+            action_sigmas=None,
         )
         steps_list.append(experience)
     obs = []
@@ -164,6 +166,8 @@ def make_fake_trajectory(
         memory=memory,
         group_status=last_group_status,
         group_reward=group_reward,
+        action_mus=None,
+        action_sigmas=None,
     )
     steps_list.append(last_experience)
     return Trajectory(

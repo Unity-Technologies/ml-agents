@@ -223,7 +223,7 @@ class NetworkBody(nn.Module):
                 network_settings.num_layers,
                 self.h_size,
                 network_settings.bottleneck,
-                network_settings.bottleneck_last
+                network_settings.bottleneck_last,
             )
 
         if self.use_lstm:
@@ -485,7 +485,9 @@ class ValueNetwork(nn.Module, Critic):
         if network_settings.memory is not None:
             encoding_size = network_settings.memory.memory_size // 2
         elif network_settings.bottleneck:
-            encoding_size = network_settings.hidden_units // (2 ** (network_settings.num_layers - 1))
+            encoding_size = network_settings.hidden_units // (
+                2 ** (network_settings.num_layers - 1)
+            )
         elif network_settings.bottleneck_last:
             encoding_size = network_settings.hidden_units // 2
         else:
@@ -552,10 +554,13 @@ class Actor(abc.ABC):
         """
         pass
 
-    def get_mus(self, inputs: List[torch.Tensor],
-                masks: Optional[torch.Tensor] = None,
-                memories: Optional[torch.Tensor] = None,
-                sequence_length: int = 1) -> Dict[str, Any]:
+    def get_mus(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Dict[str, Any]:
         pass
 
     def get_stats(
@@ -633,7 +638,9 @@ class SimpleActor(nn.Module, Actor):
         if network_settings.memory is not None:
             self.encoding_size = network_settings.memory.memory_size // 2
         elif network_settings.bottleneck:
-            self.encoding_size = network_settings.hidden_units // (2 ** (network_settings.num_layers - 1))
+            self.encoding_size = network_settings.hidden_units // (
+                2 ** (network_settings.num_layers - 1)
+            )
         elif network_settings.bottleneck_last:
             self.encoding_size = network_settings.hidden_units // 2
         else:
@@ -682,19 +689,24 @@ class SimpleActor(nn.Module, Actor):
 
         return action, run_out, memories
 
-    def get_mus(self, inputs: List[torch.Tensor],
-                masks: Optional[torch.Tensor] = None,
-                memories: Optional[torch.Tensor] = None,
-                sequence_length: int = 1) -> Dict[str, Any]:
+    def get_mus(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Dict[str, Any]:
         encoding, actor_mem_outs = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
 
-        (continuous_out,
-         discrete_out,
-         action_out_deprecated,
-         deterministic_continuous_out,
-         deterministic_discrete_out) = self.action_model.get_action_out(encoding, masks)
+        (
+            continuous_out,
+            discrete_out,
+            action_out_deprecated,
+            deterministic_continuous_out,
+            deterministic_discrete_out,
+        ) = self.action_model.get_action_out(encoding, masks)
         run_out = {"mus": deterministic_continuous_out}
         return run_out
 
@@ -710,7 +722,9 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
 
-        log_probs, entropies, mus, sigmas = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies, mus, sigmas = self.action_model.evaluate(
+            encoding, masks, actions
+        )
         run_out = {}
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies

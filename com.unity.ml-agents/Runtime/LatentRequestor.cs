@@ -18,7 +18,7 @@ namespace Unity.MLAgents
         Agent m_Agent;
         BehaviorParameters m_BehaviourParameters;
         private DecisionRequester m_DecisionRequestor;
-		int m_LatentStepCount;
+        int m_LatentStepCount;
         int m_LatentSize;
         float[] m_Latents;
         RandomNormal m_RandomNormal;
@@ -30,7 +30,7 @@ namespace Unity.MLAgents
         void Awake()
         {
             m_Agent = gameObject.GetComponent<Agent>();
-			m_LatentStepCount = 0;
+            m_LatentStepCount = 0;
             m_BehaviourParameters = gameObject.GetComponent<BehaviorParameters>();
             m_DecisionRequestor = gameObject.GetComponent<DecisionRequester>();
             m_LatentSize = m_BehaviourParameters.BrainParameters.EmbeddingSize;
@@ -77,7 +77,7 @@ namespace Unity.MLAgents
             latents = new float[n];
             float denominator = 0f;
 
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
             {
                 latents[i] = (float)m_RandomNormal.NextDouble();
                 denominator += Mathf.Pow(Mathf.Abs(latents[i]), 2);

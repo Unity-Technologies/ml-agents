@@ -1,6 +1,6 @@
 from typing import Dict
 
-from mlagents.torch_utils import torch, default_device
+from mlagents.torch_utils import torch
 from mlagents.trainers.buffer import AgentBuffer, RewardSignalUtil, BufferKey
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer
@@ -96,8 +96,13 @@ class TorchASEOptimizer(TorchPPOOptimizer):
             - decay_bet * ModelUtils.masked_mean(entropy, loss_masks)
         )
 
-        diversity_loss, diversity_stats = self.reward_signals['ase'].compute_diversity_loss(self.policy, run_out["mus"], batch)
-        self.loss += self.reward_signals['ase'].diversity_objective_weight * diversity_loss.squeeze()
+        diversity_loss, diversity_stats = self.reward_signals[
+            "ase"
+        ].compute_diversity_loss(self.policy, run_out["mus"], batch)
+        self.loss += (
+            self.reward_signals["ase"].diversity_objective_weight
+            * diversity_loss.squeeze()
+        )
 
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)

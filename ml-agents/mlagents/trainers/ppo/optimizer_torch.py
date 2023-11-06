@@ -15,7 +15,11 @@ from mlagents.trainers.settings import (
 )
 from mlagents.trainers.torch_entities.networks import ValueNetwork
 from mlagents.trainers.torch_entities.agent_action import AgentAction
-from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs, ActionMus, ActionSigmas
+from mlagents.trainers.torch_entities.action_log_probs import (
+    ActionLogProbs,
+    ActionMus,
+    ActionSigmas,
+)
 from mlagents.trainers.torch_entities.utils import ModelUtils
 from mlagents.trainers.trajectory import ObsUtil
 
@@ -190,8 +194,9 @@ class TorchPPOOptimizer(TorchOptimizer):
 
         # adaptive learning rate
         if self.hyperparameters.learning_rate_schedule == ScheduleType.ADAPTIVE:
-            decay_lr = self.decay_learning_rate.get_value(self.policy.get_current_step(), mus, old_mus, sigmas,
-                                                          old_sigmas)
+            decay_lr = self.decay_learning_rate.get_value(
+                self.policy.get_current_step(), mus, old_mus, sigmas, old_sigmas
+            )
 
         # Set optimizer learning rate
         ModelUtils.update_learning_rate(self.optimizer, decay_lr)

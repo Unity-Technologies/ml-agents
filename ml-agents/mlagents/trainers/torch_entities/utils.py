@@ -68,7 +68,7 @@ class ModelUtils:
             min_value: float,
             max_step: int,
             desired_kl: float = None,
-            max_value: float = None
+            max_value: float = None,
         ):
             """
             Object that represnets value of a parameter that should be decayed, assuming it is a function of
@@ -88,8 +88,14 @@ class ModelUtils:
             self.desired_kl = desired_kl
             self.max_value = max_value
 
-        def get_value(self, global_step: int, mus: Any = None, old_mus: Any = None,
-                      sigmas: Any = None, old_sigmas: Any = None) -> float:
+        def get_value(
+            self,
+            global_step: int,
+            mus: Any = None,
+            old_mus: Any = None,
+            sigmas: Any = None,
+            old_sigmas: Any = None,
+        ) -> float:
             """
             Get the value at a given global step.
             :param global_step: Step count.
@@ -102,8 +108,16 @@ class ModelUtils:
                     self.initial_value, self.min_value, self.max_step, global_step
                 )
             elif self.schedule == ScheduleType.ADAPTIVE:
-                self.current_value = ModelUtils.adaptive_decay(self.current_value, self.desired_kl, self.max_value,
-                                                               self.min_value, mus, old_mus, sigmas, old_sigmas)
+                self.current_value = ModelUtils.adaptive_decay(
+                    self.current_value,
+                    self.desired_kl,
+                    self.max_value,
+                    self.min_value,
+                    mus,
+                    old_mus,
+                    sigmas,
+                    old_sigmas,
+                )
                 return self.current_value
             else:
                 raise UnityTrainerException(f"The schedule {self.schedule} is invalid.")
@@ -140,14 +154,20 @@ class ModelUtils:
         mus: Any = None,
         old_mus: Any = None,
         sigmas: Any = None,
-        old_sigmas: Any = None
-    ):
+        old_sigmas: Any = None,
+    ) -> float:
         if mus is None or old_mus is None or sigmas is None or old_sigmas is None:
             return current_value
         decayed_value = current_value
         kl_star = desired_kl
         with torch.no_grad():
-            kl = torch.sum(torch.log(sigmas / old_sigmas + 1.e-5) + (torch.square(old_sigmas) + torch.square(old_mus - mus)) / (2.0 * torch.square(sigmas)) - 0.5, dim=-1)
+            kl = torch.sum(
+                torch.log(sigmas / old_sigmas + 1.0e-5)
+                + (torch.square(old_sigmas) + torch.square(old_mus - mus))
+                / (2.0 * torch.square(sigmas))
+                - 0.5,
+                dim=-1,
+            )
             kl_mean = kl.mean()
         # print(f"KL: {kl_mean}")
         if kl_mean > kl_star * 2.0:
@@ -160,7 +180,9 @@ class ModelUtils:
     def convert_to_action_probs(actions):
         mean = torch.mean(actions, dim=0)
         std = torch.std(actions, dim=0)
-        return (1 / torch.sqrt(2 * np.pi * torch.square(std))) * torch.exp(-torch.square(actions - mean) / 2 * torch.square(std))
+        return (1 / torch.sqrt(2 * np.pi * torch.square(std))) * torch.exp(
+            -torch.square(actions - mean) / 2 * torch.square(std)
+        )
 
     @staticmethod
     def get_encoder_for_type(encoder_type: EncoderType) -> nn.Module:
@@ -309,7 +331,7 @@ class ModelUtils:
         """
         action_idx = [0] + list(np.cumsum(action_size))
         branched_logits = [
-            concatenated_logits[:, action_idx[i]: action_idx[i + 1]]
+            concatenated_logits[:, action_idx[i] : action_idx[i + 1]]
             for i in range(len(action_size))
         ]
         return branched_logits

@@ -33,10 +33,7 @@ class TorchModelSaver(BaseModelSaver):
         self.modules: Dict[str, torch.nn.Modules] = {}
 
     def register(self, module: Union[TorchPolicy, TorchOptimizer]) -> None:
-        if (
-            isinstance(module, TorchPolicy)
-            or isinstance(module, TorchOptimizer)
-        ):
+        if isinstance(module, TorchPolicy) or isinstance(module, TorchOptimizer):
             self.modules.update(module.get_modules())  # type: ignore
         else:
             raise UnityPolicyException(

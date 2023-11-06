@@ -97,7 +97,7 @@ class TorchPolicy(Policy):
             0
         )
         with torch.no_grad():
-            action, run_out, memories= self.actor.get_action_and_stats(
+            action, run_out, memories = self.actor.get_action_and_stats(
                 tensor_obs, masks=masks, memories=memories
             )
         run_out["action"] = action.to_action_tuple()

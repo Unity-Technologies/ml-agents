@@ -2,7 +2,9 @@ from typing import Dict, Type
 from mlagents.trainers.exception import UnityTrainerException
 
 from mlagents.trainers.settings import RewardSignalSettings, RewardSignalType
-from mlagents.trainers.torch_entities.components.reward_providers.ase_reward_provider import ASERewardProvider
+from mlagents.trainers.torch_entities.components.reward_providers.ase_reward_provider import (
+    ASERewardProvider,
+)
 
 from mlagents.trainers.torch_entities.components.reward_providers.base_reward_provider import (
     BaseRewardProvider,
@@ -27,7 +29,7 @@ NAME_TO_CLASS: Dict[RewardSignalType, Type[BaseRewardProvider]] = {
     RewardSignalType.CURIOSITY: CuriosityRewardProvider,
     RewardSignalType.GAIL: GAILRewardProvider,
     RewardSignalType.RND: RNDRewardProvider,
-    RewardSignalType.ASE: ASERewardProvider
+    RewardSignalType.ASE: ASERewardProvider,
 }
 
 

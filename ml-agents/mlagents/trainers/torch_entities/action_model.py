@@ -7,7 +7,11 @@ from mlagents.trainers.torch_entities.distributions import (
     MultiCategoricalDistribution,
 )
 from mlagents.trainers.torch_entities.agent_action import AgentAction
-from mlagents.trainers.torch_entities.action_log_probs import ActionLogProbs, ActionMus, ActionSigmas
+from mlagents.trainers.torch_entities.action_log_probs import (
+    ActionLogProbs,
+    ActionMus,
+    ActionSigmas,
+)
 from mlagents_envs.base_env import ActionSpec
 
 
@@ -157,7 +161,9 @@ class ActionModel(nn.Module):
             continuous_mus = dists.continuous.mu()
             continuous_sigmas = dists.continuous.sigma()
         action_mus = ActionMus(continuous_mus, discrete_mus, all_discrete_mus)
-        action_sigmas = ActionSigmas(continuous_sigmas, discrete_sigmas, all_discrete_sigmas)
+        action_sigmas = ActionSigmas(
+            continuous_sigmas, discrete_sigmas, all_discrete_sigmas
+        )
         return action_mus, action_sigmas
 
     def evaluate(

@@ -37,6 +37,4 @@ class ASETrainer(PPOTrainer):
         return TRAINER_NAME
 
     def create_optimizer(self) -> TorchOptimizer:
-        return TorchASEOptimizer(
-            cast(TorchPolicy, self.policy), self.trainer_settings
-        )
+        return TorchASEOptimizer(cast(TorchPolicy, self.policy), self.trainer_settings)

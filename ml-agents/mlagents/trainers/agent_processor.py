@@ -27,7 +27,11 @@ from mlagents.trainers.behavior_id_utils import (
     GlobalAgentId,
     GlobalGroupId,
 )
-from mlagents.trainers.torch_entities.action_log_probs import LogProbsTuple, MusTuple, SigmasTuple
+from mlagents.trainers.torch_entities.action_log_probs import (
+    LogProbsTuple,
+    MusTuple,
+    SigmasTuple,
+)
 from mlagents.trainers.torch_entities.utils import ModelUtils
 
 T = TypeVar("T")
@@ -255,8 +259,10 @@ class AgentProcessor:
                 stored_action_mus = stored_take_action_outputs["mus"]
                 if not isinstance(stored_action_mus, MusTuple):
                     stored_action_mus = stored_action_mus.to_mus_tuple()
-                mus_tuple = MusTuple(continuous=stored_action_mus.continuous[idx],
-                                     discrete=stored_action_mus.discrete[idx])
+                mus_tuple = MusTuple(
+                    continuous=stored_action_mus.continuous[idx],
+                    discrete=stored_action_mus.discrete[idx],
+                )
             except KeyError:
                 mus_tuple = MusTuple.empty_mus()
 
@@ -264,8 +270,10 @@ class AgentProcessor:
                 stored_action_sigmas = stored_take_action_outputs["sigmas"]
                 if not isinstance(stored_action_sigmas, SigmasTuple):
                     stored_action_sigmas = stored_action_sigmas.to_sigmas_tuple()
-                sigmas_tuple = SigmasTuple(continuous=stored_action_sigmas.continuous[idx],
-                                           discrete=stored_action_sigmas.discrete[idx])
+                sigmas_tuple = SigmasTuple(
+                    continuous=stored_action_sigmas.continuous[idx],
+                    discrete=stored_action_sigmas.discrete[idx],
+                )
             except KeyError:
                 sigmas_tuple = MusTuple.empty_mus()
 

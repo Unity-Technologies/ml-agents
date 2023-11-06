@@ -198,9 +198,7 @@ class ActionMus(NamedTuple):
         if BufferKey.CONTINUOUS_MUS in buff:
             continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_MUS])
         if BufferKey.DISCRETE_MUS in buff:
-            discrete_tensor = ModelUtils.list_to_tensor(
-                buff[BufferKey.DISCRETE_MUS]
-            )
+            discrete_tensor = ModelUtils.list_to_tensor(buff[BufferKey.DISCRETE_MUS])
             # This will keep discrete_list = None which enables flatten()
             if discrete_tensor.shape[1] > 0:
                 discrete = [
@@ -269,9 +267,7 @@ class ActionSigmas(NamedTuple):
         if BufferKey.CONTINUOUS_SIGMAS in buff:
             continuous = ModelUtils.list_to_tensor(buff[BufferKey.CONTINUOUS_SIGMAS])
         if BufferKey.DISCRETE_SIGMAS in buff:
-            discrete_tensor = ModelUtils.list_to_tensor(
-                buff[BufferKey.DISCRETE_SIGMAS]
-            )
+            discrete_tensor = ModelUtils.list_to_tensor(buff[BufferKey.DISCRETE_SIGMAS])
             # This will keep discrete_list = None which enables flatten()
             if discrete_tensor.shape[1] > 0:
                 discrete = [
