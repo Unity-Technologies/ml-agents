@@ -53,14 +53,13 @@ class PortAllocator:
 
     def setup_once_per_node(self) -> None:
         """
-        Clean up state files from previous runs, shoud only be called once per node.
+        Clean up state files from previous runs, should only be called once per node.
         Intended to only be called via xdist hooks.
         """
-        # TODO: Use .unlink(missing_ok=True) once python 3.8 is min version.
         if self._port_alloc_lock_path.exists():
-            self._port_alloc_lock_path.unlink()
+            self._port_alloc_lock_path.unlink(missing_ok=True)
         if self._port_alloc_file_path.exists():
-            self._port_alloc_file_path.unlink()
+            self._port_alloc_file_path.unlink(missing_ok=True)
 
 
 @pytest.fixture

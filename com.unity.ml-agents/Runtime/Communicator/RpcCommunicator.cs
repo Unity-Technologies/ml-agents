@@ -68,12 +68,12 @@ namespace Unity.MLAgents
 #endif
         }
 
-#region Initialization
+        #region Initialization
 
         internal static bool CheckCommunicationVersionsAreCompatible(
             string unityCommunicationVersion,
             string pythonApiVersion
-            )
+        )
         {
             var unityVersion = new Version(unityCommunicationVersion);
             var pythonVersion = new Version(pythonApiVersion);
@@ -131,7 +131,6 @@ namespace Unity.MLAgents
             {
                 if (ex is RpcException rpcException)
                 {
-
                     switch (rpcException.Status.StatusCode)
                     {
                         case StatusCode.Unavailable:
@@ -260,9 +259,9 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
-#region Destruction
+        #region Destruction
 
         /// <summary>
         /// Close the communicator gracefully on both sides of the communication.
@@ -285,38 +284,38 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
-#region Sending Events
+        #region Sending Events
 
         void SendCommandEvent(CommandProto command)
         {
             switch (command)
             {
                 case CommandProto.Quit:
-                    {
-                        NotifyQuitAndShutDownChannel();
-                        return;
-                    }
+                {
+                    NotifyQuitAndShutDownChannel();
+                    return;
+                }
                 case CommandProto.Reset:
+                {
+                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
-                        {
-                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
-                        }
-                        ResetCommandReceived?.Invoke();
-                        return;
+                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
                     }
+                    ResetCommandReceived?.Invoke();
+                    return;
+                }
                 default:
-                    {
-                        return;
-                    }
+                {
+                    return;
+                }
             }
         }
 
-#endregion
+        #endregion
 
-#region Sending and retreiving data
+        #region Sending and retreiving data
 
         public void DecideBatch()
         {
@@ -586,7 +585,7 @@ namespace Unity.MLAgents
             }
         }
 
-#endregion
+        #endregion
 
 #if UNITY_EDITOR
         /// <summary>

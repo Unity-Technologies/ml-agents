@@ -22,7 +22,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVectorObservations(bool fullBoard)
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -68,11 +68,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVectorObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -118,7 +118,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVisualObservations(bool fullBoard)
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var gameObj = new GameObject("board");
@@ -134,7 +134,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             sensorComponent.ObservationType = Match3ObservationType.UncompressedVisual;
             var sensor = sensorComponent.CreateSensors()[0];
 
-            var expectedShape = new InplaceArray<int>(3, 3, 2);
+            var expectedShape = new InplaceArray<int>(2, 3, 3);
             Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
             Assert.AreEqual(SensorCompressionType.None, sensor.GetCompressionSpec().SensorCompressionType);
@@ -152,11 +152,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                 };
 
                 expectedObs3D = new float[,,]
-                {
-                    {{1, 0}, {0, 1}, {1, 0}},
-                    {{1, 0}, {1, 0}, {1, 0}},
-                    {{1, 0}, {1, 0}, {1, 0}},
-                };
+                { { { 1, 0, 1 }, {1, 1, 1}, {1, 1, 1} }, { {0, 1, 0}, {0, 0, 0}, {0, 0, 0} } };
             }
             else
             {
@@ -166,12 +162,9 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                     1, 0, /*   0   */ 1, 0, /*   0   */ 0, 0, /* empty */
                     0, 0, /* empty */ 0, 0, /* empty */ 0, 0, /* empty */
                 };
+
                 expectedObs3D = new float[,,]
-                {
-                    {{1, 0}, {0, 1}, {0, 0}},
-                    {{1, 0}, {1, 0}, {0, 0}},
-                    {{0, 0}, {0, 0}, {0, 0}},
-                };
+                { { {1, 0, 0}, {1, 1, 0}, {0, 0, 0} }, { {0, 1, 0}, {0, 0, 0}, {0, 0, 0} } };
             }
             SensorTestHelper.CompareObservation(sensor, expectedObs);
             SensorTestHelper.CompareObservation(sensor, expectedObs3D);
@@ -181,11 +174,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestVisualObservationsSpecial()
         {
             var boardString =
-                @"000
+@"000
                   000
                   010";
             var specialString =
-                @"010
+@"010
                   200
                   000";
 
@@ -201,7 +194,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             var specialSensor = sensors[1];
 
             {
-                var expectedShape = new InplaceArray<int>(3, 3, 2);
+                var expectedShape = new InplaceArray<int>(2, 3, 3);
                 Assert.AreEqual(expectedShape, cellSensor.GetObservationSpec().Shape);
 
                 Assert.AreEqual(SensorCompressionType.None, cellSensor.GetCompressionSpec().SensorCompressionType);
@@ -214,12 +207,27 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                 };
                 SensorTestHelper.CompareObservation(cellSensor, expectedObs);
 
+                // var expectedObs3D = new float[,,]
+                // {
+                //     {{1, 0}, {0, 1}, {1, 0}},
+                //     {{1, 0}, {1, 0}, {1, 0}},
+                //     {{1, 0}, {1, 0}, {1, 0}},
+                // };
+
                 var expectedObs3D = new float[,,]
                 {
-                    {{1, 0}, {0, 1}, {1, 0}},
-                    {{1, 0}, {1, 0}, {1, 0}},
-                    {{1, 0}, {1, 0}, {1, 0}},
+                    {
+                        {1, 0, 1},
+                        {1, 1, 1},
+                        {1, 1, 1}
+                    },
+                    {
+                        {0, 1, 0},
+                        {0, 0, 0},
+                        {0, 0, 0}
+                    }
                 };
+
                 SensorTestHelper.CompareObservation(cellSensor, expectedObs3D);
             }
             {
@@ -236,12 +244,32 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
                 };
                 SensorTestHelper.CompareObservation(specialSensor, expectedObs);
 
+                // var expectedObs3D = new float[,,]
+                // {
+                //     {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
+                //     {{0, 0, 1}, {1, 0, 0}, {1, 0, 0}},
+                //     {{1, 0, 0}, {0, 1, 0}, {1, 0, 0}},
+                // };
+
                 var expectedObs3D = new float[,,]
                 {
-                    {{1, 0, 0}, {1, 0, 0}, {1, 0, 0}},
-                    {{0, 0, 1}, {1, 0, 0}, {1, 0, 0}},
-                    {{1, 0, 0}, {0, 1, 0}, {1, 0, 0}},
+                    {
+                        {1, 1, 1},
+                        {0, 1, 1},
+                        {1, 0, 1}
+                    },
+                    {
+                        {0, 0, 0},
+                        {0, 0, 0},
+                        {0, 1, 0}
+                    },
+                    {
+                        {0, 0, 0},
+                        {1, 0, 0},
+                        {0, 0, 0}
+                    }
                 };
+
                 SensorTestHelper.CompareObservation(specialSensor, expectedObs3D);
             }
 
@@ -257,7 +285,6 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             Assert.IsNull(specialTexture);
         }
 
-
         [TestCase(true, false, TestName = "Full Board, No Special")]
         [TestCase(false, false, TestName = "Small Board, No Special")]
         [TestCase(true, true, TestName = "Full Board, Special")]
@@ -265,11 +292,11 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         public void TestCompressedVisualObservationsSpecial(bool fullBoard, bool useSpecial)
         {
             var boardString =
-                @"003
+@"003
                   000
                   010";
             var specialString =
-                @"014
+@"014
                   200
                   000";
 
@@ -303,7 +330,7 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             for (var i = 0; i < paths.Count; i++)
             {
                 var sensor = sensors[i];
-                var expectedShape = new InplaceArray<int>(3, 3, expectedNumChannels[i]);
+                var expectedShape = new InplaceArray<int>(expectedNumChannels[i], 3, 3);
                 Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
 
                 Assert.AreEqual(SensorCompressionType.PNG, sensor.GetCompressionSpec().SensorCompressionType);

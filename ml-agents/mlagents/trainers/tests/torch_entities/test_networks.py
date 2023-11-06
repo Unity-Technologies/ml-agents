@@ -74,7 +74,7 @@ def test_networkbody_lstm():
 def test_networkbody_visual():
     torch.manual_seed(1)
     vec_obs_size = 4
-    obs_size = (84, 84, 3)
+    obs_size = (3, 84, 84)
     network_settings = NetworkSettings()
     obs_shapes = [(vec_obs_size,), obs_size]
 
@@ -82,7 +82,7 @@ def test_networkbody_visual():
         create_observation_specs_with_shapes(obs_shapes), network_settings
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
-    sample_obs = 0.1 * torch.ones((1, 84, 84, 3), dtype=torch.float32)
+    sample_obs = 0.1 * torch.ones((1, 3, 84, 84), dtype=torch.float32)
     sample_vec_obs = torch.ones((1, vec_obs_size), dtype=torch.float32)
     obs = [sample_vec_obs] + [sample_obs]
     loss = 1
@@ -200,7 +200,7 @@ def test_multinetworkbody_visual(with_actions):
     act_size = 2
     n_agents = 3
     obs_size = 4
-    vis_obs_size = (84, 84, 3)
+    vis_obs_size = (3, 84, 84)
     network_settings = NetworkSettings()
     obs_shapes = [(obs_size,), vis_obs_size]
     action_spec = ActionSpec(act_size, tuple(act_size for _ in range(act_size)))
@@ -209,7 +209,7 @@ def test_multinetworkbody_visual(with_actions):
     )
     optimizer = torch.optim.Adam(networkbody.parameters(), lr=3e-3)
     sample_obs = [
-        [0.1 * torch.ones((1, obs_size))] + [0.1 * torch.ones((1, 84, 84, 3))]
+        [0.1 * torch.ones((1, obs_size))] + [0.1 * torch.ones((1, 3, 84, 84))]
         for _ in range(n_agents)
     ]
     # simulate baseline in POCA
@@ -273,7 +273,7 @@ def test_valuenetwork():
 @pytest.mark.parametrize("lstm", [True, False])
 def test_actor_critic(lstm, shared):
     obs_size = 4
-    vis_obs_size = (84, 84, 3)
+    vis_obs_size = (3, 84, 84)
     network_settings = NetworkSettings(
         memory=NetworkSettings.MemorySettings() if lstm else None, normalize=True
     )
@@ -291,14 +291,14 @@ def test_actor_critic(lstm, shared):
         critic = ValueNetwork(stream_names, obs_spec, network_settings)
     if lstm:
         sample_vis_obs = torch.ones(
-            (network_settings.memory.sequence_length, 84, 84, 3), dtype=torch.float32
+            (network_settings.memory.sequence_length, 3, 84, 84), dtype=torch.float32
         )
         sample_obs = torch.ones((network_settings.memory.sequence_length, obs_size))
         memories = torch.ones(
             (1, network_settings.memory.sequence_length, actor.memory_size)
         )
     else:
-        sample_vis_obs = 0.1 * torch.ones((1, 84, 84, 3), dtype=torch.float32)
+        sample_vis_obs = 0.1 * torch.ones((1, 3, 84, 84), dtype=torch.float32)
         sample_obs = torch.ones((1, obs_size))
         memories = torch.tensor([])
         # memories isn't always set to None, the network should be able to

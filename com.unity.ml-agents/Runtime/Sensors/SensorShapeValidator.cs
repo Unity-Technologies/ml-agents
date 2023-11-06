@@ -46,7 +46,6 @@ namespace Unity.MLAgents.Sensors
                             cachedSpec.Shape,
                             sensorSpec.Shape
                         );
-
                     }
                 }
             }

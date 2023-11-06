@@ -18,8 +18,12 @@ from dependencies of other projects. This has a few advantages:
    with the different version.
 
 ## Python Version Requirement (Required)
-This guide has been tested with Python 3.8.13 through Python 3.10.x. Newer versions might not
+This guide has been tested with Python 3.10.12. Newer versions might not
 have support for the dependent libraries, so are not recommended.
+
+## Use Conda (or Mamba)
+
+While there are many options for setting up virtual environments for python, by far the most
 
 ## Installing Pip (Required)
 
@@ -63,7 +67,7 @@ then python3-distutils needs to be installed. Install python3-distutils using
    environment using the same `activate` command listed above)
 
 Note:
-- Verify that you are using a Python version between 3.8.13 and 3.10.x. Launch a
+- Verify that you are using Python version 3.10.12. Launch a
   command prompt using `cmd` and execute `python --version` to verify the version.
 - Python3 installation may require admin privileges on Windows.
 - This guide is for Windows 10 using a 64-bit architecture only.

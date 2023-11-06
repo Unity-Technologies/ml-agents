@@ -14,16 +14,16 @@ namespace Unity.MLAgents.Editor
             if (is3d)
             {
                 EditorGUILayout.HelpBox("The Physics Module is not currently present.  " +
-                "Please add it to your project in order to use the Ray Perception APIs in the " +
-                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+                    "Please add it to your project in order to use the Ray Perception APIs in the " +
+                    $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
             }
 #endif
 #if !MLA_UNITY_PHYSICS2D_MODULE
             if (!is3d)
             {
                 EditorGUILayout.HelpBox("The Physics2D Module is not currently present.  " +
-                "Please add it to your project in order to use the Ray Perception APIs in the " +
-                $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
+                    "Please add it to your project in order to use the Ray Perception APIs in the " +
+                    $"{nameof(RayPerceptionSensorComponent3D)}", MessageType.Warning);
             }
 #endif
             var so = serializedObject;
@@ -64,6 +64,10 @@ namespace Unity.MLAgents.Editor
             }
 
             EditorGUILayout.PropertyField(so.FindProperty("m_AlternatingRayOrder"), true);
+            if (is3d)
+            {
+                EditorGUILayout.PropertyField(so.FindProperty("m_UseBatchedRaycasts"), true);
+            }
 
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);

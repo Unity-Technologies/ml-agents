@@ -18,10 +18,10 @@ jobs:
 
     steps:
     - uses: actions/checkout@main
-    - name: Set up Python 3.8
+    - name: Set up Python 3.10
       uses: actions/setup-python@v2
       with:
-        python-version: 3.8
+        python-version: 3.10.x
     - name: Install dependencies
       run: pip install setuptools wheel twine --user
     - name: verify git tag vs. version
@@ -35,14 +35,14 @@ jobs:
         python setup.py bdist_wheel
     - name: Publish distribution 📦 to Test PyPI
       if: startsWith(github.ref, 'refs/tags') && contains(github.ref, 'test')
-      uses: actions/gh-action-pypi-publish@717ba43cfbb0387f6ce311b169a825772f54d295
+      uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.TEST_PYPI_PASSWORD }}
         repository_url: https://test.pypi.org/legacy/
         packages_dir: ${{ matrix.package-path }}/dist/
     - name: Publish distribution 📦 to Production PyPI
       if: startsWith(github.ref, 'refs/tags') && !contains(github.ref, 'test')
-      uses: actions/gh-action-pypi-publish@717ba43cfbb0387f6ce311b169a825772f54d295
+      uses: pypa/gh-action-pypi-publish@master
       with:
         password: ${{ secrets.PYPI_PASSWORD }}
         packages_dir: ${{ matrix.package-path }}/dist/

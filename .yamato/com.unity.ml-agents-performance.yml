@@ -1,6 +1,6 @@
 test_editors:
-  - version: 2021.3
-  - version: 2022.1
+  - version: 2022.3
+  - version: 2023.1
 ---
 {% for editor in test_editors %}
 Run_Mac_Perfomance_Tests{{ editor.version }}:

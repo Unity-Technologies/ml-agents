@@ -80,6 +80,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                         // All joint positions are angular
                         for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
                         {
+                        // TODO add noise as an optional config
                             var jointRotationRads = m_Body.jointPosition[dofIndex] + Random.Range(-0.01f, 0.01f);
                             writer[currentOffset++] = Mathf.Sin(jointRotationRads);
                             writer[currentOffset++] = Mathf.Cos(jointRotationRads);
@@ -99,6 +100,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 for (var dofIndex = 0; dofIndex < m_Body.dofCount; dofIndex++)
                 {
                     // take tanh to keep in [-1, 1]
+                    // TODO add noise as an optional config
                     writer[currentOffset++] = (float) System.Math.Tanh(m_Body.jointForce[dofIndex] + Random.Range(-1.5f, 1.5f));
                 }
             }
@@ -153,7 +155,7 @@ namespace Unity.MLAgents.Extensions.Sensors
                 return normalized;
             }
             // take tanh() to keep in [-1, 1]
-            return (float) System.Math.Tanh(jointPos);
+            return (float)System.Math.Tanh(jointPos);
         }
     }
 }

@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference;
 using UnityEngine;
+using DeviceType = Unity.Sentis.DeviceType;
 
 namespace Unity.MLAgents.Sensors
 {
@@ -88,7 +89,32 @@ namespace Unity.MLAgents.Sensors
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, index + m_Offset] = value;
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
+                    ((TensorFloat)m_Proxy.data)[m_Batch, index + m_Offset] = value;
+                }
+            }
+        }
+
+        public float this[int ch, int w]
+        {
+            set
+            {
+                if (m_Data != null)
+                {
+                    m_Data[ch * m_TensorShape[m_TensorShape.length - 1] + w] = value;
+                }
+                else
+                {
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
+                    ((TensorFloat)m_Proxy.data)[m_Batch, ch, w] = value;
                 }
             }
         }
@@ -99,31 +125,38 @@ namespace Unity.MLAgents.Sensors
         /// <param name="h"></param>
         /// <param name="w"></param>
         /// <param name="ch"></param>
-        public float this[int h, int w, int ch]
+        public float this[int ch, int h, int w]
         {
             set
             {
                 if (m_Data != null)
                 {
-                    if (h < 0 || h >= m_TensorShape.height)
+                    if (h < 0 || h >= m_TensorShape.Height())
                     {
-                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.height - 1}]");
-                    }
-                    if (w < 0 || w >= m_TensorShape.width)
-                    {
-                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.width - 1}]");
-                    }
-                    if (ch < 0 || ch >= m_TensorShape.channels)
-                    {
-                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.channels - 1}]");
+                        throw new IndexOutOfRangeException($"height value {h} must be in range [0, {m_TensorShape.Height() - 1}]");
                     }
 
-                    var index = m_TensorShape.Index(m_Batch, h, w, ch + m_Offset);
+                    if (w < 0 || w >= m_TensorShape.Width())
+                    {
+                        throw new IndexOutOfRangeException($"width value {w} must be in range [0, {m_TensorShape.Width() - 1}]");
+                    }
+
+                    if (ch < 0 || ch >= m_TensorShape.Channels())
+                    {
+                        throw new IndexOutOfRangeException($"channel value {ch} must be in range [0, {m_TensorShape.Channels() - 1}]");
+                    }
+
+                    var index = m_TensorShape.Index(m_Batch, ch + m_Offset, h, w);
                     m_Data[index] = value;
                 }
                 else
                 {
-                    m_Proxy.data[m_Batch, h, w, ch + m_Offset] = value;
+                    if (m_Proxy.Device == DeviceType.GPU)
+                    {
+                        m_Proxy.data.MakeReadable();
+                    }
+
+                    ((TensorFloat)m_Proxy.data)[m_Batch, ch + m_Offset, h, w] = value;
                 }
             }
         }
@@ -145,10 +178,15 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
                 for (var index = 0; index < data.Count; index++)
                 {
                     var val = data[index];
-                    m_Proxy.data[m_Batch, index + m_Offset + writeOffset] = val;
+                    ((TensorFloat)m_Proxy.data)[m_Batch, index + m_Offset + writeOffset] = val;
                 }
             }
         }
@@ -168,9 +206,14 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
             }
         }
 
@@ -190,10 +233,15 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = vec.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = vec.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = vec.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = vec.w;
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = vec.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = vec.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = vec.z;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 3] = vec.w;
             }
         }
 
@@ -202,7 +250,6 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="quat">The Quaternion to be written.</param>
         /// <param name="writeOffset">Optional write offset.</param>
-
         public void Add(Quaternion quat, int writeOffset = 0)
         {
             if (m_Data != null)
@@ -214,10 +261,15 @@ namespace Unity.MLAgents.Sensors
             }
             else
             {
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 0] = quat.x;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 1] = quat.y;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 2] = quat.z;
-                m_Proxy.data[m_Batch, m_Offset + writeOffset + 3] = quat.w;
+                if (m_Proxy.Device == DeviceType.GPU)
+                {
+                    m_Proxy.data.MakeReadable();
+                }
+
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 0] = quat.x;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 1] = quat.y;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 2] = quat.z;
+                ((TensorFloat)m_Proxy.data)[m_Batch, m_Offset + writeOffset + 3] = quat.w;
             }
         }
     }
@@ -250,10 +302,12 @@ namespace Unity.MLAgents.Sensors
             {
                 return obsWriter.WriteTextureRGB24(texture, grayScale);
             }
+
             var width = texture.width;
             var height = texture.height;
 
             var texturePixels = texture.GetPixels32();
+
             // During training, we convert from Texture to PNG before sending to the trainer, which has the
             // effect of flipping the image. We need another flip here at inference time to match this.
             for (var h = height - 1; h >= 0; h--)
@@ -264,15 +318,15 @@ namespace Unity.MLAgents.Sensors
 
                     if (grayScale)
                     {
-                        obsWriter[h, w, 0] =
+                        obsWriter[0, h, w] =
                             (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
                     }
                     else
                     {
                         // For Color32, the r, g and b values are between 0 and 255.
-                        obsWriter[h, w, 0] = currentPixel.r / 255.0f;
-                        obsWriter[h, w, 1] = currentPixel.g / 255.0f;
-                        obsWriter[h, w, 2] = currentPixel.b / 255.0f;
+                        obsWriter[0, h, w] = currentPixel.r / 255.0f;
+                        obsWriter[1, h, w] = currentPixel.g / 255.0f;
+                        obsWriter[2, h, w] = currentPixel.b / 255.0f;
                     }
                 }
             }
@@ -290,6 +344,7 @@ namespace Unity.MLAgents.Sensors
             var height = texture.height;
 
             var rawBytes = texture.GetRawTextureData<byte>();
+
             // During training, we convert from Texture to PNG before sending to the trainer, which has the
             // effect of flipping the image. We need another flip here at inference time to match this.
             for (var h = height - 1; h >= 0; h--)
@@ -303,14 +358,14 @@ namespace Unity.MLAgents.Sensors
 
                     if (grayScale)
                     {
-                        obsWriter[h, w, 0] = (r + g + b) / 3f / 255.0f;
+                        obsWriter[0, h, w] = (r + g + b) / 3f / 255.0f;
                     }
                     else
                     {
                         // For Color32, the r, g and b values are between 0 and 255.
-                        obsWriter[h, w, 0] = r / 255.0f;
-                        obsWriter[h, w, 1] = g / 255.0f;
-                        obsWriter[h, w, 2] = b / 255.0f;
+                        obsWriter[0, h, w] = r / 255.0f;
+                        obsWriter[1, h, w] = g / 255.0f;
+                        obsWriter[2, h, w] = b / 255.0f;
                     }
                 }
             }

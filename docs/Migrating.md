@@ -4,9 +4,9 @@
 <!---
 TODO: update ml-agents-env package version before release
 --->
-## Migrating to the ml-agents-envs 0.29.0 package
-- Python 3.8 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
-  Please update your python installation to 3.8.13 or higher.
+## Migrating to the ml-agents-envs 0.30.0 package
+- Python 3.10 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
+  Please update your python installation to 3.10.12 or higher.
 - The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
 - Example:
   - Before
@@ -19,8 +19,8 @@ from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 ```
 
 
-## Migrating the package to version 2.0
-- The official version of Unity ML-Agents supports is now 2021.3 LTS. If you run
+## Migrating the package to version 2.x
+- The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
   into issues, please consider deleting your project's Library folder and reponening your
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
@@ -155,7 +155,7 @@ Sensors with non-normalized data cannot use PNG compression type.
 recieved from `GetObjectData()` will be the observation sent to the trainer.
 
 ### LSTM models from previous releases no longer supported
-The way the Unity Inference Engine processes LSTM (recurrent neural networks) has changed. As a result, models
+The way that Sentis processes LSTM (recurrent neural networks) has changed. As a result, models
 trained with previous versions of ML-Agents will not be usable at inference if they were trained with a `memory`
 setting in the `.yaml` config file.
 If you want to use a model that has a recurrent neural network in this release of ML-Agents, you need to train
@@ -218,7 +218,7 @@ folder
 - The Parameter Randomization feature has been merged with the Curriculum feature. It is now possible to specify a sampler
 in the lesson of a Curriculum. Curriculum has been refactored and is now specified at the level of the parameter, not the
 behavior. More information
-[here](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Training-ML-Agents.md).(#4160)
+[here](https://github.com/Unity-Technologies/ml-agents/blob/release_21_docs/docs/Training-ML-Agents.md).(#4160)
 
 ### Steps to Migrate
 - The configuration format for curriculum and parameter randomization has changed. To upgrade your configuration files,
@@ -531,9 +531,9 @@ vector observations to be used simultaneously.
 - `mlagents.envs` was renamed to `mlagents_envs`. The previous repo layout
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.
-- The official version of Unity ML-Agents supports is now 2018.4 LTS. If you run
+- The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
   into issues, please consider deleting your library folder and reponening your
-  projects. You will need to install the Barracuda package into your project in
+  projects. You will need to install the Sentis package into your project in
   order to ML-Agents to compile correctly.
 
 ### Steps to Migrate
@@ -565,8 +565,7 @@ vector observations to be used simultaneously.
   - `Heuristic Only` means the Agent will always use the `Heuristic()` method.
     This corresponds to having "Use Heuristic" selected in 0.11.0.
   - `Inference Only` means the Agent will always perform inference.
-- Barracuda was upgraded to 0.3.2, and it is now installed via the Unity Package
-  Manager.
+- ML-Agents was upgraded to use Sentis 1.2.0-exp.2 and is installed via the package manager.
 
 ### Steps to Migrate
 
@@ -586,9 +585,9 @@ vector observations to be used simultaneously.
   observations that RayPerceptionSensorComponent3D produces are different from
   the old behavior.
 - If you see messages such as
-  `The type or namespace 'Barracuda' could not be found` or
+  `The type or namespace 'Sentis' could not be found` or
   `The type or namespace 'Google' could not be found`, you will need to
-  [install the Barracuda preview package](Installation.md#package-installation).
+  [install the Sentis preview package](Installation.md#package-installation).
 
 ## Migrating from ML-Agents Toolkit v0.10 to v0.11.0
 
@@ -706,7 +705,7 @@ vector observations to be used simultaneously.
 ### Important Changes
 
 - We no longer support TFS and are now using the
-  [Unity Inference Engine](Unity-Inference-Engine.md)
+  [Sentis](Sentis.md)
 
 #### Steps to Migrate
 

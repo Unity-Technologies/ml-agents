@@ -28,7 +28,7 @@
   - [Training Configuration File](Training-Configuration-File.md)
   - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
   - [Profiling Trainers](Profiling-Python.md)
-- [Unity Inference Engine](Unity-Inference-Engine.md)
+- [Sentis](Sentis.md)
 
 ## Extending ML-Agents
 
@@ -41,9 +41,9 @@
 
 ## Python Tutorial with Google Colab
 
-- [Using a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_20_docs/colab/Colab_UnityEnvironment_1_Run.ipynb)
-- [Q-Learning with a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_20_docs/colab/Colab_UnityEnvironment_2_Train.ipynb)
-- [Using Side Channels on a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_20_docs/colab/Colab_UnityEnvironment_3_SideChannel.ipynb)
+- [Using a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_21_docs/colab/Colab_UnityEnvironment_1_Run.ipynb)
+- [Q-Learning with a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_21_docs/colab/Colab_UnityEnvironment_2_Train.ipynb)
+- [Using Side Channels on a UnityEnvironment](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/release_21_docs/colab/Colab_UnityEnvironment_3_SideChannel.ipynb)
 
 ## Help
 

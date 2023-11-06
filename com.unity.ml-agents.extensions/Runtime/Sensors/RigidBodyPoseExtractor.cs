@@ -4,7 +4,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Extensions.Sensors
 {
-
     /// <summary>
     /// Utility class to track a hierarchy of RigidBodies. These are assumed to have a root node,
     /// and child nodes are connect to their parents via Joints.
@@ -29,7 +28,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// a stabilized reference frame, which can improve learning.</param>
         /// <param name="enableBodyPoses">Optional mapping of whether a body's psoe should be enabled or not.</param>
         public RigidBodyPoseExtractor(Rigidbody rootBody, GameObject rootGameObject = null,
-            GameObject virtualRoot = null, Dictionary<Rigidbody, bool> enableBodyPoses = null)
+                                      GameObject virtualRoot = null, Dictionary<Rigidbody, bool> enableBodyPoses = null)
         {
             if (rootBody == null)
             {
@@ -217,5 +216,4 @@ namespace Unity.MLAgents.Extensions.Sensors
             }
         }
     }
-
 }

@@ -216,7 +216,6 @@ namespace Unity.MLAgents.Extensions.Sensors
             return null;
         }
 
-
         /// <summary>
         /// Update the internal model space transform storage based on the underlying system.
         /// </summary>
@@ -422,7 +421,6 @@ namespace Unity.MLAgents.Extensions.Sensors
 
             return nodesOut;
         }
-
     }
 
     /// <summary>

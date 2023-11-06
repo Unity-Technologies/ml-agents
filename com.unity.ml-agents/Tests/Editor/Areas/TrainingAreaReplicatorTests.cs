@@ -67,7 +67,6 @@ namespace Unity.MLAgents.Tests.Areas
             m_Replicator.OnEnable();
             var trainingAreas = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == m_Replicator.TrainingAreaName);
             Assert.AreEqual(10, trainingAreas.Count());
-
         }
 
         [Test]
@@ -79,7 +78,6 @@ namespace Unity.MLAgents.Tests.Areas
             m_Replicator.OnEnable();
             var trainingAreas = Resources.FindObjectsOfTypeAll<GameObject>().Where(obj => obj.name == m_Replicator.TrainingAreaName);
             Assert.AreEqual(1, trainingAreas.Count());
-
         }
     }
 }

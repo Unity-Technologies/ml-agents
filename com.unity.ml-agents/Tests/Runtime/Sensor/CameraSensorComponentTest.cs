@@ -6,7 +6,6 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class CameraSensorComponentTest
     {
@@ -32,7 +31,7 @@ namespace Unity.MLAgents.Tests
                     cameraComponent.RuntimeCameraEnable = true;
 
                     var sensor = cameraComponent.CreateSensors()[0];
-                    var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
+                    var expectedShape = new InplaceArray<int>(grayscale ? 1 : 3, height, width);
                     Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);
                     Assert.AreEqual(typeof(CameraSensor), sensor.GetType());
 

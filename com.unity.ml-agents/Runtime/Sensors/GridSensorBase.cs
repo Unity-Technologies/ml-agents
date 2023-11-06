@@ -75,7 +75,7 @@ namespace Unity.MLAgents.Sensors
 
             m_NumCells = m_GridSize.x * m_GridSize.z;
             m_CellObservationSize = GetCellObservationSize();
-            m_ObservationSpec = ObservationSpec.Visual(m_GridSize.x, m_GridSize.z, m_CellObservationSize);
+            m_ObservationSpec = ObservationSpec.Visual(m_CellObservationSize, m_GridSize.x, m_GridSize.z);
             m_PerceptionTexture = new Texture2D(m_GridSize.x, m_GridSize.z, TextureFormat.RGB24, false);
 
             ResetPerceptionBuffer();
@@ -324,7 +324,7 @@ namespace Unity.MLAgents.Sensors
                     {
                         for (var d = 0; d < m_CellObservationSize; d++)
                         {
-                            writer[h, w, d] = m_PerceptionBuffer[index];
+                            writer[d, h, w] = m_PerceptionBuffer[index];
                             index++;
                         }
                     }

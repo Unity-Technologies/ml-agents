@@ -105,6 +105,7 @@ def test_bad_env_path():
             no_graphics=True,
             seed=-1,
             num_areas=1,
+            timeout_wait=1,
             start_port=8000,
             env_args=None,
             log_folder="results/log_folder",

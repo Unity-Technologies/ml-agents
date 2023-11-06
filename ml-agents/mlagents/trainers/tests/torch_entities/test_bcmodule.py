@@ -123,26 +123,28 @@ def test_bcmodule_rnn_update(is_sac):
     assert_stats_are_float(stats)
 
 
-# Test with discrete control and visual observations
+# Test with hybrid control and visual observations
 @pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
-def test_bcmodule_dc_visual_update(is_sac):
-    mock_specs = mb.create_mock_banana_behavior_specs()
+def test_bcmodule_hybrid_visual_updates(is_sac):
+    mock_specs = mb.create_visual_food_collector_specs()
     bc_settings = BehavioralCloningSettings(
-        demo_path=os.path.dirname(os.path.abspath(__file__)) + "/" + "testdcvis.demo"
+        demo_path=os.path.dirname(os.path.abspath(__file__))
+        + "/"
+        + "testhybridvis.demo"
     )
     bc_module = create_bc_module(mock_specs, bc_settings, False, is_sac)
     stats = bc_module.update()
     assert_stats_are_float(stats)
 
 
-# Test with discrete control, visual observations and RNN
-
-
+# Test with hybrid control, visual observations and rnn
 @pytest.mark.parametrize("is_sac", [True, False], ids=["sac", "ppo"])
-def test_bcmodule_rnn_dc_update(is_sac):
-    mock_specs = mb.create_mock_banana_behavior_specs()
+def test_bcmodule_rnn_hybrid_update(is_sac):
+    mock_specs = mb.create_visual_food_collector_specs()
     bc_settings = BehavioralCloningSettings(
-        demo_path=os.path.dirname(os.path.abspath(__file__)) + "/" + "testdcvis.demo"
+        demo_path=os.path.dirname(os.path.abspath(__file__))
+        + "/"
+        + "testhybridvis.demo"
     )
     bc_module = create_bc_module(mock_specs, bc_settings, True, is_sac)
     stats = bc_module.update()

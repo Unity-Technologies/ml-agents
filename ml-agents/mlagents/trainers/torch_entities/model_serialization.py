@@ -87,9 +87,9 @@ class TensorNames:
 class ModelSerializer:
     def __init__(self, policy):
         # ONNX only support input in NCHW (channel first) format.
-        # Barracuda also expect to get data in NCHW.
+        # Sentis also expect to get data in NCHW.
         # Any multi-dimentional input should follow that otherwise will
-        # cause problem to barracuda import.
+        # cause problem for Sentis import.
         self.policy = policy
         observation_specs = self.policy.behavior_spec.observation_specs
         batch_dim = [1]
@@ -148,7 +148,7 @@ class ModelSerializer:
         of ONNX
         """
         if len(shape) == 3:
-            return shape[2], shape[0], shape[1]
+            return shape[0], shape[1], shape[2]
         return shape
 
     def export_policy_model(self, output_filepath: str) -> None:

@@ -277,9 +277,9 @@ mode with the **3D Balance Ball** sample environment.
 #### Cross-Platform Inference
 
 It is important to note that the ML-Agents Toolkit leverages the
-[Unity Inference Engine](Unity-Inference-Engine.md) to run the models within a
+[Sentis](Sentis.md) to run the models within a
 Unity scene such that an agent can take the _optimal_ action at each step. Given
-that the Unity Inference Engine support most platforms that Unity does, this
+that Sentis support most platforms that Unity does, this
 means that any model you train with the ML-Agents Toolkit can be embedded into
 your Unity application that runs on any platform. See our
 [dedicated blog post](https://blogs.unity3d.com/2019/03/01/unity-ml-agents-toolkit-v0-7-a-leap-towards-cross-platform-inference/)

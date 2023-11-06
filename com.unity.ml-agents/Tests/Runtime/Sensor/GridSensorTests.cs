@@ -77,7 +77,7 @@ namespace Unity.MLAgents.Tests
 
             var gridSensor = (GridSensorBase)gridSensorComponent.CreateSensors()[0];
             LogAssert.Expect(LogType.Warning, $"Compression type {SensorCompressionType.PNG} is only supported with normalized data. " +
-                        "The sensor will not compress the data.");
+                "The sensor will not compress the data.");
             Assert.AreEqual(gridSensor.CompressionType, SensorCompressionType.None);
         }
 
@@ -89,8 +89,8 @@ namespace Unity.MLAgents.Tests
             gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
 
             gridSensorComponent.CreateSensors();
-            var componentSensor = (List<GridSensorBase>)typeof(GridSensorComponent).GetField("m_Sensors",
-                        BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
+            var componentSensor = (List<GridSensorBase>) typeof(GridSensorComponent).GetField("m_Sensors",
+                BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
             Assert.AreEqual(componentSensor.Count, 1);
         }
 

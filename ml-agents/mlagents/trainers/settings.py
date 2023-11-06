@@ -842,6 +842,7 @@ class EnvironmentSettings:
     base_port: int = parser.get_default("base_port")
     num_envs: int = attr.ib(default=parser.get_default("num_envs"))
     num_areas: int = attr.ib(default=parser.get_default("num_areas"))
+    timeout_wait: int = attr.ib(default=parser.get_default("timeout_wait"))
     seed: int = parser.get_default("seed")
     max_lifetime_restarts: int = parser.get_default("max_lifetime_restarts")
     restarts_rate_limit_n: int = parser.get_default("restarts_rate_limit_n")

@@ -196,9 +196,9 @@ namespace Unity.MLAgents.Tests
                 // Vector observations
                 (new[] {3}, SensorCompressionType.None, false, false),
                 // Uncompressed floats
-                (new[] {4, 4, 3}, SensorCompressionType.None, false, false),
+                (new[] {3, 4, 4}, SensorCompressionType.None, false, false),
                 // Compressed floats, 3 channels
-                (new[] {4, 4, 3}, SensorCompressionType.PNG, false, true),
+                (new[] {3, 4, 4}, SensorCompressionType.PNG, false, true),
 
                 // Compressed floats, >3 channels
                 (new[] {4, 4, 4}, SensorCompressionType.PNG, false, false), // Unsupported - results in uncompressed

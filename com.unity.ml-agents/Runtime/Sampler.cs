@@ -5,13 +5,11 @@ using Random = System.Random;
 
 namespace Unity.MLAgents
 {
-
     /// <summary>
     /// Takes a list of floats that encode a sampling distribution and returns the sampling function.
     /// </summary>
     internal static class SamplerFactory
     {
-
         public static Func<float> CreateUniformSampler(float min, float max, int seed)
         {
             Random distr = new Random(seed);
@@ -63,6 +61,7 @@ namespace Unity.MLAgents
                 int sampledInterval = intervalDistr.Sample(intervalSizes);
                 return intervalFuncs[sampledInterval].Invoke();
             }
+
             return MultiRange;
         }
     }

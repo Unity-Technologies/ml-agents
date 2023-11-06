@@ -19,7 +19,7 @@ namespace Unity.MLAgents.Demonstrations
     /// See [Imitation Learning - Recording Demonstrations] for more information.
     ///
     /// [GameObject]: https://docs.unity3d.com/Manual/GameObjects.html
-    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
+    /// [Imitation Learning - Recording Demonstrations]: https://github.com/Unity-Technologies/ml-agents/blob/release_21_docs/docs//Learning-Environment-Design-Agents.md#recording-demonstrations
     /// </remarks>
     [RequireComponent(typeof(Agent))]
     [AddComponentMenu("ML Agents/Demonstration Recorder", (int)MenuGroup.Default)]
@@ -37,7 +37,7 @@ namespace Unity.MLAgents.Demonstrations
         /// Set to zero to record indefinitely.
         /// </summary>
         [Tooltip("Number of steps to record. The editor will stop playing when it reaches this threshold. " +
-                 "Set to zero to record indefinitely.")]
+            "Set to zero to record indefinitely.")]
         public int NumStepsToRecord;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [FormerlySerializedAs("demonstrationName")]
         [Tooltip("Base demonstration file name. If multiple files are saved, the additional " +
-                 "filenames will have a unique number appended.")]
+            "filenames will have a unique number appended.")]
         public string DemonstrationName;
 
         /// <summary>
@@ -55,7 +55,7 @@ namespace Unity.MLAgents.Demonstrations
         /// </summary>
         [FormerlySerializedAs("demonstrationDirectory")]
         [Tooltip("Directory to save the demo files. Will default to " +
-                 "{Application.dataPath}/Demonstrations if not specified.")]
+            "{Application.dataPath}/Demonstrations if not specified.")]
         public string DemonstrationDirectory;
 
         DemonstrationWriter m_DemoWriter;

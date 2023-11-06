@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using Unity.Collections;
+using Unity.Jobs;
 using UnityEngine;
 
 namespace Unity.MLAgents.Sensors
@@ -71,6 +73,11 @@ namespace Unity.MLAgents.Sensors
         /// Filtering options for the casts.
         /// </summary>
         public int LayerMask;
+
+        /// <summary>
+        ///  Whether to use batched raycasts.
+        /// </summary>
+        public bool UseBatchedRaycasts;
 
         /// <summary>
         /// Returns the expected number of floats in the output.
@@ -245,6 +252,8 @@ namespace Unity.MLAgents.Sensors
         RayPerceptionInput m_RayPerceptionInput;
         RayPerceptionOutput m_RayPerceptionOutput;
 
+        bool m_UseBatchedRaycasts;
+
         /// <summary>
         /// Time.frameCount at the last time Update() was called. This is only used for display in gizmos.
         /// </summary>
@@ -264,6 +273,7 @@ namespace Unity.MLAgents.Sensors
         {
             m_Name = name;
             m_RayPerceptionInput = rayInput;
+            m_UseBatchedRaycasts = rayInput.UseBatchedRaycasts;
 
             SetNumObservations(rayInput.OutputSize());
 
@@ -339,10 +349,17 @@ namespace Unity.MLAgents.Sensors
                 m_RayPerceptionOutput.RayOutputs = new RayPerceptionOutput.RayOutput[numRays];
             }
 
-            // For each ray, do the casting and save the results.
-            for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+            if (m_UseBatchedRaycasts && m_RayPerceptionInput.CastType == RayPerceptionCastType.Cast3D)
             {
-                m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
+                PerceiveBatchedRays(ref m_RayPerceptionOutput.RayOutputs, m_RayPerceptionInput);
+            }
+            else
+            {
+                // For each ray, do the casting and save the results.
+                for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
+                {
+                    m_RayPerceptionOutput.RayOutputs[rayIndex] = PerceiveSingleRay(m_RayPerceptionInput, rayIndex);
+                }
             }
         }
 
@@ -383,18 +400,153 @@ namespace Unity.MLAgents.Sensors
         /// Evaluates the raycasts to be used as part of an observation of an agent.
         /// </summary>
         /// <param name="input">Input defining the rays that will be cast.</param>
+        /// <param name="batched">Use batched raycasts.</param>
         /// <returns>Output struct containing the raycast results.</returns>
-        public static RayPerceptionOutput Perceive(RayPerceptionInput input)
+        public static RayPerceptionOutput Perceive(RayPerceptionInput input, bool batched)
         {
             RayPerceptionOutput output = new RayPerceptionOutput();
             output.RayOutputs = new RayPerceptionOutput.RayOutput[input.Angles.Count];
 
-            for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
+            if (batched)
             {
-                output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
+                PerceiveBatchedRays(ref output.RayOutputs, input);
+            }
+            else
+            {
+                for (var rayIndex = 0; rayIndex < input.Angles.Count; rayIndex++)
+                {
+                    output.RayOutputs[rayIndex] = PerceiveSingleRay(input, rayIndex);
+                }
             }
 
             return output;
+        }
+
+        /// <summary>
+        /// Evaluate the raycast results of all the rays from the RayPerceptionInput as a batch.
+        /// </summary>
+        /// <param name="input"></param>
+        /// <param name="rayIndex"></param>
+        /// <returns></returns>
+        internal static void PerceiveBatchedRays(ref RayPerceptionOutput.RayOutput[] batchedRaycastOutputs, RayPerceptionInput input)
+        {
+            var numRays = input.Angles.Count;
+            var results = new NativeArray<RaycastHit>(numRays, Allocator.TempJob);
+            var unscaledRayLength = input.RayLength;
+            var unscaledCastRadius = input.CastRadius;
+
+            var raycastCommands = new NativeArray<RaycastCommand>(unscaledCastRadius <= 0f ? numRays : 0, Allocator.TempJob);
+            var spherecastCommands = new NativeArray<SpherecastCommand>(unscaledCastRadius > 0f ? numRays : 0, Allocator.TempJob);
+
+            // this is looped
+
+            for (int i = 0; i < numRays; i++)
+            {
+                var extents = input.RayExtents(i);
+                var startPositionWorld = extents.StartPositionWorld;
+                var endPositionWorld = extents.EndPositionWorld;
+
+                var rayDirection = endPositionWorld - startPositionWorld;
+                // If there is non-unity scale, |rayDirection| will be different from rayLength.
+                // We want to use this transformed ray length for determining cast length, hit fraction etc.
+                // We also it to scale up or down the sphere or circle radii
+                var scaledRayLength = rayDirection.magnitude;
+                // Avoid 0/0 if unscaledRayLength is 0
+                var scaledCastRadius = unscaledRayLength > 0 ?
+                    unscaledCastRadius * scaledRayLength / unscaledRayLength :
+                    unscaledCastRadius;
+
+                var queryParameters = QueryParameters.Default;
+                queryParameters.layerMask = input.LayerMask;
+
+                var rayDirectionNormalized = rayDirection.normalized;
+
+                if (scaledCastRadius > 0f)
+                {
+                    spherecastCommands[i] = new SpherecastCommand(startPositionWorld, scaledCastRadius, rayDirectionNormalized, queryParameters, scaledRayLength);
+                }
+                else
+                {
+                    raycastCommands[i] = new RaycastCommand(startPositionWorld, rayDirectionNormalized, queryParameters, scaledRayLength);
+                }
+
+                batchedRaycastOutputs[i] = new RayPerceptionOutput.RayOutput
+                {
+                    HitTaggedObject = false,
+                    HitTagIndex = -1,
+                    StartPositionWorld = startPositionWorld,
+                    EndPositionWorld = endPositionWorld,
+                    ScaledCastRadius = scaledCastRadius
+                };
+            }
+
+            if (unscaledCastRadius > 0f)
+            {
+                JobHandle handle = SpherecastCommand.ScheduleBatch(spherecastCommands, results, 1, 1, default(JobHandle));
+                handle.Complete();
+            }
+            else
+            {
+                JobHandle handle = RaycastCommand.ScheduleBatch(raycastCommands, results, 1, 1, default(JobHandle));
+                handle.Complete();
+            }
+
+            for (int i = 0; i < results.Length; i++)
+            {
+                var castHit = results[i].collider != null;
+                var hitFraction = 1.0f;
+                GameObject hitObject = null;
+                float scaledRayLength;
+                float scaledCastRadius = batchedRaycastOutputs[i].ScaledCastRadius;
+                if (scaledCastRadius > 0f)
+                {
+                    scaledRayLength = spherecastCommands[i].distance;
+                }
+                else
+                {
+                    scaledRayLength = raycastCommands[i].distance;
+                }
+
+                // hitFraction = castHit ? (scaledRayLength > 0 ? results[i].distance / scaledRayLength : 0.0f) : 1.0f;
+                // Debug.Log(results[i].distance);
+                hitFraction = castHit ? (scaledRayLength > 0 ? results[i].distance / scaledRayLength : 0.0f) : 1.0f;
+                hitObject = castHit ? results[i].collider.gameObject : null;
+
+                if (castHit)
+                {
+                    var numTags = input.DetectableTags?.Count ?? 0;
+                    for (int j = 0; j < numTags; j++)
+                    {
+                        var tagsEqual = false;
+                        try
+                        {
+                            var tag = input.DetectableTags[j];
+                            if (!string.IsNullOrEmpty(tag))
+                            {
+                                tagsEqual = hitObject.CompareTag(tag);
+                            }
+                        }
+                        catch (UnityException)
+                        {
+                        }
+
+                        if (tagsEqual)
+                        {
+                            batchedRaycastOutputs[i].HitTaggedObject = true;
+                            batchedRaycastOutputs[i].HitTagIndex = j;
+                            break;
+                        }
+                    }
+                }
+
+                batchedRaycastOutputs[i].HasHit = castHit;
+                batchedRaycastOutputs[i].HitFraction = hitFraction;
+                batchedRaycastOutputs[i].HitGameObject = hitObject;
+            }
+
+            results.Dispose();
+            raycastCommands.Dispose();
+            spherecastCommands.Dispose();
         }
 
         /// <summary>

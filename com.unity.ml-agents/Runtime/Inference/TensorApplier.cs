@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 
 
@@ -43,7 +43,7 @@ namespace Unity.MLAgents.Inference
         /// <param name="seed"> The seed the Appliers will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory used to pass to the inference model.</param>
-        /// <param name="barracudaModel"></param>
+        /// <param name="sentisModel"></param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic.</param>
         public TensorApplier(
@@ -51,16 +51,16 @@ namespace Unity.MLAgents.Inference
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null,
+            object sentisModel = null,
             bool deterministicInference = false)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
-            if (barracudaModel == null)
+            if (sentisModel == null)
             {
                 return;
             }
 
-            var model = (Model)barracudaModel;
+            var model = (Model)sentisModel;
             if (!model.SupportsContinuousAndDiscrete())
             {
                 actionSpec.CheckAllContinuousOrDiscrete();
@@ -74,11 +74,11 @@ namespace Unity.MLAgents.Inference
             if (actionSpec.NumDiscreteActions > 0)
             {
                 var tensorName = model.DiscreteOutputName(deterministicInference);
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
+                if (modelVersion == (int)SentisModelParamLoader.ModelApiVersion.MLAgents1_0)
                 {
                     m_Dict[tensorName] = new LegacyDiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }
-                if (modelVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+                if (modelVersion == (int)SentisModelParamLoader.ModelApiVersion.MLAgents2_0)
                 {
                     m_Dict[tensorName] = new DiscreteActionOutputApplier(actionSpec, seed, allocator);
                 }

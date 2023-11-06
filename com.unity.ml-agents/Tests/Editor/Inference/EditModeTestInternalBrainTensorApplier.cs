@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using NUnit.Framework;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 
@@ -8,9 +8,7 @@ namespace Unity.MLAgents.Tests
 {
     public class EditModeTestInternalBrainTensorApplier
     {
-        class TestAgent : Agent
-        {
-        }
+        class TestAgent : Agent { }
 
         [Test]
         public void Construction()
@@ -30,12 +28,13 @@ namespace Unity.MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 })
             };
 
             var applier = new ContinuousActionOutputApplier(actionSpec);
 
             var agentIds = new List<int>() { 0, 1 };
+
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
@@ -58,15 +57,15 @@ namespace Unity.MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 5 },
-                data = new Tensor(
-                    2,
-                    5,
+                data = new TensorFloat(
+                    new TensorShape(2, 5),
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var alloc = new TensorCachingAllocator();
             var applier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
+
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
@@ -88,15 +87,16 @@ namespace Unity.MLAgents.Tests
             var inputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 2 },
-                data = new Tensor(
-                    2,
-                    2,
-                    new[] { 1f, 1f, 1f, 2f }),
+                data = new TensorInt(
+                    new TensorShape(2, 2),
+                    new[] { 1, 1, 1, 2 }),
+                valueType = TensorProxy.TensorType.Integer
             };
             var alloc = new TensorCachingAllocator();
             var applier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
+
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
@@ -118,14 +118,13 @@ namespace Unity.MLAgents.Tests
             var continuousInputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 })
             };
             var discreteInputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 8 },
-                data = new Tensor(
-                    2,
-                    5,
+                data = new TensorFloat(
+                    new TensorShape(2, 5),
                     new[] { 0.5f, 22.5f, 0.1f, 5f, 1f, 4f, 5f, 6f, 7f, 8f })
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
@@ -133,6 +132,7 @@ namespace Unity.MLAgents.Tests
             var discreteApplier = new LegacyDiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
+
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 
@@ -161,21 +161,23 @@ namespace Unity.MLAgents.Tests
             var continuousInputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 3 },
-                data = new Tensor(2, 3, new float[] { 1, 2, 3, 4, 5, 6 })
+                data = new TensorFloat(new TensorShape(2, 3), new float[] { 1, 2, 3, 4, 5, 6 }),
+                valueType = TensorProxy.TensorType.FloatingPoint
             };
             var discreteInputTensor = new TensorProxy()
             {
                 shape = new long[] { 2, 2 },
-                data = new Tensor(
-                    2,
-                    2,
-                    new[] { 1f, 1f, 1f, 2f }),
+                data = new TensorInt(
+                    new TensorShape(2, 2),
+                    new[] { 1, 1, 1, 2 }),
+                valueType = TensorProxy.TensorType.Integer
             };
             var continuousApplier = new ContinuousActionOutputApplier(actionSpec);
             var alloc = new TensorCachingAllocator();
             var discreteApplier = new DiscreteActionOutputApplier(actionSpec, 0, alloc);
 
             var agentIds = new List<int>() { 0, 1 };
+
             // Dictionary from AgentId to Action
             var actionDict = new Dictionary<int, ActionBuffers>() { { 0, ActionBuffers.Empty }, { 1, ActionBuffers.Empty } };
 

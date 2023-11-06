@@ -26,7 +26,7 @@ namespace Unity.MLAgents.Tests
                     renderTexComponent.Grayscale = grayscale;
                     renderTexComponent.CompressionType = compression;
 
-                    var expectedShape = new InplaceArray<int>(height, width, grayscale ? 1 : 3);
+                    var expectedShape = new InplaceArray<int>(grayscale ? 1 : 3, height, width);
 
                     var sensor = renderTexComponent.CreateSensors()[0];
                     Assert.AreEqual(expectedShape, sensor.GetObservationSpec().Shape);

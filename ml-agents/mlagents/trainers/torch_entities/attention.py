@@ -1,6 +1,7 @@
-from mlagents.torch_utils import torch
-import warnings
 from typing import Tuple, Optional, List
+
+from mlagents.torch_utils import torch
+from mlagents.trainers.exception import UnityTrainerException
 from mlagents.trainers.torch_entities.layers import (
     LinearEncoder,
     Initialization,
@@ -8,7 +9,6 @@ from mlagents.trainers.torch_entities.layers import (
     LayerNorm,
 )
 from mlagents.trainers.torch_entities.model_serialization import exporting_to_onnx
-from mlagents.trainers.exception import UnityTrainerException
 
 
 def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
@@ -18,25 +18,6 @@ def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
     layer to mask the padding observations.
     """
     with torch.no_grad():
-
-        if exporting_to_onnx.is_exporting():
-            with warnings.catch_warnings():
-                # We ignore a TracerWarning from PyTorch that warns that doing
-                # shape[n].item() will cause the trace to be incorrect (the trace might
-                # not generalize to other inputs)
-                # We ignore this warning because we know the model will always be
-                # run with inputs of the same shape
-                warnings.simplefilter("ignore")
-                # When exporting to ONNX, we want to transpose the entities. This is
-                # because ONNX only support input in NCHW (channel first) format.
-                # Barracuda also expect to get data in NCHW.
-                entities = [
-                    torch.transpose(obs, 2, 1).reshape(
-                        -1, obs.shape[1].item(), obs.shape[2].item()
-                    )
-                    for obs in entities
-                ]
-
         # Generate the masking tensors for each entities tensor (mask only if all zeros)
         key_masks: List[torch.Tensor] = [
             (torch.sum(ent**2, axis=2) < 0.01).float() for ent in entities
@@ -45,13 +26,12 @@ def get_zero_entities_mask(entities: List[torch.Tensor]) -> List[torch.Tensor]:
 
 
 class MultiHeadAttention(torch.nn.Module):
-
     NEG_INF = -1e6
 
     def __init__(self, embedding_size: int, num_heads: int):
         """
         Multi Head Attention module. We do not use the regular Torch implementation since
-        Barracuda does not support some operators it uses.
+        Sentis does not support some operators it uses.
         Takes as input to the forward method 3 tensors:
         - query: of dimensions (batch_size, number_of_queries, embedding_size)
         - key: of dimensions (batch_size, number_of_keys, embedding_size)
@@ -92,7 +72,7 @@ class MultiHeadAttention(torch.nn.Module):
         query = query.permute([0, 2, 1, 3])  # (b, h, n_q, emb / h)
         # The next few lines are equivalent to : key.permute([0, 2, 3, 1])
         # This is a hack, ONNX will compress two permute operations and
-        # Barracuda will not like seeing `permute([0,2,3,1])`
+        # Sentis will not like seeing `permute([0,2,3,1])`
         key = key.permute([0, 2, 1, 3])  # (b, h, emb / h, n_k)
         key -= 1
         key += 1
@@ -140,7 +120,7 @@ class EntityEmbedding(torch.nn.Module):
         :param x_self_size: Size of "self" entity.
         :param entity_size: Size of other entities.
         :param entity_num_max_elements: Maximum elements for a given entity, None for unrestricted.
-            Needs to be assigned in order for model to be exportable to ONNX and Barracuda.
+            Needs to be assigned in order for model to be exportable to ONNX and Sentis.
         :param embedding_size: Embedding size for the entity encoder.
         :param concat_self: Whether to concatenate x_self to entities. Set True for ego-centric
             self-attention.
@@ -181,14 +161,6 @@ class EntityEmbedding(torch.nn.Module):
                 )
             num_entities = entities.shape[1]
 
-        if exporting_to_onnx.is_exporting():
-            # When exporting to ONNX, we want to transpose the entities. This is
-            # because ONNX only support input in NCHW (channel first) format.
-            # Barracuda also expect to get data in NCHW.
-            entities = torch.transpose(entities, 2, 1).reshape(
-                -1, num_entities, self.entity_size
-            )
-
         if self.self_size > 0:
             expanded_self = x_self.reshape(-1, 1, self.self_size)
             expanded_self = torch.cat([expanded_self] * num_entities, dim=1)
@@ -221,7 +193,7 @@ class ResidualSelfAttention(torch.nn.Module):
         :param entity_num_max_elements: A List of ints representing the maximum number
             of elements in an entity sequence. Should be of length num_entities. Pass None to
             not restrict the number of elements; however, this will make the module
-            unexportable to ONNX/Barracuda.
+            unexportable to ONNX/Sentis.
         :param num_heads: Number of heads for Multi Head Self-Attention
         """
         super().__init__()

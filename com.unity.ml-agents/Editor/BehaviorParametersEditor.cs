@@ -1,11 +1,11 @@
 using System.Collections.Generic;
 using UnityEditor;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Sensors.Reflection;
-using CheckTypeEnum = Unity.MLAgents.Inference.BarracudaModelParamLoader.FailedCheck.CheckTypeEnum;
+using CheckTypeEnum = Unity.MLAgents.Inference.SentisModelParamLoader.FailedCheck.CheckTypeEnum;
 
 namespace Unity.MLAgents.Editor
 {
@@ -110,9 +110,9 @@ namespace Unity.MLAgents.Editor
                 m_TimeSinceModelReload = 0;
             }
             // Display all failed checks
-            D.logEnabled = false;
-            Model barracudaModel = null;
-            var model = (NNModel)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
+            // D.logEnabled = false;
+            Model sentisModel = null;
+            var model = (ModelAsset)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
 
             // Grab the sensor components, since we need them to determine the observation sizes.
@@ -152,12 +152,12 @@ namespace Unity.MLAgents.Editor
             var brainParameters = behaviorParameters.BrainParameters;
             if (model != null)
             {
-                barracudaModel = ModelLoader.Load(model);
+                sentisModel = ModelLoader.Load(model);
             }
             if (brainParameters != null)
             {
-                var failedChecks = Inference.BarracudaModelParamLoader.CheckModel(
-                    barracudaModel, brainParameters, sensors, actuatorComponents,
+                var failedChecks = Inference.SentisModelParamLoader.CheckModel(
+                    sentisModel, brainParameters, sensors, actuatorComponents,
                     observableAttributeSensorTotalSize, behaviorParameters.BehaviorType, behaviorParameters.DeterministicInference
                 );
                 foreach (var check in failedChecks)

@@ -11,10 +11,10 @@ namespace Unity.MLAgents.Analytics
         /// Hash of the BehaviorName.
         /// </summary>
         public string BehaviorName;
-        public string BarracudaModelSource;
-        public string BarracudaModelVersion;
-        public string BarracudaModelProducer;
-        public string BarracudaPackageVersion;
+        public string SentisModelSource;
+        public long SentisModelVersion;
+        public string SentisModelProducer;
+        public string SentisPackageVersion;
         /// <summary>
         /// Whether inference is performed on CPU (0) or GPU (1).
         /// </summary>

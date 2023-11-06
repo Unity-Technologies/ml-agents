@@ -25,7 +25,7 @@ public class TestTextureSensor : ISensor
         var width = texture.width;
         var height = texture.height;
         m_Name = name;
-        m_ObservationSpec = ObservationSpec.Visual(height, width, 3);
+        m_ObservationSpec = ObservationSpec.Visual(3, height, width);
         m_CompressionType = compressionType;
     }
 

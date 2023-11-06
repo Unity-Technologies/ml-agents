@@ -8,7 +8,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
-using Unity.Barracuda;
+using Unity.Sentis;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).
@@ -20,7 +20,7 @@ using Unity.Barracuda;
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
  * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_20_docs/docs/
+ * https://github.com/Unity-Technologies/ml-agents/tree/release_21_docs/docs/
  */
 
 namespace Unity.MLAgents
@@ -61,7 +61,7 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_20_docs/" +
+    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_21_docs/" +
         "docs/Learning-Environment-Design.md")]
     public class Academy : IDisposable
     {
@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "2.3.0-exp.4";
+        internal const string k_PackageVersion = "3.0.0-exp.1";
 
         const int k_EditorTrainingPort = 5004;
 
@@ -623,9 +623,9 @@ namespace Unity.MLAgents
 
         /// <summary>
         /// Creates or retrieves an existing ModelRunner that uses the same
-        /// NNModel and the InferenceDevice as provided.
+        /// Model and the InferenceDevice as provided.
         /// </summary>
-        /// <param name="model">The NNModel the ModelRunner must use.</param>
+        /// <param name="model">The Model the ModelRunner must use.</param>
         /// <param name="actionSpec"> Description of the actions for the Agent.</param>
         /// <param name="inferenceDevice">
         /// The inference device (CPU or GPU) the ModelRunner will use.
@@ -634,7 +634,7 @@ namespace Unity.MLAgents
         /// Deterministic. </param>
         /// <returns> The ModelRunner compatible with the input settings.</returns>
         internal ModelRunner GetOrCreateModelRunner(
-            NNModel model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
+            ModelAsset model, ActionSpec actionSpec, InferenceDevice inferenceDevice, bool deterministicInference = false)
         {
             var modelRunner = m_ModelRunners.Find(x => x.HasModel(model, inferenceDevice));
             if (modelRunner == null)

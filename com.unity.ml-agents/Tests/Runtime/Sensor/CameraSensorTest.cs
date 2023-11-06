@@ -5,7 +5,6 @@ using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Tests
 {
-
     [TestFixture]
     public class CameraSensorTest
     {
@@ -30,7 +29,7 @@ namespace Unity.MLAgents.Tests
                     var obs = sensor.GetObservationProto(obsWriter);
 
                     Assert.AreEqual((int)compression, (int)obs.CompressionType);
-                    var expectedShape = new[] { height, width, grayscale ? 1 : 3 };
+                    var expectedShape = new[] { grayscale ? 1 : 3, height, width };
                     Assert.AreEqual(expectedShape, obs.Shape);
                     UnityEngine.Object.DestroyImmediate(c);
                 }

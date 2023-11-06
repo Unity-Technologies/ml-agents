@@ -29,10 +29,16 @@ class VerifyVersionCommand(install):
             sys.exit(info)
 
 
+# Get the long description from the README file
+with open(os.path.join(here, "README.md"), encoding="utf-8") as f:
+    long_description = f.read()
+
 setup(
     name="mlagents_envs",
     version=VERSION,
     description="Unity Machine Learning Agents Interface",
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url="https://github.com/Unity-Technologies/ml-agents",
     author="Unity Technologies",
     author_email="ML-Agents@unity3d.com",
@@ -40,8 +46,6 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.8",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
     ],
     packages=find_packages(
@@ -50,16 +54,16 @@ setup(
     zip_safe=False,
     install_requires=[
         "cloudpickle",
-        "grpcio>=1.11.0",
+        "grpcio>=1.11.0,<=1.48.2",
         "Pillow>=4.2.1",
         "protobuf>=3.6,<3.20",
         "pyyaml>=3.1.0",
         "gym>=0.21.0",
         "pettingzoo==1.15.0",
-        "numpy==1.21.2",
+        "numpy>=1.21.2,<1.24.0",
         "filelock>=3.4.0",
     ],
-    python_requires=">=3.8.13,<=3.10.12",
+    python_requires=">=3.10.1,<=3.10.12",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
     cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )

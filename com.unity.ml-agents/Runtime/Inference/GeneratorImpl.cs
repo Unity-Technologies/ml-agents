@@ -1,8 +1,9 @@
 using System.Collections.Generic;
 using System;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Sensors;
+using static Unity.MLAgents.Inference.TensorProxy;
 
 namespace Unity.MLAgents.Inference
 {
@@ -42,8 +43,14 @@ namespace Unity.MLAgents.Inference
         public void Generate(TensorProxy tensorProxy, int batchSize, IList<AgentInfoSensorsPair> infos)
         {
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-            tensorProxy.data[0] = batchSize;
+            var newTensorShape = new TensorShape(1, 1);
+            tensorProxy.data = TensorUtils.CreateEmptyTensor(newTensorShape, tensorProxy.DType);
+            if (tensorProxy.Device == DeviceType.GPU)
+            {
+                tensorProxy.data.MakeReadable();
+            }
+
+            ((TensorInt)tensorProxy.data)[0] = batchSize;
         }
     }
 
@@ -66,8 +73,9 @@ namespace Unity.MLAgents.Inference
         {
             tensorProxy.shape = new long[0];
             tensorProxy.data?.Dispose();
-            tensorProxy.data = m_Allocator.Alloc(new TensorShape(1, 1));
-            tensorProxy.data[0] = 1;
+            var newTensorShape = new TensorShape(1, 1);
+            tensorProxy.data = TensorUtils.CreateEmptyTensor(newTensorShape, tensorProxy.DType);
+            ((TensorInt)tensorProxy.data)[0] = 1;
         }
     }
 
@@ -95,7 +103,7 @@ namespace Unity.MLAgents.Inference
         {
             TensorUtils.ResizeTensor(tensorProxy, batchSize, m_Allocator);
 
-            var memorySize = tensorProxy.data.width;
+            var memorySize = tensorProxy.data.Width();
 
             var agentIndex = 0;
             for (var infoIndex = 0; infoIndex < infos.Count; infoIndex++)
@@ -108,23 +116,38 @@ namespace Unity.MLAgents.Inference
                 {
                     m_Memories.Remove(info.episodeId);
                 }
+
                 if (!m_Memories.TryGetValue(info.episodeId, out memory))
                 {
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
+                    }
+
                     for (var j = 0; j < memorySize; j++)
                     {
-                        tensorProxy.data[agentIndex, 0, j, 0] = 0;
+                        ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = 0;
                     }
+
                     agentIndex++;
                     continue;
                 }
+
                 for (var j = 0; j < Math.Min(memorySize, memory.Count); j++)
                 {
                     if (j >= memory.Count)
                     {
                         break;
                     }
-                    tensorProxy.data[agentIndex, 0, j, 0] = memory[j];
+
+                    if (tensorProxy.Device == DeviceType.GPU)
+                    {
+                        tensorProxy.data.MakeReadable();
+                    }
+
+                    ((TensorFloat)tensorProxy.data)[agentIndex, 0, j] = memory[j];
                 }
+
                 agentIndex++;
             }
         }
@@ -160,7 +183,7 @@ namespace Unity.MLAgents.Inference
                 {
                     for (var j = 0; j < actionSize; j++)
                     {
-                        tensorProxy.data[agentIndex, j] = pastAction[j];
+                        ((TensorInt)tensorProxy.data)[agentIndex, j] = pastAction[j];
                     }
                 }
 
@@ -195,11 +218,17 @@ namespace Unity.MLAgents.Inference
                 var infoSensorPair = infos[infoIndex];
                 var agentInfo = infoSensorPair.agentInfo;
                 var maskList = agentInfo.discreteActionMasks;
+                if (tensorProxy.Device == DeviceType.GPU)
+                {
+                    tensorProxy.data.MakeReadable();
+                }
+
                 for (var j = 0; j < maskSize; j++)
                 {
                     var isUnmasked = (maskList != null && maskList[j]) ? 0.0f : 1.0f;
-                    tensorProxy.data[agentIndex, j] = isUnmasked;
+                    ((TensorFloat)tensorProxy.data)[agentIndex, j] = isUnmasked;
                 }
+
                 agentIndex++;
             }
         }
@@ -267,6 +296,7 @@ namespace Unity.MLAgents.Inference
                 else
                 {
                     var tensorOffset = 0;
+
                     // Write each sensor consecutively to the tensor
                     for (var sensorIndexIndex = 0; sensorIndexIndex < m_SensorIndices.Count; sensorIndexIndex++)
                     {
@@ -277,6 +307,7 @@ namespace Unity.MLAgents.Inference
                         tensorOffset += numWritten;
                     }
                 }
+
                 agentIndex++;
             }
         }

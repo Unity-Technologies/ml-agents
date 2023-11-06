@@ -26,6 +26,5 @@ namespace Unity.MLAgents.Editor
 
             so.ApplyModifiedProperties();
         }
-
     }
 }

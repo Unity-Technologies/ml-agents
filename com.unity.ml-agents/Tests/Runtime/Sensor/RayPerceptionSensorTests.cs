@@ -356,7 +356,7 @@ namespace Unity.MLAgents.Tests
             {
                 perception.SphereCastRadius = castRadius;
                 var castInput = perception.GetRayPerceptionInput();
-                var castOutput = RayPerceptionSensor.Perceive(castInput);
+                var castOutput = RayPerceptionSensor.Perceive(castInput, false);
 
                 Assert.AreEqual(1, castOutput.RayOutputs.Length);
 
@@ -391,7 +391,7 @@ namespace Unity.MLAgents.Tests
                 // There's no clean way that I can find to check for a defined tag without
                 // logging an error.
                 LogAssert.Expect(LogType.Error, "Tag: Bad tag is not defined.");
-                var castOutput = RayPerceptionSensor.Perceive(castInput);
+                var castOutput = RayPerceptionSensor.Perceive(castInput, false);
 
                 Assert.AreEqual(1, castOutput.RayOutputs.Length);
 
@@ -418,9 +418,100 @@ namespace Unity.MLAgents.Tests
             {
                 perception.SphereCastRadius = castRadius;
                 var castInput = perception.GetRayPerceptionInput();
-                var castOutput = RayPerceptionSensor.Perceive(castInput);
+                var castOutput = RayPerceptionSensor.Perceive(castInput, false);
 
                 Assert.AreEqual(1, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(-1, castOutput.RayOutputs[0].HitTagIndex);
+            }
+        }
+
+        [Test]
+        public void TestStaticBatchedPerceive()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 1; // three rays
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add(k_CubeTag);
+            perception.DetectableTags.Add(k_SphereTag);
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+                var castOutput = RayPerceptionSensor.Perceive(castInput, true);
+
+                Assert.AreEqual(3, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(0, castOutput.RayOutputs[0].HitTagIndex);
+            }
+        }
+
+        [Test]
+        public void TestStaticPerceiveBatchedInvalidTags()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 0; // three rays
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = new List<string>();
+            perception.DetectableTags.Add("Bad tag");
+            perception.DetectableTags.Add(null);
+            perception.DetectableTags.Add("");
+            perception.DetectableTags.Add(k_CubeTag);
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+
+                // There's no clean way that I can find to check for a defined tag without
+                // logging an error.
+                LogAssert.Expect(LogType.Error, "Tag: Bad tag is not defined.");
+                var castOutput = RayPerceptionSensor.Perceive(castInput, true);
+
+                Assert.AreEqual(1, castOutput.RayOutputs.Length);
+
+                // Expected to hit the cube
+                Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
+                Assert.AreEqual(3, castOutput.RayOutputs[0].HitTagIndex);
+            }
+        }
+
+        [Test]
+        public void TestStaticPerceiveBatchedNoTags()
+        {
+            SetupScene();
+            var obj = new GameObject("agent");
+            var perception = obj.AddComponent<RayPerceptionSensorComponent3D>();
+
+            perception.RaysPerDirection = 1; // single ray
+            perception.MaxRayDegrees = 45;
+            perception.RayLength = 20;
+            perception.DetectableTags = null;
+
+            var radii = new[] { 0f, .5f };
+            foreach (var castRadius in radii)
+            {
+                perception.SphereCastRadius = castRadius;
+                var castInput = perception.GetRayPerceptionInput();
+                var castOutput = RayPerceptionSensor.Perceive(castInput, true);
+
+                Assert.AreEqual(3, castOutput.RayOutputs.Length);
 
                 // Expected to hit the cube
                 Assert.AreEqual("cube", castOutput.RayOutputs[0].HitGameObject.name);
@@ -440,6 +531,7 @@ namespace Unity.MLAgents.Tests
                 perception.CreateSensors();
             });
         }
+
 #endif
     }
 }

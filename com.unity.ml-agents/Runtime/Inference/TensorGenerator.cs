@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Sensors;
 
 namespace Unity.MLAgents.Inference
@@ -43,22 +43,22 @@ namespace Unity.MLAgents.Inference
         /// <param name="seed"> The seed the Generators will be initialized with.</param>
         /// <param name="allocator"> Tensor allocator.</param>
         /// <param name="memories">Dictionary of AgentInfo.id to memory for use in the inference model.</param>
-        /// <param name="barracudaModel"></param>
+        /// <param name="sentisModel"></param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
         /// deterministic. </param>
         public TensorGenerator(
             int seed,
             ITensorAllocator allocator,
             Dictionary<int, List<float>> memories,
-            object barracudaModel = null,
+            object sentisModel = null,
             bool deterministicInference = false)
         {
             // If model is null, no inference to run and exception is thrown before reaching here.
-            if (barracudaModel == null)
+            if (sentisModel == null)
             {
                 return;
             }
-            var model = (Model)barracudaModel;
+            var model = (Model)sentisModel;
 
             m_ApiVersion = model.GetVersion();
 
@@ -93,7 +93,7 @@ namespace Unity.MLAgents.Inference
 
         public void InitializeObservations(List<ISensor> sensors, ITensorAllocator allocator)
         {
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents1_0)
+            if (m_ApiVersion == (int)SentisModelParamLoader.ModelApiVersion.MLAgents1_0)
             {
                 // Loop through the sensors on a representative agent.
                 // All vector observations use a shared ObservationGenerator since they are concatenated.
@@ -138,7 +138,7 @@ namespace Unity.MLAgents.Inference
                 }
             }
 
-            if (m_ApiVersion == (int)BarracudaModelParamLoader.ModelApiVersion.MLAgents2_0)
+            if (m_ApiVersion == (int)SentisModelParamLoader.ModelApiVersion.MLAgents2_0)
             {
                 for (var sensorIndex = 0; sensorIndex < sensors.Count; sensorIndex++)
                 {
@@ -146,7 +146,6 @@ namespace Unity.MLAgents.Inference
                     var obsGenName = TensorNames.GetObservationName(sensorIndex);
                     obsGen.AddSensorIndex(sensorIndex);
                     m_Dict[obsGenName] = obsGen;
-
                 }
             }
         }

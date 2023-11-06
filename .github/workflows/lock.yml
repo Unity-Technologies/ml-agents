@@ -8,16 +8,17 @@ on:
 jobs:
   lock:
     runs-on: ubuntu-latest
+    permissions:
+        issues: write
+        pull-requests: write
     steps:
-      - uses: dessant/lock-threads@v2
+      - uses: actions/stale@v5
         with:
-          github-token: ${{ github.token }}
-          issue-lock-inactive-days: '30'
-          issue-exclude-created-before: ''
-          issue-exclude-labels: ''
-          issue-lock-labels: ''
-          issue-lock-comment: >
-            This thread has been automatically locked since there has not been
-            any recent activity after it was closed. Please open a new issue for
-            related bugs.
-          issue-lock-reason: 'resolved'
+          days-before-issue-stale: 30
+          days-before-issue-close: 14
+          stale-issue-label: "stale"
+          stale-issue-message: "This issue is stale because it has been open for 30 days with no activity."
+          close-issue-message: "This issue was closed because it has been inactive for 14 days since being marked as stale. Please open a new issue for related bugs."
+          days-before-pr-stale: -1
+          days-before-pr-close: -1
+          repo-token: ${{ github.token }}

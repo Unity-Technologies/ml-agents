@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System.Diagnostics;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
@@ -48,7 +48,7 @@ namespace Unity.MLAgents.Analytics
         /// <summary>
         /// Models that we've already sent events for.
         /// </summary>
-        private static HashSet<NNModel> s_SentModels;
+        private static HashSet<ModelAsset> s_SentModels;
 #endif
 
         static bool EnableAnalytics()
@@ -66,7 +66,7 @@ namespace Unity.MLAgents.Analytics
             }
             if (s_EventRegistered && s_SentModels == null)
             {
-                s_SentModels = new HashSet<NNModel>();
+                s_SentModels = new HashSet<ModelAsset>();
             }
 
 #else  // no editor, no analytics
@@ -98,7 +98,7 @@ namespace Unity.MLAgents.Analytics
         /// <returns></returns>
         [Conditional("MLA_UNITY_ANALYTICS_MODULE")]
         public static void InferenceModelSet(
-            NNModel nnModel,
+            ModelAsset nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,
@@ -144,7 +144,7 @@ namespace Unity.MLAgents.Analytics
         /// <param name="actuators"></param>
         /// <returns></returns>
         internal static InferenceEvent GetEventForModel(
-            NNModel nnModel,
+            ModelAsset nnModel,
             string behaviorName,
             InferenceDevice inferenceDevice,
             IList<ISensor> sensors,
@@ -152,30 +152,31 @@ namespace Unity.MLAgents.Analytics
             IList<IActuator> actuators
         )
         {
-            var barracudaModel = ModelLoader.Load(nnModel);
+            var sentisModel = ModelLoader.Load(nnModel);
             var inferenceEvent = new InferenceEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
             inferenceEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, behaviorName);
 
-            inferenceEvent.BarracudaModelSource = barracudaModel.IrSource;
-            inferenceEvent.BarracudaModelVersion = barracudaModel.IrVersion;
-            inferenceEvent.BarracudaModelProducer = barracudaModel.ProducerName;
-            inferenceEvent.MemorySize = (int)barracudaModel.GetTensorByName(TensorNames.MemorySize)[0];
+            inferenceEvent.SentisModelSource = sentisModel.IrSource;
+            inferenceEvent.SentisModelVersion = sentisModel.IrVersion;
+            inferenceEvent.SentisModelProducer = sentisModel.ProducerName;
+            inferenceEvent.MemorySize = (int)((TensorFloat)sentisModel.GetTensorByName(TensorNames.MemorySize))[0];
             inferenceEvent.InferenceDevice = (int)inferenceDevice;
 
-            if (barracudaModel.ProducerName == "Script")
+            // TODO deprecate tensorflow conversion
+            if (sentisModel.ProducerName == "Script")
             {
                 // .nn files don't have these fields set correctly. Assign some placeholder values.
-                inferenceEvent.BarracudaModelSource = "NN";
-                inferenceEvent.BarracudaModelProducer = "tensorflow_to_barracuda.py";
+                inferenceEvent.SentisModelSource = "NN";
+                inferenceEvent.SentisModelProducer = "tensorflow_to_barracuda.py";
             }
 
 #if UNITY_EDITOR
-            var barracudaPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
-            inferenceEvent.BarracudaPackageVersion = barracudaPackageInfo.version;
+            var sentisPackageInfo = UnityEditor.PackageManager.PackageInfo.FindForAssembly(typeof(Tensor).Assembly);
+            inferenceEvent.SentisPackageVersion = sentisPackageInfo.version;
 #else
-            inferenceEvent.BarracudaPackageVersion = null;
+            inferenceEvent.SentisPackageVersion = null;
 #endif
 
             inferenceEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
@@ -191,27 +192,24 @@ namespace Unity.MLAgents.Analytics
                 inferenceEvent.ActuatorInfos.Add(EventActuatorInfo.FromActuator(actuator));
             }
 
-            inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(barracudaModel);
-            inferenceEvent.ModelHash = GetModelHash(barracudaModel);
+            inferenceEvent.TotalWeightSizeBytes = GetModelWeightSize(sentisModel);
+            inferenceEvent.ModelHash = GetModelHash(sentisModel);
             return inferenceEvent;
         }
 
         /// <summary>
         /// Compute the total model weight size in bytes.
-        /// This corresponds to the "Total weight size" display in the Barracuda inspector,
+        /// This corresponds to the "Total weight size" display in the Sentis inspector,
         /// and the calculations are the same.
         /// </summary>
-        /// <param name="barracudaModel"></param>
+        /// <param name="sentisModel"></param>
         /// <returns></returns>
-        static long GetModelWeightSize(Model barracudaModel)
+        static long GetModelWeightSize(Model sentisModel)
         {
             long totalWeightsSizeInBytes = 0;
-            for (var l = 0; l < barracudaModel.layers.Count; ++l)
+            for (var c = 0; c < sentisModel.constants.Count; c++)
             {
-                for (var d = 0; d < barracudaModel.layers[l].datasets.Length; ++d)
-                {
-                    totalWeightsSizeInBytes += barracudaModel.layers[l].datasets[d].length;
-                }
+                totalWeightsSizeInBytes += sentisModel.constants[c].length;
             }
             return totalWeightsSizeInBytes;
         }
@@ -261,20 +259,20 @@ namespace Unity.MLAgents.Analytics
         /// A subset of the layer weights are used for performance.
         /// This increases the chance of a collision, but this should still be extremely rare.
         /// </summary>
-        /// <param name="barracudaModel"></param>
+        /// <param name="sentisModel"></param>
         /// <returns></returns>
-        static string GetModelHash(Model barracudaModel)
+        static string GetModelHash(Model sentisModel)
         {
             var hash = new MLAgentsHash128();
 
             // Limit the max number of float bytes that we hash for performance.
             const int kMaxFloats = 256;
 
-            foreach (var layer in barracudaModel.layers)
+            foreach (var constant in sentisModel.constants)
             {
-                hash.Append(layer.name);
-                var numFloatsToHash = Mathf.Min(layer.weights.Length, kMaxFloats);
-                hash.Append(layer.weights, numFloatsToHash);
+                hash.Append(constant.name);
+                var numFloatsToHash = Mathf.Min(constant.weights.Length, kMaxFloats);
+                hash.Append(constant.weights.ToString());
             }
 
             return hash.ToString();

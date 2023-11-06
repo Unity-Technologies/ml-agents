@@ -19,24 +19,24 @@ namespace Unity.MLAgents.Tests
             string[] detectableTags,
             int initialColliderBufferSize,
             int maxColliderBufferSize
-            ) : base(
-                cellScale,
-                gridSize,
-                rotateWithAgent,
-                colliderMask,
-                centerObject,
-                agentGameObject,
-                detectableTags,
-                initialColliderBufferSize,
-                maxColliderBufferSize)
-        { }
+        ) : base(
+            cellScale,
+            gridSize,
+            rotateWithAgent,
+            colliderMask,
+            centerObject,
+            agentGameObject,
+            detectableTags,
+            initialColliderBufferSize,
+            maxColliderBufferSize)
+        {}
 
         public Vector3[] CellLocalPositions
         {
             get
             {
                 return (Vector3[])typeof(BoxOverlapChecker).GetField("m_CellLocalPositions",
-                        BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+                    BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
             }
         }
 
@@ -45,7 +45,7 @@ namespace Unity.MLAgents.Tests
             get
             {
                 return (Collider[])typeof(BoxOverlapChecker).GetField("m_ColliderBuffer",
-                        BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
+                    BindingFlags.Instance | BindingFlags.NonPublic).GetValue(this);
             }
         }
 
@@ -199,7 +199,7 @@ namespace Unity.MLAgents.Tests
                 gridSizeZ: 2,
                 agentGameObject: testGo,
                 centerObject: testGo,
-                detectableTags: new [] { tag1 });
+                detectableTags: new[] { tag1 });
             var helper = new VerifyParseCollidersHelper();
             boxOverlap.GridOverlapDetectedClosest += helper.DetectedAction;
 
@@ -236,7 +236,7 @@ namespace Unity.MLAgents.Tests
                 gridSizeZ: 2,
                 agentGameObject: testGo,
                 centerObject: testGo,
-                detectableTags: new [] { tag1 });
+                detectableTags: new[] { tag1 });
             var helper = new VerifyParseCollidersHelper();
             boxOverlap.GridOverlapDetectedAll += helper.DetectedAction;
 

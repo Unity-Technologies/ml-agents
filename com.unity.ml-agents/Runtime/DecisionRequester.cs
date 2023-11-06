@@ -33,7 +33,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Indicates when to requests a decision. By changing this value, the timing of decision
         /// can be shifted even among agents with the same decision period. The value can be
-        /// from 0 to DecisionPeriod - 1. 
+        /// from 0 to DecisionPeriod - 1.
         /// </summary>
         [Range(0, 19)]
         [Tooltip("Indicates when to requests a decision. By changing this value, the timing " +

@@ -150,7 +150,6 @@ namespace Unity.MLAgents.Integrations.Match3
         /// <returns></returns>
         public static Move FromPositionAndDirection(int row, int col, Direction dir, BoardSize maxBoardSize)
         {
-
             // Check for out-of-bounds
             if (row < 0 || row >= maxBoardSize.Rows)
             {

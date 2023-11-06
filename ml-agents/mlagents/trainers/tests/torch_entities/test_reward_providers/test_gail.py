@@ -61,7 +61,7 @@ def test_factory(behavior_spec: BehaviorSpec) -> None:
     "behavior_spec",
     [
         BehaviorSpec(
-            create_observation_specs_with_shapes([(8,), (24, 26, 1)]),
+            create_observation_specs_with_shapes([(8,), (1, 24, 26)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(
@@ -116,7 +116,7 @@ def test_reward_decreases(
     "behavior_spec",
     [
         BehaviorSpec(
-            create_observation_specs_with_shapes([(8,), (24, 26, 1)]),
+            create_observation_specs_with_shapes([(8,), (1, 24, 26)]),
             ACTIONSPEC_CONTINUOUS,
         ),
         BehaviorSpec(

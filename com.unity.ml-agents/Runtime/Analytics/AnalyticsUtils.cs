@@ -5,7 +5,6 @@ using UnityEngine;
 
 namespace Unity.MLAgents.Analytics
 {
-
     internal static class AnalyticsUtils
     {
         /// <summary>

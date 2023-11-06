@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
@@ -12,16 +12,15 @@ namespace Unity.MLAgents.Inference
     /// Prepares the Tensors for the Learning Brain and exposes a list of failed checks if Model
     /// and BrainParameters are incompatible.
     /// </summary>
-    internal class BarracudaModelParamLoader
+    internal class SentisModelParamLoader
     {
-
         internal enum ModelApiVersion
         {
             /// <summary>
             /// ML-Agents model version for versions 1.x.y
             /// The observations are split between vector and visual observations
             /// There are legacy action outputs for discrete and continuous actions
-            /// LSTM inputs and outputs are handled by Barracuda
+            /// LSTM inputs and outputs are handled by Sentis
             /// </summary>
             MLAgents1_0 = 2,
 
@@ -30,7 +29,7 @@ namespace Unity.MLAgents.Inference
             /// the sensor index
             /// Legacy "action" output is no longer present
             /// LSTM inputs and outputs are treated like regular inputs and outputs
-            /// and no longer managed by Barracuda
+            /// and no longer managed by Sentis
             /// </summary>
             MLAgents2_0 = 3,
             MinSupportedVersion = MLAgents1_0,
@@ -51,10 +50,12 @@ namespace Unity.MLAgents.Inference
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Info, Message = message };
             }
+
             public static FailedCheck Warning(string message)
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Warning, Message = message };
             }
+
             public static FailedCheck Error(string message)
             {
                 return new FailedCheck { CheckType = CheckTypeEnum.Error, Message = message };
@@ -65,7 +66,7 @@ namespace Unity.MLAgents.Inference
         /// Checks that a model has the appropriate version.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <returns>A FailedCheck containing the error message if the version of the model does not mach, else null</returns>
         public static FailedCheck CheckModelVersion(Model model)
@@ -89,13 +90,13 @@ namespace Unity.MLAgents.Inference
                 );
             }
 
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var memorySize = (int)((TensorFloat)model.GetTensorByName(TensorNames.MemorySize))[0];
 
             if (modelApiVersion == (int)ModelApiVersion.MLAgents1_0 && memorySize > 0)
             {
                 // This block is to make sure that models that are trained with MLAgents version 1.x and have
-                // an LSTM (i.e. use the barracuda _c and _h inputs and outputs) will not work with MLAgents version
-                // 2.x. This is because Barracuda version 2.x will eventually drop support for the _c and _h inputs
+                // an LSTM (i.e. use the Sentis _c and _h inputs and outputs) will not work with MLAgents version
+                // 2.x. This is because Sentis version 2.x will eventually drop support for the _c and _h inputs
                 // and only ML-Agents 2.x models will be compatible.
                 return FailedCheck.Error(
                     "Models from com.unity.ml-agents 1.x that use recurrent neural networks are not supported in newer versions. " +
@@ -103,17 +104,14 @@ namespace Unity.MLAgents.Inference
                 );
             }
             return null;
-
         }
-
-
 
         /// <summary>
         /// Factory for the ModelParamLoader : Creates a ModelParamLoader and runs the checks
         /// on it.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -133,7 +131,7 @@ namespace Unity.MLAgents.Inference
             int observableAttributeTotalSize = 0,
             BehaviorType behaviorType = BehaviorType.Default,
             bool deterministicInference = false
-            )
+        )
         {
             List<FailedCheck> failedModelChecks = new List<FailedCheck>();
             if (model == null)
@@ -164,11 +162,11 @@ namespace Unity.MLAgents.Inference
                 failedModelChecks.Add(versionCheck);
             }
 
-            var memorySize = (int)model.GetTensorByName(TensorNames.MemorySize)[0];
+            var memorySize = (int)((TensorFloat)model.GetTensorByName(TensorNames.MemorySize))[0];
             if (memorySize == -1)
             {
                 failedModelChecks.Add(FailedCheck.Warning($"Missing node in the model provided : {TensorNames.MemorySize}"
-                    ));
+                ));
                 return failedModelChecks;
             }
 
@@ -192,7 +190,6 @@ namespace Unity.MLAgents.Inference
             }
 
 
-
             failedModelChecks.AddRange(
                 CheckOutputTensorShape(model, brainParameters, actuatorComponents)
             );
@@ -208,7 +205,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -236,8 +233,8 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning("The model does not contain a Vector Observation Placeholder Input. " +
-                    "You must set the Vector Observation Space Size to 0.")
-                    );
+                        "You must set the Vector Observation Space Size to 0.")
+                );
             }
 
             // If there are not enough Visual Observation Input compared to what the
@@ -253,8 +250,8 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain a Visual Observation Placeholder Input " +
-                            $"for sensor component {visObsIndex} ({sensor.GetType().Name}).")
-                            );
+                                $"for sensor component {visObsIndex} ({sensor.GetType().Name}).")
+                        );
                     }
                     visObsIndex++;
                 }
@@ -265,11 +262,10 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
-                            $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
-                            );
+                                $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
+                        );
                     }
                 }
-
             }
 
             var expectedVisualObs = model.GetNumVisualInputs();
@@ -278,8 +274,8 @@ namespace Unity.MLAgents.Inference
             {
                 failedModelChecks.Add(
                     FailedCheck.Warning($"The model expects {expectedVisualObs} visual inputs," +
-                    $" but only found {visObsIndex} visual sensors.")
-                    );
+                        $" but only found {visObsIndex} visual sensors.")
+                );
             }
 
             // If the model has a non-negative memory size but requires a recurrent input
@@ -301,7 +297,7 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control.")
-                        );
+                    );
                 }
             }
             return failedModelChecks;
@@ -312,7 +308,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -345,7 +341,7 @@ namespace Unity.MLAgents.Inference
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Observation Placeholder Input " +
                             $"for sensor component {sensorIndex} ({sensor.GetType().Name}).")
-                        );
+                    );
                 }
             }
 
@@ -356,8 +352,8 @@ namespace Unity.MLAgents.Inference
                 if (!tensorsNames.Any(x => x == TensorNames.RecurrentInPlaceholder))
                 {
                     failedModelChecks.Add(
-                            FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
-                            );
+                        FailedCheck.Warning("The model does not contain a Recurrent Input Node but has memory_size.")
+                    );
                 }
             }
 
@@ -368,7 +364,7 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain an Action Mask but is using Discrete Control.")
-                        );
+                    );
                 }
             }
             return failedModelChecks;
@@ -379,7 +375,7 @@ namespace Unity.MLAgents.Inference
         /// present in the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="memory">The memory size that the model is expecting/</param>
         /// <param name="deterministicInference"> Inference only: set to true if the action selection from model should be
@@ -399,9 +395,8 @@ namespace Unity.MLAgents.Inference
                 {
                     failedModelChecks.Add(
                         FailedCheck.Warning("The model does not contain a Recurrent Output Node but has memory_size.")
-                        );
+                    );
                 }
-
             }
             return failedModelChecks;
         }
@@ -419,9 +414,9 @@ namespace Unity.MLAgents.Inference
             TensorProxy tensorProxy, ISensor sensor)
         {
             var shape = sensor.GetObservationSpec().Shape;
-            var heightBp = shape[0];
-            var widthBp = shape[1];
-            var pixelBp = shape[2];
+            var heightBp = shape[1];
+            var widthBp = shape[2];
+            var pixelBp = shape[0];
             var heightT = tensorProxy.Height;
             var widthT = tensorProxy.Width;
             var pixelT = tensorProxy.Channels;
@@ -509,7 +504,7 @@ namespace Unity.MLAgents.Inference
         /// the model and the BrainParameters. Tests the models created with the API of version 1.X
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -533,10 +528,10 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             var visObsIndex = 0;
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
@@ -544,7 +539,6 @@ namespace Unity.MLAgents.Inference
                 var sens = sensors[sensorIndex];
                 if (sens.GetObservationSpec().Shape.Length == 3)
                 {
-
                     tensorTester[TensorNames.GetVisualObservationName(visObsIndex)] =
                         (bp, tensor, scs, i) => CheckVisualObsShape(tensor, sens);
                     visObsIndex++;
@@ -565,7 +559,7 @@ namespace Unity.MLAgents.Inference
                     {
                         failedModelChecks.Add(
                             FailedCheck.Warning("Model contains an unexpected input named : " + tensor.name)
-                            );
+                        );
                     }
                 }
                 else
@@ -643,13 +637,12 @@ namespace Unity.MLAgents.Inference
             return null;
         }
 
-
         /// <summary>
         /// Generates failed checks that correspond to inputs shapes incompatibilities between
         /// the model and the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -672,10 +665,10 @@ namespace Unity.MLAgents.Inference
                 {TensorNames.RecurrentInPlaceholder, ((bp, tensor, scs, i) => null)},
             };
 
-            foreach (var mem in model.memories)
-            {
-                tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
-            }
+            // foreach (var mem in model.memories)
+            // {
+            //     tensorTester[mem.input] = ((bp, tensor, scs, i) => null);
+            // }
 
             for (var sensorIndex = 0; sensorIndex < sensors.Length; sensorIndex++)
             {
@@ -695,7 +688,6 @@ namespace Unity.MLAgents.Inference
                     tensorTester[TensorNames.GetObservationName(sensorIndex)] =
                         (bp, tensor, scs, i) => CheckRankOneObsShape(tensor, sens);
                 }
-
             }
 
             // If the model expects an input but it is not in this list
@@ -751,7 +743,7 @@ namespace Unity.MLAgents.Inference
         /// the model and the BrainParameters.
         /// </summary>
         /// <param name="model">
-        /// The Barracuda engine model for loading static parameters
+        /// The Sentis engine model for loading static parameters
         /// </param>
         /// <param name="brainParameters">
         /// The BrainParameters that are used verify the compatibility with the InferenceEngine
@@ -784,7 +776,7 @@ namespace Unity.MLAgents.Inference
             }
             if (modelApiVersion == (int)ModelApiVersion.MLAgents2_0)
             {
-                var modelDiscreteBranches = model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
+                var modelDiscreteBranches = (TensorFloat)model.GetTensorByName(TensorNames.DiscreteActionOutputShape);
                 discreteError = CheckDiscreteActionOutputShape(brainParameters, actuatorComponents, modelDiscreteBranches);
             }
 
@@ -810,9 +802,8 @@ namespace Unity.MLAgents.Inference
         /// check failed. If the check passed, returns null.
         /// </returns>
         static FailedCheck CheckDiscreteActionOutputShape(
-            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, Tensor modelDiscreteBranches)
+            BrainParameters brainParameters, ActuatorComponent[] actuatorComponents, TensorFloat modelDiscreteBranches)
         {
-
             var discreteActionBranches = brainParameters.ActionSpec.BranchSizes.ToList();
             foreach (var actuatorComponent in actuatorComponents)
             {
@@ -820,7 +811,7 @@ namespace Unity.MLAgents.Inference
                 discreteActionBranches.AddRange(actionSpec.BranchSizes);
             }
 
-            int modelDiscreteBranchesLength = modelDiscreteBranches?.length ?? 0;
+            int modelDiscreteBranchesLength = modelDiscreteBranches?.shape.length ?? 0;
             if (modelDiscreteBranchesLength != discreteActionBranches.Count)
             {
                 return FailedCheck.Warning("Discrete Action Size of the model does not match. The BrainParameters expect " +
@@ -833,7 +824,7 @@ namespace Unity.MLAgents.Inference
                 if (modelDiscreteBranches != null && modelDiscreteBranches[i] != discreteActionBranches[i])
                 {
                     return FailedCheck.Warning($"The number of Discrete Actions of branch {i} does not match. " +
-                    $"Was expecting {discreteActionBranches[i]} but the model contains {modelDiscreteBranches[i]} "
+                        $"Was expecting {discreteActionBranches[i]} but the model contains {modelDiscreteBranches[i]} "
                     );
                 }
             }

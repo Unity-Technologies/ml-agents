@@ -38,7 +38,5 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1000.0f, Time.timeScale);
 #endif
         }
-
-
     }
 }

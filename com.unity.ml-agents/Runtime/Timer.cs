@@ -79,7 +79,7 @@ namespace Unity.MLAgents
         public double TotalSeconds
         {
             get { return CurrentTicks * s_TicksToSeconds; }
-            set { }  // Serialization needs this, but unused.
+            set { }     // Serialization needs this, but unused.
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Unity.MLAgents
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
-            set { }  // Serialization needs this, but unused.
+            set { }     // Serialization needs this, but unused.
         }
 
         public IReadOnlyDictionary<string, TimerNode> Children
@@ -234,6 +234,7 @@ namespace Unity.MLAgents
             m_Metadata.Add("unity_version", Application.unityVersion);
             m_Metadata.Add("command_line_arguments", String.Join(" ", GetCleanedCommandLineArguments()));
         }
+
         /// <summary>
         /// Cleans Environment CommandLine Argument from license infos
         /// </summary>

@@ -324,7 +324,6 @@ namespace Unity.MLAgents.Tests.Actuators
             Assert.AreEqual(va2.m_DiscreteBufferSize, 4);
         }
 
-
         /// <summary>
         /// Test that sensors sort by name consistently across culture settings.
         /// Example strings and cultures taken from

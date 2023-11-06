@@ -8,11 +8,13 @@ copyright: com.unity.ml-agents copyright © 2017 - 2022 Unity Technologies
 nav:
 - Home: index.md
 - ML-Agents Overview: ML-Agents-Overview.md
+- Installation: Installation.md
 - Toolkit Documentation: ML-Agents-Toolkit-Documentation.md
 - Background:
     - Machine Learning: Background-Machine-Learning.md
     - PyTorch: Background-PyTorch.md
     - Unity: Background-Unity.md
+    - ELO: ELO-Rating-System.md
 - Interfacing with Unity Builds:
     - Getting started with the Gym API: Python-Gym-API.md
     - Getting started with the PettingZoo API: Python-PettingZoo-API.md
@@ -23,7 +25,9 @@ nav:
     - LLAPI Documentation: Python-LLAPI-Documentation.md
     - On/Off Policy Trainer: Python-On-Off-Policy-Trainer-Documentation.md
 - Tutorials:
+    - Customizing Training via Plugins: Training-Plugins.md
     - Custom Trainer Plugin: Tutorial-Custom-Trainer-Plugin.md
+    - HuggingFace: Hugging-Face-Integration.md
 - About:
     - FAQs: FAQ.md
     - Limitations: Limitations.md
@@ -34,8 +38,19 @@ theme:
   logo: images/unity-logo.png
   favicon: images/unity-logo-black.png
   palette:
-    primary: blue
-    accent: light blue
+    - primary: blue
+    - accent: light blue
+    # Palette toggle for light mode
+    - scheme: default
+      toggle:
+        icon: material/brightness-7 
+        name: Switch to dark mode
+    # Palette toggle for dark mode
+    - scheme: slate
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
 extra_css:
   - extra.css
 markdown_extensions:

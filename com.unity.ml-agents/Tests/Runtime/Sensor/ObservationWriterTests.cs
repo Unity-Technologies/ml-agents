@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Unity.Barracuda;
+using Unity.Sentis;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Inference;
 
@@ -44,37 +44,37 @@ namespace Unity.MLAgents.Tests
             var t = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 3)
+                data = TensorFloat.Zeros(new TensorShape(2, 3))
             };
 
             writer.SetTarget(t, 0, 0);
-            Assert.AreEqual(0f, t.data[0, 0]);
+            Assert.AreEqual(0f, ((TensorFloat)t.data)[0, 0]);
             writer[0] = 1f;
-            Assert.AreEqual(1f, t.data[0, 0]);
+            Assert.AreEqual(1f, ((TensorFloat)t.data)[0, 0]);
 
             writer.SetTarget(t, 1, 1);
             writer[0] = 2f;
             writer[1] = 3f;
             // [0, 0] shouldn't change
-            Assert.AreEqual(1f, t.data[0, 0]);
-            Assert.AreEqual(2f, t.data[1, 1]);
-            Assert.AreEqual(3f, t.data[1, 2]);
+            Assert.AreEqual(1f, ((TensorFloat)t.data)[0, 0]);
+            Assert.AreEqual(2f, ((TensorFloat)t.data)[1, 1]);
+            Assert.AreEqual(3f, ((TensorFloat)t.data)[1, 2]);
 
             // AddList
             t = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 3)
+                data = TensorFloat.Zeros(new TensorShape(2, 3))
             };
 
             writer.SetTarget(t, 1, 1);
             writer.AddList(new[] { -1f, -2f });
-            Assert.AreEqual(0f, t.data[0, 0]);
-            Assert.AreEqual(0f, t.data[0, 1]);
-            Assert.AreEqual(0f, t.data[0, 2]);
-            Assert.AreEqual(0f, t.data[1, 0]);
-            Assert.AreEqual(-1f, t.data[1, 1]);
-            Assert.AreEqual(-2f, t.data[1, 2]);
+            Assert.AreEqual(0f, ((TensorFloat)t.data)[0, 0]);
+            Assert.AreEqual(0f, ((TensorFloat)t.data)[0, 1]);
+            Assert.AreEqual(0f, ((TensorFloat)t.data)[0, 2]);
+            Assert.AreEqual(0f, ((TensorFloat)t.data)[1, 0]);
+            Assert.AreEqual(-1f, ((TensorFloat)t.data)[1, 1]);
+            Assert.AreEqual(-2f, ((TensorFloat)t.data)[1, 2]);
         }
 
         [Test]
@@ -84,16 +84,16 @@ namespace Unity.MLAgents.Tests
             var t = new TensorProxy
             {
                 valueType = TensorProxy.TensorType.FloatingPoint,
-                data = new Tensor(2, 2, 2, 3)
+                data = TensorFloat.Zeros(new TensorShape(2, 3, 2, 2))
             };
 
             writer.SetTarget(t, 0, 0);
-            writer[1, 0, 1] = 1f;
-            Assert.AreEqual(1f, t.data[0, 1, 0, 1]);
+            writer[1, 1, 0] = 1f;
+            Assert.AreEqual(1f, ((TensorFloat)t.data)[0, 1, 1, 0]);
 
             writer.SetTarget(t, 0, 1);
-            writer[1, 0, 0] = 2f;
-            Assert.AreEqual(2f, t.data[0, 1, 0, 1]);
+            writer[0, 1, 0] = 2f;
+            Assert.AreEqual(2f, ((TensorFloat)t.data)[0, 1, 1, 0]);
         }
     }
 }

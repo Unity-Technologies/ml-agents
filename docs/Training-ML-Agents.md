@@ -122,7 +122,7 @@ artifacts), then use the `--force` flag.
 You can also use this mode to run inference of an already-trained model in
 Python by using both the `--resume` and `--inference` flags. Note that if you
 want to run inference in Unity, you should use the
-[Unity Inference Engine](Getting-Started.md#running-a-pre-trained-model).
+[Sentis](Getting-Started.md#running-a-pre-trained-model).
 
 Additionally, if the network architecture changes, you may still load an existing model,
 but ML-Agents will only load the parts of the model it can load and ignore all others. For instance,
@@ -213,6 +213,7 @@ env_settings:
   env_args: null
   base_port: 5005
   num_envs: 1
+  timeout_wait: 10
   seed: -1
   max_lifetime_restarts: 10
   restarts_rate_limit_n: 1

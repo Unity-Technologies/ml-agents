@@ -1,12 +1,11 @@
 using System.Collections.Generic;
-using Unity.Barracuda;
+using Unity.Sentis;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Tests
 {
-
     public class DiscreteActionOutputApplierTest
     {
         [Test]
@@ -22,18 +21,17 @@ namespace Unity.MLAgents.Tests
 
             var actionTensor = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    2,
+                data = new TensorInt(
+                    new TensorShape(2, 2),
                     new[]
                     {
-                        2.0f, // Agent 0, branch 0
-                        1.0f, // Agent 0, branch 1
-                        0.0f, // Agent 1, branch 0
-                        0.0f  // Agent 1, branch 1
+                        2, // Agent 0, branch 0
+                        1, // Agent 0, branch 1
+                        0, // Agent 1, branch 0
+                        0  // Agent 1, branch 1
                     }),
                 shape = new long[] { 2, 2 },
-                valueType = TensorProxy.TensorType.FloatingPoint
+                valueType = TensorProxy.TensorType.Integer
             };
 
             applier.Apply(actionTensor, agentIds, actionBuffers);
@@ -56,9 +54,8 @@ namespace Unity.MLAgents.Tests
 
             var logProbs = new TensorProxy
             {
-                data = new Tensor(
-                    2,
-                    5,
+                data = new TensorFloat(
+                    new TensorShape(2, 5),
                     new[]
                     {
                         smallLogProb, smallLogProb, largeLogProb, // Agent 0, branch 0

@@ -7,7 +7,7 @@
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
         "Unity.InputSystem",
-        "Unity.Barracuda"
+        "Unity.Sentis"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
