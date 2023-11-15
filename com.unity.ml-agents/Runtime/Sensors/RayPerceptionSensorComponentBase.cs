@@ -244,15 +244,16 @@ namespace Unity.MLAgents.Sensors
         internal static float[] GetRayAnglesAlternating(int raysPerDirection, float maxRayDegrees)
         {
             // Example:
-            // { 90, 90 - delta, 90 + delta, 90 - 2*delta, 90 + 2*delta }
+            // { 90 - 3*delta, 90 - 2*delta, ..., 90, 90 + delta, ..., 90 + 3*delta }
             var anglesOut = new float[2 * raysPerDirection + 1];
             var delta = maxRayDegrees / raysPerDirection;
-            anglesOut[0] = 90f;
-            for (var i = 0; i < raysPerDirection; i++)
+            
+            for (var i =  0; i < 2 * raysPerDirection + 1; i++)
             {
-                anglesOut[2 * i + 1] = 90 - (i + 1) * delta;
-                anglesOut[2 * i + 2] = 90 + (i + 1) * delta;
+                // 90 - (num_rays) * delta + i * delta
+                anglesOut[i] = 90 - (raysPerDirection - i) * delta;
             }
+            
             return anglesOut;
         }
 
