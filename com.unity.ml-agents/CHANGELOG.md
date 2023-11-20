@@ -11,6 +11,7 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
 #### ml-agents / ml-agents-envs
+- Upgraded to PyTorch 2.1.1
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)

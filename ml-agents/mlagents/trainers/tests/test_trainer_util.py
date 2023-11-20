@@ -149,13 +149,20 @@ def test_setup_init_path(tmpdir, dir_exists):
 
     :return:
     """
-    test_yaml = """
+    init_path = os.path.join(
+        "{}",
+        "test_setup_init_path_results",
+        "test_run_id",
+        "MediumWallJump",
+        "checkpoint.pt",
+    )
+    test_yaml = f"""
     behaviors:
         BigWallJump:
             init_path: BigWallJump-6540981.pt #full path
             trainer_type: ppo
         MediumWallJump:
-            init_path: {}/test_setup_init_path_results/test_run_id/MediumWallJump/checkpoint.pt
+            init_path: {init_path}
             trainer_type: ppo
         SmallWallJump:
             trainer_type: ppo
