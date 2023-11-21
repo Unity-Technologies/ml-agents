@@ -79,7 +79,7 @@ namespace Unity.MLAgents
         public double TotalSeconds
         {
             get { return CurrentTicks * s_TicksToSeconds; }
-            set { }     // Serialization needs this, but unused.
+            set { }      // Serialization needs this, but unused.
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace Unity.MLAgents
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
                 return selfTicks * s_TicksToSeconds;
             }
-            set { }     // Serialization needs this, but unused.
+            set { }      // Serialization needs this, but unused.
         }
 
         public IReadOnlyDictionary<string, TimerNode> Children
