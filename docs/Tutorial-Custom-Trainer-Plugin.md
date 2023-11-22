@@ -260,7 +260,7 @@ mlagents-learn ml-agents-trainer-plugin/mlagents_trainer_plugin/a2c/a2c_3DBall.y
 ```
 
 ### Validate your implementations:
-Create a clean Python environment with Python 3.10+ and activate it before you start, if you haven't done so already:
+Create a clean Python environment with Python 3.10.12 and activate it before you start, if you haven't done so already:
 ```shell
 conda create -n trainer-env python=3.10.12
 conda activate trainer-env

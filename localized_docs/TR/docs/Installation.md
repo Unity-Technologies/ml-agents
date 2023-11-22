@@ -27,7 +27,7 @@ ML-Agents Toolkit 'i kurmanız için gerekenler:
 
 ### **Python 3.10.12** veya Daha Yüksek Bir Sürüm Yükleyin
 
-Python 3.10 veya daha yüksek bir sürümü [yüklemenizi](https://www.python.org/downloads/) öneriyoruz. Eğer, Windows kullanıyorsanız, lütfen x86-64 versiyonunu kurun ve asla sadece x86 isimli versiyonu kurmayın. Python ortamınız `pip3` içermiyorsa, [talimatları](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) takip ederek yükleyebilirsiniz.
+Python 3.10.12 veya daha yüksek bir sürümü [yüklemenizi](https://www.python.org/downloads/) öneriyoruz. Eğer, Windows kullanıyorsanız, lütfen x86-64 versiyonunu kurun ve asla sadece x86 isimli versiyonu kurmayın. Python ortamınız `pip3` içermiyorsa, [talimatları](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) takip ederek yükleyebilirsiniz.
 
 Windows'ta Anaconda kurulumu için destek sağlamıyor olsak da,
 önceki [Windows için Anaconda Yüklemesi (Kullanımdan Kaldırılan) Rehberine](Installation-Anaconda-Windows.md) bakabilirsiniz.
