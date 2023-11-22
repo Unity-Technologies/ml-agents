@@ -302,8 +302,8 @@ def _create_parser() -> argparse.ArgumentParser:
         default=False,
         action=DetectDefaultStoreTrue,
         help="Whether to run the main Unity worker in graphics mode with the remaining workers in no graphics mode"
-             "(i.e. without initializing the graphics driver. Use this only if your agents don't use visual "
-             "observations.",
+        "(i.e. without initializing the graphics driver. Use this only if your agents don't use visual "
+        "observations.",
     )
 
     torch_conf = argparser.add_argument_group(title="Torch Configuration")

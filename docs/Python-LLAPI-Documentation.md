@@ -634,22 +634,21 @@ class UnityEnvironment(BaseEnv)
 #### \_\_init\_\_
 
 ```python
- | __init__(file_name: Optional[str] = None, worker_id: int = 0, base_port: Optional[int] = None, seed: int = 0, no_graphics: bool = False, timeout_wait: int = 60, additional_args: Optional[List[str]] = None, side_channels: Optional[List[SideChannel]] = None, log_folder: Optional[str] = None, num_areas: int = 1)
+ | __init__(file_name: Optional[str] = None, worker_id: int = 0, base_port: Optional[int] = None, seed: int = 0, no_graphics: bool = False, no_graphics_monitor: bool = False, timeout_wait: int = 60, additional_args: Optional[List[str]] = None, side_channels: Optional[List[SideChannel]] = None, log_folder: Optional[str] = None, num_areas: int = 1)
 ```
 
 Starts a new unity environment and establishes a connection with the environment.
 Notice: Currently communication between Unity and Python takes place over an open socket without authentication.
 Ensure that the network where training takes place is secure.
 
-:string file_name: Name of Unity environment binary.
-:int base_port: Baseline port number to connect to Unity environment over. worker_id increments over this.
-If no environment is specified (i.e. file_name is None), the DEFAULT_EDITOR_PORT will be used.
-:int worker_id: Offset from base_port. Used for training multiple environments simultaneously.
-:bool no_graphics: Whether to run the Unity simulator in no-graphics mode
-:int timeout_wait: Time (in seconds) to wait for connection from environment.
-:list args: Addition Unity command line arguments
-:list side_channels: Additional side channel for no-rl communication with Unity
-:str log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.
+:string file_name: Name of Unity environment binary. :int base_port: Baseline port number to connect to Unity
+environment over. worker_id increments over this. If no environment is specified (i.e. file_name is None),
+the DEFAULT_EDITOR_PORT will be used. :int worker_id: Offset from base_port. Used for training multiple
+environments simultaneously. :bool no_graphics: Whether to run the Unity simulator in no-graphics mode :bool
+no_graphics_monitor: Whether to run the main worker in graphics mode, with the remaining in no-graphics mode
+:int timeout_wait: Time (in seconds) to wait for connection from environment. :list args: Addition Unity
+command line arguments :list side_channels: Additional side channel for no-rl communication with Unity :str
+log_folder: Optional folder to write the Unity Player log file into.  Requires absolute path.
 
 <a name="mlagents_envs.environment.UnityEnvironment.close"></a>
 #### close
