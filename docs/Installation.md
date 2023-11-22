@@ -43,9 +43,9 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.
 
-### Install **Python 3.10.12** or Higher
+### Install **Python 3.10.12**
 
-We recommend [installing](https://www.python.org/downloads/) Python 3.10.
+We recommend [installing](https://www.python.org/downloads/) Python 3.10.12.
 If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
@@ -53,11 +53,11 @@ on installing it. We also recommend using [conda](https://docs.conda.io/en/lates
 
 #### Conda python setup
 
-Once conda has been installed in your system, open a terminal and execute the following commands to setup a python 3.10 virtual environment
+Once conda has been installed in your system, open a terminal and execute the following commands to setup a python 3.10.12 virtual environment
 and activate it.
 
 ```shell
-conda create -n mlagents python=3.10 && conda activate mlagents
+conda create -n mlagents python=3.10.12 && conda activate mlagents
 ```
 
 ### Clone the ML-Agents Toolkit Repository (Recommended)

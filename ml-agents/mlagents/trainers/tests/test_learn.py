@@ -103,6 +103,7 @@ def test_bad_env_path():
         factory = learn.create_environment_factory(
             env_path="/foo/bar",
             no_graphics=True,
+            no_graphics_monitor=False,
             seed=-1,
             num_areas=1,
             timeout_wait=1,
@@ -131,6 +132,7 @@ def test_commandline_args(mock_file):
     assert opt.env_settings.num_envs == 1
     assert opt.env_settings.num_areas == 1
     assert opt.engine_settings.no_graphics is False
+    assert opt.engine_settings.no_graphics_monitor is False
     assert opt.debug is False
     assert opt.env_settings.env_args is None
 
@@ -168,6 +170,33 @@ def test_commandline_args(mock_file):
     opt = parse_command_line(full_args)
     assert opt.checkpoint_settings.initialize_from is None  # ignore init if resume set
     assert opt.checkpoint_settings.resume is True
+
+    full_args = [
+        "mytrainerpath",
+        "--env=./myenvfile",
+        "--inference",
+        "--run-id=myawesomerun",
+        "--seed=7890",
+        "--train",
+        "--base-port=4004",
+        "--num-envs=2",
+        "--num-areas=2",
+        "--no-graphics-monitor",
+        "--debug",
+    ]
+
+    opt = parse_command_line(full_args)
+    assert opt.behaviors == {}
+    assert opt.env_settings.env_path == "./myenvfile"
+    assert opt.checkpoint_settings.run_id == "myawesomerun"
+    assert opt.env_settings.seed == 7890
+    assert opt.env_settings.base_port == 4004
+    assert opt.env_settings.num_envs == 2
+    assert opt.env_settings.num_areas == 2
+    assert opt.engine_settings.no_graphics_monitor is True
+    assert opt.debug is True
+    assert opt.checkpoint_settings.inference is True
+    assert opt.checkpoint_settings.resume is False
 
 
 @patch("builtins.open", new_callable=mock_open, read_data=MOCK_PARAMETER_YAML)

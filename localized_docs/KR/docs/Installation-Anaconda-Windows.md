@@ -13,7 +13,7 @@ ML-Agents toolkit�� ����ϱ� ����, �Ʒ��� ���
 Windows ������ Anaconda�� [�ٿ�ε�](https://www.anaconda.com/download/#windows)�ϰ� ��ġ�Ͻʽÿ�.
 Anaconda�� ��������ν�, �ٸ� ���� ������ Python�� �и��� ȯ�濡�� ������ �� �ֽ��ϴ�.
 Python 2�� ���̻� �������� �ʱ� ������ Python 3.10�� �ʿ��մϴ�. �� ���̵忡�� �츮��
-Python 3.10 ������ Anaconda 5.1 ������ ����� ���Դϴ�.
+Python 3.10.12 ������ Anaconda 5.1 ������ ����� ���Դϴ�.
 ([64-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86_64.exe)
 �Ǵ� [32-bit](https://repo.continuum.io/archive/Anaconda3-5.1.0-Windows-x86.exe)
 ��ũ).
@@ -65,11 +65,11 @@ ML-Agents toolkit�� �Բ� ����� ���ο� [Conda ȯ��]
 ��ɾ Ÿ���� �Ͻʽÿ�:
 
 ```sh
-conda create -n ml-agents python=3.10
+conda create -n ml-agents python=3.10.12
 ```
 
 �� ��Ű���� ��ġ�ϱ� ���� �޼����� ���� ��� `y`�� Ÿ�����ϰ� ���͸� �����ʽÿ� _(���ͳ��� ����Ǿ��ִ��� Ȯ���Ͻʽÿ�)_.
-�� �䱸�Ǵ� ��Ű������ �ݵ�� ��ġ�ؾ� �մϴ�. ���ο� Conda ȯ�濡�� Python 3.10 ������ ���Ǹ� ml-agents�� ȣ��˴ϴ�.
+�� �䱸�Ǵ� ��Ű������ �ݵ�� ��ġ�ؾ� �մϴ�. ���ο� Conda ȯ�濡�� Python 3.10.12 ������ ���Ǹ� ml-agents�� ȣ��˴ϴ�.
 
 <p align="center">
   <img src="images/conda_new.PNG" alt="Anaconda Install" width="500" border="10" />
