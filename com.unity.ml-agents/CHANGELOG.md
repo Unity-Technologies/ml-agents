@@ -9,11 +9,14 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Upgraded to Sentis 1.3.0-exp.2 (#6013)
 
 #### ml-agents / ml-agents-envs
+- Upgraded to PyTorch 2.1.1 (#6013)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Added no-graphics-monitor (#6014)
 
 #### ml-agents / ml-agents-envs
 
@@ -21,7 +24,7 @@ and this project adheres to
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 
 #### ml-agents / ml-agents-envs
-- Bumped numpy version to >=1.21.2,<1.24.0 (#)
+- Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
 
 ## [3.0.0-exp.1] - 2023-10-09
 ### Major Changes

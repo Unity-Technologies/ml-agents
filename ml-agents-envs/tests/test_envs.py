@@ -1,3 +1,4 @@
+import os
 from unittest import mock
 import pytest
 
@@ -53,11 +54,15 @@ def test_port_defaults(
 def test_log_file_path_is_set(mock_communicator, mock_launcher):
     mock_communicator.return_value = MockCommunicator()
     env = UnityEnvironment(
-        file_name="myfile", worker_id=0, log_folder="./some-log-folder-path"
+        file_name="myfile",
+        worker_id=0,
+        log_folder=os.path.join(".", "some-log-folder-path"),
     )
     args = env._executable_args()
     log_file_index = args.index("-logFile")
-    assert args[log_file_index + 1] == "./some-log-folder-path/Player-0.log"
+    assert args[log_file_index + 1] == os.path.join(
+        ".", "some-log-folder-path", "Player-0.log"
+    )
     env.close()
 
 

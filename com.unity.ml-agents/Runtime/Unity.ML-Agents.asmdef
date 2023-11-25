@@ -9,11 +9,11 @@
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
-    "overrideReferences": false,
+    "overrideReferences": true,
     "precompiledReferences": [
         "System.IO.Abstractions.dll",
-        "Google.Protobuf.dll",
-        "Grpc.Core.dll"
+        "Grpc.Core.dll",
+        "Google.Protobuf_Packed.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

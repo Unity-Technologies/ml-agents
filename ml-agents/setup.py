@@ -62,7 +62,7 @@ setup(
         "Pillow>=4.2.1",
         "protobuf>=3.6,<3.20",
         "pyyaml>=3.1.0",
-        "torch>=1.13.1",
+        "torch>=2.1.1",
         "tensorboard>=2.14",
         # adding six explicit dependency since tensorboard needs it but doesn't declare it as a dep
         "six>=1.16",
