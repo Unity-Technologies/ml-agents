@@ -43,7 +43,7 @@ theme:
     # Palette toggle for light mode
     - scheme: default
       toggle:
-        icon: material/brightness-7 
+        icon: material/brightness-7
         name: Switch to dark mode
     # Palette toggle for dark mode
     - scheme: slate
@@ -56,3 +56,4 @@ extra_css:
 markdown_extensions:
     - markdown_include.include:
         base_path: docs
+    - attr_list
