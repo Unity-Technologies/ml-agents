@@ -150,6 +150,10 @@ namespace Unity.MLAgents.Inference
             if (m_Engine != null)
                 m_Engine.Dispose();
             m_TensorAllocator?.Reset(false);
+            foreach (var (name, tensor) in m_InputsByName)
+            {
+                tensor.Dispose();
+            }
         }
 
         void FetchSentisOutputs(string[] names)
