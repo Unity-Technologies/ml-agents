@@ -22,6 +22,7 @@ and this project adheres to
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
+- Fixed missing tensor Dispose in ModelRunner (#)
 
 #### ml-agents / ml-agents-envs
 - Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
