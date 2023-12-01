@@ -16,11 +16,11 @@ trunk_editor:
 test_platforms:
     - name: win
       type: Unity::VM
-      image: package-ci/win10:stable
+      image: package-ci/win11:v4
       flavor: b1.large
     - name: mac
       type: Unity::VM::osx
-      image: package-ci/mac:stable
+      image: package-ci/macos-13:v4
       flavor: b1.large
     - name: linux
       type: Unity::VM
