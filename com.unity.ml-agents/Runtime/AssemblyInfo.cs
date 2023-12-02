@@ -11,3 +11,4 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.Tests")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Pro")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Pro.Tests")]
+[assembly: InternalsVisibleTo("MLAgentsExamples.Tests.Performance")]
