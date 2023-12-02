@@ -8,7 +8,7 @@
     "com.unity.package-manager-doctools": "3.0.0-preview",
     "com.unity.package-validation-suite": "0.59.0-preview",
     "com.unity.test-framework": "1.1.33",
-    "com.unity.test-framework.performance": "2.2.0-preview",
+    "com.unity.test-framework.performance": "3.0.3",
     "com.unity.testtools.codecoverage": "1.2.4",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.physics": "1.0.0",
