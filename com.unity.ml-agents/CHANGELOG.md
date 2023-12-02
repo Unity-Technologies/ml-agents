@@ -12,17 +12,18 @@ and this project adheres to
 - Upgraded to Sentis 1.3.0-exp.2 (#6013)
 
 #### ml-agents / ml-agents-envs
-- Upgraded to PyTorch 2.1.1 (#6013)
+- Upgraded to PyTorch 2.1.1. (#6013)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Added no-graphics-monitor (#6014)
+- Added no-graphics-monitor. (#6014)
 
 #### ml-agents / ml-agents-envs
 
 ### Bug Fixes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Fixed missing tensor Dispose in ModelRunner (#)
+- Fixed missing tensor Dispose in ModelRunner. (#6028)
+- Fixed 3DBall sample package to remove Barracuda dependency. (#6030)
 
 #### ml-agents / ml-agents-envs
 - Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
