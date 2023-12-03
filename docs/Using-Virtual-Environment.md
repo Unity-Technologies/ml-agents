@@ -23,7 +23,7 @@ have support for the dependent libraries, so are not recommended.
 
 ## Use Conda (or Mamba)
 
-While there are many options for setting up virtual environments for python, by far the most
+While there are many options for setting up virtual environments for python, by far the most common and simpler approach is by using Anaconda (aka Conda). You can read the documentation on how to get started with Conda here: [https://learning.anaconda.cloud/get-started-with-anaconda]
 
 ## Installing Pip (Required)
 
