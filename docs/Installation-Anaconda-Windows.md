@@ -144,7 +144,7 @@ reinforcement learning trainers to use with Unity environments.
 The `ml-agents-envs` subdirectory contains a Python API to interface with Unity,
 which the `ml-agents` package depends on.
 
-The `gym-unity` subdirectory contains a package to interface with OpenAI Gym.
+The `gym-unity` subdirectory contains a package to interface with Gymnasium.
 
 Keep in mind where the files were downloaded, as you will need the trainer
 config files in this directory when running `mlagents-learn`. Make sure you are

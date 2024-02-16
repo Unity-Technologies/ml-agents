@@ -1,10 +1,16 @@
+"""
+An adapter between Unity ml-agents BaseEnv and Gymnasium Env.
+
+Remixed from https://github.com/Unity-Technologies/ml-agents/blob/develop/ml-agents-envs/mlagents_envs/envs/unity_gym_env.py
+"""
+
 import itertools
 
 import numpy as np
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import gym
-from gym import error, spaces
+import gymnasium as gym
+from gymnasium import error, spaces
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
@@ -20,7 +26,7 @@ class UnityGymException(error.Error):
 
 
 logger = logging_util.get_logger(__name__)
-GymStepResult = Tuple[np.ndarray, float, bool, Dict]
+GymStepResult = Tuple[np.ndarray, float, bool, bool, Dict]
 
 
 class UnityToGymWrapper(gym.Env):
@@ -107,13 +113,13 @@ class UnityToGymWrapper(gym.Env):
             self.action_size = self.group_spec.action_spec.discrete_size
             branches = self.group_spec.action_spec.discrete_branches
             if self.group_spec.action_spec.discrete_size == 1:
-                self._action_space = spaces.Discrete(branches[0])
+                self.action_space = spaces.Discrete(branches[0])
             else:
                 if flatten_branched:
                     self._flattener = ActionFlattener(branches)
-                    self._action_space = self._flattener.action_space
+                    self.action_space = self._flattener.action_space
                 else:
-                    self._action_space = spaces.MultiDiscrete(branches)
+                    self.action_space = spaces.MultiDiscrete(branches)
 
         elif self.group_spec.action_spec.is_continuous():
             if flatten_branched:
@@ -124,7 +130,7 @@ class UnityToGymWrapper(gym.Env):
 
             self.action_size = self.group_spec.action_spec.continuous_size
             high = np.array([1] * self.group_spec.action_spec.continuous_size)
-            self._action_space = spaces.Box(-high, high, dtype=np.float32)
+            self.action_space = spaces.Box(-high, high, dtype=np.float32)
         else:
             raise UnityGymException(
                 "The gym wrapper does not provide explicit support for both discrete "
@@ -132,7 +138,7 @@ class UnityToGymWrapper(gym.Env):
             )
 
         if action_space_seed is not None:
-            self._action_space.seed(action_space_seed)
+            self.action_space.seed(action_space_seed)
 
         # Set observations space
         list_spaces: List[gym.Space] = []
@@ -147,11 +153,11 @@ class UnityToGymWrapper(gym.Env):
             high = np.array([np.inf] * self._get_vec_obs_size())
             list_spaces.append(spaces.Box(-high, high, dtype=np.float32))
         if self._allow_multiple_obs:
-            self._observation_space = spaces.Tuple(list_spaces)
+            self.observation_space = spaces.Tuple(list_spaces)
         else:
-            self._observation_space = list_spaces[0]  # only return the first one
+            self.observation_space = list_spaces[0]  # only return the first one
 
-    def reset(self) -> Union[List[np.ndarray], np.ndarray]:
+    def reset(self) -> Tuple[Union[List[np.ndarray], np.ndarray], Dict]:
         """Resets the state of the environment and returns an initial observation.
         Returns: observation (object/list): the initial observation of the
         space.
@@ -163,7 +169,7 @@ class UnityToGymWrapper(gym.Env):
         self.game_over = False
 
         res: GymStepResult = self._single_step(decision_step)
-        return res[0]
+        return res[0], {}
 
     def step(self, action: List[Any]) -> GymStepResult:
         """Run one timestep of the environment's dynamics. When end of
@@ -229,7 +235,7 @@ class UnityToGymWrapper(gym.Env):
 
         done = isinstance(info, TerminalSteps)
 
-        return (default_observation, info.reward[0], done, {"step": info})
+        return (default_observation, info.reward[0], done, False, {"step": info})
 
     def _preprocess_single(self, single_visual_obs: np.ndarray) -> np.ndarray:
         if self.uint8_visual:
@@ -303,23 +309,9 @@ class UnityToGymWrapper(gym.Env):
             raise UnityGymException(
                 f"There can only be one Agent in the environment but {n_agents} were detected."
             )
-
-    @property
-    def metadata(self):
-        return {"render.modes": ["rgb_array"]}
-
-    @property
-    def reward_range(self) -> Tuple[float, float]:
-        return -float("inf"), float("inf")
-
-    @property
-    def action_space(self) -> gym.Space:
-        return self._action_space
-
-    @property
-    def observation_space(self):
-        return self._observation_space
-
+        
+    metadata = {"render.modes": ["rgb_array"]}
+    reward_range = (-float("inf"), float("inf"))
 
 class ActionFlattener:
     """

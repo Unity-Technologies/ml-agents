@@ -93,7 +93,7 @@ observation, a single discrete action and a single Agent in the scene.
 Add the following code to the `train_unity.py` file:
 
 ```python
-import gym
+import gymnasium as gym
 
 from baselines import deepq
 from baselines import logger
