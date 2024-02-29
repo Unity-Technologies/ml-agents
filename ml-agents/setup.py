@@ -60,7 +60,7 @@ setup(
         f"mlagents_envs=={VERSION}",
         "numpy>=1.21.2,<1.24.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.20",
+        "protobuf>=3.6,<3.21",
         "pyyaml>=3.1.0",
         "torch>=2.1.1",
         "tensorboard>=2.14",
@@ -72,7 +72,7 @@ setup(
         "attrs>=19.3.0",
         "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
-        "onnx==1.12.0",
+        "onnx==1.15.0",
     ],
     python_requires=">=3.10.1,<=3.10.12",
     entry_points={
