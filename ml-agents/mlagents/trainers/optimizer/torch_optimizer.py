@@ -148,8 +148,8 @@ class TorchOptimizer(Optimizer):
         """
         Get value estimates and memories for a trajectory, in batch form.
         :param batch: An AgentBuffer that consists of a trajectory.
-        :param next_obs: the next observation (after the trajectory). Used for boostrapping
-            if this is not a termiinal trajectory.
+        :param next_obs: the next observation (after the trajectory). Used for bootstrapping
+            if this is not a terminal trajectory.
         :param done: Set true if this is a terminal trajectory.
         :param agent_id: Agent ID of the agent that this trajectory belongs to.
         :returns: A Tuple of the Value Estimates as a Dict of [name, np.ndarray(trajectory_len)],
