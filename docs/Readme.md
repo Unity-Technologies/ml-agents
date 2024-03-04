@@ -52,6 +52,7 @@ to get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `main` branch which is
 under active development and may be unstable. A few helpful guidelines:
+
 - The [Versioning page](Versioning.md) overviews how we manage our GitHub
   releases and the versioning process for each of the ML-Agents components.
 - The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
