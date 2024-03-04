@@ -434,6 +434,7 @@ Similarly to Curiosity, Random Network Distillation (RND) is useful in sparse or
 reward environments as it helps the Agent explore. The RND Module is implemented following
 the paper [Exploration by Random Network Distillation](https://arxiv.org/abs/1810.12894).
 RND uses two networks:
+
  - The first is a network with fixed random weights that takes observations as inputs and
  generates an encoding
  - The second is a network with similar architecture that is trained to predict the
