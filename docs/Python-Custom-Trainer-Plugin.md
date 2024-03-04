@@ -5,7 +5,7 @@ capabilities. we introduce an extensible plugin system to define new trainers ba
 in `Ml-agents` Package. This will allow rerouting `mlagents-learn` CLI to custom trainers and extending the config files
 with hyper-parameters specific to your new trainers. We will expose a high-level extensible trainer (both on-policy,
 and off-policy trainers) optimizer and hyperparameter classes with documentation for the use of this plugin. For more
-infromation on how python plugin system works see [Plugin interfaces](Training-Plugins.md).
+information on how python plugin system works see [Plugin interfaces](Training-Plugins.md).
 ## Overview
 Model-free RL algorithms generally fall into two broad categories: on-policy and off-policy. On-policy algorithms perform updates based on data gathered from the current policy. Off-policy algorithms learn a Q function from a buffer of previous data, then use this Q function to make decisions. Off-policy algorithms have three key benefits in the context of ML-Agents: They tend to use fewer samples than on-policy as they can pull and re-use data from the buffer many times. They allow player demonstrations to be inserted in-line with RL data into the buffer, enabling new ways of doing imitation learning by streaming player data.
 

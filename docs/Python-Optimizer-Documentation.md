@@ -43,8 +43,8 @@ Get value estimates and memories for a trajectory, in batch form.
 **Arguments**:
 
 - `batch`: An AgentBuffer that consists of a trajectory.
-- `next_obs`: the next observation (after the trajectory). Used for boostrapping
-    if this is not a termiinal trajectory.
+- `next_obs`: the next observation (after the trajectory). Used for bootstrapping
+    if this is not a terminal trajectory.
 - `done`: Set true if this is a terminal trajectory.
 - `agent_id`: Agent ID of the agent that this trajectory belongs to.
 

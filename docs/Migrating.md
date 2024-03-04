@@ -21,7 +21,7 @@ from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 ## Migrating the package to version 2.x
 - The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
-  into issues, please consider deleting your project's Library folder and reponening your
+  into issues, please consider deleting your project's Library folder and reopening your
   project.
 - If you used any of the APIs that were deprecated before version 2.0, you need to use their replacement. These
 deprecated APIs have been removed. See the migration steps bellow for specific API replacements.
@@ -130,7 +130,7 @@ values from `GetMaxBoardSize()`.
 
 ### GridSensor changes
 The sensor configuration has changed:
-* The sensor implementation has been refactored and exsisting GridSensor created from extension package
+* The sensor implementation has been refactored and existing GridSensor created from extension package
 will not work in newer version. Some errors might show up when loading the old sensor in the scene.
 You'll need to remove the old sensor and create a new GridSensor.
 * These parameters names have changed but still refer to the same concept in the sensor: `GridNumSide` -> `GridSize`,
@@ -151,8 +151,8 @@ data type changed from `float` to `int`. The index of first detectable tag will 
 * The observation data should be written to the input `dataBuffer` instead of creating and returning a new array.
 * Removed the constraint of all data required to be normalized. You should specify it in `IsDataNormalized()`.
 Sensors with non-normalized data cannot use PNG compression type.
-* The sensor will not further encode the data recieved from `GetObjectData()` anymore. The values
-recieved from `GetObjectData()` will be the observation sent to the trainer.
+* The sensor will not further encode the data received from `GetObjectData()` anymore. The values
+received from `GetObjectData()` will be the observation sent to the trainer.
 
 ### LSTM models from previous releases no longer supported
 The way that Sentis processes LSTM (recurrent neural networks) has changed. As a result, models
@@ -169,7 +169,7 @@ the model using the python trainer from this release.
 - `VectorSensor.AddObservation(IEnumerable<float>)` is deprecated. Use `VectorSensor.AddObservation(IList<float>)`
   instead.
 - `ObservationWriter.AddRange()` is deprecated. Use `ObservationWriter.AddList()` instead.
-- `ActuatorComponent.CreateAcuator()` is deprecated.  Please use override `ActuatorComponent.CreateActuators`
+- `ActuatorComponent.CreateActuator()` is deprecated.  Please use override `ActuatorComponent.CreateActuators`
   instead.  Since `ActuatorComponent.CreateActuator()` is abstract, you will still need to override it in your
   class until it is removed.  It is only ever called if you don't override `ActuatorComponent.CreateActuators`.
   You can suppress the warnings by surrounding the method with the following pragma:
@@ -376,7 +376,7 @@ vector observations to be used simultaneously.
   method names will be removed in a later release:
   - `InitializeAgent()` was renamed to `Initialize()`
   - `AgentAction()` was renamed to `OnActionReceived()`
-  - `AgentReset()` was renamed to `OnEpsiodeBegin()`
+  - `AgentReset()` was renamed to `OnEpisodeBegin()`
   - `Done()` was renamed to `EndEpisode()`
   - `GiveModel()` was renamed to `SetModel()`
 - The `IFloatProperties` interface has been removed.
@@ -532,7 +532,7 @@ vector observations to be used simultaneously.
   depended on [PEP420](https://www.python.org/dev/peps/pep-0420/), which caused
   problems with some of our tooling such as mypy and pylint.
 - The official version of Unity ML-Agents supports is now 2022.3 LTS. If you run
-  into issues, please consider deleting your library folder and reponening your
+  into issues, please consider deleting your library folder and reopening your
   projects. You will need to install the Sentis package into your project in
   order to ML-Agents to compile correctly.
 

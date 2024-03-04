@@ -166,7 +166,7 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 ### More from Unity
 
 - [Unity Sentis](https://unity.com/products/sentis)
-- [Introductin Unity Muse and Sentis](https://blog.unity.com/engine-platform/introducing-unity-muse-and-unity-sentis-ai)
+- [Introducing Unity Muse and Sentis](https://blog.unity.com/engine-platform/introducing-unity-muse-and-unity-sentis-ai)
 
 ## Community and Feedback
 

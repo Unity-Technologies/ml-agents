@@ -678,7 +678,7 @@ of downloading the Unity Editor.
 The UnityEnvRegistry implements a Map, to access an entry of the Registry, use:
 ```python
 registry = UnityEnvRegistry()
-entry = registry[<environment_identifyier>]
+entry = registry[<environment_identifier>]
 ```
 An entry has the following properties :
  * `identifier` : Uniquely identifies this environment
@@ -689,7 +689,7 @@ An entry has the following properties :
 To launch a Unity environment from a registry entry, use the `make` method:
 ```python
 registry = UnityEnvRegistry()
-env = registry[<environment_identifyier>].make()
+env = registry[<environment_identifier>].make()
 ```
 
 <a name="mlagents_envs.registry.unity_env_registry.UnityEnvRegistry.register"></a>
