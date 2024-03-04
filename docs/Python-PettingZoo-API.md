@@ -1,7 +1,7 @@
 # Unity ML-Agents PettingZoo Wrapper
 
 With the increasing interest in multi-agent training with a gym-like API, we provide a
-PettingZoo Wrapper around the [Petting Zoo API](https://www.pettingzoo.ml/). Our wrapper
+PettingZoo Wrapper around the [Petting Zoo API](https://pettingzoo.farama.org/). Our wrapper
 provides interfaces on top of our `UnityEnvironment` class, which is the default way of
 interfacing with a Unity environment via Python.
 
@@ -20,7 +20,7 @@ which is a multi-agents environment with multiple different behavior names.
 ## API interface
 
 This wrapper is compatible with PettingZoo API. Please check out
-[PettingZoo API page](https://www.pettingzoo.ml/api) for more details.
+[PettingZoo API page](https://pettingzoo.farama.org/api/aec/) for more details.
 Here's an example of interacting with wrapped environment:
 
 ```python
@@ -37,8 +37,8 @@ for agent in env.agent_iter():
 ```
 
 ## Notes
-- There is support for both [AEC](https://www.pettingzoo.ml/api#interacting-with-environments)
-  and [Parallel](https://www.pettingzoo.ml/api#parallel-api) PettingZoo APIs.
+- There is support for both [AEC](https://pettingzoo.farama.org/api/aec/)
+  and [Parallel](https://pettingzoo.farama.org/api/parallel/) PettingZoo APIs.
 - The AEC wrapper is compatible with PettingZoo (PZ) API interface but works in a slightly
   different way under the hood. For the AEC API, Instead of stepping the environment in every `env.step(action)`,
   the PZ wrapper will store the action, and will only perform environment stepping when all the
