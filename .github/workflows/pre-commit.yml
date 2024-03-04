@@ -17,11 +17,12 @@ jobs:
     - uses: actions/setup-python@v2
       with:
         python-version: 3.10.x
-    - uses: actions/setup-ruby@v1
+    - uses: ruby/setup-ruby@v1
       env:
         ImageOS: ubuntu20
       with:
-        ruby-version: '2.6'
+        ruby-version: '2.7'
+        bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: actions/setup-dotnet@v3
       with:
         dotnet-version: '7.0.100'
