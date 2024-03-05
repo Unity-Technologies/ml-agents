@@ -9,7 +9,7 @@ and this project adheres to
 ## [Unreleased]
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Upgraded to Sentis 1.3.0-exp.2 (#6013)
+- Upgraded to Sentis 1.3.0-pre.3 (#6070)
 
 #### ml-agents / ml-agents-envs
 - Upgraded to PyTorch 2.1.1. (#6013)
