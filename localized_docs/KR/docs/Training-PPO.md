@@ -1,6 +1,6 @@
 # Proximal Policy Optimization를 이용한 학습
 
-ML-Agents는 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/) 라는 강화학습 기법을 사용합니다.
+ML-Agents는 [Proximal Policy Optimization (PPO)](https://openai.com/research/openai-baselines-ppo) 라는 강화학습 기법을 사용합니다.
 PPO는 에이전트의 관측 (Observation)을 통해 에이전트가 주어진 상태에서 최선의 행동을 선택할 수 있도록 하는 이상적인 함수를 인공신경망을 이용하여 근사하는 기법입니다.  ML-agents의 PPO 알고리즘은 텐서플로우로 구현되었으며 별도의 파이썬 프로세스 (소켓 통신을 통해 실행중인 유니티 프로그램과 통신)에서 실행됩니다.
 
 에이전트를 학습하기 위해서 사용자는 에이전트가 최대화하도록 시도하는 보상 시그널을 하나 혹은 그 이상 설정해야합니다.  사용 가능한 보상 시그널들과 관련된 하이퍼파라미터에 대해서는 [보상 시그널](Reward-Signals.md) 문서를 참고해주십시오.

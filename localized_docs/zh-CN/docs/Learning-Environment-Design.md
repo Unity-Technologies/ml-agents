@@ -2,7 +2,7 @@
 
 Reinforcement learning（强化学习）是一种人工智能技术，通过奖励期望的行为来训练 _agent_ 执行任务。在 reinforcement learning（强化学习）过程中，agent 会探索自己所处的环境，观测事物的状态，并根据这些观测结果采取相应动作。如果该动作带来了更好的状态，agent 会得到正奖励。如果该动作带来的状态不太理想，则 agent 不会得到奖励或会得到负奖励（惩罚）。随着 agent 在训练期间不断学习，它会优化自己的决策能力，以便随着时间的推移获得最高奖励。
 
-ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/) 的 reinforcement learning（强化学习）技术。PPO 使用神经网络来逼近理想函数；这种理想函数将 agent 的观测结果映射为 agent 在给定状态下可以采取的最佳动作。ML-Agents PPO 算法在 TensorFlow 中实现，并在单独的 Python 过程中运行（通过一个socket与正在运行的 Unity 应用程序进行通信）。
+ML-Agents 使用一种称为 [Proximal Policy Optimization (PPO)](https://openai.com/research/openai-baselines-ppo) 的 reinforcement learning（强化学习）技术。PPO 使用神经网络来逼近理想函数；这种理想函数将 agent 的观测结果映射为 agent 在给定状态下可以采取的最佳动作。ML-Agents PPO 算法在 TensorFlow 中实现，并在单独的 Python 过程中运行（通过一个socket与正在运行的 Unity 应用程序进行通信）。
 
 **注意：**如果您并非要专门研究机器学习和 reinforcement learning（强化学习）主题，只想训练 agent 完成任务，则可以将 PPO 训练视为一个_黑盒_。在 Unity 内部以及在 Python 训练方面有一些与训练相关的参数可进行调整，但您不需要深入了解算法本身就可以成功创建和训练 agent。[训练 ML-Agents](/docs/Training-ML-Agents.md)提供了执行训练过程的逐步操作程序。
 

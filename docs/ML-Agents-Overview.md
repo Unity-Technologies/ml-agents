@@ -385,7 +385,7 @@ your agent's behavior:
 
 ML-Agents provide an implementation of two reinforcement learning algorithms:
 
-- [Proximal Policy Optimization (PPO)](https://blog.openai.com/openai-baselines-ppo/)
+- [Proximal Policy Optimization (PPO)](https://openai.com/research/openai-baselines-ppo)
 - [Soft Actor-Critic (SAC)](https://bair.berkeley.edu/blog/2018/12/14/sac/)
 
 The default algorithm is PPO. This is a method that has been shown to be more
@@ -563,7 +563,7 @@ in training behaviors for specific types of environments.
 
 ML-Agents provides the functionality to train both symmetric and asymmetric
 adversarial games with
-[Self-Play](https://openai.com/blog/competitive-self-play/). A symmetric game is
+[Self-Play](https://openai.com/research/competitive-self-play). A symmetric game is
 one in which opposing agents are equal in form, function and objective. Examples
 of symmetric games are our Tennis and Soccer example environments. In
 reinforcement learning, this means both agents have the same observation and
