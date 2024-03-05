@@ -4,7 +4,7 @@ test_editors:
         # We want some scene tests to run in the DevProject, but packages there only support 2020+
       testProject: Project
       enableNoDefaultPackages: !!bool true
-    - version: 2023.1
+    - version: 2023.2
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
 
