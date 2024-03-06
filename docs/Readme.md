@@ -52,6 +52,7 @@ to get started with the latest release of ML-Agents.**
 
 The table below lists all our releases, including our `main` branch which is
 under active development and may be unstable. A few helpful guidelines:
+
 - The [Versioning page](Versioning.md) overviews how we manage our GitHub
   releases and the versioning process for each of the ML-Agents components.
 - The [Releases page](https://github.com/Unity-Technologies/ml-agents/releases)
@@ -165,7 +166,7 @@ We have also published a series of blog posts that are relevant for ML-Agents:
 ### More from Unity
 
 - [Unity Sentis](https://unity.com/products/sentis)
-- [Introductin Unity Muse and Sentis](https://blog.unity.com/engine-platform/introducing-unity-muse-and-unity-sentis-ai)
+- [Introducing Unity Muse and Sentis](https://blog.unity.com/engine-platform/introducing-unity-muse-and-unity-sentis-ai)
 
 ## Community and Feedback
 

@@ -1,6 +1,6 @@
 # Profiling in Python
 
-As part of the ML-Agents Tookit, we provide a lightweight profiling system, in
+As part of the ML-Agents Toolkit, we provide a lightweight profiling system, in
 order to identity hotspots in the training process and help spot regressions
 from changes.
 

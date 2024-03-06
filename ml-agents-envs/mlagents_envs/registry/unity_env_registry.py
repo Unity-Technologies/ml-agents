@@ -16,7 +16,7 @@ class UnityEnvRegistry(Mapping):
     The UnityEnvRegistry implements a Map, to access an entry of the Registry, use:
     ```python
     registry = UnityEnvRegistry()
-    entry = registry[<environment_identifyier>]
+    entry = registry[<environment_identifier>]
     ```
     An entry has the following properties :
      * `identifier` : Uniquely identifies this environment
@@ -27,7 +27,7 @@ class UnityEnvRegistry(Mapping):
     To launch a Unity environment from a registry entry, use the `make` method:
     ```python
     registry = UnityEnvRegistry()
-    env = registry[<environment_identifyier>].make()
+    env = registry[<environment_identifier>].make()
     ```
     """
 

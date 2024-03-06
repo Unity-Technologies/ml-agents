@@ -434,6 +434,7 @@ Similarly to Curiosity, Random Network Distillation (RND) is useful in sparse or
 reward environments as it helps the Agent explore. The RND Module is implemented following
 the paper [Exploration by Random Network Distillation](https://arxiv.org/abs/1810.12894).
 RND uses two networks:
+
  - The first is a network with fixed random weights that takes observations as inputs and
  generates an encoding
  - The second is a network with similar architecture that is trained to predict the
@@ -491,9 +492,9 @@ to the expert, the agent is incentivized to remain alive for as long as possible
 This can directly conflict with goal-oriented tasks like our PushBlock or Pyramids
 example environments where an agent must reach a goal state thus ending the
 episode as quickly as possible. In these cases, we strongly recommend that you
-use a low strength GAIL reward signal and a sparse extrinisic signal when
+use a low strength GAIL reward signal and a sparse extrinsic signal when
 the agent achieves the task. This way, the GAIL reward signal will guide the
-agent until it discovers the extrnisic signal and will not overpower it. If the
+agent until it discovers the extrinsic signal and will not overpower it. If the
 agent appears to be ignoring the extrinsic reward signal, you should reduce
 the strength of GAIL.
 

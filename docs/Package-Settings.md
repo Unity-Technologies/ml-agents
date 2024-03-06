@@ -9,7 +9,7 @@ You can find them at `Edit` > `Project Settings...` > `ML-Agents`. It lists out 
 ## Create Custom Settings
 In order to to use your own settings for your project, you'll need to create a settings asset.
 
-You can do this by clicking the `Create Settings Asset` buttom or clicking the gear on the top right and select `New Settings Asset...`.
+You can do this by clicking the `Create Settings Asset` button or clicking the gear on the top right and select `New Settings Asset...`.
 The asset file can be placed anywhere in the `Asset/` folder in your project.
 After Creating the settings asset, you'll be able to modify the settings for your project and your settings will be saved in the asset.
 
@@ -21,7 +21,7 @@ You can create multiple settings assets in one project.
 
 By clicking the gear on the top right you'll see all available settings listed in the drop-down menu to choose from.
 
-This allows you to create different settings for different scenatios. For example, you can create two
+This allows you to create different settings for different scenarios. For example, you can create two
 separate settings for training and inference, and specify which one you want to use according to what you're currently running.
 
 ![Multiple Settings](images/multiple-settings.png)

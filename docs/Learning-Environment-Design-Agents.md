@@ -620,6 +620,7 @@ the order of the entities, so there is no need to properly "order" the
 entities before feeding them into the `BufferSensor`.
 
 The `BufferSensorComponent` Editor inspector has two arguments:
+
  - `Observation Size` : This is how many floats each entities will be
  represented with. This number is fixed and all entities must
  have the same representation. For example, if the entities you want to

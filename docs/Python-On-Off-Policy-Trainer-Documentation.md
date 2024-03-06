@@ -694,7 +694,7 @@ class Lesson()
 ```
 
 Gathers the data of one lesson for one environment parameter including its name,
-the condition that must be fullfiled for the lesson to be completed and a sampler
+the condition that must be fulfilled for the lesson to be completed and a sampler
 for the environment parameter. If the completion_criteria is None, then this is
 the last lesson in the curriculum.
 

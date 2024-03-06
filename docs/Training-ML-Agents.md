@@ -413,7 +413,7 @@ Unless otherwise specified, omitting a configuration will revert it to its defau
 In some cases, you may want to specify a set of default configurations for your Behaviors.
 This may be useful, for instance, if your Behavior names are generated procedurally by
 the environment and not known before runtime, or if you have many Behaviors with very similar
-settings. To specify a default configuraton, insert a `default_settings` section in your YAML.
+settings. To specify a default configuration, insert a `default_settings` section in your YAML.
 This section should be formatted exactly like a configuration for a Behavior.
 
 ```yaml
