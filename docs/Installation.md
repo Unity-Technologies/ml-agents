@@ -146,10 +146,12 @@ offer a dedicated [guide on Virtual Environments](Using-Virtual-Environment.md).
 #### (Windows) Installing PyTorch
 
 On Windows, you'll have to install the PyTorch package separately prior to
-installing ML-Agents. Activate your virtual environment and run from the command line:
+installing ML-Agents in order to make sure the cuda-enabled version is used,
+rather than the CPU-only version. Activate your virtual environment and run from
+the command line:
 
 ```sh
-pip3 install torch~=1.13.1 -f https://download.pytorch.org/whl/torch_stable.html
+pip3 install torch~=2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 
 Note that on Windows, you may also need Microsoft's
