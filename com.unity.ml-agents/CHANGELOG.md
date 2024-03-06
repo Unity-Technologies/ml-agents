@@ -27,6 +27,8 @@ and this project adheres to
 
 #### ml-agents / ml-agents-envs
 - Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
+- Bumped onnx version to 1.15.0 (#6062)
+- Bumped protobuf version to >=3.6,<21 (#6062)
 
 ## [3.0.0-exp.1] - 2023-10-09
 ### Major Changes
