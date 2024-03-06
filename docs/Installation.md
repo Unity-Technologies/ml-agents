@@ -157,6 +157,14 @@ Note that on Windows, you may also need Microsoft's
 if you don't have it already. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/)
 for more installation options and versions.
 
+#### (OS X) Installing GRPC libraries
+
+On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
+
+```sh
+pip3 install grpcio
+```
+
 #### Installing `mlagents`
 
 To install the `mlagents` Python package, activate your virtual environment and
