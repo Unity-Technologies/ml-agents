@@ -2,7 +2,7 @@
 
 The ML-Agents Toolkit saves statistics during learning session that you can view
 with a TensorFlow utility named,
-[TensorBoard](https://www.tensorflow.org/programmers_guide/summaries_and_tensorboard).
+[TensorBoard](https://www.tensorflow.org/tensorboard).
 
 The `mlagents-learn` command saves training statistics to a folder named
 `results`, organized by the `run-id` value you assign to a training session.

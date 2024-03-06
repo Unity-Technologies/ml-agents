@@ -23,6 +23,10 @@
         {
             "pattern": "https://www.researchgate.net/",
             "comment": "Issue with GHE certs / firewall"
+        },
+        {
+            "pattern": "https://www.tensorflow.org/",
+            "comment": "Valid links failing with errors like 'https://www.tensorflow.org/tensorboard → Status: 0 Error: Exceeded maxRedirects. Probably stuck in a redirect loop'"
         }
     ]
 }
