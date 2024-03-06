@@ -90,6 +90,5 @@ setup(
             "default=mlagents.plugins.trainer_type:get_default_trainer_types"
         ],
     },
-    # TODO: Remove this once mypy stops having spurious setuptools issues.
-    cmdclass={"verify": VerifyVersionCommand},  # type: ignore
+    cmdclass={"verify": VerifyVersionCommand},
 )
