@@ -246,7 +246,7 @@ Reinforcement Learning（强化学习）算法。
 与其他许多 RL 算法相比，这种算法经证明是一种安全、
 有效且更通用的方法，因此我们选择它作为与 ML-Agents
 一起使用的示例算法。有关 PPO 的更多信息，
-请参阅 OpenAI 近期发布的[博客文章](https://blog.openai.com/openai-baselines-ppo/)，
+请参阅 OpenAI 近期发布的[博客文章](https://openai.com/research/openai-baselines-ppo)，
 其中对 PPO 进行了说明。
 
 
