@@ -54,9 +54,9 @@ setup(
     zip_safe=False,
     install_requires=[
         "cloudpickle",
-        "grpcio>=1.11.0,<=1.48.2",
+        "grpcio>=1.11.0,<=1.62.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.21",
+        "protobuf==4.21.6",
         "pyyaml>=3.1.0",
         "gym>=0.21.0",
         "pettingzoo==1.15.0",

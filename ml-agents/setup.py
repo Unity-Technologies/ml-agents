@@ -55,12 +55,12 @@ setup(
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
-        "grpcio>=1.11.0,<=1.48.2",
+        "grpcio>=1.11.0,<=1.62.0",
         "h5py>=2.9.0",
         f"mlagents_envs=={VERSION}",
         "numpy>=1.21.2,<1.24.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.21",
+        "protobuf==4.21.6",
         "pyyaml>=3.1.0",
         "torch>=2.1.1",
         "tensorboard>=2.14",

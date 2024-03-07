@@ -164,7 +164,7 @@ for more installation options and versions.
 On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
 
 ```sh
-pip3 install grpcio
+pip3 install grpcio==1.62.0
 ```
 
 #### Installing `mlagents`

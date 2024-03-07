@@ -5,20 +5,20 @@ test_linux_protobuf_generation:
     image: ml-agents/ml-agents-ubuntu-18.04:latest
     flavor: b1.large
   variables:
-    GRPC_VERSION: "1.14.1"
+    GRPC_TOOLS_VERSION: "2.62.0"
     CS_PROTO_PATH: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects"
   commands:
     - |
       sudo apt-get update && sudo apt-get install -y nuget
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.10
-      nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
+      nuget install Grpc.Tools -Version $GRPC_TOOLS_VERSION -OutputDirectory protobuf-definitions/
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
-      python3 -m pip install grpcio==1.48.2 grpcio-tools==1.48.2 protobuf==3.19.6 six==1.16.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
+      python3 -m pip install grpcio==1.62.0 grpcio-tools==1.62.0 protobuf==4.21.6 six==1.16.0 mypy-protobuf==1.16.0  --progress-bar=off --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       pushd protobuf-definitions
-      chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/protoc
-      chmod +x Grpc.Tools.$GRPC_VERSION/tools/linux_x64/grpc_csharp_plugin
-      COMPILER=Grpc.Tools.$GRPC_VERSION/tools/linux_x64 ./make.sh
+      chmod +x Grpc.Tools.$GRPC_TOOLS_VERSION/tools/linux_x64/protoc
+      chmod +x Grpc.Tools.$GRPC_TOOLS_VERSION/tools/linux_x64/grpc_csharp_plugin
+      COMPILER=Grpc.Tools.$GRPC_TOOLS_VERSION/tools/linux_x64 ./make.sh
       popd
       mkdir -p artifacts
       touch artifacts/proto.patch

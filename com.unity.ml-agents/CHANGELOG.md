@@ -13,6 +13,7 @@ and this project adheres to
 
 #### ml-agents / ml-agents-envs
 - Upgraded to PyTorch 2.1.1. (#6013)
+- Upgraded protobuf version to 4.21.6 (#xxx)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -28,7 +29,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs
 - Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
 - Bumped onnx version to 1.15.0 (#6062)
-- Bumped protobuf version to >=3.6,<21 (#6062)
+- Bumped grpc version to grpcio>=1.11.0,<=1.62.0 (#xxx)
 
 ## [3.0.0-exp.1] - 2023-10-09
 ### Major Changes
