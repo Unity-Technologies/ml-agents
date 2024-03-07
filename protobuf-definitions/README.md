@@ -6,7 +6,7 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 * protobuf 4.21.6
 * grpcio-tools 1.62.0
-* Grpc.Tools 1.14.1
+* Grpc.Tools 2.62.0
 
 ## Set-up & Installation
 
@@ -36,7 +36,7 @@ Download and install the latest version of [nuget](https://www.nuget.org/downloa
 
 Navigate to your installation of nuget and run the following:
 
-`nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
+`nuget install Grpc.Tools -Version 2.62.0 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
 ## Running
 
