@@ -58,7 +58,7 @@ jobs:
     - name: Upload colab results
       uses: actions/upload-artifact@v4
       with:
-        name: artifacts
+        name: artifacts-${{ matrix.notebook_path }}
         path: |
           colab/output-${{ matrix.notebook_path }}
       # Use always() to always run this step to publish execution results when there are failures
