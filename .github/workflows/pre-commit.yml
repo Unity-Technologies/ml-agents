@@ -13,8 +13,8 @@ jobs:
   pre-commit:
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
         python-version: 3.10.x
     - uses: ruby/setup-ruby@v1
@@ -23,7 +23,7 @@ jobs:
       with:
         ruby-version: '2.7'
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
-    - uses: actions/setup-dotnet@v3
+    - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '7.0.100'
     - name: Install manual dependencies
@@ -36,9 +36,11 @@ jobs:
   markdown-link-check:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.10.x
+    - uses: actions/setup-node@v4
       with:
         node-version: '12'
     - name: Install manual dependencies
@@ -53,6 +55,8 @@ jobs:
   validate-meta-files:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-python@v2
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
+      with:
+        python-version: 3.10.x
     - run: python utils/validate_meta_files.py

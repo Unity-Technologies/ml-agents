@@ -42,13 +42,13 @@ jobs:
           - python-version: 3.10.12
             pip_constraints: test_constraints_version.txt
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Set up Python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python-version }}
     - name: Cache pip
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         # This path is specific to Ubuntu
         path: ~/.cache/pip
@@ -85,7 +85,7 @@ jobs:
         --cov-report=html --junitxml=junit/test-results-${{ matrix.python-version }}.xml \
         -p no:warnings -v -m "${{ steps.pytest_marker.outputs.markers }}" -n 8
     - name: Upload pytest test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v4
       with:
         name: artifacts-${{ matrix.python-version }}
         path: |
