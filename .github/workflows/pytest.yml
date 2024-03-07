@@ -75,9 +75,9 @@ jobs:
       id: pytest_marker
       run: |
         if [ "${{ github.event.inputs.pytest_markers }}" != "" ]; then
-          echo "::set-output name=markers::${{ github.event.inputs.pytest_markers }}"
+          echo "markers=${{ github.event.inputs.pytest_markers }}" >> $GITHUB_OUTPUT
         else
-          echo "::set-output name=markers::not slow"
+          echo "markers=not slow" >> $GITHUB_OUTPUT
         fi
     - name: Run pytest
       run: |
