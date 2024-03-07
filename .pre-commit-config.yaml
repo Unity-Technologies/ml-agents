@@ -95,6 +95,8 @@ repos:
         name: dotnet-format
         language: system
         entry: dotnet format whitespace --folder --include
+        # Don't auto-format auto-generated files
+        exclude: "com.unity.ml-agents/Runtime/Grpc/.*"
         types_or: ["c#"]
     -   id: markdown-link-check
         name: markdown-link-check
