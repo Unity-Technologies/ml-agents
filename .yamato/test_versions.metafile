@@ -5,7 +5,7 @@
 test_editors:
   - version: 2022.3
     extra_test: gym
-  - version: 2023.1
+  - version: 2023.3
     extra_test: sensor
   - version: trunk
     extra_test: llapi
