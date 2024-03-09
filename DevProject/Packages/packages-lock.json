@@ -56,7 +56,7 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.sentis": "1.3.0-pre.2",
+        "com.unity.sentis": "1.3.0-pre.3",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.physics": "1.0.0"
@@ -106,7 +106,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.sentis": {
-      "version": "1.3.0-pre.2",
+      "version": "1.3.0-pre.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {
