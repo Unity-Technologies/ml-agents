@@ -14,7 +14,7 @@ jobs:
     runs-on: [ubuntu-latest]
     steps:
       - id: 'Checkout'
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - id: 'Validate'
         uses: 'RoadieHQ/backstage-entity-validator@v0.3.2'

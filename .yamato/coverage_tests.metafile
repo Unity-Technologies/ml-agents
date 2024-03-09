@@ -1,5 +1,5 @@
 coverage_test_editors:
-    - version: 2022.3
+    - version: 2023.2
       testProject: DevProject
 
 coverage_test_platforms:
