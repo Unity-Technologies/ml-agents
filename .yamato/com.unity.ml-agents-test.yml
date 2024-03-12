@@ -9,9 +9,11 @@ test_editors:
       enableNoDefaultPackages: !!bool true
 
 trunk_editor:
-    - version: trunk
-        # Workaround for MLA-1596 - need to make sure we load the right results.
-      testProject: DevProject
+   # TODO: re-enable trunk tests after adding support for Unity 6. As of 12 Mar 2024, tests fail
+   # with "Error: '6000.0.0b12' is not a valid Unity version"
+   # - version: trunk
+   #     # Workaround for MLA-1596 - need to make sure we load the right results.
+   #   testProject: DevProject
 
 test_platforms:
     - name: win
