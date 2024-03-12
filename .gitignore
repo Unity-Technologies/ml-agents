@@ -95,3 +95,6 @@ coverage.xml
 /htmlcov/
 
 **/UserSettings/*
+
+# yamato-parser temporary output files:
+.yamato/unfolded/
