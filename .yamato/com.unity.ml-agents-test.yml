@@ -1,6 +1,6 @@
 {% metadata_file .yamato/coverage_tests.metafile %}
 test_editors:
-    - version: 2022.3
+    - version: 2023.2
         # We want some scene tests to run in the DevProject, but packages there only support 2020+
       testProject: Project
       enableNoDefaultPackages: !!bool true
@@ -42,18 +42,18 @@ all_package_tests:
         {% for coverage_editor in coverage_test_editors %}
         {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}_{{ coverage_editor.testProject }}
         {% endfor %}
         {% endfor %}
         {% endfor %}
         {% for editor in test_editors %}
         {% for platform in test_platforms %}
-        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
+        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}_{{ editor.testProject }}
         {% endfor %}
         {% endfor %}
         {% for editor in trunk_editor %}
         {% for platform in test_platforms %}
-        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}
+        - .yamato/com.unity.ml-agents-test.yml#test_com.unity.ml-agents_{{ platform.name }}_{{ editor.version }}_{{ editor.testProject }}
         {% endfor %}
         {% endfor %}
     triggers:
@@ -72,8 +72,8 @@ all_package_tests:
   {% assign noDefaultPackagesOptions = "" %}
   {% endif %}
 
-test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
-    name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
+test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ editor.testProject }}:
+    name : {{ package.name }} test {{ editor.version }} on {{ platform.name }} in {{ editor.testProject }}
     agent:
         type: {{ platform.type }}
         image: {{ platform.image }}
@@ -90,7 +90,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
         {% for coverage_editor in coverage_test_editors %}
         {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}_{{ coverage_editor.testProject }}
         {% endfor %}
         {% endfor %}
         {% endfor %}
@@ -117,8 +117,8 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
   {% for editor in trunk_editor %}
   {% for platform in test_platforms %}
 
-test_{{ package.name }}_{{ platform.name }}_trunk:
-    name : {{ package.name }} test {{ editor.version }} on {{ platform.name }}
+test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testProject }}:
+    name : {{ package.name }} test {{ editor.version }} on {{ platform.name }} in {{ editor.testProject }}
     agent:
         type: {{ platform.type }}
         image: {{ platform.image }}
@@ -141,7 +141,7 @@ test_{{ package.name }}_{{ platform.name }}_trunk:
         {% for coverage_editor in coverage_test_editors %}
         {% for coverage_platform in coverage_test_platforms %}
         {% for coverage_package in coverage_test_packages %}
-        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}
+        - .yamato/com.unity.ml-agents-coverage.yml#test_coverage_{{ coverage_package.name }}_{{ coverage_platform.name }}_{{ coverage_editor.version }}_{{ coverage_editor.testProject }}
         {% endfor %}
         {% endfor %}
         {% endfor %}
