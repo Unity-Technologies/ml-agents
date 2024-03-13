@@ -20,7 +20,7 @@ from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 ## Migrating the package to version 3.x
 - The official version of Unity ML-Agents supports is now 2023.2. If you run
-  into issues, please consider deleting your project's Library folder and reponening your
+  into issues, please consider deleting your project's Library folder and reopening your
   project.
 
 

@@ -1,5 +1,4 @@
 test_editors:
-  - version: 2022.3
   - version: 2023.2
 test_platforms:
   - name: win

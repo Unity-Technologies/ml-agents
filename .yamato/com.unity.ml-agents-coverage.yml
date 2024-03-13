@@ -5,8 +5,8 @@
 {% for platform in coverage_test_platforms %}
 {% capture coverageOptions %} --enable-code-coverage --code-coverage-options 'generateHtmlReport;assemblyFilters:+{{ package.assembly }}'{% endcapture %}
 
-test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}:
-    name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }}
+test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ editor.testProject }}:
+    name : Coverage {{ package.name }} test {{ editor.version }} on {{ platform.name }} in {{ editor.testProject }}
     agent:
         type: {{ platform.type }}
         image: {{ platform.image }}
