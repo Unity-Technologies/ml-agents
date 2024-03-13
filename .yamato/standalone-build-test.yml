@@ -1,8 +1,8 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_linux_standalone_{{ editor.version }}:
-  name: Test Linux Standalone {{ editor.version }}
+test_linux_standalone_{{ editor.version }}_{{ editor.extra_test }}:
+  name: Test Linux Standalone {{ editor.version }} {{ editor.extra_test }}
   agent:
     type: Unity::VM
     image: ml-agents/ml-agents-ubuntu-18.04:latest

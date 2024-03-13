@@ -1,8 +1,8 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_linux_training_int_{{ editor.version }}:
-  name: Test Linux Fast Training {{ editor.version }}
+test_linux_training_int_{{ editor.version }}_{{ editor.extra_test }}:
+  name: Test Linux Fast Training {{ editor.version }} {{ editor.extra_test }}
   agent:
     type: Unity::VM
     image: ml-agents/ml-agents-ubuntu-18.04:latest
@@ -16,7 +16,7 @@ test_linux_training_int_{{ editor.version }}:
       python -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python -u -m ml-agents.tests.yamato.training_int_tests
   dependencies:
-    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
+    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}_{{ editor.extra_test }}
   triggers:
     cancel_old_ci: true
     expression: |

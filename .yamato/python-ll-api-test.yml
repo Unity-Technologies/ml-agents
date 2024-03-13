@@ -1,8 +1,8 @@
 {% metadata_file .yamato/test_versions.metafile %}
 ---
 {% for editor in test_editors %}
-test_linux_ll_api_{{ editor.version }}:
-  name: Test Linux LL-API {{ editor.version }}
+test_linux_ll_api_{{ editor.version }}_{{ editor.extra_test }}:
+  name: Test Linux LL-API {{ editor.version }} {{ editor.extra_test }}
   agent:
     type: Unity::VM
     image: ml-agents/ml-agents-ubuntu-18.04:latest
@@ -20,7 +20,7 @@ test_linux_ll_api_{{ editor.version }}:
       python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-WallJump
       python ml-agents/tests/yamato/scripts/run_llapi.py --env=artifacts/testPlayer-Match3
   dependencies:
-    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}
+    - .yamato/standalone-build-test.yml#test_linux_standalone_{{ editor.version }}_{{ editor.extra_test }}
   triggers:
     cancel_old_ci: true
     {% if editor.extra_test == "llapi" %}
