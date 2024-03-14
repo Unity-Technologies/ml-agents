@@ -25,7 +25,7 @@ jobs:
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '7.0.100'
+        dotnet-version: '8.0.202'
     - name: Install manual dependencies
       run: |
         python -m pip install pre-commit
