@@ -558,7 +558,7 @@ class BaseEnv(ABC):
         """
 
     @abstractmethod
-    def reset(self) -> None:
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> None:
         """
         Signals the environment that it must reset the simulation.
         """

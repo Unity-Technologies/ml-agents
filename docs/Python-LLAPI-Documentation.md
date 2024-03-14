@@ -526,7 +526,7 @@ by one step.
 
 ```python
  | @abstractmethod
- | reset() -> None
+ | reset(seed: Optional[int] = None, options: Optional[Dict] = None) -> None
 ```
 
 Signals the environment that it must reset the simulation.

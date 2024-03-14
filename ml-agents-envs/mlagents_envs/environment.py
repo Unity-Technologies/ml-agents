@@ -313,7 +313,7 @@ class UnityEnvironment(BaseEnv):
                 )
         self._side_channel_manager.process_side_channel_message(output.side_channel)
 
-    def reset(self) -> None:
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> None:
         if self._loaded:
             outputs = self._communicator.exchange(
                 self._generate_reset_input(), self._poll_process

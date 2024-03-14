@@ -21,7 +21,6 @@
     * [action\_space](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.action_space)
     * [side\_channel](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.side_channel)
     * [reset](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.reset)
-    * [seed](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.seed)
     * [render](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.render)
     * [close](#mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.close)
 
@@ -137,7 +136,7 @@ Initializes a Unity Parallel environment wrapper.
 #### reset
 
 ```python
- | reset() -> Dict[str, Any]
+ | reset(seed: Optional[int] = None, options: Optional[Dict] = None) -> Dict[str, Any]
 ```
 
 Resets the environment.
@@ -207,20 +206,10 @@ of an environment with `env.side_channel[<name-of-channel>]`.
 #### reset
 
 ```python
- | reset()
+ | reset(seed: Optional[int] = None, options: Optional[Dict] = None) -> None
 ```
 
 Resets the environment.
-
-<a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.seed"></a>
-#### seed
-
-```python
- | seed(seed=None)
-```
-
-Reseeds the environment (making the resulting environment deterministic).
-`reset()` must be called after `seed()`, and before `step()`.
 
 <a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.render"></a>
 #### render

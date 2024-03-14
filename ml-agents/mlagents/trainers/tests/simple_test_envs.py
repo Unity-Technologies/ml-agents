@@ -1,5 +1,5 @@
 import random
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Optional, Tuple
 import numpy as np
 
 from mlagents_envs.base_env import (
@@ -270,7 +270,7 @@ class SimpleEnvironment(BaseEnv):
             self.rewards[name] += reward
             self.step_result[name] = self._make_batched_step(name, done, reward, 0.0)
 
-    def reset(self) -> None:  # type: ignore
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> None:
         for name in self.names:
             self._reset_agent(name)
             self.step_result[name] = self._make_batched_step(name, False, 0.0, 0.0)
@@ -534,7 +534,7 @@ class MultiAgentEnvironment(BaseEnv):
                             name, done, reward, 0.0
                         )
 
-    def reset(self) -> None:  # type: ignore
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> None:
         for name in self.names:
             for i in range(self.num_agents):
                 name_and_num = name + str(i)

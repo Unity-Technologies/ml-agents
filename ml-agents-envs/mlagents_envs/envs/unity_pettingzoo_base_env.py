@@ -232,15 +232,16 @@ class UnityPettingzooBaseEnv:
         self._infos = {}
         self._agent_id_to_index = {}
 
-    def reset(self):
+    def reset(self, seed: Optional[int] = None, options: Optional[Dict] = None) -> None:
         """
         Resets the environment.
         """
+        self._seed = seed
         self._assert_loaded()
         self._agent_index = 0
         self._reset_states()
         self._possible_agents = set()
-        self._env.reset()
+        self._env.reset(seed)
         for behavior_name in self._env.behavior_specs.keys():
             _, _, _ = self._batch_update(behavior_name)
         self._live_agents.sort()  # unnecessary, only for passing API test
@@ -269,13 +270,6 @@ class UnityPettingzooBaseEnv:
         self._agent_id_to_index.update(id_map)
         self._possible_agents.update(agents)
         return dones, rewards, cumulative_rewards
-
-    def seed(self, seed=None):
-        """
-        Reseeds the environment (making the resulting environment deterministic).
-        `reset()` must be called after `seed()`, and before `step()`.
-        """
-        self._seed = seed
 
     def render(self, mode="human"):
         """
