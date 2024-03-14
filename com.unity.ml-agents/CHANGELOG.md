@@ -28,7 +28,7 @@ and this project adheres to
 - Fixed 3DBall sample package to remove Barracuda dependency. (#6030)
 
 #### ml-agents / ml-agents-envs
-- Bumped numpy version to >=1.21.2,<1.24.0 (#5997)
+- Bumped numpy version to >=1.23.5,<1.24.0 (#6082)
 - Bumped onnx version to 1.15.0 (#6062)
 - Bumped protobuf version to >=3.6,<21 (#6062)
 
