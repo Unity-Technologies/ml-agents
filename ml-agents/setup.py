@@ -48,14 +48,14 @@ setup(
         "Intended Audience :: Developers",
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
-        "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
-        "grpcio>=1.11.0,<=1.48.2",
+        "grpcio==1.62.1",
         "h5py>=2.9.0",
         f"mlagents_envs=={VERSION}",
         "numpy>=1.23.5,<1.24.0",
@@ -74,7 +74,7 @@ setup(
         'pypiwin32==223;platform_system=="Windows"',
         "onnx==1.15.0",
     ],
-    python_requires=">=3.10.1,<=3.10.12",
+    python_requires=">=3.11.0,<=3.11.8",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",

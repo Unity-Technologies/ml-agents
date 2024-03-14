@@ -12,7 +12,7 @@ jobs:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
       with:
-        python-version: 3.10.12
+        python-version: 3.11.8
     - uses: actions/setup-node@v4
       with:
         node-version: '12'
@@ -39,9 +39,9 @@ jobs:
       # If one test in the matrix fails we still want to run the others.
       fail-fast: false
       matrix:
-        python-version: [3.10.12]
+        python-version: [3.11.8]
         include:
-          - python-version: 3.10.12
+          - python-version: 3.11.8
             pip_constraints: test_constraints_version.txt
     steps:
     - uses: actions/checkout@v4

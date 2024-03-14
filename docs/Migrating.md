@@ -5,8 +5,8 @@
 TODO: update ml-agents-env package version before release
 --->
 ## Migrating to the ml-agents-envs 0.30.0 package
-- Python 3.10.12 is now the minimum version of python supported due to [python3.6 EOL](https://endoflife.date/python).
-  Please update your python installation to 3.10.12 or higher.
+- Python 3.11.0 is now the minimum version of python supported due to [python3.10 active support ending](https://endoflife.date/python).
+  Please update your python installation to 3.11.8.
 - The `gym-unity` package has been refactored into the `ml-agents-envs` package. Please update your imports accordingly.
 - Example:
   - Before

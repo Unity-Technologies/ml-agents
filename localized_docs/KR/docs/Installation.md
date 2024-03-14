@@ -40,13 +40,13 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 
 ### 파이썬과 mlagents 패키지 설치
 
-ML-Agents toolkit을 사용하기 위해 [setup.py file](../ml-agents/setup.py)에 나열된 종속성과 함께 파이썬 3.10.12이 필요합니다.
+ML-Agents toolkit을 사용하기 위해 [setup.py file](../ml-agents/setup.py)에 나열된 종속성과 함께 파이썬 3.11.8이 필요합니다.
 주요 종속성의 일부는 다음을 포함합니다:
 
 - [TensorFlow](Background-TensorFlow.md) (Requires a CPU w/ AVX support)
 - [Jupyter](Background-Jupyter.md)
 
-Python 3.10.12이 만약 설치되어 있지 않다면, [다운로드](https://www.python.org/downloads/)하고 설치하십시오.
+Python 3.11.8이 만약 설치되어 있지 않다면, [다운로드](https://www.python.org/downloads/)하고 설치하십시오.
 
 만약 당신의 파이썬 환경이 `pip3`을 포함하지 않는다면, 다음
 [지시사항](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)

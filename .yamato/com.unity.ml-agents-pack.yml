@@ -7,7 +7,7 @@ pack:
   commands:
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
-      conda activate python3.10
+      conda activate python3.11
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u 2023.2 -c editor --wait --fast
       ./.Editor/Unity -projectPath Project -batchMode -executeMethod Unity.MLAgents.SampleExporter.ExportCuratedSamples -logFile -

@@ -15,6 +15,7 @@ and this project adheres to
 
 #### ml-agents / ml-agents-envs
 - Upgraded to PyTorch 2.1.1. (#6013)
+- Deprecated support for Python 3.10.x (#6084)
 
 ### Minor Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
@@ -31,6 +32,7 @@ and this project adheres to
 - Bumped numpy version to >=1.23.5,<1.24.0 (#6082)
 - Bumped onnx version to 1.15.0 (#6062)
 - Bumped protobuf version to >=3.6,<21 (#6062)
+- Bumped pettingzoo version to 1.24.3 (#6084)
 
 ## [3.0.0-exp.1] - 2023-10-09
 ### Major Changes

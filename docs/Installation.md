@@ -25,7 +25,7 @@ The ML-Agents Toolkit contains several components:
 Consequently, to install and use the ML-Agents Toolkit you will need to:
 
 - Install Unity (2023.2 or later)
-- Install Python (3.10.12 or higher)
+- Install Python (3.11.8)
 - Clone this repository (Recommended for the latest version and bug fixes)
   - __Note:__ If you do not clone the repository, then you will not be
   able to access the example environments and training configurations or the
@@ -43,9 +43,9 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 strongly recommend that you install Unity through the Unity Hub as it will
 enable you to manage multiple Unity versions.
 
-### Install **Python 3.10.12**
+### Install **Python 3.11.8**
 
-We recommend [installing](https://www.python.org/downloads/) Python 3.10.12.
+We recommend [installing](https://www.python.org/downloads/) Python 3.11.8.
 If you are using Windows, please install the x86-64 version and not x86.
 If your Python environment doesn't include `pip3`, see these
 [instructions](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers)
@@ -53,11 +53,11 @@ on installing it. We also recommend using [conda](https://docs.conda.io/en/lates
 
 #### Conda python setup
 
-Once conda has been installed in your system, open a terminal and execute the following commands to setup a python 3.10.12 virtual environment
+Once conda has been installed in your system, open a terminal and execute the following commands to setup a python 3.11.8 virtual environment
 and activate it.
 
 ```shell
-conda create -n mlagents python=3.10.12 && conda activate mlagents
+conda create -n mlagents python=3.11.8 && conda activate mlagents
 ```
 
 ### Clone the ML-Agents Toolkit Repository (Recommended)
@@ -161,7 +161,7 @@ for more installation options and versions.
 
 #### (OS X) Installing GRPC libraries
 
-On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
+On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.11/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
 
 ```sh
 pip3 install grpcio

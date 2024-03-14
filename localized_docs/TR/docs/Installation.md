@@ -15,7 +15,7 @@ ML-Agents Araç Seti birkaç bileşen içermektedir:
 ML-Agents Toolkit 'i kurmanız için gerekenler:
 
 - Unity yükleyin (2022.3 veya daha sonraki bir sürüm)
-- Python yükleyin (3.10.12 veya daha yüksek bir sürüm)
+- Python yükleyin (3.11.8 sürüm)
 - Bu depoyu klonlayın (İsteğe bağlı)
   - __Not:__ Depoyu klonlamazsanız, örnek ortamlara ve eğitim yapılandırmalarına erişemezsiniz. Ek olarak, [Başlangıç Rehberi](Getting-Started.md) depoyu klonladığınızı varsayar.
 - `com.unity.ml-agents` ML-Agents Unity paketini yükleyin.
@@ -25,9 +25,9 @@ ML-Agents Toolkit 'i kurmanız için gerekenler:
 
 [İndir](https://unity3d.com/get-unity/download) ve Unity'i yükle. Şiddetli bir şekilde Unity Hub üzerinden kurmanızı ve bu şekilde birden fazla Unity sürümünü yönetmenizi öneriyoruz.
 
-### **Python 3.10.12** veya Daha Yüksek Bir Sürüm Yükleyin
+### **Python 3.11.8** Sürüm
 
-Python 3.10.12 veya daha yüksek bir sürümü [yüklemenizi](https://www.python.org/downloads/) öneriyoruz. Eğer, Windows kullanıyorsanız, lütfen x86-64 versiyonunu kurun ve asla sadece x86 isimli versiyonu kurmayın. Python ortamınız `pip3` içermiyorsa, [talimatları](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) takip ederek yükleyebilirsiniz.
+Python 3.11.8 veya daha yüksek bir sürümü [yüklemenizi](https://www.python.org/downloads/) öneriyoruz. Eğer, Windows kullanıyorsanız, lütfen x86-64 versiyonunu kurun ve asla sadece x86 isimli versiyonu kurmayın. Python ortamınız `pip3` içermiyorsa, [talimatları](https://packaging.python.org/guides/installing-using-linux-tools/#installing-pip-setuptools-wheel-with-linux-package-managers) takip ederek yükleyebilirsiniz.
 
 Windows'ta Anaconda kurulumu için destek sağlamıyor olsak da,
 önceki [Windows için Anaconda Yüklemesi (Kullanımdan Kaldırılan) Rehberine](Installation-Anaconda-Windows.md) bakabilirsiniz.
