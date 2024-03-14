@@ -7,7 +7,7 @@ ML-Agents Araç Seti birkaç bileşen içermektedir:
   - [`mlagents`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/ml-agents) Unity sahnenizdeki davranışları eğitmenizi sağlayan makine öğrenimi algoritmalarını içerir. Bu nedenle `mlagents` paketini kurmanız gerekecek.
   - [`mlagents_envs`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/ml-agents-envs) Unity sahnesiyle etkileşime girmek için Python API içermektedir. Unity sahnesi ile Python makine öğrenimi algoritmaları arasında veri mesajlaşmasını kolaylaştıran temel bir katmandır.
     Sonuç olarak, `mlagents,` `mlagents_envs` apisine bağımlıdır.
-  - [`gym_unity`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/gym-unity) OpenAI Gym arayüzünü destekleyen Unity sahneniz için bir Python kapsayıcı sağlar.
+  - [`gym_unity`](https://github.com/Unity-Technologies/ml-agents/tree/release_7_docs/gym-unity) Gymnasium arayüzünü destekleyen Unity sahneniz için bir Python kapsayıcı sağlar.
   <!-- düzenle learning-envir... -->
 - Unity [Project](../Project/) klasörü
   [örnek ortamlar](Learning-Environment-Examples.md) ile başlamanıza yardımcı olacak araç setinin çeşitli özelliklerini vurgulayan sahneler içermektedir.

@@ -36,7 +36,7 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 
 `ml-agents-envs` 하위 디렉토리에는 `ml-agents` 패키지에 종속되는 유니티의 인터페이스를 위한 파이썬 API가 포함되어 있습니다.
 
-`gym-unity` 하위 디렉토리에는 OpenAI Gym의 인터페이스를 위한 패키지가 포함되어 있습니다.
+`gym-unity` 하위 디렉토리에는 Gymnasium의 인터페이스를 위한 패키지가 포함되어 있습니다.
 
 ### 파이썬과 mlagents 패키지 설치
 
