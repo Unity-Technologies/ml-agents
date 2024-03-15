@@ -96,6 +96,8 @@ repos:
         language: system
         entry: dotnet format whitespace --folder --include
         types_or: ["c#"]
+        # Don't check auto-generated files.
+        exclude: "com.unity.ml-agents/Runtime/Grpc/CommunicatorObjects/.*"
     -   id: markdown-link-check
         name: markdown-link-check
         entry: utils/run_markdown_link_check.py
