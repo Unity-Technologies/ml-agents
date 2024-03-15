@@ -4,9 +4,9 @@ Contains relevant definitions needed to generate probobuf files used in [ML-Agen
 
 ## Requirements
 
-* protobuf 3.19.6
-* grpcio-tools 1.48.2
-* Grpc.Tools 1.14.1
+* protobuf 4.25.3
+* grpcio-tools 1.62.1
+* Grpc.Tools 2.62.0
 
 ## Set-up & Installation
 
@@ -14,11 +14,11 @@ First we will follow these steps once install protobuf and grpcio-tools via your
 Assume the ml-agents repository is checked out to a folder named $MLAGENTS_ROOT.
 **Note:** If you're using Anaconda, don't forget to activate the ml-agents environment first.
 
-`pip install protobuf==3.19.6 --force`
+`pip install protobuf==4.25.3 --force`
 
-`pip install grpcio-tools==1.28.1`
+`pip install grpcio-tools==1.62.1`
 
-`pip install mypy-protobuf==1.16.0`
+`pip install mypy-protobuf==3.5.0`
 
 
 #### On Windows
@@ -36,7 +36,7 @@ Download and install the latest version of [nuget](https://www.nuget.org/downloa
 
 Navigate to your installation of nuget and run the following:
 
-`nuget install Grpc.Tools -Version 1.14.1 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
+`nuget install Grpc.Tools -Version 2.62.0 -OutputDirectory $MLAGENTS_ROOT\protobuf-definitions`
 
 ## Running
 
