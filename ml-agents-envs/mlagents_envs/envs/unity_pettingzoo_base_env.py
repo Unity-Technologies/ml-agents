@@ -165,14 +165,14 @@ class UnityPettingzooBaseEnv:
         if not self._dones[current_agent]:
             current_behavior = _agent_id_to_behavior(current_agent)
             current_index = self._agent_id_to_index[current_agent]
-            if action.continuous is not None:
+            if action.continuous.shape[-1] != 0:
                 self._current_action[current_behavior].continuous[
                     current_index
-                ] = action.continuous[0]
-            if action.discrete is not None:
+                ] = action.continuous
+            if action.discrete.shape[-1] != 0:
                 self._current_action[current_behavior].discrete[
                     current_index
-                ] = action.discrete[0]
+                ] = action.discrete
         else:
             self._live_agents.remove(current_agent)
             del self._observations[current_agent]
