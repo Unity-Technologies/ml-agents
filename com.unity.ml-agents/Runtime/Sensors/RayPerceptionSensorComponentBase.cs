@@ -38,7 +38,8 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("raysPerDirection")]
-        [Range(0, 50)]
+        // Ici on modifie le nombre de rayons par direction
+        [Range(0, 1000000)] // la range de base est de 0 à 50
         [Tooltip("Number of rays to the left and right of center.")]
         int m_RaysPerDirection = 3;
 
@@ -54,7 +55,8 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("maxRayDegrees")]
-        [Range(0, 180)]
+        // Ici on modifie la valeur de l'angle de vision
+        [Range(0, 1000000)] // la range de base est de 0 à 180
         [Tooltip("Cone size for rays. Using 90 degrees will cast rays to the left and right. " +
             "Greater than 90 degrees will go backwards.")]
         float m_MaxRayDegrees = 70;
@@ -70,7 +72,8 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("sphereCastRadius")]
-        [Range(0f, 10f)]
+        // Ici on modifie la valeur du rayon de la sphere
+        [Range(0f, 10f)] // la range de base est de 0 à 10
         [Tooltip("Radius of sphere to cast. Set to zero for raycasts.")]
         float m_SphereCastRadius = 0.5f;
 
@@ -84,7 +87,8 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("rayLength")]
-        [Range(1, 1000)]
+        // Ici on modifie la longueur des rayons
+        [Range(1, 1000000)] // la range de base est de 1 à 1000
         [Tooltip("Length of the rays to cast.")]
         float m_RayLength = 20f;
 
@@ -113,7 +117,7 @@ namespace Unity.MLAgents.Sensors
         }
 
         [HideInInspector, SerializeField, FormerlySerializedAs("observationStacks")]
-        [Range(1, 50)]
+        [Range(1, 1000000)]
         [Tooltip("Number of raycast results that will be stacked before being fed to the neural network.")]
         int m_ObservationStacks = 1;
 
