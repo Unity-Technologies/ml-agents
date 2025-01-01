@@ -1,4 +1,4 @@
-ML Agents copyright © 2017 Unity Technologies
+ML Agents copyright © 2025 Unity Technologies
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
