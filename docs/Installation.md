@@ -172,8 +172,10 @@ for more installation options and versions.
 On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
 
 ```sh
-pip3 install grpcio==1.51.3
+pip3 install grpcio
 ```
+
+Note that grpcio Python binary wheels version 1.51.3 or higher is required for Apple Silicon.
 
 #### Installing `mlagents`
 
