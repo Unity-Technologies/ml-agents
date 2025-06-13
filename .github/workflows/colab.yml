@@ -16,7 +16,7 @@ on:
 
 jobs:
   colab:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     env:
         COLAB_ALWAYS_INSTALL_XVFB: 1
         QLEARNING_NUM_TRAINING_STEPS: 5
