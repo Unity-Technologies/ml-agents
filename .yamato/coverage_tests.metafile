@@ -1,11 +1,11 @@
 coverage_test_editors:
-    - version: 2023.2
+    - version: 6000.0
       testProject: DevProject
 
 coverage_test_platforms:
     - name: linux
       type: Unity::VM
-      image: ml-agents/ml-agents-ubuntu-18.04:latest
+      image: ml-agents/ubuntu-ci:v1.0.0
       flavor: b1.medium
 
 coverage_test_packages:

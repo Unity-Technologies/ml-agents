@@ -50,7 +50,7 @@ namespace Unity.MLAgents.Tests
         [TearDown]
         public void RemoveGameObjects()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.InstanceID);
             foreach (var o in objects)
             {
                 UnityEngine.Object.DestroyImmediate(o);

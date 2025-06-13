@@ -1,19 +1,15 @@
 {% metadata_file .yamato/coverage_tests.metafile %}
 test_editors:
-    - version: 2023.2
-        # We want some scene tests to run in the DevProject, but packages there only support 2020+
+    - version: 6000.0
       testProject: Project
       enableNoDefaultPackages: !!bool true
-    - version: 2023.2
+    - version: 6000.0
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
 
 trunk_editor:
-   # TODO: re-enable trunk tests after adding support for Unity 6. As of 12 Mar 2024, tests fail
-   # with "Error: '6000.0.0b12' is not a valid Unity version"
-   # - version: trunk
-   #     # Workaround for MLA-1596 - need to make sure we load the right results.
-   #   testProject: DevProject
+    - version: trunk
+      testProject: DevProject
 
 test_platforms:
     - name: win
@@ -26,7 +22,7 @@ test_platforms:
       flavor: b1.large
     - name: linux
       type: Unity::VM
-      image: ml-agents/ml-agents-ubuntu-18.04:latest
+      image: ml-agents/ubuntu-ci:v1.0.0
       flavor: b1.large
 
 packages:
@@ -81,7 +77,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ editor.testP
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
-        - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+        - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ noDefaultPackagesOptions }} --warnings-as-errors --extra-utr-arg "reruncount=2"
     artifacts:
         logs:
@@ -132,7 +128,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
 {% endif %}
           python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
           unity-downloader-cli -u trunk -c editor --wait --fast
-          npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+          npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
           upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} --extra-create-project-arg="-upmNoDefaultPackages" --extra-utr-arg "reruncount=2"
     artifacts:
         logs:

@@ -72,9 +72,9 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
 #if UNITY_2020_2_OR_NEWER
             // ArticulationBody.velocity is read-only in 2020.1
-            rootArticBody.velocity = new Vector3(1f, 0f, 0f);
-            middleArticBody.velocity = new Vector3(0f, 1f, 0f);
-            leafArticBody.velocity = new Vector3(0f, 0f, 1f);
+            rootArticBody.linearVelocity = new Vector3(1f, 0f, 0f);
+            middleArticBody.linearVelocity = new Vector3(0f, 1f, 0f);
+            leafArticBody.linearVelocity = new Vector3(0f, 0f, 1f);
 #endif
 
             var sensorComponent = rootObj.AddComponent<ArticulationBodySensorComponent>();

@@ -34,7 +34,7 @@ The following table describes the package folder structure:
 ## Installation
 To add the ML-Agents package to a Unity project:
 
-* Create a new Unity project with Unity 2023.2 (or later) or open an existing one.
+* Create a new Unity project with Unity 6000.0 (or later) or open an existing one.
 * To open the Package Manager, navigate to Window > Package Manager.
 * Click + and select Add package by name...
 * Enter com.unity.ml-agents

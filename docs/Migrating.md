@@ -19,7 +19,7 @@ TODO: update ml-agents-env package version before release
     ```
 
 ## Migrating the package to version 3.x
-- The official version of Unity ML-Agents supports is now 2023.2. If you run
+- The official version of Unity ML-Agents supports is now 6000.0. If you run
   into issues, please consider deleting your project's Library folder and reopening your
   project.
 

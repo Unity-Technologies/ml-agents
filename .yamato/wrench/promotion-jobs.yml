@@ -5,7 +5,7 @@
 publish_dry_run_ml-agents:
   name: Publish Dry Run ml-agents
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: ml-agents/ubuntu-ci:v1.0.0
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -19,30 +19,6 @@ publish_dry_run_ml-agents:
       - upm-ci~/pvp/**/*
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-macos
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-ubuntu
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-windows
-        unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_0_-_macos
     specific_options:
       UTR:
@@ -81,7 +57,7 @@ publish_dry_run_ml-agents:
 publish_ml-agents:
   name: Publish ml-agents
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: ml-agents/ubuntu-ci:v1.0.0
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -95,30 +71,6 @@ publish_ml-agents:
       - upm-ci~/pvp/**/*
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-macos
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-ubuntu
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_2023_2_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-ml-agents-2023.2-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-2023.2-windows
-        unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_0_-_macos
     specific_options:
       UTR:

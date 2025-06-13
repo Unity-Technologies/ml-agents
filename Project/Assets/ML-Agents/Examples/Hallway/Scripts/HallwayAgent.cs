@@ -22,7 +22,7 @@ public class HallwayAgent : Agent
 
     public override void Initialize()
     {
-        m_HallwaySettings = FindObjectOfType<HallwaySettings>();
+        m_HallwaySettings = FindFirstObjectByType<HallwaySettings>();
         m_AgentRb = GetComponent<Rigidbody>();
         m_GroundRenderer = ground.GetComponent<Renderer>();
         m_GroundMaterial = m_GroundRenderer.material;
@@ -146,7 +146,7 @@ public class HallwayAgent : Agent
             1f, agentOffset + Random.Range(-5f, 5f))
             + ground.transform.position;
         transform.rotation = Quaternion.Euler(0f, Random.Range(0f, 360f), 0f);
-        m_AgentRb.velocity *= 0f;
+        m_AgentRb.linearVelocity *= 0f;
 
         var goalPos = Random.Range(0, 2);
         if (goalPos == 0)

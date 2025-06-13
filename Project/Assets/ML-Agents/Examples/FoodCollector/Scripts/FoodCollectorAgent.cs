@@ -40,7 +40,7 @@ public class FoodCollectorAgent : Agent
     {
         m_AgentRb = GetComponent<Rigidbody>();
         m_MyArea = area.GetComponent<FoodCollectorArea>();
-        m_FoodCollecterSettings = FindObjectOfType<FoodCollectorSettings>();
+        m_FoodCollecterSettings = FindFirstObjectByType<FoodCollectorSettings>();
         m_ResetParams = Academy.Instance.EnvironmentParameters;
         SetResetParameters();
     }
@@ -49,7 +49,7 @@ public class FoodCollectorAgent : Agent
     {
         if (useVectorObs)
         {
-            var localVelocity = transform.InverseTransformDirection(m_AgentRb.velocity);
+            var localVelocity = transform.InverseTransformDirection(m_AgentRb.linearVelocity);
             sensor.AddObservation(localVelocity.x);
             sensor.AddObservation(localVelocity.z);
             sensor.AddObservation(m_Frozen);
@@ -110,15 +110,15 @@ public class FoodCollectorAgent : Agent
             {
                 m_Shoot = true;
                 dirToGo *= 0.5f;
-                m_AgentRb.velocity *= 0.75f;
+                m_AgentRb.linearVelocity *= 0.75f;
             }
             m_AgentRb.AddForce(dirToGo * moveSpeed, ForceMode.VelocityChange);
             transform.Rotate(rotateDir, Time.fixedDeltaTime * turnSpeed);
         }
 
-        if (m_AgentRb.velocity.sqrMagnitude > 25f) // slow it down
+        if (m_AgentRb.linearVelocity.sqrMagnitude > 25f) // slow it down
         {
-            m_AgentRb.velocity *= 0.95f;
+            m_AgentRb.linearVelocity *= 0.95f;
         }
 
         if (m_Shoot)
@@ -218,7 +218,7 @@ public class FoodCollectorAgent : Agent
         Unpoison();
         Unsatiate();
         m_Shoot = false;
-        m_AgentRb.velocity = Vector3.zero;
+        m_AgentRb.linearVelocity = Vector3.zero;
         myLaser.transform.localScale = new Vector3(0f, 0f, 0f);
         transform.position = new Vector3(Random.Range(-m_MyArea.range, m_MyArea.range),
             2f, Random.Range(-m_MyArea.range, m_MyArea.range))
