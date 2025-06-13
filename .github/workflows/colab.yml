@@ -53,7 +53,6 @@ jobs:
         python -m pip install --progress-bar=off -e ./ml-agents-envs
         python -m pip install --progress-bar=off -e ./ml-agents
         python -m pip install --progress-bar=off -r colab_requirements.txt
-        python -m pip install matplotlib
     - name: Execute notebook
       run: jupyter nbconvert --to notebook --execute --log-level=DEBUG --ExecutePreprocessor.kernel_name=python3 --output output-${{ matrix.notebook_path }} colab/${{ matrix.notebook_path }}
     - name: Upload colab results
