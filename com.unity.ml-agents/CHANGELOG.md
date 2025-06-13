@@ -28,7 +28,7 @@ and this project adheres to
 - Added no-graphics-monitor. (#6014)
 
 #### ml-agents / ml-agents-envs
-- Upgraded grpcio version. ((#6208)
+- Upgraded grpcio version. (#6208)
 - Update Installation.md (#6004)
 - Updated Using-Virtual-Environment.md (#6033)
 
