@@ -254,6 +254,10 @@ namespace Unity.MLAgents.Sensors
 
         bool m_UseBatchedRaycasts;
 
+        // ───────── Parameters Noise ─────────
+        float m_DistanceNoiseStd;
+        float m_FlipHitProb;
+
         /// <summary>
         /// Time.frameCount at the last time Update() was called. This is only used for display in gizmos.
         /// </summary>
@@ -269,11 +273,15 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         /// <param name="name">The name of the sensor.</param>
         /// <param name="rayInput">The inputs for the sensor.</param>
-        public RayPerceptionSensor(string name, RayPerceptionInput rayInput)
+        public RayPerceptionSensor(string name, RayPerceptionInput rayInput, float distanceNoiseStd, float flipHitProb)
         {
             m_Name = name;
             m_RayPerceptionInput = rayInput;
             m_UseBatchedRaycasts = rayInput.UseBatchedRaycasts;
+
+            // ───────── Parameters Noise ─────────
+            m_DistanceNoiseStd = distanceNoiseStd;
+            m_FlipHitProb = flipHitProb;
 
             SetNumObservations(rayInput.OutputSize());
 
@@ -329,7 +337,20 @@ namespace Unity.MLAgents.Sensors
                 // For each ray, write the information to the observation buffer
                 for (var rayIndex = 0; rayIndex < numRays; rayIndex++)
                 {
-                    m_RayPerceptionOutput.RayOutputs?[rayIndex].ToFloatArray(numDetectableTags, rayIndex, m_Observations);
+                    var ro = m_RayPerceptionOutput.RayOutputs[rayIndex];
+
+                    // Used to debug values
+                    float before = ro.HitFraction;
+                    bool hit0 = ro.HasHit;
+
+                    // Aplly noise
+                    ApplyNoise(ref ro);
+
+                    // Debug Value
+                    //if (before != ro.HitFraction) Debug.Log($"Ray {rayIndex} | dist {before} → {ro.HitFraction} | hit {hit0}→{ro.HasHit}");
+
+                    m_RayPerceptionOutput.RayOutputs[rayIndex] = ro;
+                    ro.ToFloatArray(numDetectableTags, rayIndex, m_Observations);
                 }
 
                 // Finally, add the observations to the ObservationWriter
@@ -665,6 +686,31 @@ namespace Unity.MLAgents.Sensors
 
 
             return rayOutput;
+        }
+        
+        /// <summary>
+        /// Applies simulated noise to ray hit data to mimic real-world sensor or environmental conditions.
+        /// Includes Gaussian-like noise on hit distance and random flipping of the hit detection state.
+        /// </summary>
+        /// <param name="ro">Reference to the RayOutput object to modify with applied noise.</param>
+        void ApplyNoise(ref RayPerceptionOutput.RayOutput ro)
+        {
+            // Apply noise to the normalized hit distance if m_DistanceNoiseStd > 0
+            if (m_DistanceNoiseStd > 0f)
+            {
+                // Generate a random value in the range [-m_DistanceNoiseStd, m_DistanceNoiseStd]
+                // Add it to the original HitFraction and clamp the result between 0 and 1
+                ro.HitFraction = Mathf.Clamp01(
+                    ro.HitFraction +
+                    UnityEngine.Random.Range(-m_DistanceNoiseStd, m_DistanceNoiseStd));
+            }
+
+            // Randomly flip the hit detection state based on m_FlipHitProb
+            if (m_FlipHitProb > 0f && UnityEngine.Random.value < m_FlipHitProb)
+            {
+                // Invert the boolean HasHit value: true becomes false, and vice versa
+                ro.HasHit = !ro.HasHit;
+            }
         }
     }
 }

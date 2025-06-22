@@ -180,6 +180,28 @@ namespace Unity.MLAgents.Sensors
         [SerializeField]
         internal Color rayMissColor = Color.white;
 
+        // ───────── Parametes Noise ─────────
+        /// <summary>
+        /// Standard deviation of Gaussian noise added to the normalized ray distance.
+        /// A value of 0 means no noise is applied.
+        /// </summary>
+        [HideInInspector]
+        [SerializeField, Range(0f, 0.5f)]
+        [Header("Noise", order = 999)]
+        [Tooltip("Standard deviation of Gaussian noise added to the normalized ray distance (HitFraction varies from 0 to 1)")]
+        internal float m_DistanceNoiseStd;
+
+        /// <summary>
+        /// Probability of randomly flipping the HasHit bit (0 → 1 or 1 → 0).
+        /// This simulates sensor or detection errors in raycasting.
+        /// A value of 0 means no flipping occurs.
+        /// </summary>
+        [HideInInspector]
+        [SerializeField, Range(0f, 0.5f)]
+        [Tooltip("Probability of flipping the HasHit bit (0 → 1 or 1 → 0).")]
+        float m_FlipHitProbability;
+
+
         [NonSerialized]
         RayPerceptionSensor m_RaySensor;
 
@@ -223,7 +245,12 @@ namespace Unity.MLAgents.Sensors
         {
             var rayPerceptionInput = GetRayPerceptionInput();
 
-            m_RaySensor = new RayPerceptionSensor(m_SensorName, rayPerceptionInput);
+            m_RaySensor = new RayPerceptionSensor(
+                m_SensorName,
+                rayPerceptionInput,
+                m_DistanceNoiseStd,
+                m_FlipHitProbability
+            );
 
             if (ObservationStacks != 1)
             {

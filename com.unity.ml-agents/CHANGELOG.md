@@ -7,6 +7,20 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+
+### Added
+- **Sensors** – Two new noise parameters are now available on RayPerceptionSensorComponent:
+
+  | Parameter | Default | Description |
+  |-----------|---------|-------------|
+  | `DistanceNoiseStd` | `0` | Standard deviation (σ) of Gaussian noise added to HitFraction, which represents the normalized hit distance (ranging from 0 to 1).  |
+  | `FlipHitProbability` | `0` | The probability of randomly flipping the HasHit boolean value (0 → 1 or 1 → 0). A value of 0 means no flipping occurs. |
+
+  Leaving both parameters at `0` reproduces the exact behaviour of previous releases.
+
+### Fixed
+- n/a
+
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
 - Upgraded to Inference Engine 2.2.1 (#6212)

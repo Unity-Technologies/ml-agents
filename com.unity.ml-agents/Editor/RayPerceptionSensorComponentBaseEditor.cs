@@ -72,6 +72,10 @@ namespace Unity.MLAgents.Editor
             EditorGUILayout.PropertyField(so.FindProperty("rayHitColor"), true);
             EditorGUILayout.PropertyField(so.FindProperty("rayMissColor"), true);
 
+            // ───────── Parameters Noise ─────────
+            EditorGUILayout.PropertyField(so.FindProperty("m_DistanceNoiseStd"), true);
+            EditorGUILayout.PropertyField(so.FindProperty("m_FlipHitProbability"), true);
+
             EditorGUI.indentLevel--;
             if (EditorGUI.EndChangeCheck())
             {

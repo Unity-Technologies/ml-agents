@@ -509,6 +509,8 @@ Both sensor components have several settings:
   but if using custom models the left-to-right layout that matches the spatial
   structuring can be preferred (e.g. for processing with conv nets).
 - _Use Batched Raycasts_ (3D only) Whether to use batched raycasts. Enable to use batched raycasts and the jobs system.
+- _Distance Noise Std_ This parameter controls the standard deviation (σ) of Gaussian noise added to HitFraction, a value representing the normalized hit distance along the ray. A value of 0 means no noise is applied. HitFraction ranges from 0 (no hit) to 1 (hit at maximum ray distance). 
+- _FlipHitProbability_ Sets the probability that the HasHit result will be flipped (e.g., hit becomes no hit, or vice versa). Useful for simulating sensor noise or unreliable detection..
 
 In the example image above, the Agent has two `RayPerceptionSensorComponent3D`s.
 Both use 3 Rays Per Direction and 90 Max Ray Degrees. One of the components had
