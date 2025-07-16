@@ -24,24 +24,6 @@ namespace Unity.MLAgents.Analytics
 {
     internal class InferenceAnalytics
     {
-        const string k_VendorKey = "unity.ml-agents";
-        const string k_EventName = "ml_agents_inferencemodelset";
-        const int k_EventVersion = 1;
-
-        /// <summary>
-        /// Whether or not we've registered this particular event yet
-        /// </summary>
-        static bool s_EventRegistered;
-
-        /// <summary>
-        /// Hourly limit for this event name
-        /// </summary>
-        const int k_MaxEventsPerHour = 1000;
-
-        /// <summary>
-        /// Maximum number of items in this event.
-        /// </summary>
-        const int k_MaxNumberOfElements = 1000;
 
 
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
@@ -54,25 +36,17 @@ namespace Unity.MLAgents.Analytics
         static bool EnableAnalytics()
         {
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
-            if (s_EventRegistered)
-            {
-                return true;
-            }
 
-            AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(k_EventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey, k_EventVersion);
-            if (result == AnalyticsResult.Ok)
-            {
-                s_EventRegistered = true;
-            }
-            if (s_EventRegistered && s_SentModels == null)
+            if (s_SentModels == null)
             {
                 s_SentModels = new HashSet<ModelAsset>();
             }
 
+            return true;
+
 #else  // no editor, no analytics
-            s_EventRegistered = false;
+            return false;
 #endif
-            return s_EventRegistered;
         }
 
         public static bool IsAnalyticsEnabled()
@@ -127,7 +101,7 @@ namespace Unity.MLAgents.Analytics
             // Debug.Log(JsonUtility.ToJson(data, true));
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
-                EditorAnalytics.SendEventWithLimit(k_EventName, data, k_EventVersion);
+                EditorAnalytics.SendAnalytic(data);
             }
 #endif
         }
@@ -156,7 +130,7 @@ namespace Unity.MLAgents.Analytics
             var inferenceEvent = new InferenceEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, behaviorName);
+            inferenceEvent.BehaviorName = AnalyticsUtils.Hash(AnalyticsConstants.k_VendorKey, behaviorName);
 
             inferenceEvent.SentisModelVersion = sentisModelInfo.Version;
             inferenceEvent.SentisModelProducer = sentisModel.ProducerName;

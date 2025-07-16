@@ -4,6 +4,7 @@ using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 #if MLA_UNITY_ANALYTICS_MODULE
 
 #if ENABLE_CLOUD_SERVICES_ANALYTICS
@@ -23,35 +24,9 @@ namespace Unity.MLAgents.Analytics
 {
     internal static class TrainingAnalytics
     {
-        const string k_VendorKey = "unity.ml-agents";
-        const string k_TrainingEnvironmentInitializedEventName = "ml_agents_training_environment_initialized";
-        const string k_TrainingBehaviorInitializedEventName = "ml_agents_training_behavior_initialized";
-        const string k_RemotePolicyInitializedEventName = "ml_agents_remote_policy_initialized";
-
-        private static readonly string[] s_EventNames =
-        {
-            k_TrainingEnvironmentInitializedEventName,
-            k_TrainingBehaviorInitializedEventName,
-            k_RemotePolicyInitializedEventName
-        };
-
-        /// <summary>
-        /// Hourly limit for this event name
-        /// </summary>
-        const int k_MaxEventsPerHour = 1000;
-
-        /// <summary>
-        /// Maximum number of items in this event.
-        /// </summary>
-        const int k_MaxNumberOfElements = 1000;
-
         private static bool s_SentEnvironmentInitialized;
 
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
-        /// <summary>
-        /// Whether or not we've registered this particular event yet
-        /// </summary>
-        static bool s_EventsRegistered;
 
         /// <summary>
         /// Behaviors that we've already sent events for.
@@ -69,19 +44,6 @@ namespace Unity.MLAgents.Analytics
         internal static bool EnableAnalytics()
         {
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
-            if (s_EventsRegistered)
-            {
-                return true;
-            }
-            foreach (var eventName in s_EventNames)
-            {
-                AnalyticsResult result = EditorAnalytics.RegisterEventWithLimit(eventName, k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-                if (result != AnalyticsResult.Ok)
-                {
-                    return false;
-                }
-            }
-            s_EventsRegistered = true;
 
             if (s_SentRemotePolicyInitialized == null)
             {
@@ -90,7 +52,7 @@ namespace Unity.MLAgents.Analytics
                 s_TrainingSessionGuid = Guid.NewGuid();
             }
 
-            return s_EventsRegistered;
+            return true;
 #else
             return false;
 #endif // MLA_UNITY_ANALYTICS_MODULE
@@ -136,13 +98,13 @@ namespace Unity.MLAgents.Analytics
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            // Debug.Log(
-            //     $"Would send event {k_TrainingEnvironmentInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
-            // );
+            Debug.Log(
+                 $"Would send event ml_agents_training_environment_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
+             );
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
-                EditorAnalytics.SendEventWithLimit(k_TrainingEnvironmentInitializedEventName, tbiEvent);
+                EditorAnalytics.SendAnalytic(tbiEvent);
             }
 #endif
         }
@@ -174,12 +136,12 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            // Debug.Log(
-            //     $"Would send event {k_RemotePolicyInitializedEventName} with body {JsonUtility.ToJson(data, true)}"
-            // );
+            Debug.Log(
+                 $"Would send event ml_agents_remote_policy_initialized with body {JsonUtility.ToJson(data, true)}"
+             );
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
-                EditorAnalytics.SendEventWithLimit(k_RemotePolicyInitializedEventName, data);
+                EditorAnalytics.SendAnalytic(data);
             }
 #endif
         }
@@ -203,7 +165,7 @@ namespace Unity.MLAgents.Analytics
             // Context: The config field was added at the same time as trainer side hashing, so messages including it should already be hashed.
             if (tbiEvent.Config.Length == 0 || tbiEvent.BehaviorName.Length != 64)
             {
-                tbiEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, tbiEvent.BehaviorName);
+                tbiEvent.BehaviorName = AnalyticsUtils.Hash(AnalyticsConstants.k_VendorKey, tbiEvent.BehaviorName);
             }
 
             return tbiEvent;
@@ -232,12 +194,12 @@ namespace Unity.MLAgents.Analytics
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            // Debug.Log(
-            //     $"Would send event {k_TrainingBehaviorInitializedEventName} with body {JsonUtility.ToJson(tbiEvent, true)}"
-            // );
+            Debug.Log(
+                 $"Would send event ml_agents_training_behavior_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
+             );
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
-                EditorAnalytics.SendEventWithLimit(k_TrainingBehaviorInitializedEventName, tbiEvent);
+                EditorAnalytics.SendAnalytic(tbiEvent);
             }
 #endif
         }
@@ -252,7 +214,7 @@ namespace Unity.MLAgents.Analytics
             var remotePolicyEvent = new RemotePolicyInitializedEvent();
 
             // Hash the behavior name so that there's no concern about PII or "secret" data being leaked.
-            remotePolicyEvent.BehaviorName = AnalyticsUtils.Hash(k_VendorKey, behaviorName);
+            remotePolicyEvent.BehaviorName = AnalyticsUtils.Hash(AnalyticsConstants.k_VendorKey, behaviorName);
 
             remotePolicyEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
             remotePolicyEvent.ActionSpec = EventActionSpec.FromActionSpec(actionSpec);
