@@ -89,7 +89,7 @@ namespace Unity.MLAgents.Tests
             gridSensorComponent.SetComponentParameters(tags, useGridSensorBase: true);
 
             gridSensorComponent.CreateSensors();
-            var componentSensor = (List<GridSensorBase>)typeof(GridSensorComponent).GetField("m_Sensors",
+            var componentSensor = (List<GridSensorBase>) typeof(GridSensorComponent).GetField("m_Sensors",
                 BindingFlags.Instance | BindingFlags.NonPublic).GetValue(gridSensorComponent);
             Assert.AreEqual(componentSensor.Count, 1);
         }

@@ -69,7 +69,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
             Assert.IsTrue(actuators[1].ActionSpec.NumDiscreteActions == 1);
 
             var actuatorComponentActionSpec = m_ActuatorComponent.ActionSpec;
-            Assert.IsTrue(actuatorComponentActionSpec.BranchSizes.SequenceEqual(new[] { 2 }));
+            Assert.IsTrue(actuatorComponentActionSpec.BranchSizes.SequenceEqual(new[] {2}));
             Assert.IsTrue(actuatorComponentActionSpec.NumContinuousActions == 2);
         }
 

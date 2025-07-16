@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Tests
             detectableTags,
             initialColliderBufferSize,
             maxColliderBufferSize)
-        { }
+        {}
 
         public Vector3[] CellLocalPositions
         {
