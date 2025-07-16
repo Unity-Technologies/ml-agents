@@ -4,7 +4,6 @@ using System.Diagnostics;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using UnityEngine;
-using Debug = UnityEngine.Debug;
 #if MLA_UNITY_ANALYTICS_MODULE
 
 #if ENABLE_CLOUD_SERVICES_ANALYTICS
@@ -98,9 +97,9 @@ namespace Unity.MLAgents.Analytics
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                 $"Would send event ml_agents_training_environment_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
-             );
+            // Debug.Log(
+            //     $"Would send event ml_agents_training_environment_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
+            // );
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
@@ -136,9 +135,9 @@ namespace Unity.MLAgents.Analytics
 
             var data = GetEventForRemotePolicy(behaviorName, sensors, actionSpec, actuators);
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                 $"Would send event ml_agents_remote_policy_initialized with body {JsonUtility.ToJson(data, true)}"
-             );
+            // Debug.Log(
+            //     $"Would send event ml_agents_remote_policy_initialized with body {JsonUtility.ToJson(data, true)}"
+            // );
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendAnalytic(data);
@@ -194,9 +193,9 @@ namespace Unity.MLAgents.Analytics
             tbiEvent.TrainingSessionGuid = s_TrainingSessionGuid.ToString();
 
             // Note - to debug, use JsonUtility.ToJson on the event.
-            Debug.Log(
-                 $"Would send event ml_agents_training_behavior_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
-             );
+            // Debug.Log(
+            //     $"Would send event ml_agents_training_behavior_initialized with body {JsonUtility.ToJson(tbiEvent, true)}"
+            // );
             if (AnalyticsUtils.s_SendEditorAnalytics)
             {
                 EditorAnalytics.SendAnalytic(tbiEvent);
