@@ -293,23 +293,23 @@ namespace Unity.MLAgents
             switch (command)
             {
                 case CommandProto.Quit:
-                {
-                    NotifyQuitAndShutDownChannel();
-                    return;
-                }
-                case CommandProto.Reset:
-                {
-                    foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
                     {
-                        m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        NotifyQuitAndShutDownChannel();
+                        return;
                     }
-                    ResetCommandReceived?.Invoke();
-                    return;
-                }
+                case CommandProto.Reset:
+                    {
+                        foreach (var brainName in m_OrderedAgentsRequestingDecisions.Keys)
+                        {
+                            m_OrderedAgentsRequestingDecisions[brainName].Clear();
+                        }
+                        ResetCommandReceived?.Invoke();
+                        return;
+                    }
                 default:
-                {
-                    return;
-                }
+                    {
+                        return;
+                    }
             }
         }
 

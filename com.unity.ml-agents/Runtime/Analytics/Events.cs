@@ -219,9 +219,9 @@ namespace Unity.MLAgents.Analytics
         Curriculum = 1 << 4,
     }
 
-[Serializable]
-[AnalyticInfo(eventName: "ml_agents_training_behavior_initialized", vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
-internal class TrainingBehaviorInitializedEvent : IAnalytic.IData, IAnalytic
+    [Serializable]
+    [AnalyticInfo(eventName: "ml_agents_training_behavior_initialized", vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
+    internal class TrainingBehaviorInitializedEvent : IAnalytic.IData, IAnalytic
     {
         public string TrainingSessionGuid;
 
