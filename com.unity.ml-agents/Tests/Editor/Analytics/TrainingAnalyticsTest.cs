@@ -87,7 +87,7 @@ namespace Unity.MLAgents.Tests.Analytics
         public void TestEnableAnalytics()
         {
 #if UNITY_EDITOR && MLA_UNITY_ANALYTICS_MODULE && ENABLE_CLOUD_SERVICES_ANALYTICS
-            Assert.IsTrue(EditorAnalytics.enabled == TrainingAnalytics.EnableAnalytics());
+            Assert.IsTrue(TrainingAnalytics.EnableAnalytics());
 #else
             Assert.IsFalse(TrainingAnalytics.EnableAnalytics());
 #endif
