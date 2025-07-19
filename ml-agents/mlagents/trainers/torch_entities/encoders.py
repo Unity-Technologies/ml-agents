@@ -12,6 +12,7 @@ class Normalizer(nn.Module):
         self.register_buffer("running_variance", torch.ones(vec_obs_size))
 
     def forward(self, inputs: torch.Tensor) -> torch.Tensor:
+        inputs = inputs.to(self.running_mean.device)
         normalized_state = torch.clamp(
             (inputs - self.running_mean)
             / torch.sqrt(self.running_variance / self.normalization_steps),
