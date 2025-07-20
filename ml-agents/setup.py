@@ -63,8 +63,7 @@ setup(
         "protobuf>=3.6,<3.21",
         "pyyaml>=3.1.0",
         "torch>=2.1.1",
-        "tensorboard>=2.14,<=2.18",
-        "tensorflow<=2.18",
+        "tensorboard>=2.14",
         # adding six explicit dependency since tensorboard needs it but doesn't declare it as a dep
         "six>=1.16",
         # cattrs 1.1.0 dropped support for python 3.6, but 1.0.0 doesn't work for python 3.9
