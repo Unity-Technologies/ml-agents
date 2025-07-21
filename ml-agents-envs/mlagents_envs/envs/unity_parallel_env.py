@@ -2,6 +2,7 @@ from typing import Optional, Dict, Any, Tuple
 from gymnasium import error
 from mlagents_envs.base_env import BaseEnv
 from pettingzoo import ParallelEnv
+from pettingzoo.utils.env import AgentID, ObsType, ActionType
 
 from mlagents_envs.envs.unity_pettingzoo_base_env import UnityPettingzooBaseEnv
 
@@ -20,15 +21,19 @@ class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
         """
         super().__init__(env, seed)
 
-    def reset(self) -> Tuple[Dict[str, Any], Dict[str, Any]]:
+    def reset(
+        self,
+        seed: int | None = None,
+        options: dict | None = None,
+    ) -> Tuple[Dict[AgentID, ObsType], Dict[AgentID, Dict]]:
         """
         Resets the environment.
         """
-        super().reset()
+        super().reset(seed, options)
 
         return self._observations, self._infos
 
-    def step(self, actions: Dict[str, Any]) -> Tuple:
+    def step(self, actions: Dict[AgentID, ActionType]) -> Tuple:
         self._assert_loaded()
         if len(self._live_agents) <= 0 and actions:
             raise error.Error(

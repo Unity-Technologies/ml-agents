@@ -4,7 +4,9 @@ import numpy as np
 from gymnasium import error, spaces
 from mlagents_envs.base_env import BaseEnv, ActionTuple
 from mlagents_envs.envs.env_helpers import _agent_id_to_behavior, _unwrap_batch_steps
+from mlagents_envs import logging_util
 
+logger = logging_util.get_logger(__name__)
 
 class UnityPettingzooBaseEnv:
     """
@@ -27,6 +29,7 @@ class UnityPettingzooBaseEnv:
             for v in self._env._side_channel_manager._side_channels_dict.values()  # type: ignore
         }
 
+        self.render_mode: str = None # Not implemented. Expected in some wrappers.
         self._live_agents: List[str] = []  # agent id for agents alive
         self._agents: List[str] = []  # all agent id in current step
         self._possible_agents: Set[str] = set()  # all agents that have ever appear
@@ -232,14 +235,24 @@ class UnityPettingzooBaseEnv:
         self._infos = {}
         self._agent_id_to_index = {}
 
-    def reset(self):
+    def reset(
+        self,
+        seed: int | None = None,
+        options: dict | None = None,
+    ):
         """
         Resets the environment.
         """
+        if seed is not None:
+            logger.warning("Reset seed is currently not supported.")
+        if options is not None:
+            logger.warning("Reset options are currently not supported.")
+
         self._assert_loaded()
         self._agent_index = 0
         self._reset_states()
         self._possible_agents = set()
+
         self._env.reset()
         for behavior_name in self._env.behavior_specs.keys():
             _, _, _ = self._batch_update(behavior_name)
@@ -277,7 +290,7 @@ class UnityPettingzooBaseEnv:
         """
         self._seed = seed
 
-    def render(self, mode="human"):
+    def render(self):
         """
         NOT SUPPORTED.
 

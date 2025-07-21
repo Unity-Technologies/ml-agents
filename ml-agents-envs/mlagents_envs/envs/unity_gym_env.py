@@ -301,6 +301,13 @@ class UnityToGymWrapper(gym.Env):
         """
         self._env.close()
 
+    def seed(self, seed: Any = None) -> None:
+        """Sets the seed for this env's random number generator(s).
+        Currently not implemented.
+        """
+        logger.warning("Could not seed environment %s", self.name)
+        return
+
     @staticmethod
     def _check_agents(n_agents: int) -> None:
         if n_agents > 1:
