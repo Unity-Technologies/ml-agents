@@ -60,7 +60,7 @@ setup(
         "pyyaml>=3.1.0",
         "gymnasium",
         "pettingzoo>=1.22.0",
-        "numpy>=1.23.5,<1.24.0",
+        "numpy>=1.23.5,<2.0.0",  # Ensure compatibility with Python 3.10
         "filelock>=3.4.0",
     ],
     python_requires=">=3.10.1,<=3.10.12",
