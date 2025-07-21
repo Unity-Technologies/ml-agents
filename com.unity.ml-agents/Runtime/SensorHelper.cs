@@ -1,4 +1,4 @@
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents.Inference;
 
 namespace Unity.MLAgents.Sensors

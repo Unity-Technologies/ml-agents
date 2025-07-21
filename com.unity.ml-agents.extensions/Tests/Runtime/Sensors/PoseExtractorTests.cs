@@ -236,8 +236,6 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             var product = inverseT.Multiply(t);
             Assert.IsTrue(Vector3.zero == product.position);
             Assert.IsTrue(Quaternion.identity == product.rotation);
-
-            Assert.IsTrue(Pose.identity == product);
         }
     }
 }

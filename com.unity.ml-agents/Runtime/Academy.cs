@@ -8,7 +8,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 
 /**
  * Welcome to Unity Machine Learning Agents (ML-Agents).

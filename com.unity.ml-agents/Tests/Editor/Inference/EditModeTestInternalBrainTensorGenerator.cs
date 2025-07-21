@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Actuators;

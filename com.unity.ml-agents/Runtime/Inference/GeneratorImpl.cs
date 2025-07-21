@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 using System;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents.Inference.Utils;
 using Unity.MLAgents.Sensors;
 using static Unity.MLAgents.Inference.TensorProxy;

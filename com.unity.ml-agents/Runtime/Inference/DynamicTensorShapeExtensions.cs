@@ -1,4 +1,4 @@
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using UnityEngine.Assertions;
 
 namespace Unity.MLAgents.Inference

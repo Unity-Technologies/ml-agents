@@ -60,7 +60,7 @@ namespace Unity.MLAgents.Extensions.Sensors
         /// <inheritdoc/>
         protected internal override Vector3 GetLinearVelocityAt(int index)
         {
-            return m_Bodies[index].velocity;
+            return m_Bodies[index].linearVelocity;
         }
 
         /// <inheritdoc/>

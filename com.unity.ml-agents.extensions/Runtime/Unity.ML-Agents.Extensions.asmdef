@@ -1,7 +1,7 @@
 {
     "name": "Unity.ML-Agents.Extensions",
     "references": [
-        "Unity.Sentis",
+        "Unity.InferenceEngine",
         "Unity.ML-Agents",
         "Unity.ML-Agents.Extensions.Input"
     ]

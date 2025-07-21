@@ -5,7 +5,7 @@ test_compressed_obs_{{ editor.version }}_{{ editor.extra_test }}:
   name: Test Compressed Sensor Observation {{ editor.version }} {{ editor.extra_test }}
   agent:
     type: Unity::VM
-    image: ml-agents/ml-agents-ubuntu-18.04:latest
+    image: ml-agents/ubuntu-ci:v1.0.0
     flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}

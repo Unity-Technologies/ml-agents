@@ -79,7 +79,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
         m_GroundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
-        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        m_PushBlockSettings = FindFirstObjectByType<PushBlockSettings>();
 
         //Reset Players Remaining
         m_NumberOfRemainingPlayers = AgentsList.Count;
@@ -229,7 +229,7 @@ public class DungeonEscapeEnvController : MonoBehaviour
             var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
 
             item.Agent.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
+            item.Rb.linearVelocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.Agent.MyKey.SetActive(false);
             item.Agent.IHaveAKey = false;

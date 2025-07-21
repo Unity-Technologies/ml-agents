@@ -3,7 +3,7 @@
 using System.Collections;
 using UnityEngine;
 using Unity.MLAgents;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgentsExamples;
@@ -52,7 +52,7 @@ public class WallJumpAgent : Agent
 
     public override void Initialize()
     {
-        m_WallJumpSettings = FindObjectOfType<WallJumpSettings>();
+        m_WallJumpSettings = FindFirstObjectByType<WallJumpSettings>();
         m_Configuration = Random.Range(0, 5);
 
         m_AgentRb = GetComponent<Rigidbody>();
@@ -152,8 +152,8 @@ public class WallJumpAgent : Agent
         var velocityTarget = Time.fixedDeltaTime * targetVel * moveToPos;
         if (float.IsNaN(velocityTarget.x) == false)
         {
-            rb.velocity = Vector3.MoveTowards(
-                rb.velocity, velocityTarget, maxVel);
+            rb.linearVelocity = Vector3.MoveTowards(
+                rb.linearVelocity, velocityTarget, maxVel);
         }
     }
 
@@ -300,7 +300,7 @@ public class WallJumpAgent : Agent
     void ResetBlock(Rigidbody blockRb)
     {
         blockRb.transform.position = GetRandomSpawnPos();
-        blockRb.velocity = Vector3.zero;
+        blockRb.linearVelocity = Vector3.zero;
         blockRb.angularVelocity = Vector3.zero;
     }
 
@@ -310,7 +310,7 @@ public class WallJumpAgent : Agent
         transform.localPosition = new Vector3(
             18 * (Random.value - 0.5f), 1, -12);
         m_Configuration = Random.Range(0, 5);
-        m_AgentRb.velocity = default(Vector3);
+        m_AgentRb.linearVelocity = default(Vector3);
     }
 
     void FixedUpdate()

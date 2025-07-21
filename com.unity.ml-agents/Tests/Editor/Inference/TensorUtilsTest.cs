@@ -1,6 +1,6 @@
 using System;
 using NUnit.Framework;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Inference.Utils;
 

@@ -9,7 +9,7 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
         [TearDown]
         public void RemoveGameObjects()
         {
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.InstanceID);
             foreach (var o in objects)
             {
                 UnityEngine.Object.DestroyImmediate(o);
@@ -79,11 +79,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
 
             rb1.position = new Vector3(1, 0, 0);
             rb1.rotation = Quaternion.Euler(0, 13.37f, 0);
-            rb1.velocity = new Vector3(2, 0, 0);
+            rb1.linearVelocity = new Vector3(2, 0, 0);
 
             Assert.AreEqual(rb1.position, poseExtractor.GetPoseAt(0).position);
             Assert.IsTrue(rb1.rotation == poseExtractor.GetPoseAt(0).rotation);
-            Assert.AreEqual(rb1.velocity, poseExtractor.GetLinearVelocityAt(0));
+            Assert.AreEqual(rb1.linearVelocity, poseExtractor.GetLinearVelocityAt(0));
 
             // Check DisplayNodes gives expected results
             var displayNodes = poseExtractor.GetDisplayNodes();
@@ -137,11 +137,11 @@ namespace Unity.MLAgents.Extensions.Tests.Sensors
             // Same as above test, but using index 1
             rb1.position = new Vector3(1, 0, 0);
             rb1.rotation = Quaternion.Euler(0, 13.37f, 0);
-            rb1.velocity = new Vector3(2, 0, 0);
+            rb1.linearVelocity = new Vector3(2, 0, 0);
 
             Assert.AreEqual(rb1.position, poseExtractor.GetPoseAt(1).position);
             Assert.IsTrue(rb1.rotation == poseExtractor.GetPoseAt(1).rotation);
-            Assert.AreEqual(rb1.velocity, poseExtractor.GetLinearVelocityAt(1));
+            Assert.AreEqual(rb1.linearVelocity, poseExtractor.GetLinearVelocityAt(1));
         }
 
         [Test]

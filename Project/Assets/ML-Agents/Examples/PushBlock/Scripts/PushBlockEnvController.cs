@@ -79,7 +79,7 @@ public class PushBlockEnvController : MonoBehaviour
         m_GroundRenderer = ground.GetComponent<Renderer>();
         // Starting material
         m_GroundMaterial = m_GroundRenderer.material;
-        m_PushBlockSettings = FindObjectOfType<PushBlockSettings>();
+        m_PushBlockSettings = FindFirstObjectByType<PushBlockSettings>();
         // Initialize Blocks
         foreach (var item in BlocksList)
         {
@@ -144,7 +144,7 @@ public class PushBlockEnvController : MonoBehaviour
         block.T.position = GetRandomSpawnPos();
 
         // Reset block velocity back to zero.
-        block.Rb.velocity = Vector3.zero;
+        block.Rb.linearVelocity = Vector3.zero;
 
         // Reset block angularVelocity back to zero.
         block.Rb.angularVelocity = Vector3.zero;
@@ -211,7 +211,7 @@ public class PushBlockEnvController : MonoBehaviour
             var rot = UseRandomAgentRotation ? GetRandomRot() : item.StartingRot;
 
             item.Agent.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
+            item.Rb.linearVelocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
         }
 
@@ -222,7 +222,7 @@ public class PushBlockEnvController : MonoBehaviour
             var rot = UseRandomBlockRotation ? GetRandomRot() : item.StartingRot;
 
             item.T.transform.SetPositionAndRotation(pos, rot);
-            item.Rb.velocity = Vector3.zero;
+            item.Rb.linearVelocity = Vector3.zero;
             item.Rb.angularVelocity = Vector3.zero;
             item.T.gameObject.SetActive(true);
         }

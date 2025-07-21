@@ -49,7 +49,7 @@ namespace Unity.MLAgents.Extensions.Tests.Runtime.Input
         public override void TearDown()
         {
             m_ActuatorComponent.CleanupActionAsset();
-            var objects = GameObject.FindObjectsOfType<GameObject>();
+            var objects = UnityEngine.Object.FindObjectsByType<GameObject>(FindObjectsSortMode.InstanceID);
             foreach (var o in objects)
             {
                 UnityEngine.Object.DestroyImmediate(o);

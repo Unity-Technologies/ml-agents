@@ -10,7 +10,7 @@
         "Unity.ML-Agents.Runtime.Sensor.Tests",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Unity.Sentis"
+        "Unity.InferenceEngine"
     ],
     "includePlatforms": [
         "Editor"

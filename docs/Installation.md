@@ -24,7 +24,7 @@ The ML-Agents Toolkit contains several components:
 
 Consequently, to install and use the ML-Agents Toolkit you will need to:
 
-- Install Unity (2023.2 or later)
+- Install Unity (6000.0 or later)
 - Install Python (>= 3.10.1, <=3.10.12) - we recommend using 3.10.12
 - Clone this repository (Recommended for the latest version and bug fixes)
   - __Note:__ If you do not clone the repository, then you will not be
@@ -37,7 +37,7 @@ Consequently, to install and use the ML-Agents Toolkit you will need to:
 - Install the `mlagents-envs`
 - Install the `mlagents` Python package
 
-### Install **Unity 2023.2** or Later
+### Install **Unity 6000.0** or Later
 
 [Download](https://unity3d.com/get-unity/download) and install Unity. We
 strongly recommend that you install Unity through the Unity Hub as it will
@@ -166,14 +166,6 @@ Note that on Windows, you may also need Microsoft's
 [Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 if you don't have it already. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/)
 for more installation options and versions.
-
-#### (OS X) Installing GRPC libraries
-
-On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
-
-```sh
-pip3 install grpcio
-```
 
 #### Installing `mlagents`
 

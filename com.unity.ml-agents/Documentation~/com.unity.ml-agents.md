@@ -9,7 +9,7 @@ The package allows you to convert any Unity scene into a learning environment an
 * Define Agents: entities, or characters, whose behavior will be learned. Agents are entities that generate observations (through sensors), take actions, and receive rewards from the environment.
 * Define Behaviors: entities that specify how an agent should act. Multiple agents can share the same Behavior and a scene may have multiple Behaviors.
 * Record demonstrations: To show the behaviors of an agent within the Editor. You can use demonstrations to help train a behavior for that agent.
-* Embed a trained behavior (aka: run your ML model) in the scene via the [Unity Sentis] inference engine. Embedded behaviors allow you to switch an Agent between learning and inference.
+* Embed a trained behavior (aka: run your ML model) in the scene via the [Unity Inference Engine]. Embedded behaviors allow you to switch an Agent between learning and inference.
 
 ## Special Notes
 Note that the ML-Agents package does not contain the machine learning algorithms for training behaviors. The ML-Agents package only supports instrumenting a Unity scene, setting it up for training, and then embedding the trained model back into your Unity scene. The machine learning algorithms that orchestrate training are part of the companion [python package].
@@ -34,7 +34,7 @@ The following table describes the package folder structure:
 ## Installation
 To add the ML-Agents package to a Unity project:
 
-* Create a new Unity project with Unity 2023.2 (or later) or open an existing one.
+* Create a new Unity project with Unity 6000.0 (or later) or open an existing one.
 * To open the Package Manager, navigate to Window > Package Manager.
 * Click + and select Add package by name...
 * Enter com.unity.ml-agents
@@ -53,7 +53,7 @@ mode if training is not supported or is not currently running.
 
 ### Inference
 
-Inference is executed via [Unity Sentis](https://docs.unity3d.com/Packages/com.unity.sentis@latest/index.html) on the end-user device. Therefore, it is subject to the performance limitations of the end-user CPU or GPU. Also, only models created with our trainers are supported for running ML-Agents with a neural network behavior.
+Inference is executed via [Unity Inference Engine](https://docs.unity3d.com/Packages/com.unity.ai.inference@latest) on the end-user device. Therefore, it is subject to the performance limitations of the end-user CPU or GPU. Also, only models created with our trainers are supported for running ML-Agents with a neural network behavior.
 
 ### Headless Mode
 
@@ -74,7 +74,7 @@ You can control the frequency of Academy stepping by calling `Academy.Instance.D
 
 [github docs]: https://unity-technologies.github.io/ml-agents/
 [installation instructions]: https://github.com/Unity-Technologies/ml-agents/blob/release_22_docs/docs/Installation.md
-[Unity Sentis]: https://docs.unity3d.com/Packages/com.unity.sentis@2.1/manual/index.html
+[Unity Inference Engine]: https://docs.unity3d.com/Packages/com.unity.ai.inference@2.2/manual/index.html
 [python package]: https://github.com/Unity-Technologies/ml-agents
 [ML-Agents GitHub repo]: https://github.com/Unity-Technologies/ml-agents/blob/release_22_docs/com.unity.ml-agents.extensions
 [GitHub repository]: https://github.com/Unity-Technologies/ml-agents

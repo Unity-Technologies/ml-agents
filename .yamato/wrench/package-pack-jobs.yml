@@ -5,7 +5,7 @@
 package_pack_-_ml-agents:
   name: Package Pack - ml-agents
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: ml-agents/ubuntu-ci:v1.0.0
     type: Unity::VM
     flavor: b1.large
   commands:

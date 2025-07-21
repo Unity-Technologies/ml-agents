@@ -82,7 +82,7 @@ public class WormAgent : Agent
 
         //Get velocities in the context of our orientation cube's space
         //Note: You can get these velocities in world space as well but it may not train as well.
-        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.velocity));
+        sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.linearVelocity));
         sensor.AddObservation(m_OrientationCube.transform.InverseTransformDirection(bp.rb.angularVelocity));
 
 
@@ -163,7 +163,7 @@ public class WormAgent : Agent
 
         var velReward =
             GetMatchingVelocityReward(m_OrientationCube.transform.forward * m_MaxWalkingSpeed,
-                m_JdController.bodyPartsDict[bodySegment0].rb.velocity);
+                m_JdController.bodyPartsDict[bodySegment0].rb.linearVelocity);
 
         //Angle of the rotation delta between cube and body.
         //This will range from (0, 180)

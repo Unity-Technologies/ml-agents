@@ -3,7 +3,7 @@ using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Extensions.Input;
 using Unity.MLAgents.Policies;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.LowLevel;

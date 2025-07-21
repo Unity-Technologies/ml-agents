@@ -6,7 +6,7 @@
         "Unity.ML-Agents.CommunicatorObjects",
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "Unity.Sentis"
+        "Unity.InferenceEngine"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using FailedCheck = Unity.MLAgents.Inference.SentisModelParamLoader.FailedCheck;
 
 namespace Unity.MLAgents.Inference

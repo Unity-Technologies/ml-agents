@@ -1,5 +1,5 @@
 using NUnit.Framework;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents.Actuators;
 using UnityEngine;
 using Unity.MLAgents.Policies;

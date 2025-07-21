@@ -2,14 +2,14 @@ pack:
   name: Pack
   agent:
     type: Unity::VM
-    image: ml-agents/ml-agents-ubuntu-18.04:latest
-    flavor: b1.small
+    image: ml-agents/ubuntu-ci:v1.0.0
+    flavor: b1.medium
   commands:
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
       conda activate python3.10
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-      unity-downloader-cli -u 2023.2 -c editor --wait --fast
+      unity-downloader-cli -u 6000.0 -c editor --wait --fast
       ./.Editor/Unity -projectPath Project -batchMode -executeMethod Unity.MLAgents.SampleExporter.ExportCuratedSamples -logFile -
       npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
       upm-ci project pack --project-path Project
