@@ -33,7 +33,13 @@ class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
 
         return self._observations, self._infos
 
-    def step(self, actions: Dict[AgentID, ActionType]) -> Tuple:
+    def step(self, actions: Dict[AgentID, ActionType]) -> Tuple[
+        Dict[AgentID, ObsType],
+        Dict[AgentID, float],
+        Dict[AgentID, bool],
+        Dict[AgentID, bool],
+        Dict[AgentID, Dict],
+    ]:
         self._assert_loaded()
         if len(self._live_agents) <= 0 and actions:
             raise error.Error(
@@ -55,4 +61,4 @@ class UnityParallelEnv(UnityPettingzooBaseEnv, ParallelEnv):
         self._cleanup_agents()
         self._live_agents.sort()  # unnecessary, only for passing API test
 
-        return self._observations, self._rewards, self._dones, False, self._infos
+        return self._observations, self._rewards, self._terminations, self._truncations, self._infos
