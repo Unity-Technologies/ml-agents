@@ -5,13 +5,19 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 
 # Get version information without importing the package
-with open(os.path.join("mlagents_envs", "__init__.py"), "r") as f:
+with open(os.path.join("mlagents_envs", "__init__.py")) as f:
     init_text = f.read()
-    
+
 # Extract version with regex to avoid import
 VERSION = re.search(r'__version__ = "([^"]+)"', init_text).group(1)
-EXPECTED_TAG = re.search(r'__release_tag__ = ([^"]*None[^"]*|"([^"]+)")', init_text)
-EXPECTED_TAG = EXPECTED_TAG.group(2) if EXPECTED_TAG.group(2) else None
+version_tag_match = re.search(
+    r'__release_tag__ = ([^"]*None[^"]*|"([^"]+)")', init_text
+)
+EXPECTED_TAG = (
+    version_tag_match.group(2)
+    if version_tag_match and version_tag_match.group(2)
+    else None
+)
 
 here = os.path.abspath(os.path.dirname(__file__))
 
