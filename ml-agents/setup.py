@@ -1,13 +1,22 @@
 import os
 import sys
+import re
 
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-from mlagents.plugins import ML_AGENTS_STATS_WRITER, ML_AGENTS_TRAINER_TYPE
-import mlagents.trainers
 
-VERSION = mlagents.trainers.__version__
-EXPECTED_TAG = mlagents.trainers.__release_tag__
+# Define plugin constants directly to avoid importing
+ML_AGENTS_STATS_WRITER = "mlagents.plugins.stats_writer"
+ML_AGENTS_TRAINER_TYPE = "mlagents.plugins.trainer_type"
+
+# Get version information without importing the package
+with open(os.path.join("mlagents", "trainers", "__init__.py"), "r") as f:
+    init_text = f.read()
+    
+# Extract version with regex to avoid import
+VERSION = re.search(r'__version__ = "([^"]+)"', init_text).group(1)
+EXPECTED_TAG = re.search(r'__release_tag__ = ([^"]*None[^"]*|"([^"]+)")', init_text)
+EXPECTED_TAG = EXPECTED_TAG.group(2) if EXPECTED_TAG.group(2) else None
 
 here = os.path.abspath(os.path.dirname(__file__))
 

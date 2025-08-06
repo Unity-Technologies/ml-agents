@@ -1,11 +1,17 @@
 import os
 import sys
+import re
 from setuptools import setup, find_packages
 from setuptools.command.install import install
-import mlagents_envs
 
-VERSION = mlagents_envs.__version__
-EXPECTED_TAG = mlagents_envs.__release_tag__
+# Get version information without importing the package
+with open(os.path.join("mlagents_envs", "__init__.py"), "r") as f:
+    init_text = f.read()
+    
+# Extract version with regex to avoid import
+VERSION = re.search(r'__version__ = "([^"]+)"', init_text).group(1)
+EXPECTED_TAG = re.search(r'__release_tag__ = ([^"]*None[^"]*|"([^"]+)")', init_text)
+EXPECTED_TAG = EXPECTED_TAG.group(2) if EXPECTED_TAG.group(2) else None
 
 here = os.path.abspath(os.path.dirname(__file__))
 
