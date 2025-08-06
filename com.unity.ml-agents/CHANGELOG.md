@@ -11,14 +11,15 @@ and this project adheres to
 #### com.unity.ml-agents (C#)
 - Upgraded to Inference Engine 2.2.1 (#6212)
 - The minimum supported Unity version was updated to 6000.0. (#6207)
-- Merge the extension package com.unity.ml-agents.extensions to the main package com.unity.ml-agents. (#6227)
+- Merged the extension package com.unity.ml-agents.extensions to the main package com.unity.ml-agents. (#6227)
 
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-- Remove broken sample from the package (#6230)
+- Removed broken sample from the package (#6230)
 
 #### ml-agents / ml-agents-envs
 - Bumped grpcio version to >=1.11.0,<=1.53.2 (#6208)
+- Used pyproject.toml to build python packages (#6235)
 
 ## [3.0.0] - 2024-09-02
 ### Major Changes
