@@ -25,7 +25,6 @@ test_linux_training_int_{{ editor.version }}_{{ editor.extra_test }}:
       pull_request.target match "release.+") AND
       NOT pull_request.draft AND
       (pull_request.changes.any match "com.unity.ml-agents/**" OR
-      pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
       pull_request.changes.any match "Project/**" OR
       pull_request.changes.any match "ml-agents/**" OR
       pull_request.changes.any match "ml-agents-envs/**" OR

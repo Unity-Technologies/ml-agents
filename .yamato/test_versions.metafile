@@ -7,5 +7,5 @@ test_editors:
     extra_test: gym
   - version: 6000.0
     extra_test: sensor
-  - version: trunk
+  - version: 6000.3.0a3
     extra_test: llapi

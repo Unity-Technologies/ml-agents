@@ -8,7 +8,7 @@ test_editors:
       enableNoDefaultPackages: !!bool true
 
 trunk_editor:
-    - version: trunk
+    - version: 6000.3.0a3
       testProject: DevProject
 
 test_platforms:
@@ -29,9 +29,6 @@ packages:
     - name: com.unity.ml-agents
       assembly: Unity.ML-Agents
       minCoveragePct: 72
-    - name: com.unity.ml-agents.extensions
-      assembly: Unity.ML-Agents.Extensions*
-      minCoveragePct: 75
 ---
 
 all_package_tests:
@@ -102,9 +99,6 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ editor.testP
             NOT pull_request.draft AND
             (pull_request.changes.any match "com.unity.ml-agents/**" OR
              pull_request.changes.any match " {{ editor.testProject }}/**" OR
-            {% if package.name == "com.unity.ml-agents.extensions" %}
-              pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
-            {% endif %}
             pull_request.changes.any match ".yamato/com.unity.ml-agents-test.yml")
       {% endif %}
       {% endfor %}

@@ -11,7 +11,6 @@ VERSION_LINE_START = "__version__ = "
 DIRECTORIES = ["ml-agents/mlagents/trainers", "ml-agents-envs/mlagents_envs"]
 
 MLAGENTS_PACKAGE_JSON_PATH = "com.unity.ml-agents/package.json"
-MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH = "com.unity.ml-agents.extensions/package.json"
 
 ACADEMY_PATH = "com.unity.ml-agents/Runtime/Academy.cs"
 
@@ -84,16 +83,10 @@ def set_version(
         # removed exp.1 tag from version strings since MLA package is a supported package again
         # package_version = f"{csharp_version}-exp.1"
         package_version = f"{csharp_version}"
-        if csharp_extensions_version is not None:
-            # since this has never been promoted we need to keep
-            # it in preview forever or CI will fail
-            extension_version = f"{csharp_extensions_version}-preview"
         print(
             f"Setting package version to {package_version} in {MLAGENTS_PACKAGE_JSON_PATH}"
-            f" and {MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH}"
         )
         set_package_version(package_version)
-        set_extension_package_version(package_version, extension_version)
         print(f"Setting package version to {package_version} in {ACADEMY_PATH}")
         set_academy_version_string(package_version)
 
@@ -104,19 +97,6 @@ def set_package_version(new_version: str) -> None:
     if "version" in package_json:
         package_json["version"] = new_version
     with open(MLAGENTS_PACKAGE_JSON_PATH, "w") as f:
-        json.dump(package_json, f, indent=2)
-        f.write("\n")
-
-
-def set_extension_package_version(
-    new_dependency_version: str, new_extension_version
-) -> None:
-    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH) as f:
-        package_json = json.load(f)
-    package_json["dependencies"]["com.unity.ml-agents"] = new_dependency_version
-    if new_extension_version is not None:
-        package_json["version"] = new_extension_version
-    with open(MLAGENTS_EXTENSIONS_PACKAGE_JSON_PATH, "w") as f:
         json.dump(package_json, f, indent=2)
         f.write("\n")
 

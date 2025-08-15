@@ -7,6 +7,8 @@ pack:
   commands:
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+      sudo apt-get update
+      sudo apt-get install upm-pvp=0.76.0
       conda activate python3.10
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
       unity-downloader-cli -u 6000.0 -c editor --wait --fast

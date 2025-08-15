@@ -24,12 +24,12 @@ namespace Unity.MLAgents.Actuators
         VectorActuator = 2,
 
         /// <summary>
-        /// Corresponds to the Match3Actuator in com.unity.ml-agents.extensions.
+        /// Corresponds to the Match3Actuator.
         /// </summary>
         Match3Actuator = 3,
 
         /// <summary>
-        /// Corresponds to the InputActionActuator in com.unity.ml-agents.extensions.
+        /// Corresponds to the InputActionActuator.
         /// </summary>
         InputActionActuator = 4,
     }
