@@ -1,6 +1,6 @@
 # Unity ML-Agents Toolkit
 
-[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_23_docs/docs/)
+[![docs badge](https://img.shields.io/badge/docs-reference-blue.svg)](https://github.com/Unity-Technologies/ml-agents/tree/release_22_docs/docs/)
 
 [![license badge](https://img.shields.io/badge/license-Apache--2.0-green.svg)](../LICENSE.md)
 
@@ -44,7 +44,7 @@ See our [ML-Agents Overview](ML-Agents-Overview.md) page for detailed
 descriptions of all these features. Or go straight to our [web docs](https://unity-technologies.github.io/ml-agents/).
 ## Releases & Documentation
 
-**Our latest, stable release is `Release 23`. Click
+**Our latest, stable release is `Release 22`. Click
 [here](Getting-Started.md)
 to get started with the latest release of ML-Agents.**
 
@@ -67,7 +67,7 @@ under active development and may be unstable. A few helpful guidelines:
 
 |      **Version**       | **Release Date**  |                                  **Source**                                   | **Documentation** |                                      **Download**                                      | **Python Package** |                                    **Unity Package**                                     |
 |:----------------------:|:-----------------:|:-----------------------------------------------------------------------------:|:-------:|:--------------------------------------------------------------------------------------:|:------------:|:----------------------------------------------------------------------------------------:|
-|     **Release 23**     | **July 11, 2025** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_23)** | **[docs](https://unity-technologies.github.io/ml-agents/)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_23.zip)** | **[1.1.0](https://pypi.org/project/mlagents/1.1.0/)** | **[4.0.0](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/index.html)** |
+|     **Release 22**     | **October 5, 2024** | **[source](https://github.com/Unity-Technologies/ml-agents/tree/release_22)** | **[docs](https://unity-technologies.github.io/ml-agents/)** | **[download](https://github.com/Unity-Technologies/ml-agents/archive/release_22.zip)** | **[1.1.0](https://pypi.org/project/mlagents/1.1.0/)** | **[4.0.0](https://docs.unity3d.com/Packages/com.unity.ml-agents@4.0/manual/index.html)** |
 | **develop (unstable)** |        --         |    [source](https://github.com/Unity-Technologies/ml-agents/tree/develop)     | [docs](https://unity-technologies.github.io/ml-agents/) |    [download](https://github.com/Unity-Technologies/ml-agents/archive/develop.zip)     | -- |                                            --                                            |
 
 
