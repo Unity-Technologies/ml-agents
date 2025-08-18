@@ -57,9 +57,9 @@ namespace Unity.MLAgents.Inference
         {
             int index =
                 n * shape.Height() * shape.Width() * shape.Channels() +
-                h * shape.Width() * shape.Channels() +
-                w * shape.Channels() +
-                c;
+                c * shape.Height() * shape.Width() +
+                h * shape.Width() +
+                w;
             return index;
         }
     }
