@@ -1,0 +1,18 @@
+We have published a series of blog posts that are relevant for ML-Agents:
+
+- (July 12, 2021)
+  [ML-Agents plays Dodgeball](https://blog.unity.com/technology/ml-agents-plays-dodgeball)
+- (May 5, 2021)
+  [ML-Agents v2.0 release: Now supports training complex cooperative behaviors](https://blogs.unity3d.com/2021/05/05/ml-agents-v2-0-release-now-supports-training-complex-cooperative-behaviors/)
+- (November 20, 2020)
+  [How Eidos-Montréal created Grid Sensors to improve observations for training agents](https://www.eidosmontreal.com/news/the-grid-sensor-for-automated-game-testing/)
+- (February 28, 2020)
+  [Training intelligent adversaries using self-play with ML-Agents](https://blogs.unity3d.com/2020/02/28/training-intelligent-adversaries-using-self-play-with-ml-agents/)
+- (November 11, 2019)
+  [Training your agents 7 times faster with ML-Agents](https://blogs.unity3d.com/2019/11/11/training-your-agents-7-times-faster-with-ml-agents/)
+- (June 26, 2018)
+  [Solving sparse-reward tasks with Curiosity](https://blogs.unity3d.com/2018/06/26/solving-sparse-reward-tasks-with-curiosity/)
+- (June 19, 2018)
+  [Unity ML-Agents Toolkit v0.4 and Udacity Deep Reinforcement Learning Nanodegree](https://github.com/udacity/deep-reinforcement-learning)
+- (September 19, 2017)
+  [Introducing: Unity Machine Learning Agents Toolkit](https://blogs.unity3d.com/2017/09/19/introducing-unity-machine-learning-agents/)

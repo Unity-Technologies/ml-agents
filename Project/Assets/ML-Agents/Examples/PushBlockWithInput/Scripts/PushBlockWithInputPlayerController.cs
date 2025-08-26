@@ -1,4 +1,4 @@
-using Unity.MLAgents.Extensions.Input;
+using Unity.MLAgents.Input;
 using UnityEngine;
 using UnityEngine.InputSystem;
 

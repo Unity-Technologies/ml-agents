@@ -2,7 +2,7 @@ test_linux_protobuf_generation:
   name: Protobuf Generation Tests
   agent:
     type: Unity::VM
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     flavor: b1.large
   variables:
     GRPC_VERSION: "1.14.1"

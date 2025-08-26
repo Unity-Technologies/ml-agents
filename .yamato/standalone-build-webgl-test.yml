@@ -3,7 +3,7 @@ test_webgl_standalone_{{ editor_version }}:
   name: Test WebGL Standalone {{ editor_version }}
   agent:
     type: Unity::VM
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     flavor: b1.large
   variables:
     UNITY_VERSION: {{ editor_version }}

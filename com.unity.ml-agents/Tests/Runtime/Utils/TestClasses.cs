@@ -9,7 +9,6 @@ using Unity.MLAgents.Sensors.Reflection;
 
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Editor.Tests")]
 [assembly: InternalsVisibleTo("Unity.ML-Agents.Runtime.Sensor.Tests")]
-[assembly: InternalsVisibleTo("Unity.ML-Agents.Extensions.EditorTests")]
 
 namespace Unity.MLAgents.Utils.Tests
 {

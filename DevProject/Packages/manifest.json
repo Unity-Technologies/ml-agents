@@ -4,7 +4,6 @@
     "com.unity.coding": "0.1.0-preview.13",
     "com.unity.inputsystem": "1.13.0",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
-    "com.unity.ml-agents.extensions": "file:../../com.unity.ml-agents.extensions",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.package-manager-doctools": "3.0.0-preview",
     "com.unity.package-validation-suite": "0.59.0-preview",
@@ -22,7 +21,6 @@
   "registry": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates",
   "testables": [
     "com.unity.ml-agents",
-    "com.unity.ml-agents.extensions",
     "com.unity.inputsystem"
   ]
 }

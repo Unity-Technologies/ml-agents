@@ -96,14 +96,18 @@ class ReleaseInfo(NamedTuple):
         if self.is_verified:
             return "https://github.com/Unity-Technologies/ml-agents/blob/release_2_verified_docs/docs/Readme.md"
 
-        # TODO remove in favor of webdocs. commenting out for now.
-        # # For release_X branches, docs are on a separate tag.
-        # if self.release_tag.startswith("release"):
-        #     docs_name = self.release_tag + "_docs"
-        # else:
-        #     docs_name = self.release_tag
-        # return f"https://github.com/Unity-Technologies/ml-agents/tree/{docs_name}/docs/Readme.md"
-        return "https://unity-technologies.github.io/ml-agents/"
+        if self.csharp_version == "develop":
+            return (
+                "https://github.com/Unity-Technologies/ml-agents/tree/"
+                "develop/com.unity.ml-agents/Documentation~/index.md"
+            )
+
+        # Prioritize Unity Package documentation over web docs
+        try:
+            StrictVersion(self.csharp_version).version
+            return "https://docs.unity3d.com/Packages/com.unity.ml-agents@latest"
+        except ValueError:
+            return "https://unity-technologies.github.io/ml-agents/  (DEPRECATED)"
 
     @property
     def package_link(self):

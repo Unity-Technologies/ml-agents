@@ -50,8 +50,8 @@
 # Plugins
 /com.unity.ml-agents/VideoRecorder*
 
-# Generated doc folders
-/docs/html
+# MkDocs build output
+/site/
 
 # Mac hidden files
 *.DS_Store

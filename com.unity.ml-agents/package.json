@@ -9,12 +9,5 @@
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.physics": "1.0.0"
-  },
-  "samples": [
-    {
-      "displayName": "3D Ball",
-      "description": "The 3D Ball sample is a simple environment that is a great for jumping into ML-Agents to see how things work.",
-      "path": "Samples~/3DBall"
-    }
-  ]
+  }
 }

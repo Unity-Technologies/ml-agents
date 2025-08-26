@@ -6,7 +6,6 @@ def main():
         "Project/Assets",
         "DevProject/Assets",
         "com.unity.ml-agents",
-        "com.unity.ml-agents.extensions",
     ]
     meta_suffix = ".meta"
     python_suffix = ".py"
@@ -19,9 +18,6 @@ def main():
             "com.unity.ml-agents/Tests/.tests.json",
             "com.unity.ml-agents/.pre-commit-config.yaml",
             "com.unity.ml-agents/.pre-commit-search-and-replace.yaml",
-            "com.unity.ml-agents.extensions/.gitignore",
-            "com.unity.ml-agents.extensions/.npmignore",
-            "com.unity.ml-agents.extensions/Tests/.tests.json",
             "com.unity.ml-agents/Samples/3DBall/.sample.json",
         ]
     )
