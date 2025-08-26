@@ -182,7 +182,9 @@ class ActionModel(nn.Module):
             action_out_deprecated = continuous_out
             deterministic_continuous_out = dists.continuous.deterministic_sample()
             if self.clip_action:
+                #! FIXME: troca de saida do modelo
                 continuous_out = torch.clamp(continuous_out, -3, 3) / 3
+                # continuous_out = torch.tanh(continuous_out)
                 action_out_deprecated = continuous_out
                 deterministic_continuous_out = (
                     torch.clamp(deterministic_continuous_out, -3, 3) / 3
