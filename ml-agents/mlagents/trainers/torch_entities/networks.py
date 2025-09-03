@@ -531,6 +531,15 @@ class Actor(abc.ABC):
         """
         pass
 
+    def get_mus(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Dict[str, Any]:
+        pass
+
     def get_stats(
         self,
         inputs: List[torch.Tensor],
@@ -637,7 +646,7 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, entropies, mus, sigmas = self.action_model(encoding, masks)
         run_out = {}
         # This is the clipped action which is not saved to the buffer
         # but is exclusively sent to the environment.
@@ -646,8 +655,31 @@ class SimpleActor(nn.Module, Actor):
         )
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies
+        run_out["mus"] = mus
+        run_out["sigmas"] = sigmas
 
         return action, run_out, memories
+
+    def get_mus(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Dict[str, Any]:
+        encoding, actor_mem_outs = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+
+        (
+            continuous_out,
+            discrete_out,
+            action_out_deprecated,
+            deterministic_continuous_out,
+            deterministic_discrete_out,
+        ) = self.action_model.get_action_out(encoding, masks)
+        run_out = {"mus": deterministic_continuous_out}
+        return run_out
 
     def get_stats(
         self,
@@ -661,10 +693,13 @@ class SimpleActor(nn.Module, Actor):
             inputs, memories=memories, sequence_length=sequence_length
         )
 
-        log_probs, entropies = self.action_model.evaluate(encoding, masks, actions)
+        log_probs, entropies, mus, sigmas = self.action_model.evaluate(encoding, masks, actions)
         run_out = {}
         run_out["log_probs"] = log_probs
         run_out["entropy"] = entropies
+        run_out["mus"] = mus
+        run_out["sigmas"] = sigmas
+
         return run_out
 
     def forward(

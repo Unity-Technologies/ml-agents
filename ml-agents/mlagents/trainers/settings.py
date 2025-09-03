@@ -105,6 +105,7 @@ class EncoderType(Enum):
 class ScheduleType(Enum):
     CONSTANT = "constant"
     LINEAR = "linear"
+    ADAPTIVE = "adaptive"
     # TODO add support for lesson based scheduling
     # LESSON = "lesson"
 
@@ -158,6 +159,9 @@ class HyperparamSettings:
     batch_size: int = 1024
     buffer_size: int = 10240
     learning_rate: float = 3.0e-4
+    desired_lr_kl: float = 0.008
+    lr_min: float = 1.0e-10
+    lr_max: float = 1.0e-2
     learning_rate_schedule: ScheduleType = ScheduleType.CONSTANT
 
 

@@ -24,6 +24,14 @@ class DistInstance(nn.Module, abc.ABC):
         pass
 
     @abc.abstractmethod
+    def mu(self):
+        pass
+
+    @abc.abstractmethod
+    def sigma(self):
+        pass
+
+    @abc.abstractmethod
     def log_prob(self, value: torch.Tensor) -> torch.Tensor:
         """
         Returns the log probabilities of a particular value.
@@ -68,6 +76,12 @@ class GaussianDistInstance(DistInstance):
 
     def deterministic_sample(self):
         return self.mean
+
+    def mu(self):
+        return self.mean
+
+    def sigma(self):
+        return self.std
 
     def log_prob(self, value):
         var = self.std**2
