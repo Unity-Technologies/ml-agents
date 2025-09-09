@@ -74,7 +74,7 @@ setup(
         'pypiwin32==223;platform_system=="Windows"',
         "onnx==1.15.0",
     ],
-    python_requires=">=3.10.1,<=3.10.12",
+    python_requires=">=3.10.1,<=3.10.18",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
