@@ -5,7 +5,7 @@
 publish_dry_run_ml-agents:
   name: Publish Dry Run ml-agents
   agent:
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -57,7 +57,7 @@ publish_dry_run_ml-agents:
 publish_ml-agents:
   name: Publish ml-agents
   agent:
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     type: Unity::VM
     flavor: b1.large
   commands:

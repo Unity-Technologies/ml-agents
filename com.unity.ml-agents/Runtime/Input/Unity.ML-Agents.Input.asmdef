@@ -1,0 +1,24 @@
+{
+    "name": "Unity.ML-Agents.Input",
+    "rootNamespace": "",
+    "references": [
+        "Unity.ML-Agents",
+        "Unity.InferenceEngine",
+        "Unity.InputSystem"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.3.0",
+            "define": "MLA_INPUT_SYSTEM"
+        }
+    ],
+    "noEngineReferences": false
+}

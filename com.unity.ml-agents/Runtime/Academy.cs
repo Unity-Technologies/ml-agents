@@ -19,8 +19,8 @@ using Unity.InferenceEngine;
  * manages the communication between the learning environment and the Python
  * API. For more information on each of these entities, in addition to how to
  * set-up a learning environment and train the behavior of characters in a
- * Unity scene, please browse our documentation pages on GitHub:
- * https://github.com/Unity-Technologies/ml-agents/tree/release_22_docs/docs/
+ * Unity scene, please browse our documentation pages:
+ * https://docs.unity3d.com/Packages/com.unity.ml-agents@latest
  */
 
 namespace Unity.MLAgents
@@ -61,8 +61,8 @@ namespace Unity.MLAgents
     /// fall back to inference or heuristic decisions. (You can also set agents to always use
     /// inference or heuristics.)
     /// </remarks>
-    [HelpURL("https://github.com/Unity-Technologies/ml-agents/tree/release_22_docs/" +
-        "docs/Learning-Environment-Design.md")]
+    [HelpURL("https://docs.unity3d.com/Packages/com.unity.ml-agents@latest/index.html?subfolder=/manual/" +
+        "Learning-Environment-Design.html")]
     public class Academy : IDisposable
     {
         /// <summary>
@@ -107,7 +107,7 @@ namespace Unity.MLAgents
         /// Unity package version of com.unity.ml-agents.
         /// This must match the version string in package.json and is checked in a unit test.
         /// </summary>
-        internal const string k_PackageVersion = "3.0.0";
+        internal const string k_PackageVersion = "4.0.0";
 
         const int k_EditorTrainingPort = 5004;
 

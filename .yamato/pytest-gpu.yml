@@ -2,7 +2,7 @@ pytest_gpu:
   name: Pytest GPU
   agent:
     type: Unity::VM::GPU
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     flavor: b1.large
   commands:
     - |

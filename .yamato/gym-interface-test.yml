@@ -5,7 +5,7 @@ test_gym_interface_{{ editor.version }}_{{ editor.extra_test }}:
   name: Test Linux Gym Interface {{ editor.version }} {{ editor.extra_test }}
   agent:
     type: Unity::VM
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     flavor: b1.medium
   variables:
     UNITY_VERSION: {{ editor.version }}

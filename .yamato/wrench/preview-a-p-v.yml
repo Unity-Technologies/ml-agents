@@ -68,7 +68,7 @@ preview_apv_-_6000_0_-_macos:
 preview_apv_-_6000_0_-_ubuntu:
   name: Preview APV - 6000.0 - ubuntu
   agent:
-    image: ml-agents/ubuntu-ci:v1.0.0
+    image: ml-agents/ubuntu-ci:v1.0.1
     type: Unity::VM
     flavor: b1.large
   commands:

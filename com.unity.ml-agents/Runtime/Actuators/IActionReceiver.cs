@@ -184,7 +184,7 @@ namespace Unity.MLAgents.Actuators
         ///
         /// See [Agents - Actions] for more information on masking actions.
         ///
-        /// [Agents - Actions]: https://github.com/Unity-Technologies/ml-agents/blob/release_22_docs/docs/Learning-Environment-Design-Agents.md#actions
+        /// [Agents - Actions]: https://docs.unity3d.com/Packages/com.unity.ml-agents@latest/index.html?subfolder=/manual/Learning-Environment-Design.html
         /// </remarks>
         /// <seealso cref="IActionReceiver.OnActionReceived"/>
         void WriteDiscreteActionMask(IDiscreteActionMask actionMask);
