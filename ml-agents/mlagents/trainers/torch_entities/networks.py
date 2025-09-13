@@ -329,19 +329,37 @@ class MultiAgentNetworkBody(torch.nn.Module):
     def copy_normalization(self, other_network: "MultiAgentNetworkBody") -> None:
         self.observation_encoder.copy_normalization(other_network.observation_encoder)
 
-    def _get_masks_from_nans(self, obs_tensors: List[torch.Tensor]) -> torch.Tensor:
+    def _get_masks_from_nans(self, obs_tensors: List[List[torch.Tensor]]) -> torch.Tensor:
         """
         Get attention masks by grabbing an arbitrary obs across all the agents
         Since these are raw obs, the padded values are still NaN
         """
-        only_first_obs = [_all_obs[0] for _all_obs in obs_tensors]
-        # Just get the first element in each obs regardless of its dimension. This will speed up
-        # searching for NaNs.
-        only_first_obs_flat = torch.stack(
-            [_obs.reshape(_obs.shape[0], -1)[:, 0] for _obs in only_first_obs], dim=1
-        )
+        batch_size = len(obs_tensors)
+        if batch_size == 0:
+            return torch.empty((0, 0), dtype=torch.bool)
+
+        num_agents = len(obs_tensors[0])
+        if num_agents == 0:
+            return torch.empty((batch_size, 0), dtype=torch.bool)
+
+        # Create a list of 1D tensors, where each tensor corresponds to the first element
+        # of the first observation for each agent in each batch.
+        # This will be a list of lists of scalars.
+        first_elements_per_agent_per_batch = []
+        for batch_idx in range(batch_size):
+            first_elements_for_batch = []
+            for agent_idx in range(num_agents):
+                # Get the first observation for this agent in this batch
+                first_obs_for_agent = obs_tensors[batch_idx][agent_idx]
+                # Get the first element of that observation
+                first_elements_for_batch.append(first_obs_for_agent.flatten()[0])
+            first_elements_per_agent_per_batch.append(torch.stack(first_elements_for_batch, dim=0))
+
+        # Stack these 1D tensors to get a 2D tensor of shape (batch_size, num_agents)
+        stacked_first_elements = torch.stack(first_elements_per_agent_per_batch, dim=0)
+
         # Get the mask from NaNs
-        attn_mask = only_first_obs_flat.isnan().float()
+        attn_mask = stacked_first_elements.isnan()
         return attn_mask
 
     def _copy_and_remove_nans_from_obs(
@@ -349,18 +367,33 @@ class MultiAgentNetworkBody(torch.nn.Module):
     ) -> List[List[torch.Tensor]]:
         """
         Helper function to remove NaNs from observations using an attention mask.
+        all_obs: List[List[torch.Tensor]] where outer list is for batch, inner list for agents.
+                 Each torch.Tensor is an observation for a specific agent in a specific batch.
+        attention_mask: torch.Tensor of shape (batch_size, num_agents)
         """
-        obs_with_no_nans = []
-        for i_agent, single_agent_obs in enumerate(all_obs):
-            no_nan_obs = []
-            for obs in single_agent_obs:
-                new_obs = obs.clone()
-                if new_obs.ndim > 1:
-                    new_obs[attention_mask.bool()[:, i_agent], ::] = 0.0
+        batch_size = len(all_obs)
+        if batch_size == 0:
+            return []
+
+        num_agents = len(all_obs[0])
+        if num_agents == 0:
+            return all_obs
+
+        obs_with_no_nans: List[List[torch.Tensor]] = []
+
+        for batch_idx in range(batch_size):
+            single_batch_obs_no_nans: List[torch.Tensor] = []
+            for i_agent in range(num_agents):
+                original_obs_tensor = all_obs[batch_idx][i_agent].clone()
+                # The mask for this agent in the current batch
+                agent_mask_for_batch = attention_mask.bool()[batch_idx, i_agent]
+
+                # If the mask is True for this agent in this batch, set the observation to 0.0
+                if agent_mask_for_batch:
+                    single_batch_obs_no_nans.append(torch.zeros_like(original_obs_tensor))
                 else:
-                    new_obs[attention_mask.bool()[:, i_agent]] = 0.0
-                no_nan_obs.append(new_obs)
-            obs_with_no_nans.append(no_nan_obs)
+                    single_batch_obs_no_nans.append(original_obs_tensor)
+            obs_with_no_nans.append(single_batch_obs_no_nans)
         return obs_with_no_nans
 
     def forward(
@@ -400,7 +433,7 @@ class MultiAgentNetworkBody(torch.nn.Module):
             self_attn_inputs.append(self.obs_action_encoder(None, f_inp))
 
         concat_encoded_obs = []
-        if obs_only:
+        if len(obs_only) > 0:
             obs_only_attn_mask = self._get_masks_from_nans(obs_only)
             obs_only = self._copy_and_remove_nans_from_obs(obs_only, obs_only_attn_mask)
             for inputs in obs_only:
@@ -644,7 +677,7 @@ class SimpleActor(nn.Module, Actor):
         encoding, memories = self.network_body(
             inputs, memories=memories, sequence_length=sequence_length
         )
-        action, log_probs, entropies = self.action_model(encoding, masks)
+        action, log_probs, continuous_entropy, discrete_entropy = self.action_model(encoding, masks)
         run_out = {}
         # This is the clipped action which is not saved to the buffer
         # but is exclusively sent to the environment.
@@ -652,6 +685,27 @@ class SimpleActor(nn.Module, Actor):
             clip=self.action_model.clip_action
         )
         run_out["log_probs"] = log_probs
+        run_out["continuous_entropy"] = continuous_entropy
+        run_out["discrete_entropy"] = discrete_entropy
+        entropies = None
+        if self.action_spec.continuous_size > 0 and continuous_entropy is not None:
+            entropies = continuous_entropy
+        if self.action_spec.discrete_size > 0 and discrete_entropy is not None:
+            if entropies is not None:
+                entropies += torch.sum(discrete_entropy, dim=1, keepdim=True)
+            else:
+                entropies = torch.sum(discrete_entropy, dim=1, keepdim=True)
+        if entropies is None:
+            # If no actions, or both entropies are None, initialize with zeros
+            # This case should ideally not happen if action_spec is valid
+            if action.continuous_tensor is not None:
+                entropies = torch.zeros_like(action.continuous_tensor[:, 0].unsqueeze(1))
+            elif action.discrete_list is not None and len(action.discrete_list) > 0:
+                entropies = torch.zeros_like(action.discrete_list[0][:, 0].unsqueeze(1))
+            else:
+                # Fallback for truly empty action space, though unlikely
+                entropies = torch.zeros((action.continuous_tensor.shape[0] if action.continuous_tensor is not None else 1, 1))
+
         run_out["entropy"] = entropies
 
         return action, run_out, memories
@@ -746,6 +800,69 @@ class SharedActorCritic(SimpleActor, Critic):
             inputs, memories=memories, sequence_length=sequence_length
         )
         return self.value_heads(encoding), memories_out
+
+    def get_action_and_stats(
+        self,
+        inputs: List[torch.Tensor],
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Tuple[AgentAction, Dict[str, Any], Optional[torch.Tensor]]:
+
+        encoding, memories = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+        action, log_probs, continuous_entropy, discrete_entropy = self.action_model(encoding, masks)
+        run_out = {}
+        # This is the clipped action which is not saved to the buffer
+        # but is exclusively sent to the environment.
+        run_out["env_action"] = action.to_action_tuple(
+            clip=self.action_model.clip_action
+        )
+        run_out["log_probs"] = log_probs
+        run_out["continuous_entropy"] = continuous_entropy
+        run_out["discrete_entropy"] = discrete_entropy
+        entropies = None
+        if self.action_spec.continuous_size > 0 and continuous_entropy is not None:
+            entropies = continuous_entropy
+        if self.action_spec.discrete_size > 0 and discrete_entropy is not None:
+            if entropies is not None:
+                entropies += torch.sum(discrete_entropy, dim=1, keepdim=True)
+            else:
+                entropies = torch.sum(discrete_entropy, dim=1, keepdim=True)
+        if entropies is None:
+            # If no actions, or both entropies are None, initialize with zeros
+            # This case should ideally not happen if action_spec is valid
+            if action.continuous_tensor is not None:
+                entropies = torch.zeros_like(action.continuous_tensor[:, 0].unsqueeze(1))
+            elif action.discrete_list is not None and len(action.discrete_list) > 0:
+                entropies = torch.zeros_like(action.discrete_list[0][:, 0].unsqueeze(1))
+            else:
+                # Fallback for truly empty action space, though unlikely
+                entropies = torch.zeros((action.continuous_tensor.shape[0] if action.continuous_tensor is not None else 1, 1))
+
+        run_out["entropy"] = entropies
+
+        return action, run_out, memories
+
+    def get_stats(
+        self,
+        inputs: List[torch.Tensor],
+        actions: AgentAction,
+        masks: Optional[torch.Tensor] = None,
+        memories: Optional[torch.Tensor] = None,
+        sequence_length: int = 1,
+    ) -> Dict[str, Any]:
+        encoding, actor_mem_outs = self.network_body(
+            inputs, memories=memories, sequence_length=sequence_length
+        )
+
+        log_probs, continuous_entropy, discrete_entropy = self.action_model.evaluate(encoding, masks, actions)
+        run_out = {}
+        run_out["log_probs"] = log_probs
+        run_out["continuous_entropy"] = continuous_entropy
+        run_out["discrete_entropy"] = discrete_entropy
+        return run_out
 
 
 class GlobalSteps(nn.Module):

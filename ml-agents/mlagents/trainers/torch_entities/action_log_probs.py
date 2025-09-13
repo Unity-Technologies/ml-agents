@@ -60,6 +60,8 @@ class ActionLogProbs(NamedTuple):
         """
         Returns the discrete log probs of each branch as a tensor
         """
+        if self.all_discrete_list is None:
+            return None
         return torch.cat(self.all_discrete_list, dim=1)
 
     def to_log_probs_tuple(self) -> LogProbsTuple:

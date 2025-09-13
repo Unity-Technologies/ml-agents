@@ -1,4 +1,5 @@
 # # Unity ML-Agents Toolkit
+import multiprocessing
 from mlagents import torch_utils
 import yaml
 
@@ -203,12 +204,11 @@ def create_environment_factory(
 
         if main_trainer_type == "all":
             # AllTrainer uses PPO, SAC, TD3, TDSAC
-            trainer_types_map = [ "sac", "td3", "tdsac","ppo"]
+            trainer_types_map = ["td3", "tdsac", "bisac", "lsac", "sac","ppo"]
             trainer_type_for_worker = trainer_types_map[worker_id % len(trainer_types_map)]
-        elif main_trainer_type == "both":
-            # BothTrainer uses PPO and SAC
-            trainer_type_for_worker = "ppo" if worker_id % 2 == 0 else "sac"
         else:
+            # For other trainer types (e.g., ppo, sac, td3, tdsac, bisac, lsac),
+            # the main_trainer_type is used directly.
             trainer_type_for_worker = main_trainer_type
 
         specific_log_folder = os.path.join(log_folder, trainer_type_for_worker)
@@ -232,6 +232,10 @@ def create_environment_factory(
 
 
 def run_cli(options: RunOptions) -> None:
+    try:
+        multiprocessing.set_start_method('spawn', force=True)
+    except RuntimeError:
+        pass
     try:
         print(
             """

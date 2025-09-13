@@ -11,10 +11,17 @@ from mlagents.trainers.sac.optimizer_torch import SACSettings
 from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.td3.optimizer_torch import TD3Settings
 from mlagents.trainers.td3.trainer import TD3Trainer
-from mlagents.trainers.tdsac.optimizer_torch import TDSACSettings
 from mlagents.trainers.tdsac.trainer import TDSACTrainer
+from mlagents.trainers.tdsac.optimizer_torch import TDSACSettings
+
+from mlagents.trainers.bisac.trainer import BiSACTrainer
+from mlagents.trainers.bisac.optimizer_torch import BiSACSettings
+
+from mlagents.trainers.lsac.trainer import LSACTrainer
+from mlagents.trainers.lsac.optimizer_torch import LSACSettings
+
+
 from mlagents.trainers.all.trainer import AllTrainer
-from mlagents.trainers.both.trainer import BothTrainer
 from mlagents.trainers.settings import TrainerSettings, HyperparamSettings
 from mlagents_envs import logging_util
 
@@ -32,9 +39,12 @@ def get_default_trainer_types() -> Tuple[Dict[str, Any], Dict[str, Any]]:
             SACTrainer.get_trainer_name(): SACTrainer,
             POCATrainer.get_trainer_name(): POCATrainer,
             TD3Trainer.get_trainer_name(): TD3Trainer,
+
             TDSACTrainer.get_trainer_name(): TDSACTrainer,
-            AllTrainer.get_trainer_name(): AllTrainer,
-            BothTrainer.get_trainer_name(): BothTrainer,
+            BiSACTrainer.get_trainer_name(): BiSACTrainer,
+            LSACTrainer.get_trainer_name(): LSACTrainer,
+
+            AllTrainer.get_trainer_name(): AllTrainer, # Using HyperparamSettings as a placeholder for AllSettings
         }
     )
     # global all_trainer_settings
@@ -44,9 +54,11 @@ def get_default_trainer_types() -> Tuple[Dict[str, Any], Dict[str, Any]]:
             SACTrainer.get_trainer_name(): SACSettings,
             POCATrainer.get_trainer_name(): POCASettings,
             TD3Trainer.get_trainer_name(): TD3Settings,
+
             TDSACTrainer.get_trainer_name(): TDSACSettings,
-            AllTrainer.get_trainer_name(): HyperparamSettings, # Using HyperparamSettings as a placeholder for AllSettings
-            BothTrainer.get_trainer_name(): HyperparamSettings,
+            BiSACTrainer.get_trainer_name(): BiSACSettings,
+            LSACTrainer.get_trainer_name(): LSACSettings,
+            AllTrainer.get_trainer_name(): HyperparamSettings,
         }
     )
 
