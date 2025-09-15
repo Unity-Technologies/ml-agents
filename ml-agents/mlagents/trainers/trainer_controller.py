@@ -28,6 +28,7 @@ from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents import torch_utils
+from mlagents.trainers.settings import TorchSettings
 from mlagents.torch_utils.globals import get_rank
 
 
@@ -292,6 +293,9 @@ class TrainerController:
                     merge_gauges(thread_timer_stack.gauges)
 
     def trainer_update_func(self, trainer: Trainer) -> None:
+        torch_utils.set_torch_config(
+            TorchSettings(device=str(torch_utils.default_device()))
+        )
         while not self.kill_trainers:
             with hierarchical_timer("trainer_advance"):
                 trainer.advance()

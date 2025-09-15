@@ -69,13 +69,17 @@ class TorchPolicy(Policy):
         return self._export_m_size
 
     def _extract_masks(self, decision_requests: DecisionSteps) -> np.ndarray:
+        device = default_device()
         mask = None
         if self.behavior_spec.action_spec.discrete_size > 0:
             num_discrete_flat = np.sum(self.behavior_spec.action_spec.discrete_branches)
-            mask = torch.ones([len(decision_requests), num_discrete_flat])
+            mask = torch.ones(
+                [len(decision_requests), num_discrete_flat], device=device
+            )
             if decision_requests.action_mask is not None:
                 mask = torch.as_tensor(
-                    1 - np.concatenate(decision_requests.action_mask, axis=1)
+                    1 - np.concatenate(decision_requests.action_mask, axis=1),
+                    device=device,
                 )
         return mask
 
@@ -91,11 +95,12 @@ class TorchPolicy(Policy):
         """
         obs = decision_requests.obs
         masks = self._extract_masks(decision_requests)
-        tensor_obs = [torch.as_tensor(np_ob) for np_ob in obs]
+        device = default_device()
+        tensor_obs = [torch.as_tensor(np_ob, device=device) for np_ob in obs]
 
-        memories = torch.as_tensor(self.retrieve_memories(global_agent_ids)).unsqueeze(
-            0
-        )
+        memories = torch.as_tensor(
+            self.retrieve_memories(global_agent_ids), device=device
+        ).unsqueeze(0)
         with torch.no_grad():
             action, run_out, memories = self.actor.get_action_and_stats(
                 tensor_obs, masks=masks, memories=memories
