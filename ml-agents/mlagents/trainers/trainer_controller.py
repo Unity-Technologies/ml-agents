@@ -28,7 +28,6 @@ from mlagents.trainers.trainer import TrainerFactory
 from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.agent_processor import AgentManager
 from mlagents import torch_utils
-from mlagents.trainers.settings import TorchSettings
 from mlagents.torch_utils.globals import get_rank
 
 
@@ -293,9 +292,6 @@ class TrainerController:
                     merge_gauges(thread_timer_stack.gauges)
 
     def trainer_update_func(self, trainer: Trainer) -> None:
-        # Note: Avoid calling torch.set_default_device in worker threads; it can
-        # interfere with PyTorch's global device context manager. The policy and
-        # optimizer code explicitly places tensors on the configured default_device().
         while not self.kill_trainers:
             with hierarchical_timer("trainer_advance"):
                 trainer.advance()
