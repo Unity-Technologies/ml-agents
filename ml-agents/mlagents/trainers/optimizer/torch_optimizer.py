@@ -1,5 +1,5 @@
 from typing import Dict, Optional, Tuple, List
-from mlagents.torch_utils import torch
+from mlagents.torch_utils import torch, default_device
 import numpy as np
 from collections import defaultdict
 
@@ -162,7 +162,7 @@ class TorchOptimizer(Optimizer):
             memory = self.critic_memory_dict[agent_id]
         else:
             memory = (
-                torch.zeros((1, 1, self.critic.memory_size))
+                torch.zeros((1, 1, self.critic.memory_size), device=default_device())
                 if self.policy.use_recurrent
                 else None
             )

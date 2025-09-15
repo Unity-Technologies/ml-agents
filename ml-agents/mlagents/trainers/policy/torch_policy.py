@@ -109,6 +109,7 @@ class TorchPolicy(Policy):
         if "log_probs" in run_out:
             run_out["log_probs"] = run_out["log_probs"].to_log_probs_tuple()
         if "entropy" in run_out:
+            # Ensure entropy is detached and moved to CPU before NumPy conversion
             run_out["entropy"] = ModelUtils.to_numpy(run_out["entropy"])
         if self.use_recurrent:
             run_out["memory_out"] = ModelUtils.to_numpy(memories).squeeze(0)

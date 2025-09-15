@@ -608,12 +608,12 @@ class TorchPOCAOptimizer(TorchOptimizer):
             _init_baseline_mem = self.baseline_memory_dict[agent_id]
         else:
             _init_value_mem = (
-                torch.zeros((1, 1, self.critic.memory_size))
+                torch.zeros((1, 1, self.critic.memory_size), device=default_device())
                 if self.policy.use_recurrent
                 else None
             )
             _init_baseline_mem = (
-                torch.zeros((1, 1, self.critic.memory_size))
+                torch.zeros((1, 1, self.critic.memory_size), device=default_device())
                 if self.policy.use_recurrent
                 else None
             )
