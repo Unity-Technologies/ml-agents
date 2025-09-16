@@ -234,9 +234,7 @@ class ModelUtils:
         calling as_tensor on the list directly.
         """
         device = default_device()
-        return torch.as_tensor(
-            np.asanyarray(ndarray_list), dtype=dtype, device=device
-        )
+        return torch.as_tensor(np.asanyarray(ndarray_list), dtype=dtype, device=device)
 
     @staticmethod
     def list_to_tensor_list(

@@ -226,7 +226,9 @@ class DiscriminatorNetwork(torch.nn.Module):
         if self._settings.use_actions:
             policy_action = self.get_action_input(policy_batch)
             expert_action = self.get_action_input(expert_batch)
-            action_epsilon = torch.rand(policy_action.shape, device=policy_action.device)
+            action_epsilon = torch.rand(
+                policy_action.shape, device=policy_action.device
+            )
             policy_dones = torch.as_tensor(
                 policy_batch[BufferKey.DONE], dtype=torch.float, device=default_device()
             ).unsqueeze(1)
