@@ -12,6 +12,7 @@ and this project adheres to
 - Fixed tensor indexing to use correct CHW layout (#6239)
 
 #### ml-agents / ml-agents-envs
+- Set the Torch version constraint to 2.8 (#6251)
 - Fixed CUDA/CPU mismatch in threaded training (#6245)
 
 ## [4.0.0] - 2025-08-15
