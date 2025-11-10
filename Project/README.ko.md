@@ -60,3 +60,11 @@
 - **W/S**: Z축 이동
 - **A/D**: X축 이동
 - **Q/E**: Y축 이동
+
+
+### Vidoes
+[![ML-Agent UR16 PPO 1](https://img.youtube.com/vi/hCeppvgj01s/0.jpg)](https://www.youtube.com/watch?v=hCeppvgj01s)
+[![ML-Agent UR16 PPO 2](https://img.youtube.com/vi/eraQduLw8Zk/0.jpg)](https://www.youtube.com/watch?v=eraQduLw8Zk)
+[![ML-Agent UR16 PPO 3](https://img.youtube.com/vi/wddv8uCz7a0/0.jpg)](https://www.youtube.com/watch?v=wddv8uCz7a0)
+[![ML-Agent UR16 PPO 4](https://img.youtube.com/vi/cB5jqH2LSJE/0.jpg)](https://www.youtube.com/watch?v=cB5jqH2LSJE)
+[![ML-Agent UR16 PPO 5](https://img.youtube.com/vi/NXXl5ug3gQI/0.jpg)](https://www.youtube.com/watch?v=NXXl5ug3gQI)
