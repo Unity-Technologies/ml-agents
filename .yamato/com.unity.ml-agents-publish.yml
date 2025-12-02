@@ -10,6 +10,7 @@ publish:
     - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     - upm-ci package publish --package-path com.unity.ml-agents
   triggers:
+    expression: NOT push.branch eq "master"
     cancel_old_ci: true
 #    tags:
 #      only:
