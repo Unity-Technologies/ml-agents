@@ -17,8 +17,8 @@ namespace Unity.MLAgents
     [DataContract]
     internal class TimerNode
     {
-        static string s_Separator = ".";
-        static double s_TicksToSeconds = 1e-7; // 100 ns per tick
+        const string k_Separator = ".";
+        const double k_TicksToSeconds = 1e-7; // 100 ns per tick
 
         /// <summary>
         /// Full name of the node. This is the node's parents full name concatenated with this
@@ -78,7 +78,7 @@ namespace Unity.MLAgents
         [DataMember(Name = "total")]
         public double TotalSeconds
         {
-            get { return CurrentTicks * s_TicksToSeconds; }
+            get { return CurrentTicks * k_TicksToSeconds; }
             set { }      // Serialization needs this, but unused.
         }
 
@@ -100,7 +100,7 @@ namespace Unity.MLAgents
                 }
 
                 var selfTicks = Mathf.Max(0, CurrentTicks - totalChildTicks);
-                return selfTicks * s_TicksToSeconds;
+                return selfTicks * k_TicksToSeconds;
             }
             set { }      // Serialization needs this, but unused.
         }
@@ -171,7 +171,7 @@ namespace Unity.MLAgents
 
             if (!m_Children.ContainsKey(name))
             {
-                var childFullName = m_FullName + s_Separator + name;
+                var childFullName = m_FullName + k_Separator + name;
                 var newChild = new TimerNode(childFullName);
                 m_Children[name] = newChild;
                 return newChild;
@@ -189,7 +189,7 @@ namespace Unity.MLAgents
         public string DebugGetTimerString(string parentName = "", int level = 0)
         {
             var indent = new string(' ', 2 * level); // TODO generalize
-            var shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + s_Separator, "");
+            var shortName = (level == 0) ? m_FullName : m_FullName.Replace(parentName + k_Separator, "");
             string timerString;
             if (level == 0)
             {

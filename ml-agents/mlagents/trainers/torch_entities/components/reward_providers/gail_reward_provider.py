@@ -143,7 +143,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         if self._settings.use_actions:
             actions = self.get_action_input(mini_batch)
             dones = torch.as_tensor(
-                mini_batch[BufferKey.DONE], dtype=torch.float
+                mini_batch[BufferKey.DONE], dtype=torch.float, device=default_device()
             ).unsqueeze(1)
             action_inputs = torch.cat([actions, dones], dim=1)
             hidden, _ = self.encoder(inputs, action_inputs)
@@ -162,7 +162,7 @@ class DiscriminatorNetwork(torch.nn.Module):
         """
         Given a policy mini_batch and an expert mini_batch, computes the loss of the discriminator.
         """
-        total_loss = torch.zeros(1)
+        total_loss = torch.zeros(1, device=default_device())
         stats_dict: Dict[str, np.ndarray] = {}
         policy_estimate, policy_mu = self.compute_estimate(
             policy_batch, use_vail_noise=True
@@ -219,21 +219,23 @@ class DiscriminatorNetwork(torch.nn.Module):
         expert_inputs = self.get_state_inputs(expert_batch)
         interp_inputs = []
         for policy_input, expert_input in zip(policy_inputs, expert_inputs):
-            obs_epsilon = torch.rand(policy_input.shape)
+            obs_epsilon = torch.rand(policy_input.shape, device=policy_input.device)
             interp_input = obs_epsilon * policy_input + (1 - obs_epsilon) * expert_input
             interp_input.requires_grad = True  # For gradient calculation
             interp_inputs.append(interp_input)
         if self._settings.use_actions:
             policy_action = self.get_action_input(policy_batch)
             expert_action = self.get_action_input(expert_batch)
-            action_epsilon = torch.rand(policy_action.shape)
+            action_epsilon = torch.rand(
+                policy_action.shape, device=policy_action.device
+            )
             policy_dones = torch.as_tensor(
-                policy_batch[BufferKey.DONE], dtype=torch.float
+                policy_batch[BufferKey.DONE], dtype=torch.float, device=default_device()
             ).unsqueeze(1)
             expert_dones = torch.as_tensor(
-                expert_batch[BufferKey.DONE], dtype=torch.float
+                expert_batch[BufferKey.DONE], dtype=torch.float, device=default_device()
             ).unsqueeze(1)
-            dones_epsilon = torch.rand(policy_dones.shape)
+            dones_epsilon = torch.rand(policy_dones.shape, device=policy_dones.device)
             action_inputs = torch.cat(
                 [
                     action_epsilon * policy_action

@@ -22,6 +22,13 @@ namespace Unity.MLAgents.SideChannels
         static readonly Queue<CachedSideChannelMessage> s_CachedMessages =
             new Queue<CachedSideChannelMessage>();
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStaticsOnLoad()
+        {
+            s_RegisteredChannels = new Dictionary<Guid, SideChannel>();
+        }
+#endif
         /// <summary>
         /// Register a side channel to begin sending and receiving messages. This method is
         /// available for environments that have custom side channels. All built-in side

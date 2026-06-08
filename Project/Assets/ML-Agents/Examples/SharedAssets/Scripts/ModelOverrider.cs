@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using System.IO;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;

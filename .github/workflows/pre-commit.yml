@@ -11,7 +11,13 @@ on:
 
 jobs:
   pre-commit:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-24.04
+    env:
+      DOTNET_NOLOGO: 1
+      DOTNET_SKIP_FIRST_TIME_EXPERIENCE: "1"
+      DOTNET_CLI_HOME: "${{ github.workspace }}/.dotnet"
+      NUGET_PACKAGES: "${{ github.workspace }}/.nuget/packages"
+      TMPDIR: "${{ github.workspace }}/.tmp"
     steps:
     - uses: actions/checkout@v4
     - uses: actions/setup-python@v5
@@ -19,10 +25,13 @@ jobs:
         python-version: 3.10.x
     - uses: ruby/setup-ruby@v1
       env:
-        ImageOS: ubuntu20
+        ImageOS: ubuntu24
       with:
         ruby-version: '2.7'
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
+    - name: Create writable dirs
+      run: |
+        mkdir -p "$DOTNET_CLI_HOME" "$NUGET_PACKAGES" "$TMPDIR"
     - uses: actions/setup-dotnet@v4
       with:
         dotnet-version: '8.0.202'
@@ -30,6 +39,10 @@ jobs:
       run: |
         python -m pip install pre-commit
         pre-commit install
+    - name: Pre-warm dotnet
+      run: |
+        dotnet --info
+        dotnet restore || true
     - name: Run pre-commit
       run: |
         pre-commit run --all-files

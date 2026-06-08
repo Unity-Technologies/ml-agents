@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RuleSet Name="MLAgents" ToolsVersion="10.0">
+  <Rules AnalyzerId="Unity.Serialization.Analyzer" RuleNamespace="Unity.Serialization.Analyzer">
+    <Rule Id="UAC1005" Action="None" />
+    <Rule Id="UAC1015" Action="None" />
+  </Rules>
+</RuleSet>

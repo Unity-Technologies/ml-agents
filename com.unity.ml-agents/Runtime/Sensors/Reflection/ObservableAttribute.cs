@@ -59,7 +59,7 @@ namespace Unity.MLAgents.Sensors.Reflection
         /// <summary>
         /// Supported types and their observation sizes and corresponding sensor type.
         /// </summary>
-        static Dictionary<Type, (int, Type)> s_TypeToSensorInfo = new Dictionary<Type, (int, Type)>()
+        static readonly Dictionary<Type, (int, Type)> s_TypeToSensorInfo = new Dictionary<Type, (int, Type)>()
         {
             {typeof(int), (1, typeof(IntReflectionSensor))},
             {typeof(bool), (1, typeof(BoolReflectionSensor))},

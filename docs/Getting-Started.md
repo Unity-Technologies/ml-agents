@@ -92,7 +92,7 @@ itself to keep the ball balanced on its head.
 ## Running a pre-trained model
 
 We include pre-trained models for our agents (`.onnx` files) and we use the
-[Sentis](Sentis.md) to run these models inside
+[Inference Engine](Inference-Engine.md) to run these models inside
 Unity. In this section, we will use the pre-trained model for the 3D Ball
 example.
 

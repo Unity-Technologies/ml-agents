@@ -49,6 +49,15 @@ namespace Unity.MLAgents.Integrations.Match3
             set => m_ForceHeuristic = value;
         }
 
+        int CreateNewSeed()
+        {
+#if UNITY_6000_3_OR_NEWER
+            return gameObject.GetEntityId().GetHashCode();
+#else
+            return gameObject.GetInstanceID();
+#endif
+        }
+
         /// <inheritdoc/>
         public override IActuator[] CreateActuators()
         {
@@ -58,7 +67,7 @@ namespace Unity.MLAgents.Integrations.Match3
                 return Array.Empty<IActuator>();
             }
 
-            var seed = m_RandomSeed == -1 ? gameObject.GetInstanceID() : m_RandomSeed + 1;
+            var seed = m_RandomSeed == -1 ? CreateNewSeed() : m_RandomSeed + 1;
             return new IActuator[] { new Match3Actuator(board, m_ForceHeuristic, seed, m_ActuatorName) };
         }
 

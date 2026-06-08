@@ -2,39 +2,44 @@
 
 **Table of Contents:**
 
-- [Decisions](#decisions)
-- [Observations and Sensors](#observations-and-sensors)
-  - [Generating Observations](#generating-observations)
-    - [Agent.CollectObservations()](#agentcollectobservations)
-    - [Observable Fields and Properties](#observable-fields-and-properties)
-    - [ISensor interface and SensorComponents](#isensor-interface-and-sensorcomponents)
-  - [Vector Observations](#vector-observations)
-    - [One-hot encoding categorical information](#one-hot-encoding-categorical-information)
-    - [Normalization](#normalization)
-    - [Stacking](#stacking)
-    - [Vector Observation Summary & Best Practices](#vector-observation-summary--best-practices)
-  - [Visual Observations](#visual-observations)
-    - [Visual Observation Summary & Best Practices](#visual-observation-summary--best-practices)
-  - [Raycast Observations](#raycast-observations)
-    - [RayCast Observation Summary & Best Practices](#raycast-observation-summary--best-practices)
-  - [Variable Length Observations](#variable-length-observations)
-    - [Variable Length Observation Summary & Best Practices](#variable-length-observation-summary--best-practices)
-  - [Goal Signal](#goal-signal)
-    - [Goal Signal Summary & Best Practices](#goal-signal-summary--best-practices)
-- [Actions and Actuators](#actions-and-actuators)
-  - [Continuous Actions](#continuous-actions)
-  - [Discrete Actions](#discrete-actions)
-    - [Masking Discrete Actions](#masking-discrete-actions)
-  - [Actions Summary & Best Practices](#actions-summary--best-practices)
-- [Rewards](#rewards)
-  - [Examples](#examples)
-  - [Rewards Summary & Best Practices](#rewards-summary--best-practices)
-- [Agent Properties](#agent-properties)
-- [Destroying an Agent](#destroying-an-agent)
-- [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
-  - [Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
-  - [Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
-- [Recording Demonstrations](#recording-demonstrations)
+- [Agents](#agents)
+  - [Decisions](#decisions)
+  - [Observations and Sensors](#observations-and-sensors)
+    - [Generating Observations](#generating-observations)
+      - [Agent.CollectObservations()](#agentcollectobservations)
+      - [Observable Fields and Properties](#observable-fields-and-properties)
+      - [ISensor interface and SensorComponents](#isensor-interface-and-sensorcomponents)
+    - [Vector Observations](#vector-observations)
+      - [One-hot encoding categorical information](#one-hot-encoding-categorical-information)
+      - [Normalization](#normalization)
+      - [Stacking](#stacking)
+      - [Vector Observation Summary \& Best Practices](#vector-observation-summary--best-practices)
+    - [Visual Observations](#visual-observations)
+      - [Visual Observation Summary \& Best Practices](#visual-observation-summary--best-practices)
+    - [Raycast Observations](#raycast-observations)
+      - [RayCast Observation Summary \& Best Practices](#raycast-observation-summary--best-practices)
+    - [Grid Observations](#grid-observations)
+      - [Grid Observation Summary \& Best Practices](#grid-observation-summary--best-practices)
+    - [Variable Length Observations](#variable-length-observations)
+      - [Variable Length Observation Summary \& Best Practices](#variable-length-observation-summary--best-practices)
+    - [Goal Signal](#goal-signal)
+      - [Goal Signal Summary \& Best Practices](#goal-signal-summary--best-practices)
+  - [Actions and Actuators](#actions-and-actuators)
+    - [Continuous Actions](#continuous-actions)
+    - [Discrete Actions](#discrete-actions)
+      - [Masking Discrete Actions](#masking-discrete-actions)
+    - [IActuator interface and ActuatorComponents](#iactuator-interface-and-actuatorcomponents)
+    - [Actions Summary \& Best Practices](#actions-summary--best-practices)
+  - [Rewards](#rewards)
+    - [Examples](#examples)
+    - [Rewards Summary \& Best Practices](#rewards-summary--best-practices)
+  - [Agent Properties](#agent-properties)
+  - [Destroying an Agent](#destroying-an-agent)
+  - [Defining Multi-agent Scenarios](#defining-multi-agent-scenarios)
+    - [Teams for Adversarial Scenarios](#teams-for-adversarial-scenarios)
+    - [Groups for Cooperative Scenarios](#groups-for-cooperative-scenarios)
+      - [Cooperative Behaviors Notes and Best Practices](#cooperative-behaviors-notes-and-best-practices)
+  - [Recording Demonstrations](#recording-demonstrations)
 
 An agent is an entity that can observe its environment, decide on the best
 course of action using those observations, and execute those actions within its
@@ -578,9 +583,7 @@ granularity of the observation and training speed.
 To allow more variety of observations that grid sensor can capture, the
 `GridSensorComponent` and the underlying `GridSensorBase` also provides interfaces
 that can be overridden to collect customized observation from detected objects.
-See the doc on
-[extending grid Sensors](https://github.com/Unity-Technologies/ml-agents/blob/release_22_docs/com.unity.ml-agents.extensions/Documentation~/CustomGridSensors.md)
-for more details on custom grid sensors.
+See the Unity package documentation for more details on custom grid sensors.
 
 __Note__: The `GridSensor` only works in 3D environments and will not behave
 properly in 2D environments.
@@ -661,7 +664,7 @@ a `CameraSensor` is a goal by attaching a `VectorSensorComponent` or a
 `CameraSensorComponent` to the Agent and selecting `Goal Signal` as `Observation Type`.
 On the trainer side, there are two different ways to condition the policy. This
 setting is determined by the
-[conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
+[goal_conditioning_type parameter](Training-Configuration-File.md#common-trainer-configurations).
 If set to `hyper` (default) a [HyperNetwork](https://arxiv.org/pdf/1609.09106.pdf)
 will be used to generate some of the
 weights of the policy using the goal observations as input. Note that using a
@@ -674,7 +677,7 @@ For an example on how to use a goal signal, see the
 #### Goal Signal Summary & Best Practices
  - Attach a `VectorSensorComponent` or `CameraSensorComponent` to an agent and
  set the observation type to goal to use the feature.
- - Set the conditioning_type parameter in the training configuration.
+ - Set the goal_conditioning_type parameter in the training configuration.
  - Reduce the number of hidden units in the network when using the HyperNetwork
  conditioning type.
 

@@ -1,0 +1,11 @@
+{
+  "name": "com.unity.ml-agents.tests",
+  "displayName": "ML Agents Tests",
+  "version": "1.0.0",
+  "unity": "6000.0",
+  "description": "Provides testing for ML Agents.",
+  "dependencies": {
+    "com.unity.ml-agents": "4.0.3"
+  },
+  "type": "tests"
+}

@@ -5,11 +5,51 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
+## [4.0.3] - 2026-04-17
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Support for Fast Enter Play Mode required by Core CLR (#6288)
+- Fix deprecated instanceID API usages in com.unity.ml-agents (#6287)
+- Improve documentation on how to set up local environments (#6289)
+- Upgraded to Sentis 2.6.1 (#6291)
+
+## [4.0.2] - 2026-02-03
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Tests have been migrated to a companion package `com.unity.ml-agents.tests` to conform with the recommandations and best practices of Unity (#6280)
+- Upgraded to Inference Engine 2.5.0 (#6280)
+
+## [4.0.1] - 2025-12-04
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Upgraded to Inference Engine 2.4.1 (#6269)
+- Fixed tensor indexing to use correct CHW layout (#6239)
+- Updated the installation doc (#6242)
+- Fixed Unity Editor crashing when quitting in play mode (#6274)
+
+#### ml-agents / ml-agents-envs
+- Set the Torch version constraint to 2.8 (#6251)
+- Fixed CUDA/CPU mismatch in threaded training (#6245)
+
+## [4.0.0] - 2025-08-28
+### Major Changes
+#### com.unity.ml-agents (C#)
+- Upgraded to Inference Engine 2.2.1 (#6212)
+- The minimum supported Unity version was updated to 6000.0. (#6207)
+- Merged the extension package com.unity.ml-agents.extensions to the main package com.unity.ml-agents. (#6227)
+
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Removed broken sample from the package (#6230)
+- Moved to Unity Package documentation as the primary developer documentation. (#6232)
+
+#### ml-agents / ml-agents-envs
+- Bumped grpcio version to >=1.11.0,<=1.53.2 (#6208)
 
 ## [3.0.0] - 2024-09-02
 ### Major Changes
 #### com.unity.ml-agents / com.unity.ml-agents.extensions (C#)
-- Upgraded to Sentis 2.1.0 ()
+- Upgraded to Sentis 2.1.0 (#6153)
 - Upgraded to Sentis 2.0.0 (#6137)
 - Upgraded to Sentis 1.3.0-pre.3 (#6070)
 - Upgraded to Sentis 1.3.0-exp.2 (#6013)

@@ -22,6 +22,7 @@ namespace Unity.MLAgentsExamples
 
         private static Color s_EmptyColor = new Color(0.5f, 0.5f, 0.5f, .25f);
 
+        [System.NonSerialized]
         public Dictionary<(int, int), Match3TileSelector> tilesDict = new Dictionary<(int, int), Match3TileSelector>();
         public float CubeSpacing = 1.25f;
         public GameObject TilePrefab;

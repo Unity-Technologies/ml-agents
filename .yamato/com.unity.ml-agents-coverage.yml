@@ -12,7 +12,7 @@ test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ edi
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
-        - npm install upm-ci-utils@1.27.0 -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+        - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci project test -u {{ editor.version }} --type project-tests --project-path {{ editor.testProject }} --package-filter {{ package.name }} {{ coverageOptions }} --extra-utr-arg "reruncount=2"
         - |
           conda activate python3.10
@@ -33,9 +33,6 @@ test_coverage_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ edi
             NOT pull_request.draft AND
             (pull_request.changes.any match "com.unity.ml-agents/**" OR
              pull_request.changes.any match " {{ editor.testProject }}/**" OR
-            {% if package.name == "com.unity.ml-agents.extensions" %}
-            pull_request.changes.any match "com.unity.ml-agents.extensions/**" OR
-            {% endif %}
             pull_request.changes.any match ".yamato/com.unity.ml-agents-coverage.yml")
       {% endif %}
 {% endfor %}

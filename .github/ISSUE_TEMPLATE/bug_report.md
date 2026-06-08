@@ -24,7 +24,7 @@ Please wrap in triple backticks (```) to make it easier to read.
 If applicable, add screenshots to help explain your problem.
 
 **Environment (please complete the following information):**
-- Unity Version: [e.g. Unity 2023.2.12f1]
+- Unity Version: [e.g. Unity 6000.0.40f1]
 - OS + version: [e.g. Windows 10]
 - _ML-Agents version_: (e.g. ML-Agents v0.8, or latest `develop` branch from source)
 - _Torch version_: (you can run `pip3 show torch` to get this)

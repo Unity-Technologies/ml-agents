@@ -2,21 +2,22 @@
 
 **Table of Contents**
 
-- [Common Trainer Configurations](#common-trainer-configurations)
-- [Trainer-specific Configurations](#trainer-specific-configurations)
-  - [PPO-specific Configurations](#ppo-specific-configurations)
-  - [SAC-specific Configurations](#sac-specific-configurations)
-- [Reward Signals](#reward-signals)
-  - [Extrinsic Rewards](#extrinsic-rewards)
-  - [Curiosity Intrinsic Reward](#curiosity-intrinsic-reward)
-  - [GAIL Intrinsic Reward](#gail-intrinsic-reward)
-  - [RND Intrinsic Reward](#rnd-intrinsic-reward)
-  - [Reward Signal Settings for SAC](#reward-signal-settings-for-sac)
-- [Behavioral Cloning](#behavioral-cloning)
-- [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
-- [Self-Play](#self-play)
-  - [Note on Reward Signals](#note-on-reward-signals)
-  - [Note on Swap Steps](#note-on-swap-steps)
+- [Training Configuration File](#training-configuration-file)
+  - [Common Trainer Configurations](#common-trainer-configurations)
+  - [Trainer-specific Configurations](#trainer-specific-configurations)
+    - [PPO-specific Configurations](#ppo-specific-configurations)
+    - [SAC-specific Configurations](#sac-specific-configurations)
+    - [MA-POCA-specific Configurations](#ma-poca-specific-configurations)
+  - [Reward Signals](#reward-signals)
+    - [Extrinsic Rewards](#extrinsic-rewards)
+    - [Curiosity Intrinsic Reward](#curiosity-intrinsic-reward)
+    - [GAIL Intrinsic Reward](#gail-intrinsic-reward)
+    - [RND Intrinsic Reward](#rnd-intrinsic-reward)
+  - [Behavioral Cloning](#behavioral-cloning)
+  - [Memory-enhanced Agents using Recurrent Neural Networks](#memory-enhanced-agents-using-recurrent-neural-networks)
+  - [Self-Play](#self-play)
+    - [Note on Reward Signals](#note-on-reward-signals)
+    - [Note on Swap Steps](#note-on-swap-steps)
 
 ## Common Trainer Configurations
 
@@ -44,7 +45,7 @@ choice of the trainer (which we review on subsequent sections).
 | `network_settings -> num_layers`             | (default = `2`) The number of hidden layers in the neural network. Corresponds to how many hidden layers are present after the observation input, or after the CNN encoding of the visual observation. For simple problems, fewer layers are likely to train faster and more efficiently. More layers may be necessary for more complex control problems. <br><br> Typical range: `1` - `3`                                                                                                                                                                                                                                                                                                                                                    |
 | `network_settings -> normalize`              | (default = `false`) Whether normalization is applied to the vector observation inputs. This normalization is based on the running average and variance of the vector observation. Normalization can be helpful in cases with complex continuous control problems, but may be harmful with simpler discrete control problems.                                                                                                                                                                                                                                                                                                                                                                                                                       |
 | `network_settings -> vis_encode_type`       | (default = `simple`) Encoder type for encoding visual observations. <br><br> `simple` (default) uses a simple encoder which consists of two convolutional layers, `nature_cnn` uses the CNN implementation proposed by [Mnih et al.](https://www.nature.com/articles/nature14236), consisting of three convolutional layers, and `resnet` uses the [IMPALA Resnet](https://arxiv.org/abs/1802.01561) consisting of three stacked layers, each with two residual blocks, making a much larger network than the other two. `match3` is a smaller CNN ([Gudmundsoon et al.](https://www.researchgate.net/publication/328307928_Human-Like_Playtesting_with_Deep_Learning)) that can capture more granular spatial relationships and is optimized for board games. `fully_connected` uses a single fully connected dense layer as encoder without any convolutional layers. <br><br> Due to the size of convolution kernel, there is a minimum observation size limitation that each encoder type can handle - `simple`: 20x20, `nature_cnn`: 36x36, `resnet`: 15 x 15, `match3`: 5x5.  `fully_connected` doesn't have convolutional layers and thus no size limits, but since it has less representation power it should be reserved for very small inputs. Note that using the `match3` CNN with very large visual input might result in a huge observation encoding and thus potentially slow down training or cause memory issues.                                                                                                                                                                                              |
-| `network_settings -> conditioning_type`       | (default = `hyper`) Conditioning type for the policy using goal observations. <br><br> `none` treats the goal observations as regular observations, `hyper` (default) uses a HyperNetwork with goal observations as input to generate some of the weights of the policy. Note that when using `hyper` the number of parameters of the network increases greatly. Therefore, it is recommended to reduce the number of `hidden_units` when using this `conditioning_type`
+| `network_settings -> goal_conditioning_type`       | (default = `hyper`) Conditioning type for the policy using goal observations. <br><br> `none` treats the goal observations as regular observations, `hyper` (default) uses a HyperNetwork with goal observations as input to generate some of the weights of the policy. Note that when using `hyper` the number of parameters of the network increases greatly. Therefore, it is recommended to reduce the number of `hidden_units` when using this `goal_conditioning_type`
 
 
 ## Trainer-specific Configurations

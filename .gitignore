@@ -24,6 +24,9 @@
 *.csproj
 *.unityproj
 *.sln
+# Allow C# projects and solutions in Tools directory
+!Tools/**/*.csproj
+!Tools/**/*.sln
 *.suo
 *.tmp
 *.user
@@ -50,8 +53,8 @@
 # Plugins
 /com.unity.ml-agents/VideoRecorder*
 
-# Generated doc folders
-/docs/html
+# MkDocs build output
+/site/
 
 # Mac hidden files
 *.DS_Store
@@ -98,3 +101,6 @@ coverage.xml
 
 # yamato-parser temporary output files:
 .yamato/unfolded/
+
+Tools/ci/obj/
+Tools/ci/bin/

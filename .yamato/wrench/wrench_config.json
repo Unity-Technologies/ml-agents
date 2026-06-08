@@ -1,13 +1,55 @@
 {
-  "project_path": "Tools/CI",
-  "schema_version": 0.5,
+  "schema_version": 0.7,
   "packages": {
     "com.unity.ml-agents": {
       "directory": "com.unity.ml-agents/",
       "prePackCommands": [],
-      "preTestCommands": {},
+      "preTestCommands": {
+        "MacOs13": [],
+        "MacOs13Arm": [],
+        "Ubuntu1804": [],
+        "Ubuntu2004": [],
+        "Ubuntu2204": [],
+        "Win10": [],
+        "Win10GPU": [],
+        "Win11": [],
+        "Win11Arm": [],
+        "Win11GPU": []
+      },
       "InternalOnly": false,
-      "NeverPublish": false
+      "NeverPublish": false,
+      "MaxEditorVersion": "",
+      "coverageEnabled": false,
+      "coverageCommands": [
+        "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;"
+      ],
+      "dependantsToIgnoreInPreviewApv": {},
+      "postPackCommands": []
+    },
+    "com.unity.ml-agents.tests": {
+      "directory": "com.unity.ml-agents.tests/",
+      "prePackCommands": [],
+      "preTestCommands": {
+        "MacOs13": [],
+        "MacOs13Arm": [],
+        "Ubuntu1804": [],
+        "Ubuntu2004": [],
+        "Ubuntu2204": [],
+        "Win10": [],
+        "Win10GPU": [],
+        "Win11": [],
+        "Win11Arm": [],
+        "Win11GPU": []
+      },
+      "InternalOnly": false,
+      "NeverPublish": false,
+      "MaxEditorVersion": "",
+      "coverageEnabled": false,
+      "coverageCommands": [
+        "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;"
+      ],
+      "dependantsToIgnoreInPreviewApv": {},
+      "postPackCommands": []
     }
   },
   "releasing_packages": [
@@ -15,13 +57,14 @@
   ],
   "jobs_to_monitor": {
     "com.unity.ml-agents": [
-      ".yamato/wrench/api-validation-jobs.yml#api_validation_-_ml-agents_-_2023_2_-_windows",
+      ".yamato/wrench/api-validation-jobs.yml#api_validation_-_ml-agents_-_6000_0_-_win10",
       ".yamato/wrench/preview-a-p-v.yml#all_preview_apv_jobs",
       ".yamato/wrench/promotion-jobs.yml#publish_dry_run_ml-agents"
     ]
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_ml-agents",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "0.10.5.0",
-  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
+  "wrench_version": "2.7.0.0",
+  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json",
+  "cs_project_path": "Tools/ci/MLAgents.Cookbook.csproj"
 }

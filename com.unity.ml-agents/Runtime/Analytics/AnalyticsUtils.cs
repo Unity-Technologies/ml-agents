@@ -43,6 +43,14 @@ namespace Unity.MLAgents.Analytics
 
         internal static bool s_SendEditorAnalytics = true;
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStaticsOnLoad()
+        {
+            s_SendEditorAnalytics = true;
+        }
+#endif
+
         /// <summary>
         /// Helper class to temporarily disable sending analytics from unit tests.
         /// </summary>

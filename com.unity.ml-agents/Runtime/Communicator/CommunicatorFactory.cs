@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 namespace Unity.MLAgents
 {
@@ -23,6 +24,14 @@ namespace Unity.MLAgents
             set => s_Enabled = value;
         }
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStaticsOnLoad()
+        {
+            s_Creator = null;
+            s_Enabled = true;
+        }
+#endif
         /// <summary>
         /// Check if a communicator has been registered.
         /// </summary>

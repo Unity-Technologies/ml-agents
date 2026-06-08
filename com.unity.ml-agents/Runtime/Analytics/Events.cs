@@ -2,10 +2,28 @@ using System;
 using System.Collections.Generic;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Sensors;
+using UnityEngine.Analytics;
 
 namespace Unity.MLAgents.Analytics
 {
-    internal struct InferenceEvent
+    internal static class AnalyticsConstants
+    {
+        public const string k_VendorKey = "unity.ml-agents";
+
+        /// <summary>
+        /// Maximum number of events sent per hour.
+        /// </summary>
+        public const int k_MaxEventsPerHour = 1000;
+
+        /// <summary>
+        /// Maximum number of items in an event.
+        /// </summary>
+        public const int k_MaxNumberOfElements = 1000;
+    }
+
+    [Serializable]
+    [AnalyticInfo(eventName: "ml_agents_inferencemodelset", version: 1, vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
+    internal class InferenceEvent : IAnalytic.IData, IAnalytic
     {
         /// <summary>
         /// Hash of the BehaviorName.
@@ -25,6 +43,12 @@ namespace Unity.MLAgents.Analytics
         public int MemorySize;
         public long TotalWeightSizeBytes;
         public string ModelHash;
+        public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+        {
+            data = this;
+            error = null;
+            return true;
+        }
     }
 
     /// <summary>
@@ -126,7 +150,9 @@ namespace Unity.MLAgents.Analytics
         }
     }
 
-    internal struct RemotePolicyInitializedEvent
+    [Serializable]
+    [AnalyticInfo(eventName: "ml_agents_remote_policy_initialized", vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
+    internal class RemotePolicyInitializedEvent : IAnalytic.IData, IAnalytic
     {
         public string TrainingSessionGuid;
         /// <summary>
@@ -143,9 +169,18 @@ namespace Unity.MLAgents.Analytics
         /// </summary>
         public string MLAgentsEnvsVersion;
         public string TrainerCommunicationVersion;
+        public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+        {
+            data = this;
+            error = null;
+            return true;
+        }
     }
 
-    internal struct TrainingEnvironmentInitializedEvent
+
+    [Serializable]
+    [AnalyticInfo(eventName: "ml_agents_training_environment_initialized", vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
+    internal class TrainingEnvironmentInitializedEvent : IAnalytic.IData, IAnalytic
     {
         public string TrainingSessionGuid;
 
@@ -157,6 +192,12 @@ namespace Unity.MLAgents.Analytics
         public int NumEnvironments;
         public int NumEnvironmentParameters;
         public string RunOptions;
+        public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+        {
+            data = this;
+            error = null;
+            return true;
+        }
     }
 
     [Flags]
@@ -178,7 +219,9 @@ namespace Unity.MLAgents.Analytics
         Curriculum = 1 << 4,
     }
 
-    internal struct TrainingBehaviorInitializedEvent
+    [Serializable]
+    [AnalyticInfo(eventName: "ml_agents_training_behavior_initialized", vendorKey: AnalyticsConstants.k_VendorKey, maxEventsPerHour: AnalyticsConstants.k_MaxEventsPerHour, maxNumberOfElements: AnalyticsConstants.k_MaxNumberOfElements)]
+    internal class TrainingBehaviorInitializedEvent : IAnalytic.IData, IAnalytic
     {
         public string TrainingSessionGuid;
 
@@ -190,5 +233,12 @@ namespace Unity.MLAgents.Analytics
         public int NumNetworkLayers;
         public int NumNetworkHiddenUnits;
         public string Config;
+
+        public bool TryGatherData(out IAnalytic.IData data, out Exception error)
+        {
+            data = this;
+            error = null;
+            return true;
+        }
     }
 }

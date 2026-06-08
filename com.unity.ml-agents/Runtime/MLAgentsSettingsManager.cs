@@ -16,7 +16,14 @@ namespace Unity.MLAgents
         internal static event Action OnSettingsChange;
         internal const string EditorBuildSettingsConfigKey = "com.unity.ml-agents.settings";
         private static MLAgentsSettings s_Settings;
-
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
+        static void ResetStaticsOnLoad()
+        {
+            s_Settings = null;
+            OnSettingsChange = null;
+        }
+#endif
 
         // setter will trigger callback for refreshing editor UI if using editor
         public static MLAgentsSettings Settings

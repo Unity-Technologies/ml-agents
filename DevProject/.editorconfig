@@ -1,0 +1,5 @@
+# Suppress UAC1005 (direct self-reference in serializable type) from com.unity.ai.inference package
+# This is a known issue in the inference package's ThirdParty/Microsoft.Msagl RBNode<T> class
+# and should be removed once the inference package ships a fix.
+[*.cs]
+dotnet_diagnostic.UAC1005.severity = none

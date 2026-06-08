@@ -260,7 +260,7 @@ public class CrawlerAgent : Agent
         foreach (var item in m_JdController.bodyPartsList)
         {
             numOfRb++;
-            velSum += item.rb.velocity;
+            velSum += item.rb.linearVelocity;
         }
 
         avgVel = velSum / numOfRb;

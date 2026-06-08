@@ -56,7 +56,8 @@ repos:
             (?x)^(
                 .*cs.meta|
                 .*.css|
-                .*.meta
+                .*.meta|
+                .*.cmd
             )$
         args: [--fix=lf]
 
@@ -94,7 +95,8 @@ repos:
     -   id: dotnet-format
         name: dotnet-format
         language: system
-        entry: dotnet format whitespace --folder --include
+        entry: dotnet format whitespace --folder --include . --verify-no-changes
+        pass_filenames: false
         types_or: ["c#"]
     -   id: markdown-link-check
         name: markdown-link-check
@@ -135,4 +137,4 @@ repos:
         language: python
         entry: ./utils/generate_markdown_docs.py --package_dirs ml-agents-envs ml-agents
         pass_filenames: false
-        additional_dependencies: [pyyaml==5.3, pydoc-markdown==3.10.1]
+        additional_dependencies: [pyyaml==5.3, pydoc-markdown==3.10.1, setuptools<81]

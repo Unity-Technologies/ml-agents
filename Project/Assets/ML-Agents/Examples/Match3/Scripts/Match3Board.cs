@@ -57,9 +57,18 @@ namespace Unity.MLAgentsExamples
             };
         }
 
+        int CreateNewSeed()
+        {
+#if UNITY_6000_3_OR_NEWER
+            return gameObject.GetEntityId().GetHashCode();
+#else
+            return gameObject.GetInstanceID();
+#endif
+        }
+
         void Start()
         {
-            m_Random = new System.Random(RandomSeed == -1 ? gameObject.GetInstanceID() : RandomSeed);
+            m_Random = new System.Random(RandomSeed == -1 ? CreateNewSeed() : RandomSeed);
             InitRandom();
         }
 

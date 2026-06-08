@@ -1,8 +1,0 @@
-{
-    "name": "Unity.ML-Agents.Extensions",
-    "references": [
-        "Unity.Sentis",
-        "Unity.ML-Agents",
-        "Unity.ML-Agents.Extensions.Input"
-    ]
-}

@@ -265,7 +265,7 @@ namespace Unity.MLAgents.Integrations.Match3
         Color[] m_Colors;
         int m_MaxHeight;
         int m_MaxWidth;
-        private static Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
+        private static readonly Color[] s_OneHotColors = { Color.red, Color.green, Color.blue };
 
         public OneHotToTextureUtil(int maxHeight, int maxWidth)
         {

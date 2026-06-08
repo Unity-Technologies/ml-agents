@@ -1,20 +1,16 @@
 {
   "name": "com.unity.ml-agents",
   "displayName": "ML Agents",
-  "version": "3.0.0",
-  "unity": "2023.2",
+  "version": "4.0.3",
+  "unity": "6000.0",
   "description": "Use state-of-the-art machine learning to create intelligent character behaviors in any Unity environment (games, robotics, film, etc.).",
   "dependencies": {
-    "com.unity.sentis": "2.1.0",
+    "com.unity.ai.inference": "2.6.1",
     "com.unity.modules.imageconversion": "1.0.0",
     "com.unity.modules.jsonserialize": "1.0.0",
     "com.unity.modules.physics": "1.0.0"
   },
-  "samples": [
-    {
-      "displayName": "3D Ball",
-      "description": "The 3D Ball sample is a simple environment that is a great for jumping into ML-Agents to see how things work.",
-      "path": "Samples~/3DBall"
-    }
-  ]
+  "relatedPackages": {
+    "com.unity.ml-agents.tests": "1.0.0"
+  }
 }

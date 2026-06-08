@@ -3,13 +3,9 @@
 The ML-Agents Toolkit contains several components:
 
 - Unity package ([`com.unity.ml-agents`](../com.unity.ml-agents/)) contains the
-  Unity C# SDK that will be integrated into your Unity project.  This package contains
-  a sample to help you get started with ML-Agents.
-- Unity package
-  ([`com.unity.ml-agents.extensions`](../com.unity.ml-agents.extensions/))
-  contains experimental C#/Unity components that are not yet ready to be part
-  of the base `com.unity.ml-agents` package. `com.unity.ml-agents.extensions`
-  has a direct dependency on `com.unity.ml-agents`.
+  Unity C# SDK that will be integrated into your Unity project. This package contains
+  a sample to help you get started with ML-Agents, including advanced features like
+  custom sensors, input system integration, and physics-based components.
 - Two Python packages:
   - [`mlagents`](../ml-agents/) contains the machine learning algorithms that
     enables you to train behaviors in your Unity scene. Most users of ML-Agents
@@ -24,20 +20,18 @@ The ML-Agents Toolkit contains several components:
 
 Consequently, to install and use the ML-Agents Toolkit you will need to:
 
-- Install Unity (2023.2 or later)
+- Install Unity (6000.0 or later)
 - Install Python (>= 3.10.1, <=3.10.12) - we recommend using 3.10.12
 - Clone this repository (Recommended for the latest version and bug fixes)
   - __Note:__ If you do not clone the repository, then you will not be
-  able to access the example environments and training configurations or the
-  `com.unity.ml-agents.extensions` package. Additionally, the
-  [Getting Started Guide](Getting-Started.md) assumes that you have cloned the
+  able to access the example environments and training configurations.
+  Additionally, the [Getting Started Guide](Getting-Started.md) assumes that you have cloned the
   repository.
 - Install the `com.unity.ml-agents` Unity package
-- Install the `com.unity.ml-agents.extensions` Unity package (Optional)
 - Install the `mlagents-envs`
 - Install the `mlagents` Python package
 
-### Install **Unity 2023.2** or Later
+### Install **Unity 6000.0** or Later
 
 [Download](https://unity3d.com/get-unity/download) and install Unity. We
 strongly recommend that you install Unity through the Unity Hub as it will
@@ -83,7 +77,7 @@ the `develop` branch as it may have potential fixes for bugs and dependency issu
 (Optional to get bleeding edge)
 
 ```sh
-git clone --branch https://github.com/Unity-Technologies/ml-agents.git
+git clone https://github.com/Unity-Technologies/ml-agents.git
 ```
 
 #### Advanced: Local Installation for Development
@@ -132,15 +126,6 @@ project by:
 If you are going to follow the examples from our documentation, you can open the
 `Project` folder in Unity and start tinkering immediately.
 
-### Install the `com.unity.ml-agents.extensions` Unity package (Optional)
-
-To install the `com.unity.ml-agents.extensions` package, you need to first
-clone the repo and then complete a local installation similar to what was
-outlined in the previous
-[Advanced: Local Installation for Development](#advanced-local-installation-for-development-1)
-section. Complete installation steps can be found in the
-[package documentation](../com.unity.ml-agents.extensions/Documentation~/com.unity.ml-agents.extensions.md#installation).
-
 ### Install the `mlagents` Python package
 
 Installing the `mlagents` Python package involves installing other Python
@@ -166,14 +151,6 @@ Note that on Windows, you may also need Microsoft's
 [Visual C++ Redistributable](https://support.microsoft.com/en-us/help/2977003/the-latest-supported-visual-c-downloads)
 if you don't have it already. See the [PyTorch installation guide](https://pytorch.org/get-started/locally/)
 for more installation options and versions.
-
-#### (OS X) Installing GRPC libraries
-
-On OS X, you may need to explicitly install the GRPC runtime libraries to avoid hitting errors when training like `dlopen(/Users/alex.mccarthy/miniconda3/envs/mlagents/lib/python3.10/site-packages/grpc/_cython/cygrpc.cpython-310-darwin.so, 0x0002): symbol not found in flat namespace '_CFRelease'`.
-
-```sh
-pip3 install grpcio
-```
 
 #### Installing `mlagents`
 

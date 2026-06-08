@@ -51,7 +51,7 @@ namespace Unity.MLAgentsExamples
         {
             bp.rb.transform.position = bp.startingPos;
             bp.rb.transform.rotation = bp.startingRot;
-            bp.rb.velocity = Vector3.zero;
+            bp.rb.linearVelocity = Vector3.zero;
             bp.rb.angularVelocity = Vector3.zero;
             if (bp.groundContact)
             {
@@ -109,6 +109,7 @@ namespace Unity.MLAgentsExamples
         public float jointDampen;
         public float maxJointForceLimit;
 
+        [System.NonSerialized]
         [HideInInspector] public Dictionary<Transform, BodyPart> bodyPartsDict = new Dictionary<Transform, BodyPart>();
 
         [HideInInspector] public List<BodyPart> bodyPartsList = new List<BodyPart>();

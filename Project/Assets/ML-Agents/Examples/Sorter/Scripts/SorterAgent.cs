@@ -53,7 +53,7 @@ public class SorterAgent : Agent
         SetTilePositions();
 
         transform.position = m_StartingPos;
-        m_AgentRb.velocity = Vector3.zero;
+        m_AgentRb.linearVelocity = Vector3.zero;
         m_AgentRb.angularVelocity = Vector3.zero;
     }
 

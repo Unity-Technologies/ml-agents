@@ -29,7 +29,7 @@ namespace Unity.MLAgents.Actuators
         /// An Empty segment which has an offset of 0, a Length of 0, and it's underlying array
         /// is also empty.
         /// </summary>
-        public static ActionSegment<T> Empty = new ActionSegment<T>(System.Array.Empty<T>(), 0, 0);
+        public static readonly ActionSegment<T> Empty = new ActionSegment<T>(System.Array.Empty<T>(), 0, 0);
 
         static void CheckParameters(IReadOnlyCollection<T> actionArray, int offset, int length)
         {

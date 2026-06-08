@@ -28,7 +28,7 @@
   - [Training Configuration File](Training-Configuration-File.md)
   - [Using TensorBoard to Observe Training](Using-Tensorboard.md)
   - [Profiling Trainers](Profiling-Python.md)
-- [Sentis](Sentis.md)
+- [Inference Engine](Inference-Engine.md)
 
 ## Extending ML-Agents
 

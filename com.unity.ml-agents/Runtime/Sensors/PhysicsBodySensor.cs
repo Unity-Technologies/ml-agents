@@ -1,0 +1,131 @@
+using System.Collections.Generic;
+#if UNITY_2020_1_OR_NEWER
+using UnityEngine;
+#endif
+
+namespace Unity.MLAgents.Sensors
+{
+    /// <summary>
+    /// ISensor implementation that generates observations for a group of Rigidbodies or ArticulationBodies.
+    /// </summary>
+    [UnityEngine.Scripting.APIUpdating.MovedFrom("Unity.MLAgents.Extensions.Sensors")]
+    public class PhysicsBodySensor : ISensor, IBuiltInSensor
+    {
+        ObservationSpec m_ObservationSpec;
+        string m_SensorName;
+
+        PoseExtractor m_PoseExtractor;
+        List<IJointExtractor> m_JointExtractors;
+        PhysicsSensorSettings m_Settings;
+
+        /// <summary>
+        /// Construct a new PhysicsBodySensor
+        /// </summary>
+        /// <param name="poseExtractor">The pose extractor used to obtain rigid body poses.</param>
+        /// <param name="settings">The settings used to configure the physics sensor.</param>
+        /// <param name="sensorName">The name assigned to the sensor.</param>
+        public PhysicsBodySensor(
+            RigidBodyPoseExtractor poseExtractor,
+            PhysicsSensorSettings settings,
+            string sensorName
+        )
+        {
+            m_PoseExtractor = poseExtractor;
+            m_SensorName = sensorName;
+            m_Settings = settings;
+
+            var numJointExtractorObservations = 0;
+            m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
+            foreach (var rb in poseExtractor.GetEnabledRigidbodies())
+            {
+                var jointExtractor = new RigidBodyJointExtractor(rb);
+                numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                m_JointExtractors.Add(jointExtractor);
+            }
+
+            var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
+        }
+
+#if UNITY_2020_1_OR_NEWER
+        public PhysicsBodySensor(ArticulationBody rootBody, PhysicsSensorSettings settings, string sensorName = null)
+        {
+            var poseExtractor = new ArticulationBodyPoseExtractor(rootBody);
+            m_PoseExtractor = poseExtractor;
+            m_SensorName = string.IsNullOrEmpty(sensorName) ? $"ArticulationBodySensor:{rootBody?.name}" : sensorName;
+            m_Settings = settings;
+
+            var numJointExtractorObservations = 0;
+            m_JointExtractors = new List<IJointExtractor>(poseExtractor.NumEnabledPoses);
+            foreach (var articBody in poseExtractor.GetEnabledArticulationBodies())
+            {
+                var jointExtractor = new ArticulationBodyJointExtractor(articBody);
+                numJointExtractorObservations += jointExtractor.NumObservations(settings);
+                m_JointExtractors.Add(jointExtractor);
+            }
+
+            var numTransformObservations = m_PoseExtractor.GetNumPoseObservations(settings);
+            m_ObservationSpec = ObservationSpec.Vector(numTransformObservations + numJointExtractorObservations);
+        }
+
+#endif
+
+        /// <inheritdoc/>
+        public ObservationSpec GetObservationSpec()
+        {
+            return m_ObservationSpec;
+        }
+
+        /// <inheritdoc/>
+        public int Write(ObservationWriter writer)
+        {
+            var numWritten = writer.WritePoses(m_Settings, m_PoseExtractor);
+            foreach (var jointExtractor in m_JointExtractors)
+            {
+                numWritten += jointExtractor.Write(m_Settings, writer, numWritten);
+            }
+            return numWritten;
+        }
+
+        /// <inheritdoc/>
+        public byte[] GetCompressedObservation()
+        {
+            return null;
+        }
+
+        /// <inheritdoc/>
+        public void Update()
+        {
+            if (m_Settings.UseModelSpace)
+            {
+                m_PoseExtractor.UpdateModelSpacePoses();
+            }
+
+            if (m_Settings.UseLocalSpace)
+            {
+                m_PoseExtractor.UpdateLocalSpacePoses();
+            }
+        }
+
+        /// <inheritdoc/>
+        public void Reset() { }
+
+        /// <inheritdoc/>
+        public CompressionSpec GetCompressionSpec()
+        {
+            return CompressionSpec.Default();
+        }
+
+        /// <inheritdoc/>
+        public string GetName()
+        {
+            return m_SensorName;
+        }
+
+        /// <inheritdoc/>
+        public BuiltInSensorType GetBuiltInSensorType()
+        {
+            return BuiltInSensorType.PhysicsBodySensor;
+        }
+    }
+}

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using TMPro;
-using Unity.Sentis;
+using Unity.InferenceEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Policies;
 using UnityEditor;

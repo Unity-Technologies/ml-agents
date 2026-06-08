@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MLAgents.Cookbook", "MLAgents.Cookbook.csproj", "{A5A71435-C891-4C78-989C-2713DAA7B3B8}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A5A71435-C891-4C78-989C-2713DAA7B3B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A5A71435-C891-4C78-989C-2713DAA7B3B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A5A71435-C891-4C78-989C-2713DAA7B3B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A5A71435-C891-4C78-989C-2713DAA7B3B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
