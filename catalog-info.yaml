@@ -1,4 +1,4 @@
-# For more information about the available options please visit: http://go/backstage (VPN required)
+# For more information about the available options please visit: http://go/catalog-info (VPN required)
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:

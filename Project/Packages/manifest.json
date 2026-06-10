@@ -9,6 +9,7 @@
     "com.unity.ml-agents.tests": "file:../../com.unity.ml-agents.tests",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.nuget.newtonsoft-json": "3.2.1",
+    "com.unity.package-manager-doctools": "file:/Users/v.rochonmontplaisir/Git/com.unity.package-manager-doctools",
     "com.unity.recorder": "5.1.2",
     "com.unity.test-framework": "1.4.6",
     "com.unity.toolchain.macos-x86_64-linux-x86_64": "2.0.10",
@@ -23,5 +24,14 @@
   "testables": [
     "com.unity.ml-agents.tests",
     "com.unity.inputsystem"
+  ],
+  "scopedRegistries": [
+    {
+      "name": "PMDT",
+      "url": "https://artifactory.prd.it.unity3d.com/artifactory/api/npm/upm-candidates",
+      "scopes": [
+        "com.unity.package-manager-doctools"
+      ]
+    }
   ]
 }
