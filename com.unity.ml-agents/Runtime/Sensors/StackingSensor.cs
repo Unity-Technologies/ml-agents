@@ -85,12 +85,12 @@ namespace Unity.MLAgents.Sensors
             {
                 m_StackedCompressedObservations = new byte[numStackedObservations][];
 
+                var numEmptyPNGs = (m_WrappedSpec.Shape[0] + 2) / 3;
                 // Generate Single Empty PNG
-                Byte[] singleEmptyPNG = CreateEmptyPNG();
+                byte[] singleEmptyPNG = CreateEmptyPNG();
                 List<byte> emptyCompressedObservationList = new List<byte>();
-
                 // Combine Multiple Empty PNGs for channels more than 3
-                for (int i = 0; i < (m_WrappedSpec.Shape[^1] + 2) / 3; i++)
+                for (int i = 0; i < numEmptyPNGs; i++)
                 {
                     emptyCompressedObservationList.AddRange(singleEmptyPNG);
                 }
