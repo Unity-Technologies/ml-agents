@@ -7,7 +7,7 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 ## [Unreleased]
 ### Minor Changes
-- Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#5456)
+- Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 
 ## [4.0.3] - 2026-04-17
 ### Minor Changes
