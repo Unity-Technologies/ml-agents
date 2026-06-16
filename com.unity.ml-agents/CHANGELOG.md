@@ -116,7 +116,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs
 - Add your trainers to the package using Ml-Agents Custom Trainers plugin. (#)
   - ML-Agents Custom Trainers plugin is an extensible plugin system to define new trainers based on the
-  High level trainer API, read more [here](../docs/Python-Custom-Trainer-Plugin.md).
+  High level trainer API, read more [here](https://github.com/Unity-Technologies/ml-agents/blob/release_20_docs/docs/Python-Custom-Trainer-Plugin.md).
 - Refactored core modules to make ML-Agents internal classes more generalizable to various RL algorithms. (#)
 - The minimum supported Python version for ML-agents has changed to 3.8.13. (#)
 - The minimum supported version of PyTorch was changed to 1.8.0. (#)
