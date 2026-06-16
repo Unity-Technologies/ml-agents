@@ -131,7 +131,7 @@ def test_curriculum_conversion():
     assert lesson.value.max_value == 3
 
 
-test_bad_curriculum_no_competion_criteria_config_yaml = """
+test_bad_curriculum_no_completion_criteria_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
@@ -154,7 +154,7 @@ environment_parameters:
 """
 
 
-test_bad_curriculum_all_competion_criteria_config_yaml = """
+test_bad_curriculum_all_completion_criteria_config_yaml = """
 environment_parameters:
     param_1:
       curriculum:
@@ -192,14 +192,14 @@ environment_parameters:
 def test_curriculum_raises_no_completion_criteria_conversion():
     with pytest.raises(TrainerConfigError):
         RunOptions.from_dict(
-            yaml.safe_load(test_bad_curriculum_no_competion_criteria_config_yaml)
+            yaml.safe_load(test_bad_curriculum_no_completion_criteria_config_yaml)
         )
 
 
 def test_curriculum_raises_all_completion_criteria_conversion():
     with pytest.warns(TrainerConfigWarning):
         run_options = RunOptions.from_dict(
-            yaml.safe_load(test_bad_curriculum_all_competion_criteria_config_yaml)
+            yaml.safe_load(test_bad_curriculum_all_completion_criteria_config_yaml)
         )
 
     param_manager = EnvironmentParameterManager(

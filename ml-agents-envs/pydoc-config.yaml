@@ -1,5 +1,5 @@
 # config to specify which modules will be used to render api docs docs from ml-agents-env package
-folder: docs
+folder: com.unity.ml-agents/Documentation~
 modules:
     - name: mlagents_envs
       file_name: Python-Gym-API-Documentation.md

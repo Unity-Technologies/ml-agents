@@ -279,6 +279,35 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
+        public void TestStackedGetCompressedObservationMultiChannel()
+        {
+            var wrapped = new Dummy3DSensor();
+            wrapped.ObservationSpec = ObservationSpec.Visual(4, 1, 1);
+            var sensor = new StackingSensor(wrapped, 2);
+
+            var singleEmptyPNG = sensor.CreateEmptyPNG();
+            var emptyObservation = singleEmptyPNG.Concat(singleEmptyPNG).ToArray();
+
+            wrapped.CurrentObservation = new[, ,] { { { 1f } }, { { 2f } }, { { 3f } }, { { 4f } } };
+            var expected1 = emptyObservation.Concat(
+                Array.ConvertAll(new[] { 1f, 2f, 3f, 4f }, (z) => (byte)z)).ToArray();
+            Assert.AreEqual(sensor.GetCompressedObservation(), expected1);
+
+            sensor.Update();
+            wrapped.CurrentObservation = new[, ,] { { { 5f } }, { { 6f } }, { { 7f } }, { { 8f } } };
+            var expected2 = Array.ConvertAll(
+                new[] { 1f, 2f, 3f, 4f, 5f, 6f, 7f, 8f }, (z) => (byte)z);
+            Assert.AreEqual(sensor.GetCompressedObservation(), expected2);
+
+            // Test reset
+            sensor.Reset();
+            wrapped.CurrentObservation = new[, ,] { { { 9f } }, { { 10f } }, { { 11f } }, { { 12f } } };
+            var expected3 = emptyObservation.Concat(
+                Array.ConvertAll(new[] { 9f, 10f, 11f, 12f }, (z) => (byte)z)).ToArray();
+            Assert.AreEqual(sensor.GetCompressedObservation(), expected3);
+        }
+
+        [Test]
         public void TestStackingSensorBuiltInSensorType()
         {
             var dummySensor = new Dummy3DSensor();

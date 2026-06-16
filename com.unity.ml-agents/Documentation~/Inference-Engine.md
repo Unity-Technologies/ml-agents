@@ -1,6 +1,6 @@
 # Sentis
 
-The ML-Agents Toolkit allows you to use pre-trained neural network models inside your Unity games. This support is possible thanks to the [Sentis](https://docs.unity3d.com/Packages/com.unity.ai.inference@latest). Sentis uses [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html) to run the neural network within Unity.
+The ML-Agents Toolkit allows you to use pre-trained neural network models inside your Unity games. This support is possible thanks to [Sentis](https://docs.unity3d.com/Packages/com.unity.ai.inference@latest). Sentis uses [compute shaders](https://docs.unity3d.com/Manual/class-ComputeShader.html) to run the neural network within Unity.
 
 ## Supported devices
 
