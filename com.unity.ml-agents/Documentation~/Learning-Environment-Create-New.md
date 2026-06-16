@@ -181,7 +181,7 @@ To solve the task of moving towards the target, the Agent (Sphere) needs to be a
 The RollerAgent applies the values from the `actionBuffers.ContinuousActions[]` array to its Rigidbody component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
-public override void OnActionReceived(ActionBuffers actionBuffers) 
+public override void OnActionReceived(ActionBuffers actionBuffers)
 {
     Vector3 controlSignal = Vector3.zero;
     controlSignal.x = actionBuffers.ContinuousActions[0];
