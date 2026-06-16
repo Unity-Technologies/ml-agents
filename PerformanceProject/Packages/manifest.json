@@ -6,7 +6,7 @@
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.multiplayer.center": "1.0.0",
     "com.unity.test-framework.build": "0.0.1-preview.15",
-    "com.unity.test-framework.performance": "3.4.0",
+    "com.unity.test-framework.performance": "3.5.0",
     "com.unity.test-framework.utp-reporter": "1.1.0-preview",
     "com.unity.timeline": "1.8.12",
     "com.unity.ugui": "2.0.0",

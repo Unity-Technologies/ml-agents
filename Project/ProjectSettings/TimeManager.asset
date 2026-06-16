@@ -3,6 +3,7 @@
 --- !u!5 &1
 TimeManager:
   m_ObjectHideFlags: 0
+  serializedVersion: 2
   Fixed Timestep:
     m_Count: 2822399
     m_Rate:
