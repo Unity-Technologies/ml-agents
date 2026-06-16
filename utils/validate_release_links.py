@@ -53,7 +53,7 @@ def test_release_pattern():
             True,
         ),
         (
-            "https://github.com/Unity-Technologies/ml-agents/blob/latest_release/com.unity.ml-agents/Documentation~/Foo.md",
+            "https://github.com/Unity-Technologies/ml-agents/blob/latest_release/docs/Foo.md",
             False,
         ),
     ]:
