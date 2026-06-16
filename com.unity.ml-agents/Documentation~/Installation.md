@@ -5,7 +5,7 @@ This process includes installing Unity, configuring Python, and installing the M
 
 
 
-##  Install Unity
+## Install Unity
 
 Install Unity 6000.0 or later to use the ML-Agents Toolkit.
 
@@ -15,6 +15,27 @@ To install Unity, follow these steps:
 2. Use **Unity Hub** to manage installations and versions.
    Unity Hub makes it easier to manage multiple Unity versions and associated projects.
 3. Verify that the Unity Editor version is 6000.0 or later.
+
+
+## Install the ML-Agents Unity package
+You can install ML-Agents in two ways:
+
+* [Package installation](#install-ml-agents-package-installation): Recommended for most users who want to use ML-Agents without modifying the source code or using the example environments.
+* [Advanced installation](#install-ml-agents-advanced-installation): For contributors, developers extending ML-Agents, or users who want access to the example environments.
+
+### Install ML-Agents (Package Installation)
+
+Use this method if you don’t plan to modify the toolkit or need the example environments.
+
+To install the package, follow these steps:
+
+1. In Unity, open **Window** > **Package Manager**.
+2. Select **+** > **Add package by name**.
+3. Enter `com.unity.ml-agents`.
+4. Enable **Preview Packages** under the **Advanced** drop-down list if the package doesn’t appear.
+
+If the package isn’t listed, follow the [Advanced Installation](#install-ml-agents-advanced-installation) method instead.
+
 
 ## Install Python 3.10.12 using Conda
 
@@ -36,31 +57,13 @@ pip3 install torch~=2.2.1 --index-url https://download.pytorch.org/whl/cu121
 ```
 If prompted, install Microsoft Visual C++ Redistributable. For more installation options and versions, refer to the [PyTorch installation guide](https://pytorch.org/get-started/locally/).
 
+You can install the ML-Agents Python package in two ways:
 
-## Install ML-Agents
-You can install ML-Agents in two ways:
-
-* [Package installation](#install-ml-agents-package-installation): Recommended for most users who want to use ML-Agents without modifying the source code or using the example environments.
-* [Advanced installation](#install-ml-agents-advanced-installation): For contributors, developers extending ML-Agents, or users who want access to the example environments.
-
-### Install ML-Agents (Package installation)
-
-Use this method if you don’t plan to modify the toolkit or need the example environments.
-
-#### Install the ML-Agents Unity package
-
-To install the package, follow these steps:
-
-1. In Unity, open **Window** > **Package Manager**.
-2. Select **+** > **Add package by name**.
-3. Enter `com.unity.ml-agents`.
-4. Enable **Preview Packages** under the **Advanced** drop-down list if the package doesn’t appear.
-
-If the package isn’t listed, follow the [Advanced Installation](#install-ml-agents-advanced-installation) method instead.
+* [Package installation](#install-ml-agents-python-package-package-installation): Recommended for most users who want to use ML-Agents without modifying the source code or using the example environments.
+* [Advanced installation](#install-ml-agents-python-package-advanced-installation): For contributors, developers extending ML-Agents, or users who want access to the example environments.
 
 
-
-#### Install the ML-Agents Python package
+### Install the ML-Agents Python package
 
 Install the ML-Agents Python package to enable communication between Unity and your machine learning training environment.
 
@@ -86,11 +89,11 @@ This step resolves dependency conflicts that can occur with older versions of `g
 4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
 
 
-### Install ML-Agents (Advanced Installation)
+## Install ML-Agents (Advanced Installation)
 
 Use the advanced installation method if you plan to modify or extend the ML-Agents Toolkit, or if you want to download and use the example environments included in the repository.
 
-#### Clone the ML-Agents repository
+### Clone the ML-Agents repository
 
 Clone the ML-Agents repository to access the source code, sample environments, and development branches.
 
@@ -110,7 +113,7 @@ git clone https://github.com/Unity-Technologies/ml-agents.git
 If you plan to contribute your changes, clone the develop branch (omit the `--branch` flag) and refer to the [Contribution Guidelines](CONTRIBUTING.md) for details.
 
 
-#### Add the ML-Agents Unity package
+### Add the ML-Agents Unity package
 
 After cloning the repository, add the `com.unity.ml-agents` Unity package to your project.
 
@@ -131,7 +134,7 @@ Unity adds the ML-Agents package to your project.
 <p align="center"> <img src="images/unity_package_manager_window.png" alt="Unity Package Manager Window" height="150" border="10" /> <img src="images/unity_package_json.png" alt="package.json" height="150" border="10" /> </p>
 
 
-#### Install the ML-Agents Python package
+### Install the ML-Agents Python package (Advanced Installation)
 
 Install the Python packages from the cloned repository to enable training and environment communication.
 

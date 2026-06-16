@@ -23,7 +23,7 @@ If you haven't already, follow the [installation instructions](Installation.md).
 The first task to accomplish is simply creating a new Unity project and importing the ML-Agents assets into it:
 
 1. Launch Unity Hub and create a new 3D project named "RollerBall".
-2. [Add the ML-Agents Unity package](Installation.md#install-the-comunityml-agents-unity-package) to your project.
+2. [Add the ML-Agents Unity package](Installation.md#install-ml-agents-package-installation) to your project.
 
 Your Unity **Project** window should contain the following Packages:
 
@@ -47,8 +47,7 @@ Next, we will create a very simple scene to act as our learning environment. The
 1. Right click in Hierarchy window, select 3D Object > Cube.
 2. Name the GameObject "Target".
 3. Select the Target Cube to view its properties in the Inspector window.
-4. Set Transform to Position = `(3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale =
-   `(1, 1, 1)`.
+4. Set Transform to Position = `(3, 0.5, 3)`, Rotation = `(0, 0, 0)`, Scale = `(1, 1, 1)`.
 
 ![Target Cube Inspector window](images/roller-ball-target.png){: style="width:400px"}
 
@@ -112,8 +111,7 @@ In this example, each time the Agent (Sphere) reaches its target (Cube), the epi
 
 To move the target (Cube), we need a reference to its Transform (which stores a GameObject's position, orientation and scale in the 3D world). To get this reference, add a public field of type `Transform` to the RollerAgent class. Public fields of a component in Unity get displayed in the Inspector window, allowing you to choose which GameObject to use as the target in the Unity Editor.
 
-To reset the Agent's velocity (and later to apply force to move the agent) we need a reference to the Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) Since the Rigidbody component is on the same GameObject as our Agent script, the best way to get this reference is using
-`GameObject.GetComponent<T>()`, which we can call in our script's `Start()`
+To reset the Agent's velocity (and later to apply force to move the agent) we need a reference to the Rigidbody component. A [Rigidbody](https://docs.unity3d.com/ScriptReference/Rigidbody.html) is Unity's primary element for physics simulation. (See [Physics](https://docs.unity3d.com/Manual/PhysicsSection.html) for full documentation of Unity physics.) Since the Rigidbody component is on the same GameObject as our Agent script, the best way to get this reference is using `GameObject.GetComponent<T>()`, which we can call in our script's `Start()`
 method.
 
 So far, our RollerAgent script looks like:
@@ -123,6 +121,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.MLAgents;
 using Unity.MLAgents.Sensors;
+using Unity.MLAgents.Actuators;
 
 public class RollerAgent : Agent
 {
@@ -179,13 +178,16 @@ The final part of the Agent code is the `Agent.OnActionReceived()` method, which
 
 To solve the task of moving towards the target, the Agent (Sphere) needs to be able to move in the `x` and `z` directions. As such, the agent needs 2 actions: the first determines the force applied along the x-axis; and the second determines the force applied along the z-axis. (If we allowed the Agent to move in three dimensions, then we would need a third action.)
 
-The RollerAgent applies the values from the `action[]` array to its Rigidbody component `rBody`, using `Rigidbody.AddForce()`:
+The RollerAgent applies the values from the `actionBuffers.ContinuousActions[]` array to its Rigidbody component `rBody`, using `Rigidbody.AddForce()`:
 
 ```csharp
-Vector3 controlSignal = Vector3.zero;
-controlSignal.x = action[0];
-controlSignal.z = action[1];
-rBody.AddForce(controlSignal * forceMultiplier);
+public override void OnActionReceived(ActionBuffers actionBuffers)
+{
+    Vector3 controlSignal = Vector3.zero;
+    controlSignal.x = actionBuffers.ContinuousActions[0];
+    controlSignal.z = actionBuffers.ContinuousActions[1];
+    rBody.AddForce(controlSignal * forceMultiplier);
+}
 ```
 
 #### Rewards
@@ -216,8 +218,7 @@ if (this.transform.localPosition.y < 0)
 
 #### OnActionReceived()
 
-With the action and reward logic outlined above, the final version of
-`OnActionReceived()` looks like:
+With the action and reward logic outlined above, the final version of `OnActionReceived()` looks like:
 
 ```csharp
 public float forceMultiplier = 10;
@@ -319,6 +320,8 @@ behaviors:
 ```
 
 Hyperparameters are explained in [the training configuration file documentation](Training-Configuration-File.md)
+
+Make sure the behavior name in the 'Behavior Parameters' component matches the one in the config file.
 
 Since this example creates a very simple training environment with only a few inputs and outputs, using small batch and buffer sizes speeds up the training considerably. However, if you add more complexity to the environment or change the reward or observation functions, you might also find that training performs better with different hyperparameter values. In addition to setting these hyperparameter values, the Agent **DecisionFrequency** parameter has a large effect on training time and success. A larger value reduces the number of decisions the training algorithm has to consider and, in this simple environment, speeds up training.
 

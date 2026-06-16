@@ -57,5 +57,5 @@ extra_javascript:
   - deprecation-banner.js
 markdown_extensions:
     - markdown_include.include:
-        base_path: docs
+        base_path: com.unity.ml-agents/Documentation~
     - attr_list

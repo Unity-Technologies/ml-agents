@@ -369,7 +369,7 @@ To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml
 
 - We [fixed a bug](https://github.com/Unity-Technologies/ml-agents/pull/2823) in `RayPerception3d.Perceive()` that was causing the `endOffset` to be used incorrectly. However this may produce different behavior from previous versions if you use a non-zero `startOffset`. To reproduce the old behavior, you should increase the value of `endOffset` by `startOffset`. You can verify your raycasts are performing as expected in scene view using the debug rays.
 - If you use RayPerception3D, replace it with RayPerceptionSensorComponent3D (and similarly for 2D). The settings, such as ray angles and detectable tags, are configured on the component now. RayPerception3D would contribute `(# of rays) * (# of tags + 2)` to the State Size in Behavior Parameters, but this is no longer necessary, so you should reduce the State Size by this amount. Making this change will require retraining your model, since the observations that RayPerceptionSensorComponent3D produces are different from the old behavior.
-- If you see messages such as `The type or namespace 'Sentis' could not be found` or `The type or namespace 'Google' could not be found`, you will need to [install the Sentis preview package](Installation.md#package-installation).
+- If you see messages such as `The type or namespace 'Sentis' could not be found` or `The type or namespace 'Google' could not be found`, you will need to install the Sentis package(https://docs.unity3d.com/Packages/com.unity.ai.inference@latest).
 
 ## Migrating from ML-Agents Toolkit v0.10 to v0.11.0
 
@@ -436,7 +436,7 @@ To do it manually, copy your `<BehaviorName>` sections from `trainer_config.yaml
 
 ### Important Changes
 
-- We no longer support TFS and are now using the [Sentis](Inference-Engine.md)
+- We no longer support TFS and are now using [Sentis](Inference-Engine.md)
 
 #### Steps to Migrate
 
