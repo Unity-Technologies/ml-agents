@@ -17,7 +17,9 @@ from mlagents.trainers.settings import TorchSettings
     ],
 )
 @mock.patch.object(torch, "set_default_dtype")
+@mock.patch.object(torch, "set_default_device")
 def test_set_torch_device(
+    mock_set_default_device,
     mock_set_default_tensor_type,
     device_str,
     expected_type,
