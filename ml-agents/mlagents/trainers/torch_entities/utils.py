@@ -419,10 +419,8 @@ class ModelUtils:
         """
         value_losses = []
         for name, head in values.items():
-            old_val_tensor = old_values[name]
-            old_val_tensor = old_val_tensor.to(head.device)
-            returns_tensor = returns[name]
-            returns_tensor = returns_tensor.to(head.device)
+            old_val_tensor = old_values[name].to(head.device)
+            returns_tensor = returns[name].to(head.device)
             clipped_value_estimate = old_val_tensor + torch.clamp(
                 head - old_val_tensor, -epsilon, epsilon
             )
@@ -448,8 +446,7 @@ class ModelUtils:
         :param old_log_probs: Past policy probabilities
         :param loss_masks: Mask for losses. Used with LSTM to ignore 0'ed out experiences.
         """
-        advantage = advantages.unsqueeze(-1)
-        advantage = advantage.to(log_probs.device)
+        advantage = advantages.unsqueeze(-1).to(log_probs.device)
         old_log_probs = old_log_probs.to(log_probs.device)
         r_theta = torch.exp(log_probs - old_log_probs)
         p_opt_a = r_theta * advantage
