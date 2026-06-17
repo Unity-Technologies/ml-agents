@@ -1,7 +1,7 @@
 {
   "dependencies": {
     "com.autodesk.fbx": {
-      "version": "5.1.1",
+      "version": "5.1.3",
       "depth": 1,
       "source": "registry",
       "dependencies": {},
@@ -9,11 +9,11 @@
     },
     "com.unity.ai.inference": {
       "version": "2.6.1",
-      "depth": 1,
+      "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.burst": "1.8.17",
-        "com.unity.dt.app-ui": "1.3.1",
+        "com.unity.dt.app-ui": "1.3.6",
         "com.unity.collections": "2.4.3",
         "com.unity.nuget.newtonsoft-json": "3.2.1",
         "com.unity.modules.imageconversion": "1.0.0"
@@ -21,7 +21,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.ai.navigation": {
-      "version": "2.0.6",
+      "version": "2.0.13",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -30,17 +30,17 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.bindings.openimageio": {
-      "version": "1.0.0",
+      "version": "1.0.2",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.collections": "1.0.0"
+        "com.unity.collections": "1.2.4"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.8.19",
-      "depth": 2,
+      "version": "1.8.29",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.mathematics": "1.2.1",
@@ -49,20 +49,21 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.collections": {
-      "version": "2.5.1",
+      "version": "2.6.7",
       "depth": 1,
       "source": "registry",
       "dependencies": {
-        "com.unity.burst": "1.8.17",
-        "com.unity.test-framework": "1.4.5",
-        "com.unity.nuget.mono-cecil": "1.11.4",
+        "com.unity.burst": "1.8.29",
+        "com.unity.mathematics": "1.3.2",
+        "com.unity.test-framework": "1.4.6",
+        "com.unity.nuget.mono-cecil": "1.11.6",
         "com.unity.test-framework.performance": "3.0.3"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.dt.app-ui": {
-      "version": "1.3.1",
-      "depth": 2,
+      "version": "1.3.6",
+      "depth": 1,
       "source": "registry",
       "dependencies": {
         "com.unity.modules.physics": "1.0.0",
@@ -75,22 +76,21 @@
     "com.unity.ext.nunit": {
       "version": "2.0.5",
       "depth": 1,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://packages.unity.com"
+      "source": "builtin",
+      "dependencies": {}
     },
     "com.unity.formats.fbx": {
-      "version": "5.1.1",
+      "version": "5.1.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.autodesk.fbx": "5.1.1",
+        "com.autodesk.fbx": "5.1.3",
         "com.unity.timeline": "1.7.1"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.ide.rider": {
-      "version": "3.0.31",
+      "version": "3.0.40",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -99,7 +99,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.13.0",
+      "version": "1.19.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -109,7 +109,7 @@
     },
     "com.unity.mathematics": {
       "version": "1.3.2",
-      "depth": 3,
+      "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
@@ -119,10 +119,18 @@
       "depth": 0,
       "source": "local",
       "dependencies": {
-        "com.unity.ai.inference": "2.5.0",
+        "com.unity.ai.inference": "2.6.1",
         "com.unity.modules.imageconversion": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0",
         "com.unity.modules.physics": "1.0.0"
+      }
+    },
+    "com.unity.ml-agents.tests": {
+      "version": "file:../../com.unity.ml-agents.tests",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {
+        "com.unity.ml-agents": "4.0.3"
       }
     },
     "com.unity.multiplayer.center": {
@@ -134,27 +142,27 @@
       }
     },
     "com.unity.nuget.mono-cecil": {
-      "version": "1.11.4",
+      "version": "1.11.6",
       "depth": 2,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.nuget.newtonsoft-json": {
-      "version": "3.2.1",
+      "version": "3.2.2",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
     "com.unity.recorder": {
-      "version": "5.1.2",
+      "version": "5.1.6",
       "depth": 0,
       "source": "registry",
       "dependencies": {
         "com.unity.timeline": "1.8.7",
         "com.unity.collections": "1.2.4",
-        "com.unity.bindings.openimageio": "1.0.0"
+        "com.unity.bindings.openimageio": "1.0.2"
       },
       "url": "https://packages.unity.com"
     },
@@ -175,28 +183,27 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.test-framework": {
-      "version": "1.4.6",
+      "version": "1.6.0",
       "depth": 0,
-      "source": "registry",
+      "source": "builtin",
       "dependencies": {
         "com.unity.ext.nunit": "2.0.3",
         "com.unity.modules.imgui": "1.0.0",
         "com.unity.modules.jsonserialize": "1.0.0"
-      },
-      "url": "https://packages.unity.com"
+      }
     },
     "com.unity.test-framework.performance": {
-      "version": "3.0.3",
+      "version": "3.5.0",
       "depth": 2,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.31",
+        "com.unity.test-framework": "1.1.33",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://packages.unity.com"
     },
     "com.unity.timeline": {
-      "version": "1.8.7",
+      "version": "1.8.12",
       "depth": 1,
       "source": "registry",
       "dependencies": {
@@ -208,7 +215,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.toolchain.macos-x86_64-linux-x86_64": {
-      "version": "2.0.10",
+      "version": "2.0.11",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -234,7 +241,7 @@
     },
     "com.unity.modules.androidjni": {
       "version": "1.0.0",
-      "depth": 3,
+      "depth": 2,
       "source": "builtin",
       "dependencies": {}
     },
@@ -303,7 +310,7 @@
     },
     "com.unity.modules.screencapture": {
       "version": "1.0.0",
-      "depth": 3,
+      "depth": 2,
       "source": "builtin",
       "dependencies": {
         "com.unity.modules.imageconversion": "1.0.0"
