@@ -1,7 +1,7 @@
 from typing import Callable, List, Dict, Tuple, Optional, Union, Any
 import abc
 
-from mlagents.torch_utils import torch, nn, default_device
+from mlagents.torch_utils import torch, nn
 
 from mlagents_envs.base_env import ActionSpec, ObservationSpec, ObservationType
 from mlagents.trainers.torch_entities.action_model import ActionModel
