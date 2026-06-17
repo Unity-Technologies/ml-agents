@@ -135,12 +135,7 @@ checkpoint_settings:
 
 ```yaml
 torch_settings:
-  # Device used for training. One of:
-  #   cpu      - CPU
-  #   cuda     - default CUDA GPU
-  #   cuda:<n> - a specific CUDA GPU, e.g. cuda:1
-  #   mps      - Apple Silicon (M1/M2) GPU
-  #   xpu      - Intel GPU (XPU)
+  # Device used for training
   device: cpu
 ```
 

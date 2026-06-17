@@ -39,3 +39,39 @@ def test_set_torch_device(
         # restore the defaults
         torch_settings = TorchSettings(device=None)
         set_torch_config(torch_settings)
+
+
+@pytest.mark.parametrize(
+    "device_str, expect_set_default_device",
+    [
+        # GPU-like devices must set the *full* device as default, preserving the
+        # index (regression for cuda:1 landing tensors on cuda:0).
+        ("cuda", True),
+        ("cuda:1", True),
+        ("xpu", True),
+        ("mps", True),
+        # cpu (and unknown/non-GPU types) must not call set_default_device.
+        ("cpu", False),
+        ("opengl", False),
+    ],
+)
+@mock.patch.object(torch, "set_default_dtype")
+@mock.patch.object(torch, "set_default_device")
+def test_set_torch_config_default_device(
+    mock_set_default_device,
+    mock_set_default_dtype,
+    device_str,
+    expect_set_default_device,
+):
+    try:
+        set_torch_config(TorchSettings(device=device_str))
+        if expect_set_default_device:
+            # The full device (including any index) is passed, not just the type.
+            mock_set_default_device.assert_called_once_with(torch.device(device_str))
+        else:
+            mock_set_default_device.assert_not_called()
+        # dtype is always pinned to float32 regardless of device.
+        mock_set_default_dtype.assert_called_once_with(torch.float32)
+    finally:
+        # restore the defaults
+        set_torch_config(TorchSettings(device=None))
