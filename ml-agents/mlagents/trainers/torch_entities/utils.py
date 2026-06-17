@@ -323,12 +323,12 @@ class ModelUtils:
         :param tensor: Tensor which needs mean computation.
         :param masks: Boolean tensor of masks with same dimension as tensor.
         """
+        masks = masks.to(tensor.device)
         if tensor.ndim == 0:
             return (tensor * masks).sum() / torch.clamp(
                 (torch.ones_like(tensor) * masks).float().sum(), min=1.0
             )
         else:
-            masks = masks.to(tensor.device)
             return (
                 tensor.permute(*torch.arange(tensor.ndim - 1, -1, -1)) * masks
             ).sum() / torch.clamp(

@@ -76,7 +76,7 @@ class GaussianDistInstance(DistInstance):
         return (
             -((value - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale
-            - 0.5 * torch.log(torch.tensor(2 * math.pi, device=self.mean.device))
+            - math.log(math.sqrt(2 * math.pi))
         )
 
     def pdf(self, value):

@@ -111,6 +111,23 @@ def test_gaussian_dist_instance():
         assert ent == pytest.approx(1.42, abs=0.01)
 
 
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires a GPU")
+def test_gaussian_dist_instance_mixed_device():
+    # Regression test: log_prob of a value on a different device than the
+    # distribution parameters should not raise and should match the CPU result.
+    torch.manual_seed(0)
+    act_size = 4
+    value = torch.zeros((1, act_size))
+    cpu_dist = GaussianDistInstance(torch.zeros(1, act_size), torch.ones(1, act_size))
+    expected = cpu_dist.log_prob(value)
+
+    gpu_dist = GaussianDistInstance(
+        torch.zeros(1, act_size).to("cuda"), torch.ones(1, act_size).to("cuda")
+    )
+    log_prob = gpu_dist.log_prob(value)  # value stays on CPU
+    assert torch.allclose(log_prob.cpu(), expected)
+
+
 def test_tanh_gaussian_dist_instance():
     torch.manual_seed(0)
     act_size = 4

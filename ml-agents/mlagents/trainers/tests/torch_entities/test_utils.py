@@ -197,6 +197,62 @@ def test_masked_mean():
     assert mean == 4.0
 
 
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires a GPU")
+def test_masked_mean_mixed_device():
+    # Regression test: tensor and masks on different devices should not raise
+    # and should produce the same result as the all-CPU computation.
+    test_input = torch.tensor([1.0, 2.0, 3.0, 4.0, 5.0])
+    masks = torch.tensor([False, False, True, True, True])
+    expected = ModelUtils.masked_mean(test_input, masks=masks)
+
+    mean = ModelUtils.masked_mean(test_input.to("cuda"), masks=masks)
+    assert mean.item() == pytest.approx(expected.item())
+
+    # Also exercise the scalar (ndim == 0) branch.
+    scalar = torch.tensor(4.0).to("cuda")
+    scalar_mask = torch.tensor(True)
+    assert ModelUtils.masked_mean(scalar, masks=scalar_mask).item() == pytest.approx(
+        4.0
+    )
+
+
+@pytest.mark.skipif(not torch.cuda.is_available(), reason="Requires a GPU")
+def test_trust_region_loss_mixed_device():
+    # Regression test: loss helpers must tolerate operands living on different
+    # devices (e.g. buffer data on CPU, network heads on GPU) without erroring,
+    # and match the all-CPU result.
+    torch.manual_seed(0)
+    values = {"extrinsic": torch.rand(5, 1)}
+    old_values = {"extrinsic": torch.rand(5, 1)}
+    returns = {"extrinsic": torch.rand(5, 1)}
+    advantages = torch.rand(5)
+    log_probs = torch.rand(5, 1)
+    old_log_probs = torch.rand(5, 1)
+    masks = torch.ones(5).bool()
+
+    cpu_value_loss = ModelUtils.trust_region_value_loss(
+        values, old_values, returns, 0.2, masks
+    )
+    cpu_policy_loss = ModelUtils.trust_region_policy_loss(
+        advantages, log_probs, old_log_probs, masks, 0.2
+    )
+
+    # Move only the network outputs to GPU, leaving buffer-side tensors on CPU.
+    gpu_value_loss = ModelUtils.trust_region_value_loss(
+        {k: v.to("cuda") for k, v in values.items()},
+        old_values,
+        returns,
+        0.2,
+        masks,
+    )
+    gpu_policy_loss = ModelUtils.trust_region_policy_loss(
+        advantages, log_probs.to("cuda"), old_log_probs, masks, 0.2
+    )
+
+    assert gpu_value_loss.item() == pytest.approx(cpu_value_loss.item(), rel=1e-5)
+    assert gpu_policy_loss.item() == pytest.approx(cpu_policy_loss.item(), rel=1e-5)
+
+
 def test_soft_update():
     class TestModule(torch.nn.Module):
         def __init__(self, vals):
