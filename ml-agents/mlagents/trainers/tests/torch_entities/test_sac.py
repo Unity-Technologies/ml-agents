@@ -1,12 +1,15 @@
 import pytest
 from mlagents.torch_utils import torch
 
+from mlagents.trainers.behavior_id_utils import BehaviorIdentifiers
 from mlagents.trainers.buffer import BufferKey, RewardSignalUtil
+from mlagents.trainers.trainer.trainer_factory import TrainerFactory  # noqa F401
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer
+from mlagents.trainers.sac.trainer import SACTrainer
 from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.torch_entities.networks import SimpleActor
 from mlagents.trainers.tests import mock_brain as mb
-from mlagents.trainers.settings import NetworkSettings
+from mlagents.trainers.settings import NetworkSettings, TrainerSettings
 from mlagents.trainers.tests.dummy_config import (  # noqa: F401
     sac_dummy_config,
     curiosity_dummy_config,
@@ -49,6 +52,28 @@ def create_sac_optimizer_mock(dummy_config, use_rnn, use_discrete, use_visual):
     )
     optimizer = TorchSACOptimizer(policy, trainer_settings)
     return optimizer
+
+
+def create_sac_trainer(
+    dummy_config: TrainerSettings, use_rnn: bool = False
+) -> SACTrainer:
+    mock_behavior_spec = mb.setup_test_behavior_specs(
+        True,
+        False,
+        vector_action_space=DISCRETE_ACTION_SPACE,
+        vector_obs_space=VECTOR_OBS_SPACE,
+    )
+    trainer_settings = dummy_config
+    trainer_settings.network_settings.memory = (
+        NetworkSettings.MemorySettings(sequence_length=16, memory_size=12)
+        if use_rnn
+        else None
+    )
+    trainer = SACTrainer("test", 1, trainer_settings, True, False, 0, "0")
+    parsed_behavior_id = BehaviorIdentifiers.from_name_behavior_id("test")
+    policy = trainer.create_policy(parsed_behavior_id, mock_behavior_spec)
+    trainer.add_policy(parsed_behavior_id, policy)
+    return trainer
 
 
 @pytest.mark.parametrize("discrete", [True, False], ids=["discrete", "continuous"])
@@ -114,6 +139,23 @@ def test_sac_update_reward_signals(
     required_stats = ["Losses/Curiosity Forward Loss", "Losses/Curiosity Inverse Loss"]
     for stat in required_stats:
         assert stat in return_stats.keys()
+
+
+def test_sac_buffer_truncate(dummy_config: TrainerSettings) -> None:
+    # Weird buffer size that isn't a multiple of the sequence length
+    dummy_config.hyperparameters.buffer_size = 1234
+    sac_trainer = create_sac_trainer(dummy_config, use_rnn=True)
+    sac_trainer.update_buffer = mb.simulate_rollout(
+        2000, sac_trainer.policy.behavior_spec
+    )
+    sac_trainer._update_policy()
+    # Make sure buffer has been truncated properly
+    max_buffer_size = dummy_config.hyperparameters.buffer_size
+    assert sac_trainer.update_buffer.num_experiences < max_buffer_size
+    assert (
+        sac_trainer.update_buffer.num_experiences % sac_trainer.policy.sequence_length
+        == 0
+    )
 
 
 if __name__ == "__main__":

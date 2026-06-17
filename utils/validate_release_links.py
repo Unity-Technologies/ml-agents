@@ -22,10 +22,10 @@ MATCH_ANY = re.compile(r"(?s).*")
 # To allow everything in the file (effectively skipping it), use MATCH_ANY for the value
 ALLOW_LIST = {
     # Previous release table
-    "docs/Python-PettingZoo-API.md": re.compile(
+    "com.unity.ml-agents/Documentation~/Python-PettingZoo-API.md": re.compile(
         r"\*\*(Verified Package ([0-9]\.?)*|Release [0-9]+)\*\*"
     ),
-    "docs/Versioning.md": MATCH_ANY,
+    "com.unity.ml-agents/Documentation~/Versioning.md": MATCH_ANY,
     "com.unity.ml-agents/CHANGELOG.md": MATCH_ANY,
     "utils/make_readme_table.py": MATCH_ANY,
     "utils/validate_release_links.py": MATCH_ANY,

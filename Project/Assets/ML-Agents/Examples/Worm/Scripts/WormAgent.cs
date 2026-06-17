@@ -125,14 +125,6 @@ public class WormAgent : Agent
         }
     }
 
-    /// <summary>
-    /// Agent touched the target
-    /// </summary>
-    public void TouchedTarget()
-    {
-        AddReward(1f);
-    }
-
     public override void OnActionReceived(ActionBuffers actionBuffers)
     {
         // The dictionary with all the body parts in it are in the jdController
