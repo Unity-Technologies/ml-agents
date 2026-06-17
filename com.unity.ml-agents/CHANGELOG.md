@@ -8,10 +8,11 @@ and this project adheres to
 ## [Unreleased]
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-Fixed StackingSensor compressed observation for sensors with more than 3 channels.
+- Fixed StackingSensor compressed observation for sensors with more than 3 channels. (#6299)
 
 #### ml-agents / ml-agents-envs
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
+- Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer (#6225)
 
 ## [4.0.3] - 2026-04-17
 ### Minor Changes
