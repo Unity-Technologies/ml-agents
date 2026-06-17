@@ -329,7 +329,6 @@ class ModelUtils:
             )
         else:
             masks = masks.to(tensor.device)
-            # print("Mask Device:",masks.device)
             return (
                 tensor.permute(*torch.arange(tensor.ndim - 1, -1, -1)) * masks
             ).sum() / torch.clamp(

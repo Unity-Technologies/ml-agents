@@ -69,24 +69,10 @@ class GaussianDistInstance(DistInstance):
     def deterministic_sample(self):
         return self.mean
 
-    # def log_prob(self, value):
-    #     var = self.std**2
-    #     log_scale = torch.log(self.std + EPSILON)
-    #     return (
-    #         -((value - self.mean) ** 2) / (2 * var + EPSILON)
-    #         - log_scale
-    #         - math.log(math.sqrt(2 * math.pi))
-    #     )
-    
     def log_prob(self, value):
         value = value.to(self.mean.device)
         var = self.std ** 2
         log_scale = torch.log(self.std + EPSILON)
-        # print("value device:", value.device)
-        # print("mean device :", self.mean.device)
-        # print("std device  :", self.std.device)
-        # print("var device  :", var.device)
-        # print("log_scale device  :", log_scale.device)
         return (
             -((value - self.mean) ** 2) / (2 * var + EPSILON)
             - log_scale

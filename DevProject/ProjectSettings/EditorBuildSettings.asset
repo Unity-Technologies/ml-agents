@@ -9,6 +9,6 @@ EditorBuildSettings:
     path: Assets/ML-Agents/Scripts/Tests/Runtime/AcademyTest/AcademyStepperTestScene.unity
     guid: 9bafc50b1e55b43b2b1ae9620f1f8311
   m_configObjects:
-    com.unity.ml-agents.settings: {fileID: 11400000, guid: b176c44294f5e434bb5109ddfc43274e,
+    com.unity.ml-agents.settings: {fileID: 11400000, guid: b9540ad82945942dd852207c48989240,
       type: 2}
   m_UseUCBPForAssetBundles: 0
