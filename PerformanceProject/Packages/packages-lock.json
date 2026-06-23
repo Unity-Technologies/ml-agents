@@ -24,7 +24,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.collab-proxy": {
-      "version": "2.7.1",
+      "version": "2.12.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {},
@@ -182,11 +182,11 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.test-framework.performance": {
-      "version": "3.0.3",
+      "version": "3.5.0",
       "depth": 0,
       "source": "registry",
       "dependencies": {
-        "com.unity.test-framework": "1.1.31",
+        "com.unity.test-framework": "1.1.33",
         "com.unity.modules.jsonserialize": "1.0.0"
       },
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
@@ -212,7 +212,7 @@
       "url": "https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-candidates"
     },
     "com.unity.timeline": {
-      "version": "1.8.7",
+      "version": "1.8.12",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -233,7 +233,7 @@
       }
     },
     "com.unity.visualscripting": {
-      "version": "1.9.5",
+      "version": "1.9.11",
       "depth": 0,
       "source": "registry",
       "dependencies": {

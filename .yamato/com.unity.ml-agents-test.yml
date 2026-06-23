@@ -7,8 +7,10 @@ test_editors:
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
 
+# Pinning to 6000.5 instead of `trunk`.
+# Bump back to `trunk` once the CI image's pinned UTR understands UTF-1.8.
 trunk_editor:
-    - version: trunk
+    - version: 6000.5
       testProject: DevProject
 
 test_platforms:
@@ -121,7 +123,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
           conda activate python3.10
 {% endif %}
           python -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
-          unity-downloader-cli -u trunk -c editor --wait --fast
+          unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
           npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
           upm-ci project test -u {{ editor.version }} --project-path {{ editor.testProject }} --package-filter {{ package.name }} --extra-create-project-arg="-upmNoDefaultPackages" --extra-utr-arg "reruncount=2"
     artifacts:
