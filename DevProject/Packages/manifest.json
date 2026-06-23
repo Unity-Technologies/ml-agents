@@ -3,7 +3,7 @@
     "com.unity.ai.inference": "2.6.1",
     "com.unity.ai.navigation": "2.0.6",
     "com.unity.coding": "0.1.0-preview.26",
-    "com.unity.inputsystem": "1.13.0",
+    "com.unity.inputsystem": "1.19.0",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.tests": "file:../../com.unity.ml-agents.tests",
     "com.unity.multiplayer.center": "1.0.0",

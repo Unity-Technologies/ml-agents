@@ -4,7 +4,7 @@
     "com.unity.ai.navigation": "2.0.6",
     "com.unity.formats.fbx": "5.1.1",
     "com.unity.ide.rider": "3.0.31",
-    "com.unity.inputsystem": "1.13.0",
+    "com.unity.inputsystem": "1.19.0",
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.tests": "file:../../com.unity.ml-agents.tests",
     "com.unity.multiplayer.center": "1.0.0",
