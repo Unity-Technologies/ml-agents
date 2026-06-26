@@ -63,7 +63,7 @@ public class PushAgentEscape : Agent
                 dirToGo = transform.right * 0.75f;
                 break;
         }
-        transform.Rotate(rotateDir, Time.fixedDeltaTime * 200f);
+        transform.Rotate(rotateDir, Time.fixedDeltaTime * m_PushBlockSettings.agentRotationSpeed);
         m_AgentRb.AddForce(dirToGo * m_PushBlockSettings.agentRunSpeed,
             ForceMode.VelocityChange);
     }

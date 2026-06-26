@@ -14,6 +14,9 @@ and this project adheres to
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 - Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer; Updated training devices. (#6303)
 
+#### Examples
+- Replace hardcoded value 200f by agentRotationSpeed in MoveAgent() (#6306)
+
 ## [4.0.3] - 2026-04-17
 ### Minor Changes
 #### com.unity.ml-agents (C#)
