@@ -7,6 +7,10 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Major Changes
+#### ml-agents / ml-agents-envs
+- Migrated from gym to gymnasium (#6309)
+
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Fixed StackingSensor compressed observation for sensors with more than 3 channels. (#6299)
