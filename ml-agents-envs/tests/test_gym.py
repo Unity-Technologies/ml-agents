@@ -2,7 +2,7 @@ from unittest import mock
 import pytest
 import numpy as np
 
-from gym import spaces
+from gymnasium import spaces
 
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 from mlagents_envs.base_env import (
@@ -23,15 +23,40 @@ def test_gym_wrapper():
         mock_env, mock_spec, mock_decision_step, mock_terminal_step
     )
     env = UnityToGymWrapper(mock_env)
-    assert isinstance(env.reset(), np.ndarray)
+    reset_obs, reset_info = env.reset()
+    assert isinstance(reset_obs, np.ndarray)
+    assert isinstance(reset_info, dict)
     actions = env.action_space.sample()
     assert actions.shape[0] == 2
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert env.observation_space.contains(obs)
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
-    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(term, (bool, np.bool_))
+    assert isinstance(trunc, (bool, np.bool_))
     assert isinstance(info, dict)
+
+
+@pytest.mark.parametrize(
+    "interrupted,expected",
+    [(True, (False, True)), (False, (True, False))],
+    ids=["truncated", "terminated"],
+)
+def test_gym_wrapper_terminated_truncated(interrupted, expected):
+    # A non-empty TerminalSteps drives step() down its terminal branch so the
+    # interrupted -> (terminated, truncated) translation is actually exercised.
+    mock_env = mock.MagicMock()
+    mock_spec = create_mock_group_spec()
+    mock_decision_step, _ = create_mock_vector_steps(mock_spec)
+    mock_terminal_step = create_mock_terminal_steps(mock_spec, interrupted=interrupted)
+    setup_mock_unityenvironment(
+        mock_env, mock_spec, mock_decision_step, mock_terminal_step
+    )
+    env = UnityToGymWrapper(mock_env)
+    env.reset()
+    obs, rew, term, trunc, info = env.step(env.action_space.sample())
+    assert (term, trunc) == expected
+    assert env.game_over is True
 
 
 def test_branched_flatten():
@@ -108,14 +133,17 @@ def test_gym_wrapper_visual(use_uint8):
 
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8)
     assert isinstance(env.observation_space, spaces.Box)
-    assert isinstance(env.reset(), np.ndarray)
+    reset_obs, reset_info = env.reset()
+    assert isinstance(reset_obs, np.ndarray)
+    assert isinstance(reset_info, dict)
     actions = env.action_space.sample()
     assert actions.shape[0] == 2
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert env.observation_space.contains(obs)
     assert isinstance(obs, np.ndarray)
     assert isinstance(rew, float)
-    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(term, (bool, np.bool_))
+    assert isinstance(trunc, (bool, np.bool_))
     assert isinstance(info, dict)
 
 
@@ -137,32 +165,35 @@ def test_gym_wrapper_single_visual_and_vector(use_uint8):
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
     assert isinstance(env.observation_space, spaces.Tuple)
     assert len(env.observation_space) == 2
-    reset_obs = env.reset()
+    reset_obs, reset_info = env.reset()
     assert isinstance(reset_obs, list)
+    assert isinstance(reset_info, dict)
     assert len(reset_obs) == 2
     assert all(isinstance(ob, np.ndarray) for ob in reset_obs)
     assert reset_obs[-1].shape == (3,)
     assert len(reset_obs[0].shape) == 3
     actions = env.action_space.sample()
     assert actions.shape == (2,)
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert isinstance(obs, list)
     assert len(obs) == 2
     assert all(isinstance(ob, np.ndarray) for ob in obs)
     assert reset_obs[-1].shape == (3,)
     assert isinstance(rew, float)
-    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(term, (bool, np.bool_))
+    assert isinstance(trunc, (bool, np.bool_))
     assert isinstance(info, dict)
 
     # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env.observation_space, spaces.Box)
-    reset_obs = env.reset()
+    reset_obs, reset_info = env.reset()
     assert isinstance(reset_obs, np.ndarray)
+    assert isinstance(reset_info, dict)
     assert len(reset_obs.shape) == 3
     actions = env.action_space.sample()
     assert actions.shape == (2,)
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert isinstance(obs, np.ndarray)
 
 
@@ -184,28 +215,31 @@ def test_gym_wrapper_multi_visual_and_vector(use_uint8):
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=True)
     assert isinstance(env.observation_space, spaces.Tuple)
     assert len(env.observation_space) == 3
-    reset_obs = env.reset()
+    reset_obs, reset_info = env.reset()
     assert isinstance(reset_obs, list)
+    assert isinstance(reset_info, dict)
     assert len(reset_obs) == 3
     assert all(isinstance(ob, np.ndarray) for ob in reset_obs)
     assert reset_obs[-1].shape == (3,)
     actions = env.action_space.sample()
     assert actions.shape == (2,)
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert all(isinstance(ob, np.ndarray) for ob in obs)
     assert isinstance(rew, float)
-    assert isinstance(done, (bool, np.bool_))
+    assert isinstance(term, (bool, np.bool_))
+    assert isinstance(trunc, (bool, np.bool_))
     assert isinstance(info, dict)
 
     # check behavior for allow_multiple_obs = False
     env = UnityToGymWrapper(mock_env, uint8_visual=use_uint8, allow_multiple_obs=False)
     assert isinstance(env.observation_space, spaces.Box)
-    reset_obs = env.reset()
+    reset_obs, reset_info = env.reset()
     assert isinstance(reset_obs, np.ndarray)
+    assert isinstance(reset_info, dict)
     assert len(reset_obs.shape) == 3
     actions = env.action_space.sample()
     assert actions.shape == (2,)
-    obs, rew, done, info = env.step(actions)
+    obs, rew, term, trunc, info = env.step(actions)
     assert isinstance(obs, np.ndarray)
 
 
@@ -262,6 +296,20 @@ def create_mock_vector_steps(specs, num_agents=1, number_visual_observations=0):
         DecisionSteps(obs, rewards, agents, None, group_id, group_rewards),
         TerminalSteps.empty(specs),
     )
+
+
+def create_mock_terminal_steps(specs, num_agents=1, interrupted=True):
+    """
+    Creates a non-empty TerminalSteps mock so the wrapper's terminal branch
+    (and the interrupted -> terminated/truncated split) can be tested.
+    """
+    obs = [np.array(num_agents * [[1, 2, 3]], dtype=np.float32).reshape(num_agents, 3)]
+    rewards = np.array(num_agents * [1.0])
+    interrupted_arr = np.array(num_agents * [interrupted], dtype=bool)
+    agents = np.array(range(0, num_agents))
+    group_id = np.array(num_agents * [0])
+    group_rewards = np.array(num_agents * [0.0])
+    return TerminalSteps(obs, rewards, interrupted_arr, agents, group_id, group_rewards)
 
 
 def setup_mock_unityenvironment(mock_env, mock_spec, mock_decision, mock_termination):

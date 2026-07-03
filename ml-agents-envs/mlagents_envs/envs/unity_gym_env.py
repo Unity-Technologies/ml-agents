@@ -3,8 +3,8 @@ import itertools
 import numpy as np
 from typing import Any, Dict, List, Optional, Tuple, Union
 
-import gym
-from gym import error, spaces
+import gymnasium as gym
+from gymnasium import error, spaces
 
 from mlagents_envs.base_env import ActionTuple, BaseEnv
 from mlagents_envs.base_env import DecisionSteps, TerminalSteps
@@ -20,7 +20,7 @@ class UnityGymException(error.Error):
 
 
 logger = logging_util.get_logger(__name__)
-GymStepResult = Tuple[np.ndarray, float, bool, Dict]
+GymStepResult = Tuple[np.ndarray, float, bool, bool, Dict]
 
 
 class UnityToGymWrapper(gym.Env):
@@ -151,11 +151,16 @@ class UnityToGymWrapper(gym.Env):
         else:
             self._observation_space = list_spaces[0]  # only return the first one
 
-    def reset(self) -> Union[List[np.ndarray], np.ndarray]:
-        """Resets the state of the environment and returns an initial observation.
-        Returns: observation (object/list): the initial observation of the
+    def reset(
+        self, *, seed: Optional[int] = None, options: Optional[Dict[str, Any]] = None
+    ) -> Tuple[np.ndarray, Dict]:
+        """Resets the state of the environment and returns an initial observation and info.
+        Returns:
+            observation (object/list): the initial observation of the
         space.
+            info (dict): contains auxiliary diagnostic information.
         """
+        super().reset(seed=seed, options=options)
         self._env.reset()
         decision_step, _ = self._env.get_steps(self.name)
         n_agents = len(decision_step)
@@ -163,26 +168,27 @@ class UnityToGymWrapper(gym.Env):
         self.game_over = False
 
         res: GymStepResult = self._single_step(decision_step)
-        return res[0]
+        return res[0], res[4]
 
-    def step(self, action: List[Any]) -> GymStepResult:
+    def step(self, action: Any) -> GymStepResult:
         """Run one timestep of the environment's dynamics. When end of
         episode is reached, you are responsible for calling `reset()`
         to reset this environment's state.
-        Accepts an action and returns a tuple (observation, reward, done, info).
+        Accepts an action and returns a tuple (observation, reward, terminated, truncated, info).
         Args:
             action (object/list): an action provided by the environment
         Returns:
             observation (object/list): agent's observation of the current environment
             reward (float/list) : amount of reward returned after previous action
-            done (boolean/list): whether the episode has ended.
+            terminated (boolean/list): whether the episode has ended by termination.
+            truncated (boolean/list): whether the episode has ended by truncation.
             info (dict): contains auxiliary diagnostic information.
         """
         if self.game_over:
             raise UnityGymException(
                 "You are calling 'step()' even though this environment has already "
-                "returned done = True. You must always call 'reset()' once you "
-                "receive 'done = True'."
+                "returned `terminated` or `truncated` as True. You must always call 'reset()' once you "
+                "receive `terminated` or `truncated` as True."
             )
         if self._flattener is not None:
             # Translate action into list
@@ -227,9 +233,19 @@ class UnityToGymWrapper(gym.Env):
             visual_obs = self._get_vis_obs_list(info)
             self.visual_obs = self._preprocess_single(visual_obs[0][0])
 
-        done = isinstance(info, TerminalSteps)
+        if isinstance(info, TerminalSteps):
+            interrupted = info.interrupted[0]
+            terminated, truncated = not interrupted, interrupted
+        else:
+            terminated, truncated = False, False
 
-        return (default_observation, info.reward[0], done, {"step": info})
+        return (
+            default_observation,
+            info.reward[0],
+            terminated,
+            truncated,
+            {"step": info},
+        )
 
     def _preprocess_single(self, single_visual_obs: np.ndarray) -> np.ndarray:
         if self.uint8_visual:
@@ -276,7 +292,7 @@ class UnityToGymWrapper(gym.Env):
                 result += obs_spec.shape[0]
         return result
 
-    def render(self, mode="rgb_array"):
+    def render(self):
         """
         Return the latest visual observations.
         Note that it will not render a new frame of the environment.
@@ -306,7 +322,7 @@ class UnityToGymWrapper(gym.Env):
 
     @property
     def metadata(self):
-        return {"render.modes": ["rgb_array"]}
+        return {"render_modes": ["rgb_array"]}
 
     @property
     def reward_range(self) -> Tuple[float, float]:

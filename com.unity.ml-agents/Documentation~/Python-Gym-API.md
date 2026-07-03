@@ -1,8 +1,8 @@
 # Unity ML-Agents Gym Wrapper
 
-A common way in which machine learning researchers interact with simulation environments is via a wrapper provided by OpenAI called `gym`. For more information on the gym interface, see [here](https://github.com/openai/gym).
+A common way in which machine learning researchers interact with simulation environments is via a wrapper provided by the Farama Foundation called `gymnasium` (formerly known as OpenAI `gym`). For more information on the gymnasium interface, see the [Gymnasium Documentation](https://gymnasium.farama.org/index.html) and [Gymnasium Github repository](https://github.com/Farama-Foundation/Gymnasium).
 
-We provide a gym wrapper and instructions for using it with existing machine learning algorithms which utilize gym. Our wrapper provides interfaces on top of our `UnityEnvironment` class, which is the default way of interfacing with a Unity environment via Python.
+We provide a gym wrapper and instructions for using it with existing machine learning algorithms which utilize gymnasium. Our wrapper provides interfaces on top of our `UnityEnvironment` class, which is the default way of interfacing with a Unity environment via Python.
 
 ## Installation
 
@@ -11,7 +11,7 @@ The gym wrapper is part of the `mlagents_envs` package. Please refer to the [mla
 
 ## Using the Gym Wrapper
 
-The gym interface is available from `gym_unity.envs`. To launch an environment from the root of the project repository use:
+The gym interface is available from `mlagents_envs.envs.unity_gym_env`. To launch an environment from the root of the project repository use:
 
 ```python
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
@@ -23,13 +23,13 @@ env = UnityToGymWrapper(unity_env, uint8_visual, flatten_branched, allow_multipl
 
 - `uint8_visual` refers to whether to output visual observations as `uint8` values (0-255). Many common Gym environments (e.g. Atari) do this. By default, they will be floats (0.0-1.0). Defaults to `False`.
 
-- `flatten_branched` will flatten a branched discrete action space into a Gym Discrete. Otherwise, it will be converted into a MultiDiscrete. Defaults to `False`.
+- `flatten_branched` will flatten a branched discrete action space into a gymnasium `Discrete` space. Otherwise, it will be converted into a `MultiDiscrete`. Defaults to `False`.
 
 - `allow_multiple_obs` will return a list of observations. The first elements contain the visual observations and the last element contains the array of vector observations. If False the environment returns a single array (containing a single visual observations, if present, otherwise the vector observation). Defaults to `False`.
 
 - `action_space_seed` is the optional seed for action sampling. If non-None, will be used to set the random seed on created gym.Space instances.
 
-The returned environment `env` will function as a gym.
+The returned environment `env` will function as a gymnasium environment.
 
 ## Limitations
 
@@ -40,128 +40,119 @@ The returned environment `env` will function as a gym.
 - Environment registration for use with `gym.make()` is currently not supported.
 - Calling env.render() will not render a new frame of the environment. It will return the latest visual observation if using visual observations.
 
-## Running OpenAI Baselines Algorithms
+## Training with Stable-Baselines3
 
-OpenAI provides a set of open-source maintained and tested Reinforcement Learning algorithms called the [Baselines](https://github.com/openai/baselines).
+[Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) (SB3) is a set of reliable, actively maintained implementations of reinforcement learning algorithms in PyTorch. It is the community successor to OpenAI Baselines and, like this wrapper, is built on the Farama Foundation `gymnasium` API, so ML-Agents environments can be trained with it directly.
 
-Using the provided Gym wrapper, it is possible to train ML-Agents environments using these algorithms. This requires the creation of custom training scripts to launch each algorithm. In most cases these scripts can be created by making slight modifications to the ones provided for Atari and Mujoco environments.
+Install SB3 with:
 
-These examples were tested with baselines version 0.1.6.
+```sh
+pip install stable-baselines3
+```
 
-### Example - DQN Baseline
+### Example - PPO
 
-To train an agent to play the `GridWorld` environment using the Baselines DQN algorithm, you first need to install the Baselines package. For instructions, refer to the [Baselines README](https://github.com/openai/baselines).
-
-Next, create a file called `train_unity.py`. Then create an `/envs/` directory and build the environment to that directory. For more information on building Unity environments, see [here](Learning-Environment-Executable.md). Note that because of limitations of the DQN baseline, the environment must have a single visual observation, a single discrete action and a single Agent in the scene. Add the following code to the `train_unity.py` file:
+To train an agent with PPO on a single-agent environment, create a file called `train_unity.py` with the following code. Then create an `/envs/` directory and build the environment to that directory. For more information on building Unity environments, see [here](Learning-Environment-Executable.md).
 
 ```python
-import gym
-
-from baselines import deepq
-from baselines import logger
+from stable_baselines3 import PPO
 
 from mlagents_envs.environment import UnityEnvironment
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 
 def main():
-  unity_env = UnityEnvironment( < path - to - environment >)
-  env = UnityToGymWrapper(unity_env, uint8_visual=True)
-  logger.configure('./logs')  # Change to log in a different directory
-  act = deepq.learn(
-    env,
-    "cnn",  # For visual inputs
-    lr=2.5e-4,
-    total_timesteps=1000000,
-    buffer_size=50000,
-    exploration_fraction=0.05,
-    exploration_final_eps=0.1,
-    print_freq=20,
-    train_freq=5,
-    learning_starts=20000,
-    target_network_update_freq=50,
-    gamma=0.99,
-    prioritized_replay=False,
-    checkpoint_freq=1000,
-    checkpoint_path='./logs',  # Change to save model in a different directory
-    dueling=True
-  )
-  print("Saving model to unity_model.pkl")
-  act.save("unity_model.pkl")
+    unity_env = UnityEnvironment(<path-to-environment>)
+    env = UnityToGymWrapper(unity_env)
+    model = PPO("MlpPolicy", env, verbose=1)
+    model.learn(total_timesteps=100000)
+    print("Saving model to unity_model.zip")
+    model.save("unity_model")
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()
 ```
 
-To start the training process, run the following from the directory containing
-`train_unity.py`:
+To start the training process, run the following from the directory containing `train_unity.py`:
 
 ```sh
-python -m train_unity
+python train_unity.py
 ```
 
-### Other Algorithms
+Use the `"MlpPolicy"` for environments with vector observations and the `"CnnPolicy"` for environments with visual (image) observations.
 
-Other algorithms in the Baselines repository can be run using scripts similar to the examples from the baselines package. In most cases, the primary changes needed to use a Unity environment are to import `UnityToGymWrapper`, and to replace the environment creation code, typically `gym.make()`, with a call to `UnityToGymWrapper(unity_environment)` passing the environment as input.
+### Example - DQN
 
-A typical rule of thumb is that for vision-based environments, modification should be done to Atari training scripts, and for vector observation environments, modification should be done to Mujoco scripts.
-
-Some algorithms will make use of `make_env()` or `make_mujoco_env()` functions. You can define a similar function for Unity environments. An example of such a method using the PPO2 baseline:
+DQN requires a discrete action space. For an environment with a single visual observation and branched discrete actions, enable `uint8_visual` (to output `uint8` image observations) and `flatten_branched` (to collapse the branched action space into a single `Discrete` space):
 
 ```python
+from stable_baselines3 import DQN
+
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.envs import UnityToGymWrapper
-from baselines.common.vec_env.subproc_vec_env import SubprocVecEnv
-from baselines.common.vec_env.dummy_vec_env import DummyVecEnv
-from baselines.bench import Monitor
-from baselines import logger
-import baselines.ppo2.ppo2 as ppo2
-
-import os
-
-try:
-  from mpi4py import MPI
-except ImportError:
-  MPI = None
-
-
-def make_unity_env(env_directory, num_env, visual, start_index=0):
-  """
-  Create a wrapped, monitored Unity environment.
-  """
-
-  def make_env(rank, use_visual=True):  # pylint: disable=C0111
-    def _thunk():
-      unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
-      env = UnityToGymWrapper(unity_env, uint8_visual=True)
-      env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)))
-      return env
-
-    return _thunk
-
-  if visual:
-    return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
-  else:
-    rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
-    return DummyVecEnv([make_env(rank, use_visual=False)])
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 
 
 def main():
-  env = make_unity_env( < path - to - environment >, 4, True)
-  ppo2.learn(
-    network="mlp",
-    env=env,
-    total_timesteps=100000,
-    lr=1e-3,
-  )
+    unity_env = UnityEnvironment(<path-to-environment>)
+    env = UnityToGymWrapper(unity_env, uint8_visual=True, flatten_branched=True)
+    model = DQN(
+        "CnnPolicy",
+        env,
+        learning_rate=2.5e-4,
+        buffer_size=50000,
+        learning_starts=20000,
+        target_update_interval=50,
+        gamma=0.99,
+        verbose=1,
+    )
+    model.learn(total_timesteps=1000000)
+    print("Saving model to unity_model.zip")
+    model.save("unity_model")
 
 
-if __name__ == '__main__':
-  main()
+if __name__ == "__main__":
+    main()
+```
+
+### Training on multiple environments in parallel
+
+SB3 can train on several environment instances at once using a vectorized environment. Each Unity instance must use a distinct `base_port` so the instances do not conflict:
+
+```python
+from stable_baselines3 import PPO
+from stable_baselines3.common.vec_env import SubprocVecEnv
+
+from mlagents_envs.environment import UnityEnvironment
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
+
+
+def make_unity_env(env_directory, num_env, start_index=0):
+    """Create a wrapped, vectorized Unity environment."""
+
+    def make_env(rank):
+        def _thunk():
+            unity_env = UnityEnvironment(env_directory, base_port=5000 + rank)
+            return UnityToGymWrapper(unity_env)
+
+        return _thunk
+
+    return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
+
+
+def main():
+    env = make_unity_env(<path-to-environment>, 4)
+    model = PPO("MlpPolicy", env, verbose=1)
+    model.learn(total_timesteps=100000)
+
+
+if __name__ == "__main__":
+    main()
 ```
 
 ## Run Google Dopamine Algorithms
+
+> **Note:** The walkthrough below was written for an older, OpenAI `gym`-based release of Dopamine. This wrapper now follows the Farama Foundation `gymnasium` API: `reset()` returns `(observation, info)` and `step()` returns `(observation, reward, terminated, truncated, info)`. Recent versions of Dopamine target `gymnasium` and are compatible with the wrapper, but the exact file names, module paths, and configuration steps described here may differ from the version you install. Treat this section as a general guide rather than a step-by-step recipe.
 
 Google provides a framework [Dopamine](https://github.com/google/dopamine), and implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of Rainbow. Using the Gym wrapper, we can run Unity environments using Dopamine.
 
@@ -177,11 +168,11 @@ Then, follow the appropriate install instructions as specified on [Dopamine's ho
 
 First, open `dopamine/atari/run_experiment.py`. Alternatively, copy the entire `atari` folder, and name it something else (e.g. `unity`). If you choose the  copy approach, be sure to change the package names in the import statements in `train.py` to your new directory.
 
-Within `run_experiment.py`, we will need to make changes to which environment is instantiated, just as in the Baselines example. At the top of the file, insert
+Within `run_experiment.py`, we will need to make changes to which environment is instantiated, just as in the Stable-Baselines3 examples above. At the top of the file, insert
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.envs import UnityToGymWrapper
+from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 ```
 
 to import the Gym Wrapper. Navigate to the `create_atari_environment` method in the same file, and switch to instantiating a Unity environment by replacing the method with the following code.
@@ -200,7 +191,7 @@ Note that we are not using the preprocessor from Dopamine, as it uses many Atari
 
 ### Limitations
 
-Since Dopamine is designed around variants of DQN, it is only compatible with discrete action spaces, and specifically the Discrete Gym space. For environments that use branched discrete action spaces, you can enable the `flatten_branched` parameter in `UnityToGymWrapper`, which treats each combination of branched actions as separate actions.
+Since Dopamine is designed around variants of DQN, it is only compatible with discrete action spaces, and specifically the `Discrete` gymnasium space. For environments that use branched discrete action spaces, you can enable the `flatten_branched` parameter in `UnityToGymWrapper`, which treats each combination of branched actions as separate actions.
 
 Furthermore, when building your environments, ensure that your Agent is using visual observations with greyscale enabled, and that the dimensions of the visual observations is 84 by 84 (matches the parameter found in `dqn_agent.py` and `rainbow_agent.py`). Dopamine's agents currently do not automatically adapt to the observation dimensions or number of channels.
 

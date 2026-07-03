@@ -17,7 +17,7 @@ def test_run_environment(env_name):
         print(str(env))
 
         # Reset the environment
-        initial_observations = env.reset()
+        initial_observations, _ = env.reset()
 
         if len(env.observation_space.shape) == 1:
             # Examine the initial vector observation
@@ -29,7 +29,8 @@ def test_run_environment(env_name):
             episode_rewards = 0
             while not done:
                 actions = env.action_space.sample()
-                obs, reward, done, _ = env.step(actions)
+                obs, reward, terminated, truncated, _ = env.step(actions)
+                done = terminated or truncated
                 episode_rewards += reward
             print(f"Total reward this episode: {episode_rewards}")
     finally:
