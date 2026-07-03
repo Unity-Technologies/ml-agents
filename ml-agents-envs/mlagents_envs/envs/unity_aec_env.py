@@ -60,7 +60,8 @@ class UnityAECEnv(UnityPettingzooBaseEnv, AECEnv):
 
     def last(self, observe=True):
         """
-        returns observation, cumulative reward, termination, truncation, info for the current agent (specified by self.agent_selection)
+        returns observation, cumulative reward, termination, truncation, info
+        for the current agent (specified by self.agent_selection)
         """
         obs, cumm_rewards, terminated, truncated, info = self.observe(
             self._agents[self._agent_index]
