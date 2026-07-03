@@ -57,7 +57,7 @@ Initializes a Unity AEC environment wrapper.
  | step(action: Any) -> None
 ```
 
-Sets the action of the active agent and get the observation, reward, done and info of the next agent.
+Sets the action of the active agent and get the observation, reward, termination, truncation and info of the next agent.
 
 **Arguments**:
 
@@ -79,7 +79,7 @@ Returns the observation an agent currently can make. `last()` calls this functio
  | last(observe=True)
 ```
 
-returns observation, cumulative reward, done, info for the current agent (specified by self.agent_selection)
+returns observation, cumulative reward, termination, truncation, info for the current agent (specified by self.agent_selection)
 
 <a name="mlagents_envs.envs.unity_parallel_env"></a>
 # mlagents\_envs.envs.unity\_parallel\_env
@@ -180,31 +180,23 @@ The side channels of the environment. You can access the side channels of an env
 #### reset
 
 ```python
- | reset()
+ | reset(seed: Optional[int] = None, options: Optional[Dict] = None) -> Any
 ```
 
 Resets the environment.
-
-<a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.seed"></a>
-#### seed
-
-```python
- | seed(seed=None)
-```
-
-Reseeds the environment (making the resulting environment deterministic).
-`reset()` must be called after `seed()`, and before `step()`.
 
 <a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.render"></a>
 #### render
 
 ```python
- | render(mode="human")
+ | render()
 ```
 
 NOT SUPPORTED.
 
-Displays a rendered frame from the environment, if supported. Alternate render modes in the default environments are `'rgb_array'` which returns a numpy array and is supported by all environments outside of classic, and `'ansi'` which returns the strings printed (specific to classic environments).
+Renders the environment as specified by self.render_mode, if supported.
+
+Render mode can be `human` to display a window. Other render modes in the default environments are `'rgb_array'` which returns a numpy array and is supported by all environments outside of classic, and `'ansi'` which returns the strings printed (specific to classic environments).
 
 <a name="mlagents_envs.envs.unity_pettingzoo_base_env.UnityPettingzooBaseEnv.close"></a>
 #### close

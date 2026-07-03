@@ -17,7 +17,9 @@ class UnityPettingzooBaseEnv:
         super().__init__()
         atexit.register(self.close)
         self._env = env
-        self.metadata = metadata if metadata is not None else {"name": "unity_ml-agents"}
+        self.metadata = (
+            metadata if metadata is not None else {"name": "unity_ml-agents"}
+        )
         self._assert_loaded()
 
         self._agent_index = 0
@@ -247,6 +249,11 @@ class UnityPettingzooBaseEnv:
         Resets the environment.
         """
         self._seed = seed
+        if seed is not None:
+            # Action spaces are created (and seeded) once in __init__, so reseed
+            # the existing ones here to make reset(seed=...) actually reproducible.
+            for space in self._action_spaces.values():
+                space.seed(seed)
 
         self._assert_loaded()
         self._agent_index = 0

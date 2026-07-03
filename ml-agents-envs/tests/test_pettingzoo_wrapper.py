@@ -69,3 +69,18 @@ def test_multi_agent_parallel():
     )
     env = UnityParallelEnv(unity_env)
     parallel_api_test(env, num_cycles=NUM_TEST_CYCLES)
+
+
+def test_reset_seed_reseeds_action_spaces():
+    # reset(seed=...) on a long-lived wrapper must actually reseed the existing
+    # action spaces so sampling is reproducible, not just store self._seed.
+    unity_env = SimpleEnvironment(["test_single"])
+    env = UnityAECEnv(unity_env)
+
+    env.reset(seed=1337)
+    agent = env.possible_agents[0]
+    first = env.action_space(agent).sample()
+    env.reset(seed=1337)
+    second = env.action_space(agent).sample()
+
+    assert np.array_equal(first, second)

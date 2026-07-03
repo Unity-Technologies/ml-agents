@@ -16,13 +16,13 @@ This wrapper is compatible with PettingZoo API. Please check out [PettingZoo API
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
-from mlagents_envs.envs import UnityToPettingZooWrapper
+from mlagents_envs.envs.unity_aec_env import UnityAECEnv
 
 unity_env = UnityEnvironment("StrikersVsGoalie")
-env = UnityToPettingZooWrapper(unity_env)
+env = UnityAECEnv(unity_env)
 env.reset()
 for agent in env.agent_iter():
-    observation, reward, done, info = env.last()
+    observation, reward, termination, truncation, info = env.last()
     action = policy(observation, agent)
     env.step(action)
 ```
