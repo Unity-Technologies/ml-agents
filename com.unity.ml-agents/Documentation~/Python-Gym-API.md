@@ -80,7 +80,7 @@ To start the training process, run the following from the directory containing `
 python train_unity.py
 ```
 
-Use the `"MlpPolicy"` for environments with vector observations and the `"CnnPolicy"` for environments with visual (image) observations.
+Use the `MlpPolicy` for environments with vector observations, and the `CnnPolicy` for environments with visual (image) observations.
 
 ### Example - DQN
 
