@@ -42,7 +42,7 @@ The returned environment `env` will function as a gymnasium environment.
 
 ## Training with Stable-Baselines3
 
-[Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) (SB3) is a set of reliable, actively maintained implementations of reinforcement learning algorithms in PyTorch. It is the community successor to OpenAI Baselines and, like this wrapper, is built on the Farama Foundation `gymnasium` API, so ML-Agents environments can be trained with it directly.
+[Stable-Baselines3](https://github.com/DLR-RM/stable-baselines3) (SB3) is a set of reliable, actively maintained implementations of reinforcement learning algorithms in PyTorch. It is the community successor to OpenAI Baselines and, like this wrapper, is built on the Farama Foundation `gymnasium` API, so you can train ML-Agents environments with it directly.
 
 Install SB3 with:
 
