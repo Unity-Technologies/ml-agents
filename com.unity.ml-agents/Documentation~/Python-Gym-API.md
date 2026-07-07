@@ -2,7 +2,7 @@
 
 A common way in which machine learning researchers interact with simulation environments is via a wrapper provided by the Farama Foundation called `gymnasium` (formerly known as OpenAI `gym`). For more information on the gymnasium interface, see the [Gymnasium Documentation](https://gymnasium.farama.org/index.html) and [Gymnasium Github repository](https://github.com/Farama-Foundation/Gymnasium).
 
-We provide a gym wrapper and instructions for using it with existing machine learning algorithms which utilize gymnasium. Our wrapper provides interfaces on top of our `UnityEnvironment` class, which is the default way of interfacing with a Unity environment via Python.
+The ML Agents package provides a gym wrapper and instructions for using it with existing machine learning algorithms which utilize gymnasium. This wrapper provides interfaces on top of the `UnityEnvironment` class, which is the default way of interfacing with a Unity environment via Python.
 
 ## Installation
 
