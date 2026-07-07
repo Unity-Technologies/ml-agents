@@ -152,7 +152,7 @@ if __name__ == "__main__":
 
 ## Run Google Dopamine Algorithms
 
-> **Note:** The walkthrough below was written for an older, OpenAI `gym`-based release of Dopamine. This wrapper now follows the Farama Foundation `gymnasium` API: `reset()` returns `(observation, info)` and `step()` returns `(observation, reward, terminated, truncated, info)`. Recent versions of Dopamine target `gymnasium` and are compatible with the wrapper, but the exact file names, module paths, and configuration steps described here may differ from the version you install. Treat this section as a general guide rather than a step-by-step recipe.
+> [!NOTE] The following walkthrough was written for an older, OpenAI `gym`-based release of Dopamine. This wrapper now follows the Farama Foundation `gymnasium` API: `reset()` returns `(observation, info)` and `step()` returns `(observation, reward, terminated, truncated, info)`. Recent versions of Dopamine target `gymnasium` and are compatible with the wrapper, but the exact file names, module paths, and configuration steps described here may differ from the version you install. Treat this section as a general guide rather than a step-by-step recipe.
 
 Google provides a framework [Dopamine](https://github.com/google/dopamine), and implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of Rainbow. Using the Gym wrapper, we can run Unity environments using Dopamine.
 
