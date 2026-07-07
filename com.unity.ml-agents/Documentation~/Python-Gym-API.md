@@ -117,7 +117,7 @@ if __name__ == "__main__":
 
 ### Training on multiple environments in parallel
 
-SB3 can train on several environment instances at once using a vectorized environment. Each Unity instance must use a distinct `base_port` so the instances do not conflict:
+SB3 can train on several environment instances at once using a vectorized environment. Each Unity instance must use a distinct `base_port` so the instances don't conflict:
 
 ```python
 from stable_baselines3 import PPO
