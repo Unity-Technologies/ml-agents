@@ -154,7 +154,7 @@ if __name__ == "__main__":
 
 > [!NOTE] The following walkthrough was written for an older, OpenAI `gym`-based release of Dopamine. This wrapper now follows the Farama Foundation `gymnasium` API: `reset()` returns `(observation, info)` and `step()` returns `(observation, reward, terminated, truncated, info)`. Recent versions of Dopamine target `gymnasium` and are compatible with the wrapper, but the exact file names, module paths, and configuration steps described here may differ from the version you install. Treat this section as a general guide rather than a step-by-step recipe.
 
-Google provides a framework [Dopamine](https://github.com/google/dopamine), and implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of Rainbow. Using the Gym wrapper, we can run Unity environments using Dopamine.
+Google provides a framework [Dopamine](https://github.com/google/dopamine), and implementations of algorithms, e.g. DQN, Rainbow, and the C51 variant of Rainbow. Using the Gym wrapper, you can run Unity environments using Dopamine.
 
 First, after installing the Gym wrapper, clone the Dopamine repository.
 
@@ -168,7 +168,7 @@ Then, follow the appropriate install instructions as specified on [Dopamine's ho
 
 First, open `dopamine/atari/run_experiment.py`. Alternatively, copy the entire `atari` folder, and name it something else (e.g. `unity`). If you choose the  copy approach, be sure to change the package names in the import statements in `train.py` to your new directory.
 
-Within `run_experiment.py`, we will need to make changes to which environment is instantiated, just as in the Stable-Baselines3 examples in the previous section. At the top of the file, insert
+Within `run_experiment.py`, you need to make changes to which environment is instantiated, just as in the Stable-Baselines3 examples in the previous section. At the top of the file, insert
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
@@ -185,9 +185,9 @@ to import the Gym Wrapper. Navigate to the `create_atari_environment` method in 
     return env
 ```
 
-`<path-to-environment>` is the path to your built Unity executable. For more information on building Unity environments, see [here](Learning-Environment-Executable.md), and note the Limitations section below.
+`<path-to-environment>` is the path to your built Unity executable. For more information on building Unity environments, refer to [Using an Environment Executable](Learning-Environment-Executable.md), and note the Limitations section below.
 
-Note that we are not using the preprocessor from Dopamine, as it uses many Atari-specific calls. Furthermore, frame-skipping can be done from within Unity, rather than on the Python side.
+Note that the script is not using the preprocessor from Dopamine, as it uses many Atari-specific calls. Furthermore, frame-skipping can be done from within Unity, rather than on the Python side.
 
 ### Limitations
 
@@ -247,7 +247,7 @@ python -um dopamine.unity.train \
   --gin_files='dopamine/agents/rainbow/configs/rainbow.gin'
 ```
 
-Again, we assume that you've copied `atari` into a separate folder. Remember to replace `unity` with the directory you copied your files into. If you edited the Atari files directly, this should be `atari`.
+Again, ensure to copy `atari` into a separate folder. Remember to replace `unity` with the directory you copied your files into. If you edited the Atari files directly, this should be `atari`.
 
 ### Example: GridWorld
 
