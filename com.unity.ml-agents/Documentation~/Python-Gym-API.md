@@ -168,7 +168,7 @@ Then, follow the appropriate install instructions as specified on [Dopamine's ho
 
 First, open `dopamine/atari/run_experiment.py`. Alternatively, copy the entire `atari` folder, and name it something else (e.g. `unity`). If you choose the  copy approach, be sure to change the package names in the import statements in `train.py` to your new directory.
 
-Within `run_experiment.py`, we will need to make changes to which environment is instantiated, just as in the Stable-Baselines3 examples above. At the top of the file, insert
+Within `run_experiment.py`, we will need to make changes to which environment is instantiated, just as in the Stable-Baselines3 examples in the previous section. At the top of the file, insert
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
