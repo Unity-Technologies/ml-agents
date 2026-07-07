@@ -52,7 +52,7 @@ pip install stable-baselines3
 
 ### Example - PPO
 
-To train an agent with PPO on a single-agent environment, create a file called `train_unity.py` with the following code. Then create an `/envs/` directory and build the environment to that directory. For more information on building Unity environments, see [here](Learning-Environment-Executable.md).
+To train an agent with PPO on a single-agent environment, create a file called `train_unity.py` with the following code. Then create an `/envs/` directory and build the environment to that directory. For more information on building Unity environments, refer to [Using an Environment Executable](Learning-Environment-Executable.md).
 
 ```python
 from stable_baselines3 import PPO
