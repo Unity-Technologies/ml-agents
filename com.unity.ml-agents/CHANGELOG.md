@@ -19,6 +19,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 - Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer; Updated training devices. (#6303)
+- Fix typing on optional strings
 
 #### Examples
 - Replace hardcoded value 200f by agentRotationSpeed in MoveAgent() (#6306)

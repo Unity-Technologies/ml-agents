@@ -71,7 +71,10 @@ class TimerNode:
         self.count += 1
 
     def merge(
-        self, other: "TimerNode", root_name: str = None, is_parallel: bool = True
+        self,
+        other: "TimerNode",
+        root_name: Optional[str] = None,
+        is_parallel: bool = True,
     ) -> None:
         """
         Add the other node to this node, then do the same recursively on its children.
