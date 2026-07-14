@@ -259,7 +259,7 @@ def test_process_pixels_gray():
     byte_arr = generate_compressed_data(in_array)
     out_array = process_pixels(byte_arr, 1)
     assert out_array.shape == (1, 128, 64)
-    assert np.mean(in_array.mean(axis=0, keepdims=True) - out_array) < 0.01
+    assert np.mean(in_array.mean(axis=0, keepdims=True) - out_array) < 0.002
     assert np.allclose(in_array.mean(axis=0, keepdims=True), out_array, atol=0.01)
 
 

@@ -20,6 +20,7 @@ and this project adheres to
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 - Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer; Updated training devices. (#6303)
 - Fix typing on optional strings (#6311)
+- Tighten assertion bound for test_process_pixels_gray (#6312)
 
 #### Examples
 - Replace hardcoded value 200f by agentRotationSpeed in MoveAgent() (#6306)
