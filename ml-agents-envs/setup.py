@@ -48,6 +48,7 @@ setup(
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     packages=find_packages(
         exclude=["*.tests", "*.tests.*", "tests.*", "tests", "colabs", "*.ipynb"]
@@ -55,7 +56,7 @@ setup(
     zip_safe=False,
     install_requires=[
         "cloudpickle",
-        "grpcio>=1.11.0,<=1.53.2",
+        "grpcio>=1.11.0,<=1.62.2",
         "Pillow>=4.2.1",
         "protobuf>=3.6,<3.21",
         "pyyaml>=3.1.0",
@@ -64,7 +65,7 @@ setup(
         "numpy>=1.23.5,<2.0",
         "filelock>=3.4.0",
     ],
-    python_requires=">=3.10.1,<=3.11.15",
+    python_requires=">=3.10.1,<=3.12.13",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
     cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )

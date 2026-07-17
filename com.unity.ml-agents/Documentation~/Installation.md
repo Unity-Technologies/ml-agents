@@ -37,17 +37,17 @@ To install the package, follow these steps:
 If the package isn’t listed, follow the [Advanced Installation](#install-ml-agents-advanced-installation) method instead.
 
 
-## Install Python 3.10.20 or 3.11.15 using Conda
+## Install Python 3.10.20, 3.11.15, or 3.12.13 using Conda
 
 Use Conda or Mamba to install and manage your Python environment. This ensures that ML-Agents dependencies are isolated and version-controlled.
 
 To install Python, follow these steps:
 
 1. Install [Conda](https://docs.conda.io/en/latest/) or [Mamba](https://github.com/mamba-org/mamba).
-2. Open a terminal and create a new Conda environment with Python 3.10.20 or 3.11.15:
+2. Open a terminal and create a new Conda environment with Python 3.10.20, 3.11.15, or 3.12.13:
 
 ```shell
-conda create -n mlagents python=3.11.15 && conda activate mlagents
+conda create -n mlagents python=3.12.13 && conda activate mlagents
 ```
 
 3. On **Windows**, install PyTorch separately to ensure CUDA support:
