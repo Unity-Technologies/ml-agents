@@ -8,7 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <PackageReference Include="RecipeEngine.Modules.Wrench" Version="2.7.0" />
+      <PackageReference Include="RecipeEngine.Modules.Wrench" Version="3.4.0" />
     </ItemGroup>
 
 </Project>
