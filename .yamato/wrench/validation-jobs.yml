@@ -32,7 +32,10 @@ validate_-_ml-agents_-_6000_0_-_macos13:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -67,10 +70,10 @@ validate_-_ml-agents_-_6000_0_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -100,7 +103,10 @@ validate_-_ml-agents_-_6000_0_-_ubuntu2204:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -135,10 +141,10 @@ validate_-_ml-agents_-_6000_0_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -168,7 +174,10 @@ validate_-_ml-agents_-_6000_0_-_win10:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -203,10 +212,10 @@ validate_-_ml-agents_-_6000_0_-_win10:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -236,7 +245,10 @@ validate_-_ml-agents_-_6000_3_-_macos13:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -271,10 +283,10 @@ validate_-_ml-agents_-_6000_3_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -304,7 +316,10 @@ validate_-_ml-agents_-_6000_3_-_ubuntu2204:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -339,10 +354,10 @@ validate_-_ml-agents_-_6000_3_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -372,7 +387,10 @@ validate_-_ml-agents_-_6000_3_-_win10:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -407,214 +425,10 @@ validate_-_ml-agents_-_6000_3_-_win10:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-  labels:
-  - Packages:ml-agents
-
-# PVP Editor and Playmode tests for Validate - ml-agents - 6000.4 - macos13 (6000.4 - MacOS).
-validate_-_ml-agents_-_6000_4_-_macos13:
-  name: Validate - ml-agents - 6000.4 - macos13
-  agent:
-    image: package-ci/macos-13:v4
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 20
-    retries: 3
-  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 20
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
-    timeout: 20
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-ml-agents/Logs/**
-      - test-ml-agents/Library/*.log
-      - test-ml-agents/*.log
-      - test-ml-agents/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-  labels:
-  - Packages:ml-agents
-
-# PVP Editor and Playmode tests for Validate - ml-agents - 6000.4 - ubuntu2204 (6000.4 - Ubuntu).
-validate_-_ml-agents_-_6000_4_-_ubuntu2204:
-  name: Validate - ml-agents - 6000.4 - ubuntu2204
-  agent:
-    image: package-ci/ubuntu-22.04:v4
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 20
-    retries: 3
-  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 20
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
-    timeout: 20
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-ml-agents/Logs/**
-      - test-ml-agents/Library/*.log
-      - test-ml-agents/*.log
-      - test-ml-agents/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-  labels:
-  - Packages:ml-agents
-
-# PVP Editor and Playmode tests for Validate - ml-agents - 6000.4 - win10 (6000.4 - Windows).
-validate_-_ml-agents_-_6000_4_-_win10:
-  name: Validate - ml-agents - 6000.4 - win10
-  agent:
-    image: package-ci/win10:v4
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 20
-    retries: 3
-  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 20
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
-    timeout: 20
-    retries: 1
-  after:
-  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-ml-agents/Logs/**
-      - test-ml-agents/Library/*.log
-      - test-ml-agents/*.log
-      - test-ml-agents/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -644,7 +458,10 @@ validate_-_ml-agents_-_6000_5_-_macos13:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -679,10 +496,10 @@ validate_-_ml-agents_-_6000_5_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -712,7 +529,10 @@ validate_-_ml-agents_-_6000_5_-_ubuntu2204:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -747,10 +567,10 @@ validate_-_ml-agents_-_6000_5_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -780,7 +600,10 @@ validate_-_ml-agents_-_6000_5_-_win10:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -815,26 +638,27 @@ validate_-_ml-agents_-_6000_5_-_win10:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
-# PVP Editor and Playmode tests for Validate - ml-agents - 6000.6 - macos13 (6000.6 - MacOS).
-validate_-_ml-agents_-_6000_6_-_macos13:
-  name: Validate - ml-agents - 6000.6 - macos13
+# PVP Editor and Playmode tests for Validate - ml-agents - 6000.6 - macos13arm (6000.6 - MacOS).
+validate_-_ml-agents_-_6000_6_-_macos13arm:
+  name: Validate - ml-agents - 6000.6 - macos13arm
   agent:
-    image: package-ci/macos-13:v4
+    image: package-ci/macos-13-arm64:v4
     type: Unity::VM::osx
-    flavor: b1.xlarge
+    flavor: m1.mac
+    model: M1
   commands:
   - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast --arch arm64
     timeout: 20
     retries: 3
   - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
@@ -848,7 +672,10 @@ validate_-_ml-agents_-_6000_6_-_macos13:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -883,10 +710,10 @@ validate_-_ml-agents_-_6000_6_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -902,7 +729,7 @@ validate_-_ml-agents_-_6000_6_-_ubuntu2204:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast
     timeout: 20
     retries: 3
   - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
@@ -916,7 +743,10 @@ validate_-_ml-agents_-_6000_6_-_ubuntu2204:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -951,10 +781,10 @@ validate_-_ml-agents_-_6000_6_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
@@ -970,7 +800,7 @@ validate_-_ml-agents_-_6000_6_-_win10:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast
     timeout: 20
     retries: 3
   - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
@@ -984,7 +814,10 @@ validate_-_ml-agents_-_6000_6_-_win10:
     timeout: 5
     retries: 0
   - command: echo No additional PVP profiles to declared to check.
-  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
     timeout: 20
     retries: 1
   after:
@@ -1019,10 +852,224 @@ validate_-_ml-agents_-_6000_6_-_win10:
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
+  labels:
+  - Packages:ml-agents
+
+# PVP Editor and Playmode tests for Validate - ml-agents - 6000.7 - macos13arm (6000.7 - MacOS).
+validate_-_ml-agents_-_6000_7_-_macos13arm:
+  name: Validate - ml-agents - 6000.7 - macos13arm
+  agent:
+    image: package-ci/macos-13-arm64:v4
+    type: Unity::VM::osx
+    flavor: m1.mac
+    model: M1
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast --arch arm64
+    timeout: 20
+    retries: 3
+  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-ml-agents/Logs/**
+      - test-ml-agents/Library/*.log
+      - test-ml-agents/*.log
+      - test-ml-agents/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
+  labels:
+  - Packages:ml-agents
+
+# PVP Editor and Playmode tests for Validate - ml-agents - 6000.7 - ubuntu2204 (6000.7 - Ubuntu).
+validate_-_ml-agents_-_6000_7_-_ubuntu2204:
+  name: Validate - ml-agents - 6000.7 - ubuntu2204
+  agent:
+    image: package-ci/ubuntu-22.04:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 20
+    retries: 3
+  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-ml-agents/Logs/**
+      - test-ml-agents/Library/*.log
+      - test-ml-agents/*.log
+      - test-ml-agents/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
+  labels:
+  - Packages:ml-agents
+
+# PVP Editor and Playmode tests for Validate - ml-agents - 6000.7 - win10 (6000.7 - Windows).
+validate_-_ml-agents_-_6000_7_-_win10:
+  name: Validate - ml-agents - 6000.7 - win10
+  agent:
+    image: package-ci/win10:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 20
+    retries: 3
+  - command: upm-pvp create-test-project test-ml-agents --packages "upm-ci~/packages/*.tgz" --filter "com.unity.ml-agents com.unity.ml-agents.tests" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/editor --suite=editor "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  - command: 'UnifiedTestRunner.exe --testproject=test-ml-agents --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts/playmode --suite=playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-ml-agents/Logs/**
+      - test-ml-agents/Library/*.log
+      - test-ml-agents/*.log
+      - test-ml-agents/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
   labels:
   - Packages:ml-agents
 
