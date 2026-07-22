@@ -14,12 +14,14 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Fixed StackingSensor compressed observation for sensors with more than 3 channels. (#6299)
-- Fix a crash that could occur when exiting playmode (#6296)
+- Fixed a crash that could occur when exiting playmode (#6296)
+- Fixed compatibility of Google.Protobuf_Packed.dll with ILL2CPP (#6313)
+- Fixed Google.Protobuf_Packed.dll being shadowed by Sentis copy of the dll (#6310)
 
 #### ml-agents / ml-agents-envs
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 - Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer; Updated training devices. (#6303)
-- Fix typing on optional strings (#6311)
+- Fixed typing on optional strings (#6311)
 - Tighten assertion bound for test_process_pixels_gray (#6312)
 
 #### Examples
@@ -1000,7 +1002,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Uncompressed visual (i.e. 3d float arrays) observations are now supported.
   CameraSensorComponent and RenderTextureSensor now have an option to write
   uncompressed observations (#3148)
-- Agent’s handling of observations during training was improved so that an extra
+- Agent's handling of observations during training was improved so that an extra
   copy of the observations is no longer maintained (#3229)
 - Error message for missing trainer config files was improved to include the
   absolute path (#3230)
@@ -1009,7 +1011,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 
 ### Bug Fixes
 
-- Numpy warning when stats don’t exist (#3251)
+- Numpy warning when stats don't exist (#3251)
 - A bug that caused RayPerceptionSensor to behave inconsistently with transforms
   that have non-1 scale was fixed (#3321)
 - Some small bugfixes to tensorflow_to_barracuda.py were backported from the
