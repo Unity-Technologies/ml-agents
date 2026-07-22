@@ -7,10 +7,8 @@ test_editors:
       testProject: DevProject
       enableNoDefaultPackages: !!bool true
 
-# Pinning to 6000.5 instead of `trunk`.
-# Bump back to `trunk` once the CI image's pinned UTR understands UTF-1.8.
 trunk_editor:
-    - version: 6000.5
+    - version: trunk
       testProject: DevProject
 
 test_platforms:
