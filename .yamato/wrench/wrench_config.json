@@ -64,7 +64,7 @@
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_ml-agents",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "2.7.0.0",
+  "wrench_version": "3.4.0.0",
   "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json",
   "cs_project_path": "Tools/ci/MLAgents.Cookbook.csproj"
 }
