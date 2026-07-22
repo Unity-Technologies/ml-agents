@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.0.4] - 2026-07-22
 ### Major Changes
 #### ml-agents / ml-agents-envs
 - Migrated from gym to gymnasium (#6309)
@@ -1000,7 +1000,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 - Uncompressed visual (i.e. 3d float arrays) observations are now supported.
   CameraSensorComponent and RenderTextureSensor now have an option to write
   uncompressed observations (#3148)
-- Agent’s handling of observations during training was improved so that an extra
+- Agent's handling of observations during training was improved so that an extra
   copy of the observations is no longer maintained (#3229)
 - Error message for missing trainer config files was improved to include the
   absolute path (#3230)
@@ -1009,7 +1009,7 @@ vector observations to be used simultaneously. (#3981) Thank you @shakenes !
 
 ### Bug Fixes
 
-- Numpy warning when stats don’t exist (#3251)
+- Numpy warning when stats don't exist (#3251)
 - A bug that caused RayPerceptionSensor to behave inconsistently with transforms
   that have non-1 scale was fixed (#3321)
 - Some small bugfixes to tensorflow_to_barracuda.py were backported from the
