@@ -117,8 +117,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
         flavor: {{ platform.flavor}}
     commands:
         - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
-        - upm-pvp create-test-project test-project --packages "upm-ci~/packages/*.tgz" --unity .Editor
-        - UnifiedTestRunner --suite=editor --suite=playmode --editor-location=.Editor --testproject=test-project --artifacts-path=upm-ci~/test-results --reruncount=2
+        - UnifiedTestRunner --suite=editor --suite=playmode --editor-location=.Editor --testproject={{ editor.testProject }} --artifacts-path=upm-ci~/test-results --reruncount=2
     artifacts:
         logs:
             paths:
