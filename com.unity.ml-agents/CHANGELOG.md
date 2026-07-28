@@ -25,7 +25,7 @@ and this project adheres to
 - Tightened assertion bound for `test_process_pixels_gray` (#6312)
 
 #### Examples
-- Replace hardcoded value 200f by agentRotationSpeed in MoveAgent() (#6306)
+- Replace hardcoded value `200f` by `agentRotationSpeed` in `MoveAgent()`. (#6306)
 
 ## [4.0.3] - 2026-04-17
 ### Minor Changes
