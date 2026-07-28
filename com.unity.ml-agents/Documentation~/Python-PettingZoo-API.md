@@ -4,7 +4,7 @@ With the increasing interest in multi-agent training with a gym-like API, we pro
 
 ## Installation and Examples
 
-The PettingZoo wrapper is part of the `mlagents_envs` package. Please refer to the [mlagents_envs installation instructions](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents-envs/README.md).
+The PettingZoo wrapper is part of the `mlagents_envs` package. Please refer to the [mlagents_envs installation instructions](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents-envs/README.md).
 
 [[Colab] PettingZoo Wrapper Example](https://colab.research.google.com/github/Unity-Technologies/ml-agents/blob/develop-python-api-ga/ml-agents-envs/colabs/Colab_PettingZoo.ipynb)
 

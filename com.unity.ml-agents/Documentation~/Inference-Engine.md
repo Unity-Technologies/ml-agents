@@ -18,7 +18,7 @@ When using a model, drag the model file into the **Model** field in the Inspecto
 
 # Unsupported use cases
 ## Externally trained models
-The ML-Agents Toolkit only supports the models created with Unity's trainers. Model loading expects certain conventions for constants and tensor names. While you can construct a model that follows these conventions, Unity doesn't provide any additional help for this. You can find more details in [TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/com.unity.ml-agents/Runtime/Inference/TensorNames.cs) and [SentisModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/com.unity.ml-agents/Runtime/Inference/SentisModelParamLoader.cs).
+The ML-Agents Toolkit only supports the models created with Unity's trainers. Model loading expects certain conventions for constants and tensor names. While you can construct a model that follows these conventions, Unity doesn't provide any additional help for this. You can find more details in [TensorNames.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/com.unity.ml-agents/Runtime/Inference/TensorNames.cs) and [SentisModelParamLoader.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/com.unity.ml-agents/Runtime/Inference/SentisModelParamLoader.cs).
 
 > [!NOTE]
 > If you want to run inference on an externally trained model, use Sentis directly, instead of trying to run it through ML-Agents.

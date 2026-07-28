@@ -86,7 +86,7 @@ conda install "grpcio=1.48.2" -c conda-forge
 ```
 This step resolves dependency conflicts that can occur with older versions of `grpcio`.
 
-4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
+4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
 
 
 ## Install ML-Agents (Advanced Installation)

@@ -17,7 +17,7 @@ The key objects in the Python API include:
 - **TerminalSteps** — contains the data from Agents belonging to the same "Behavior" in the simulation, such as observations and rewards. Only Agents whose episode ended since the last call to `env.step()` are in the TerminalSteps object.
 - **BehaviorSpec** — describes the shape of the observation data inside DecisionSteps and TerminalSteps as well as the expected action shapes.
 
-These classes are all defined in the [base_env](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents-envs/mlagents_envs/base_env.py) script.
+These classes are all defined in the [base_env](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents-envs/mlagents_envs/base_env.py) script.
 
 An Agent "Behavior" is a group of Agents identified by a `BehaviorName` that share the same observations and action types (described in their `BehaviorSpec`). You can think about Agent Behavior as a group of agents that will share the same policy. All Agents with the same behavior have the same goal and reward signals.
 
@@ -27,7 +27,7 @@ _Notice: Currently communication between Unity and Python takes place over an op
 
 ## Loading a Unity Environment
 
-Python-side communication happens through `UnityEnvironment` which is located in [`environment.py`](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents-envs/mlagents_envs/environment.py). To load a Unity environment from a built binary file, put the file in the same directory as `envs`. For example, if the filename of your Unity environment is `3DBall`, in python, run:
+Python-side communication happens through `UnityEnvironment` which is located in [`environment.py`](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents-envs/mlagents_envs/environment.py). To load a Unity environment from a built binary file, put the file in the same directory as `envs`. For example, if the filename of your Unity environment is `3DBall`, in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
