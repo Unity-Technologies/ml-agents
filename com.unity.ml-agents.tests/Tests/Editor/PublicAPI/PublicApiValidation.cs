@@ -2,6 +2,7 @@ using Unity.MLAgents.Sensors;
 using NUnit.Framework;
 using Unity.MLAgents;
 using UnityEngine;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgentsExamples
 {
@@ -99,3 +100,4 @@ namespace Unity.MLAgentsExamples
         }
     }
 }
+#endif

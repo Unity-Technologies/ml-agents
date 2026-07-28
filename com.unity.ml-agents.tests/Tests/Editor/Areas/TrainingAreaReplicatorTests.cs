@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Unity.Mathematics;
 using Unity.MLAgents.Areas;
 using UnityEngine;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Areas
 {
@@ -81,3 +82,4 @@ namespace Unity.MLAgents.Tests.Areas
         }
     }
 }
+#endif

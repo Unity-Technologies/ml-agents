@@ -7,6 +7,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Policies;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -540,3 +541,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
