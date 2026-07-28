@@ -16,7 +16,7 @@ and this project adheres to
 - Fixed `StackingSensor` compressed observation for sensors with more than 3 channels. (#6299)
 - Fixed a crash that could occur when exiting Play mode. (#6296)
 - Fixed compatibility of Google.Protobuf_Packed.dll with ILL2CPP (#6313)
-- Fixed Google.Protobuf_Packed.dll being shadowed by Sentis copy of the dll (#6310)
+- Fixed `Google.Protobuf_Packed.dll` being shadowed by Sentis' copy of the DLL. (#6310)
 
 #### ml-agents / ml-agents-envs
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
