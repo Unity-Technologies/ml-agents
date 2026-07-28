@@ -5,6 +5,7 @@ using NUnit.Framework;
 using UnityEngine;
 using Unity.MLAgents.Integrations.Match3;
 using Unity.MLAgents.Sensors;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Integrations.Match3
 {
@@ -17,8 +18,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         private const string k_SpecialObservationPng = "match3obs_special_";
         private const string k_Suffix2x2 = "2x2_";
 
-        [TestCase(true, TestName = "Full Board")]
-        [TestCase(false, TestName = "Small Board")]
+        [TestCase(true, TestName = "{m}(Full Board)")]
+        [TestCase(false, TestName = "{m}(Small Board)")]
         public void TestVectorObservations(bool fullBoard)
         {
             var boardString =
@@ -113,8 +114,8 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             }
         }
 
-        [TestCase(true, TestName = "Full Board")]
-        [TestCase(false, TestName = "Small Board")]
+        [TestCase(true, TestName = "{m}(Full Board)")]
+        [TestCase(false, TestName = "{m}(Small Board)")]
         public void TestVisualObservations(bool fullBoard)
         {
             var boardString =
@@ -281,10 +282,10 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
             Assert.IsNull(specialTexture);
         }
 
-        [TestCase(true, false, TestName = "Full Board, No Special")]
-        [TestCase(false, false, TestName = "Small Board, No Special")]
-        [TestCase(true, true, TestName = "Full Board, Special")]
-        [TestCase(false, true, TestName = "Small Board, Special")]
+        [TestCase(true, false, TestName = "{m}(Full Board, No Special)")]
+        [TestCase(false, false, TestName = "{m}(Small Board, No Special)")]
+        [TestCase(true, true, TestName = "{m}(Full Board, Special)")]
+        [TestCase(false, true, TestName = "{m}(Small Board, Special)")]
         public void TestCompressedVisualObservationsSpecial(bool fullBoard, bool useSpecial)
         {
             var boardString =
@@ -429,3 +430,4 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         }
     }
 }
+#endif

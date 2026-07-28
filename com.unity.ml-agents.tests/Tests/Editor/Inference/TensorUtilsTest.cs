@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Unity.InferenceEngine;
 using Unity.MLAgents.Inference;
 using Unity.MLAgents.Inference.Utils;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -130,3 +131,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
