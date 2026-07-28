@@ -21,7 +21,7 @@ and this project adheres to
 #### ml-agents / ml-agents-envs
 - Fixed a bug when using LSTM and SAC where the buffer might contain non-integer numbers of sequences. (#6301)
 - Fixed mixed CPU/GPU computation by ensuring tensors share a consistent device in the trainer. Updated training devices. (#6303)
-- Fixed typing on optional strings (#6311)
+- Fixed typing on optional strings. (#6311)
 - Tightened assertion bound for `test_process_pixels_gray` (#6312)
 
 #### Examples
