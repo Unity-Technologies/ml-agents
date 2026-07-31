@@ -1,0 +1,157 @@
+
+# >>>>>>>>>>>>>>>>>>>>>> ERROR REPORT <<<<<<<<<<<<<<<<<<<<<<
+
+    Traceback (most recent call last):
+      File "D:\anaconda\Lib\site-packages\conda\exception_handler.py", line 29, in __call__
+        return func(*args, **kwargs)
+      File "D:\anaconda\Lib\site-packages\conda\cli\main.py", line 61, in main_subshell
+        exit_code = do_call(args, parser)
+      File "D:\anaconda\Lib\site-packages\conda\cli\conda_argparse.py", line 205, in do_call
+        result = getattr(module, func_name)(args, parser)
+      File "D:\anaconda\Lib\site-packages\conda\cli\main_run.py", line 120, in execute
+        print(response.stdout, file=sys.stdout)
+        ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+      File "D:\anaconda\Lib\encodings\cp1252.py", line 19, in encode
+        return codecs.charmap_encode(input,self.errors,encoding_table)[0]
+               ~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    UnicodeEncodeError: 'charmap' codec can't encode character '\ufffd' in position 214: character maps to <undefined>
+
+`$ D:\anaconda\Scripts\conda-script.py run -n rl mlagents-learn .\config\poca\SoccerTwos-5M.yaml --env=.\training-envs-executables\SoccerTwos\SoccerTwos.exe --run-id=SoccerTwos-5M --no-graphics`
+
+  environment variables:
+                 CIO_TEST=<not set>
+    CONDA_ALLOW_SOFTLINKS=false
+        CONDA_DEFAULT_ENV=base
+                CONDA_EXE=D:\anaconda\Scripts\conda.exe
+               CONDA_EXES="D:\anaconda\Scripts\conda.exe"
+             CONDA_PREFIX=D:\anaconda
+    CONDA_PROMPT_MODIFIER=(base)
+         CONDA_PYTHON_EXE=D:\anaconda\python.exe
+               CONDA_ROOT=D:\anaconda
+              CONDA_SHLVL=1
+           CURL_CA_BUNDLE=<not set>
+                 HOMEPATH=\Users\ARJUN MITRA
+               LD_PRELOAD=<not set>
+                     PATH=D:\anaconda;D:\anaconda\Library\mingw-
+                          w64\bin;D:\anaconda\Library\usr\bin;D:\anaconda\Library\bin;D:\anacond
+                          a\Scripts;D:\anaconda\bin;C:\Users\ARJUN MITRA\.codex\tmp\arg0\codex-
+                          arg0KmoztS;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windo
+                          ws\system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\Wi
+                          ndowsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files
+                          (x86)\NVIDIA
+                          Corporation\PhysX\Common;C:\MinGW\bin;C:\MinGW\bin;C:\Users\ARJUN
+                          MITRA\Downloads\YoutubeDownload;C:\Users\ARJUN
+                          MITRA\Downloads\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\bin;C:\Program Files\NVIDIA Corporation\NVIDIA
+                          App\NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\nodejs;D:\runtim
+                          e\win64;D:\bin;D:\MATLAB\runtime\win64;D:\MATLAB\bin;C:\flutter\bin;C:
+                          \Program Files\Common Files\Oracle\Java\javapath;C:\Windows\system32;C
+                          :\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\WindowsPowerShe
+                          ll\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files (x86)\NVIDIA
+                          Corporation\PhysX\Common;C:\MinGW\bin;C:\MinGW\bin;C:\Users\ARJUN
+                          MITRA\Downloads\YoutubeDownload;C:\Users\ARJUN
+                          MITRA\Downloads\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\bin;C:\Program Files\NVIDIA Corporation\NVIDIA
+                          App\NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\nodejs;D:\runtim
+                          e\win64;D:\bin;D:\MATLAB\runtime\win64;D:\MATLAB\bin;C:\Program
+                          Files\MySQL\MySQL Shell 8.0\bin;D:\anaconda;D:\anaconda\Library\mingw-
+                          w64\bin;D:\anaconda\Library\usr\bin;D:\anaconda\Library\bin;D:\anacond
+                          a\Scripts;D:\anaconda\bin;D:\anaconda\condabin;C:\Program Files\Common
+                          Files\Oracle\Java\javapath;C:\Windows\system32;C:\Windows;C:\Windows\S
+                          ystem32\Wbem;C:\Windows\System32\WindowsPowerShell\v1.0;C:\Windows\Sys
+                          tem32\OpenSSH;C:\Program Files (x86)\NVIDIA
+                          Corporation\PhysX\Common;C:\MinGW\bin;C:\MinGW\bin;C:\Users\ARJUN
+                          MITRA\Downloads\YoutubeDownload;C:\Users\ARJUN
+                          MITRA\Downloads\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\bin;C:\Program Files\NVIDIA Corporation\NVIDIA
+                          App\NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\nodejs;D:\runtim
+                          e\win64;D:\bin;D:\MATLAB\runtime\win64;D:\MATLAB\bin;C:\Users\ARJUN
+                          MITRA\.local\bin;C:\Users\ARJUN MITRA\AppData\Local\Programs\Microsoft
+                          VS Code;C:\Program Files\Common Files\Oracle\Java\javapath;C:\Windows\
+                          system32;C:\Windows;C:\Windows\System32\Wbem;C:\Windows\System32\Windo
+                          wsPowerShell\v1.0;C:\Windows\System32\OpenSSH;C:\Program Files
+                          (x86)\NVIDIA
+                          Corporation\PhysX\Common;C:\MinGW\bin;C:\MinGW\bin;C:\Users\ARJUN
+                          MITRA\Downloads\YoutubeDownload;C:\Users\ARJUN
+                          MITRA\Downloads\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\ffmpeg-2025-04-17-git-7684243fbe-
+                          essentials_build\bin;C:\Program Files\NVIDIA Corporation\NVIDIA
+                          App\NvDLISR;C:\Program Files\Git\cmd;C:\Program Files\nodejs;D:\runtim
+                          e\win64;D:\bin;D:\MATLAB\runtime\win64;D:\MATLAB\bin;D:\c\bin;D:\perl\
+                          site\bin;D:\perl\bin;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Python\Python313\Scripts;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Python\Python313;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Python\Launcher;C:\Users\ARJUN
+                          MITRA\AppData\Local\Microsoft\WindowsApps;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Microsoft VS Code\bi;C:\Program
+                          Files\MiKTeX\miktex\bin;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Microsoft VS Code\bin;c:\Users\ARJUN
+                          MITRA\.antigravity\extensions\ms-python.debugpy-2025.18.0-win32-
+                          x64\bundled\scripts\noConfigScripts;C:\Users\ARJUN
+                          MITRA\AppData\Roaming\Python\Python313\Scripts;C:\Program
+                          Files\Tesseract-OCR;C:\Users\ARJUN
+                          MITRA\AppData\Local\Programs\Antigravity IDE\bin;c:\Users\ARJUN MITRA\
+                          .vscode\extensions\openai.chatgpt-26.727.40816-win32-x64\bin\windows-
+                          x86_64
+             PSMODULEPATH=C:\Users\ARJUN MITRA\OneDrive - St.Thomas'CollegeOfEngineering&Technol
+                          ogy\Documents\WindowsPowerShell\Modules;C:\Program Files\WindowsPowerS
+                          hell\Modules;C:\Windows\system32\WindowsPowerShell\v1.0\Modules
+       REQUESTS_CA_BUNDLE=<not set>
+            SSL_CERT_FILE=D:\anaconda\Library\ssl\cacert.pem
+   VSCODE_CODE_CACHE_PATH=C:\Users\ARJUN MITRA\AppData\Roaming\Code\CachedData\e4c7e7b1d6d060162
+                          f4aa7f8225271b67ce1df75
+
+     active environment : base
+    active env location : D:\anaconda
+            shell level : 1
+       user config file : C:\Users\ARJUN MITRA\.condarc
+ populated config files : D:\anaconda\.condarc
+          conda version : 25.11.0
+    conda-build version : 25.11.1
+         python version : 3.13.9.final.0
+                 solver : libmamba (default)
+       virtual packages : __archspec=1=x86_64_v3
+                          __conda=25.11.0=0
+                          __cuda=13.3=0
+                          __win=10.0.26200=0
+       base environment : D:\anaconda  (read only)
+      conda av data dir : D:\anaconda\etc\conda
+  conda av metadata url : None
+           channel URLs : https://repo.anaconda.com/pkgs/main/win-64
+                          https://repo.anaconda.com/pkgs/main/noarch
+                          https://repo.anaconda.com/pkgs/r/win-64
+                          https://repo.anaconda.com/pkgs/r/noarch
+                          https://repo.anaconda.com/pkgs/msys2/win-64
+                          https://repo.anaconda.com/pkgs/msys2/noarch
+          package cache : D:\anaconda\pkgs
+                          C:\Users\ARJUN MITRA\.conda\pkgs
+                          C:\Users\ARJUN MITRA\AppData\Local\conda\conda\pkgs
+       envs directories : C:\Users\ARJUN MITRA\.conda\envs
+                          D:\anaconda\envs
+                          C:\Users\ARJUN MITRA\AppData\Local\conda\conda\envs
+               platform : win-64
+             user-agent : conda/25.11.0 requests/2.32.5 CPython/3.13.9 Windows/11 Windows/10.0.26200 solver/libmamba conda-libmamba-solver/25.11.0 libmambapy/2.3.2 aau/0.7.5 c/. s/. e/. a/.
+          administrator : False
+             netrc file : None
+           offline mode : False
+
+
+An unexpected error has occurred. Conda has prepared the above report.
+If you suspect this error is being caused by a malfunctioning plugin,
+consider using the --no-plugins option to turn off plugins.
+
+Example: conda --no-plugins install <package>
+
+Alternatively, you can set the CONDA_NO_PLUGINS environment variable on
+the command line to run the command without plugins enabled.
+
+Example: CONDA_NO_PLUGINS=true conda install <package>
+
+
+No report sent. To permanently opt-out, use
+
+    $ conda config --set report_errors false
+
