@@ -122,8 +122,12 @@ namespace Unity.MLAgents.Editor
             {
                 return;
             }
-            agent.sensors = new List<ISensor>();
-            agent.InitializeSensors();
+
+            if (!EditorApplication.isPlaying || agent.sensors == null)
+            {
+                agent.sensors = new List<ISensor>();
+                agent.InitializeSensors();
+            }
             var sensors = agent.sensors.ToArray();
 
             ActuatorComponent[] actuatorComponents;
