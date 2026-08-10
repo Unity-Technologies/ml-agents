@@ -123,7 +123,7 @@ namespace Unity.MLAgents.Editor
                 return;
             }
 
-            if (!EditorApplication.isPlaying || !agent.Initialized)
+            if (!EditorApplication.isPlaying || agent.sensors == null)
             {
                 agent.sensors = new List<ISensor>();
                 agent.InitializeSensors();

@@ -313,12 +313,6 @@ namespace Unity.MLAgents
         bool m_Initialized;
 
         /// <summary>
-        /// Whether the Agent is currently initialized (i.e. has live sensors).
-        /// Set true by LazyInitialize() and reset to false in OnDisable().
-        /// </summary>
-        internal bool Initialized => m_Initialized;
-
-        /// <summary>
         /// Set of DemonstrationWriters that the Agent will write its step information to.
         /// If you use a DemonstrationRecorder component, this will automatically register its DemonstrationWriter.
         /// You can also add your own DemonstrationWriter by calling
