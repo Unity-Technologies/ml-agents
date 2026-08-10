@@ -6,6 +6,11 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Minor Changes
+#### com.unity.ml-agents (C#)
+- Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
+
 ## [4.1.0] - 2026-07-27
 ### Major Changes
 #### ml-agents / ml-agents-envs
