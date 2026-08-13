@@ -14,7 +14,12 @@ namespace Unity.MLAgents.Sensors
         /// <summary>
         /// PNG format. Data will be stored in binary format.
         /// </summary>
-        PNG
+        PNG,
+
+        /// <summary>
+        /// OpenEXR format.
+        /// </summary>
+        OPENEXR
     }
 
     /// <summary>

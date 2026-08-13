@@ -24,6 +24,7 @@ namespace Unity.MLAgents.Editor
                 EditorGUILayout.PropertyField(so.FindProperty("m_Width"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Height"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_Grayscale"), true);
+                EditorGUILayout.PropertyField(so.FindProperty("m_RGBD"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationStacks"), true);
                 EditorGUILayout.PropertyField(so.FindProperty("m_ObservationType"), true);
             }

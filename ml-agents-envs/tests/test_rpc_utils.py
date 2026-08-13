@@ -236,7 +236,7 @@ def proto_from_steps_and_action(
 def test_process_pixels():
     in_array = np.random.rand(3, 128, 64)
     byte_arr = generate_compressed_data(in_array)
-    out_array = process_pixels(byte_arr, 3)
+    out_array = process_pixels(byte_arr, PNG, 3)
     assert out_array.shape == (3, 128, 64)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
     assert np.allclose(in_array, out_array, atol=0.01)
@@ -248,7 +248,7 @@ def test_process_pixels_multi_png():
     num_channels = 7
     in_array = np.random.rand(num_channels, height, width)
     byte_arr = generate_compressed_data(in_array)
-    out_array = process_pixels(byte_arr, num_channels)
+    out_array = process_pixels(byte_arr, PNG, num_channels)
     assert out_array.shape == (num_channels, height, width)
     assert np.sum(in_array - out_array) / np.prod(in_array.shape) < 0.01
     assert np.allclose(in_array, out_array, atol=0.01)
@@ -257,7 +257,7 @@ def test_process_pixels_multi_png():
 def test_process_pixels_gray():
     in_array = np.random.rand(3, 128, 64)
     byte_arr = generate_compressed_data(in_array)
-    out_array = process_pixels(byte_arr, 1)
+    out_array = process_pixels(byte_arr, PNG, 1)
     assert out_array.shape == (1, 128, 64)
     assert np.mean(in_array.mean(axis=0, keepdims=True) - out_array) < 0.002
     assert np.allclose(in_array.mean(axis=0, keepdims=True), out_array, atol=0.01)

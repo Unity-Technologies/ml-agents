@@ -308,7 +308,8 @@ namespace Unity.MLAgents.Sensors
         public static int WriteTexture(
             this ObservationWriter obsWriter,
             Texture2D texture,
-            bool grayScale)
+            bool grayScale,
+            bool rgbd = false)
         {
             if (texture.format == TextureFormat.RGB24)
             {
@@ -318,7 +319,7 @@ namespace Unity.MLAgents.Sensors
             var width = texture.width;
             var height = texture.height;
 
-            var texturePixels = texture.GetPixels32();
+            var texturePixels = texture.GetPixels();
 
             // During training, we convert from Texture to PNG before sending to the trainer, which has the
             // effect of flipping the image. We need another flip here at inference time to match this.
@@ -328,22 +329,25 @@ namespace Unity.MLAgents.Sensors
                 {
                     var currentPixel = texturePixels[(height - h - 1) * width + w];
 
-                    if (grayScale)
+                    if (grayScale && !rgbd)
                     {
                         obsWriter[0, h, w] =
-                            (currentPixel.r + currentPixel.g + currentPixel.b) / 3f / 255.0f;
+                            (currentPixel.r + currentPixel.g + currentPixel.b) / 3f;
                     }
                     else
                     {
-                        // For Color32, the r, g and b values are between 0 and 255.
-                        obsWriter[0, h, w] = currentPixel.r / 255.0f;
-                        obsWriter[1, h, w] = currentPixel.g / 255.0f;
-                        obsWriter[2, h, w] = currentPixel.b / 255.0f;
+                        obsWriter[0, h, w] = currentPixel.r;
+                        obsWriter[1, h, w] = currentPixel.g;
+                        obsWriter[2, h, w] = currentPixel.b;
+                        if (rgbd)
+                        {
+                            obsWriter[3, h, w] = currentPixel.a;
+                        }
                     }
                 }
             }
 
-            return height * width * (grayScale ? 1 : 3);
+            return height * width * (rgbd ? 4 : grayScale ? 1 : 3);
         }
 
         internal static int WriteTextureRGB24(

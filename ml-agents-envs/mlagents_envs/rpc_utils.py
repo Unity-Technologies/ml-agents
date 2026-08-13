@@ -13,10 +13,13 @@ from mlagents_envs.communicator_objects.agent_info_pb2 import AgentInfoProto
 from mlagents_envs.communicator_objects.observation_pb2 import (
     ObservationProto,
     NONE as COMPRESSION_TYPE_NONE,
+    PNG as COMPRESSION_TYPE_PNG,
 )
 from mlagents_envs.communicator_objects.brain_parameters_pb2 import BrainParametersProto
 import numpy as np
+import OpenEXR as exr
 import io
+import Imath
 from typing import cast, List, Tuple, Collection, Optional, Iterable
 from PIL import Image
 
@@ -104,7 +107,7 @@ class OffsetBytesIO:
 
 @timed
 def process_pixels(
-    image_bytes: bytes, expected_channels: int, mappings: Optional[List[int]] = None
+    image_bytes: bytes, compression_type: int, expected_channels: int, mappings: Optional[List[int]] = None
 ) -> np.ndarray:
     """
     Converts byte array observation image into numpy array, re-sizes it,
@@ -118,13 +121,26 @@ def process_pixels(
     image_arrays = []
     # Read the images back from the bytes (without knowing the sizes).
     while True:
-        with hierarchical_timer("image_decompress"):
-            image = Image.open(image_fp)
-            # Normally Image loads lazily, load() forces it to do loading in the timer scope.
-            image.load()
-        image_arrays.append(
-            np.moveaxis(np.array(image, dtype=np.float32) / 255.0, -1, 0)
-        )
+        if compression_type == COMPRESSION_TYPE_PNG:
+            with hierarchical_timer("image_decompress"):
+                image = Image.open(image_fp)
+                # Normally Image loads lazily, load() forces it to do loading in the timer scope.
+                image.load()
+            image_arrays.append(
+                np.moveaxis(np.array(image, dtype=np.float32) / 255.0, -1, 0)
+            )
+        else:
+            with hierarchical_timer("image_decompress"):
+                file = exr.InputFile(image_fp)
+                header = file.header()
+                dw = header["dataWindow"]
+                channels = "RGBA" if "A" in header["channels"] else "RGB"
+                image_size = (dw.max.y - dw.min.y + 1, dw.max.x - dw.min.x + 1)
+                image_data = file.channels(channels, Imath.PixelType(Imath.PixelType.FLOAT))
+                image = np.stack([
+                    np.frombuffer(channel, dtype=np.float32) for channel in image_data
+                ]).reshape(-1, *image_size)
+            image_arrays.append(image)
 
         # Look for the next header, starting from the current stream location
         try:
@@ -234,7 +250,7 @@ def _observation_to_np_array(
         return img
     else:
         img = process_pixels(
-            obs.compressed_data, expected_channels, list(obs.compressed_channel_mapping)
+            obs.compressed_data, obs.compression_type, expected_channels, list(obs.compressed_channel_mapping)
         )
         # Compare decompressed image size to observation shape and make sure they match
         if list(obs.shape) != list(img.shape):

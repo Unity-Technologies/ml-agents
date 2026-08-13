@@ -13,10 +13,18 @@ namespace Unity.MLAgents.Sensors
         int m_Width;
         int m_Height;
         bool m_Grayscale;
+        bool m_RGBD;
         string m_Name;
         private ObservationSpec m_ObservationSpec;
         SensorCompressionType m_CompressionType;
         Texture2D m_Texture;
+
+        /// <summary>
+        /// Indicates wether or not the Render method is being executed by CameraSensor.
+        /// This boolean is checked in CameraSensorComponent.OnRenderImage method to avoid
+        /// applying the depth shader outside of the camera sensor scope.
+        /// </summary>
+        public bool m_InCameraSensorRender { get; private set; }
 
         /// <summary>
         /// The Camera used for rendering the sensor observations.
@@ -47,17 +55,19 @@ namespace Unity.MLAgents.Sensors
         /// <param name="compression">The compression to apply to the generated image.</param>
         /// <param name="observationType">The type of observation.</param>
         public CameraSensor(
-            Camera camera, int width, int height, bool grayscale, string name, SensorCompressionType compression, ObservationType observationType = ObservationType.Default)
+            Camera camera, int width, int height, bool grayscale, bool rgbd, string name, SensorCompressionType compression, ObservationType observationType = ObservationType.Default)
         {
             m_Camera = camera;
             m_Width = width;
             m_Height = height;
             m_Grayscale = grayscale;
+            m_RGBD = rgbd;
             m_Name = name;
-            var channels = grayscale ? 1 : 3;
+            var channels = rgbd ? 4 : grayscale ? 1 : 3;  // RGBD has priority over Grayscale
             m_ObservationSpec = ObservationSpec.Visual(channels, height, width, observationType);
             m_CompressionType = compression;
-            m_Texture = new Texture2D(width, height, TextureFormat.RGB24, false);
+            m_Texture = new Texture2D(width, height, rgbd ? TextureFormat.RGBAFloat : TextureFormat.RGB24, false);
+            m_InCameraSensorRender = false;
         }
 
         /// <summary>
@@ -90,8 +100,11 @@ namespace Unity.MLAgents.Sensors
             using (TimerStack.Instance.Scoped("CameraSensor.GetCompressedObservation"))
             {
                 // TODO support more types here, e.g. JPG
-                var compressed = m_Texture.EncodeToPNG();
-                return compressed;
+                if (m_CompressionType == SensorCompressionType.OPENEXR)
+                {
+                    return m_Texture.EncodeToEXR();
+                }
+                return m_Texture.EncodeToPNG();
             }
         }
 
@@ -104,7 +117,7 @@ namespace Unity.MLAgents.Sensors
         {
             using (TimerStack.Instance.Scoped("CameraSensor.WriteToTensor"))
             {
-                var numWritten = writer.WriteTexture(m_Texture, m_Grayscale);
+                var numWritten = writer.WriteTexture(m_Texture, m_Grayscale, m_RGBD);
                 return numWritten;
             }
         }
@@ -131,7 +144,7 @@ namespace Unity.MLAgents.Sensors
         /// <param name="texture2D">Texture2D to render to.</param>
         /// <param name="width">Width of resulting 2D texture.</param>
         /// <param name="height">Height of resulting 2D texture.</param>
-        public static void ObservationToTexture(Camera obsCamera, Texture2D texture2D, int width, int height)
+        public void ObservationToTexture(Camera obsCamera, Texture2D texture2D, int width, int height)
         {
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.Null)
             {
@@ -140,9 +153,9 @@ namespace Unity.MLAgents.Sensors
 
             var oldRec = obsCamera.rect;
             obsCamera.rect = new Rect(0f, 0f, 1f, 1f);
-            var depth = 24;
-            var format = RenderTextureFormat.Default;
-            var readWrite = RenderTextureReadWrite.Default;
+            var depth = m_RGBD ? 32 : 24;
+            var format = m_RGBD ? RenderTextureFormat.ARGBFloat : RenderTextureFormat.Default;
+            var readWrite = m_RGBD ? RenderTextureReadWrite.Linear : RenderTextureReadWrite.Default;
 
             var tempRt =
                 RenderTexture.GetTemporary(width, height, depth, format, readWrite);
@@ -154,7 +167,11 @@ namespace Unity.MLAgents.Sensors
             RenderTexture.active = tempRt;
             obsCamera.targetTexture = tempRt;
 
+            m_InCameraSensorRender = true;
+
             obsCamera.Render();
+
+            m_InCameraSensorRender = false;
 
             texture2D.ReadPixels(new Rect(0, 0, texture2D.width, texture2D.height), 0, 0);
 

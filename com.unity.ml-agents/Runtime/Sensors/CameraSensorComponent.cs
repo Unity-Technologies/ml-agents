@@ -67,13 +67,26 @@ namespace Unity.MLAgents.Sensors
         bool m_Grayscale;
 
         /// <summary>
-        /// Whether to generate grayscale images or color.
+        /// Whether to generate grayscale images or color. Disable RGBD to use it.
         /// Note that changing this after the sensor is created has no effect.
         /// </summary>
         public bool Grayscale
         {
             get { return m_Grayscale; }
-            set { m_Grayscale = value; }
+            set { m_Grayscale = value; UpdateSensor(); }
+        }
+
+        [HideInInspector, SerializeField, FormerlySerializedAs("rgbd")]
+        bool m_RGBD;
+
+        /// <summary>
+        /// Whether to generate color+depth images. RGBD has priority over Grayscale.
+        /// Note that changing this after the sensor is created has no effect.
+        /// </summary>
+        public bool RGBD
+        {
+            get { return m_RGBD; }
+            set { m_RGBD = value; UpdateSensor(); }
         }
 
         [HideInInspector, SerializeField]
@@ -130,9 +143,15 @@ namespace Unity.MLAgents.Sensors
             set { m_ObservationStacks = value; }
         }
 
+        /// <summary>
+        /// The material used to render the depth image.
+        /// </summary>
+        private Material m_DepthMaterial;
+
         void Start()
         {
             UpdateSensor();
+            m_DepthMaterial = new Material(Shader.Find("Custom/DepthShader"));
         }
 
         /// <summary>
@@ -142,7 +161,7 @@ namespace Unity.MLAgents.Sensors
         public override ISensor[] CreateSensors()
         {
             Dispose();
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
+            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, RGBD, m_SensorName, m_Compression, m_ObservationType);
 
             if (ObservationStacks != 1)
             {
@@ -158,6 +177,14 @@ namespace Unity.MLAgents.Sensors
         {
             if (m_Sensor != null)
             {
+                // Update depth settings before camera settings because m_Compression might change
+                if (m_RGBD)
+                {
+                    m_Grayscale = false;
+                    m_Compression = SensorCompressionType.OPENEXR;
+                }
+
+                // Update camera settings
                 m_Sensor.Camera = m_Camera;
                 m_Sensor.CompressionType = m_Compression;
                 m_Sensor.Camera.enabled = m_RuntimeCameraEnable;
@@ -173,6 +200,21 @@ namespace Unity.MLAgents.Sensors
             {
                 m_Sensor.Dispose();
                 m_Sensor = null;
+            }
+        }
+
+        /// <summary>
+        /// Apply the depth material to the camera image if the sensor is set to RGBD.
+        /// </summary>
+        void OnRenderImage(RenderTexture src, RenderTexture dest)
+        {
+            if (m_RGBD && m_Sensor != null && m_Sensor.m_InCameraSensorRender)
+            {
+                Graphics.Blit(src, dest, m_DepthMaterial);
+            }
+            else
+            {
+                Graphics.Blit(src, dest);
             }
         }
     }
