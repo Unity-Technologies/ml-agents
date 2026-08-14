@@ -10,6 +10,7 @@ and this project adheres to
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
+- Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
 
 ## [4.1.0] - 2026-07-27
 ### Major Changes
