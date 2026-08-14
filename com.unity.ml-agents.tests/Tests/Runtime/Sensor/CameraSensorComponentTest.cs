@@ -81,8 +81,8 @@ namespace Unity.MLAgents.Tests
 
                     // Make sure cleaning up the component cleans up the sensor too
                     cameraComponent.Dispose();
-                    var cameraComponentSensor = (CameraSensor)typeof(CameraSensorComponent).GetField("m_Sensor", flags).GetValue(cameraComponent);
-                    Assert.IsNull(cameraComponentSensor);
+                    var cameraComponentSensors = (List<CameraSensor>)typeof(CameraSensorComponent).GetField("m_Sensors", flags).GetValue(cameraComponent);
+                    Assert.IsEmpty(cameraComponentSensors);
                     var cameraTexture = (Texture2D)typeof(CameraSensor).GetField("m_Texture", flags).GetValue(sensor);
                     Assert.IsNull(cameraTexture);
                 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -13,7 +14,8 @@ namespace Unity.MLAgents.Sensors
         [HideInInspector, SerializeField, FormerlySerializedAs("camera")]
         Camera m_Camera;
 
-        CameraSensor m_Sensor;
+        // One sensor per Agent sharing this component
+        readonly List<CameraSensor> m_Sensors = new List<CameraSensor>();
 
         /// <summary>
         /// Camera object that provides the data to the sensor.
@@ -141,14 +143,14 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor[] CreateSensors()
         {
-            Dispose();
-            m_Sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
+            var sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
+            m_Sensors.Add(sensor);
 
             if (ObservationStacks != 1)
             {
-                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
+                return new ISensor[] { new StackingSensor(sensor, ObservationStacks) };
             }
-            return new ISensor[] { m_Sensor };
+            return new ISensor[] { sensor };
         }
 
         /// <summary>
@@ -156,24 +158,24 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         internal void UpdateSensor()
         {
-            if (m_Sensor != null)
+            foreach (var sensor in m_Sensors)
             {
-                m_Sensor.Camera = m_Camera;
-                m_Sensor.CompressionType = m_Compression;
-                m_Sensor.Camera.enabled = m_RuntimeCameraEnable;
+                sensor.Camera = m_Camera;
+                sensor.CompressionType = m_Compression;
+                sensor.Camera.enabled = m_RuntimeCameraEnable;
             }
         }
 
         /// <summary>
-        /// Clean up the sensor created by CreateSensors().
+        /// Clean up the sensors created by CreateSensors().
         /// </summary>
         public void Dispose()
         {
-            if (!ReferenceEquals(m_Sensor, null))
+            foreach (var sensor in m_Sensors)
             {
-                m_Sensor.Dispose();
-                m_Sensor = null;
+                sensor.Dispose();
             }
+            m_Sensors.Clear();
         }
     }
 }

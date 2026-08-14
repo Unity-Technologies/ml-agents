@@ -16,7 +16,7 @@ namespace Unity.MLAgents.Sensors
     /// Internally, a circular buffer of arrays is used. The m_CurrentIndex represents the most recent observation.
     /// Currently, observations are stacked on the last dimension.
     /// </summary>
-    public class StackingSensor : ISensor, IBuiltInSensor
+    public class StackingSensor : ISensor, IBuiltInSensor, IDisposable
     {
         /// <summary>
         /// The wrapped sensor.
@@ -302,6 +302,14 @@ namespace Unity.MLAgents.Sensors
                 }
             }
             return compressionMapping;
+        }
+
+        /// <summary>
+        /// Disposes the wrapped sensor, which the StackingSensor takes ownership of.
+        /// </summary>
+        public void Dispose()
+        {
+            (m_WrappedSensor as IDisposable)?.Dispose();
         }
 
         /// <inheritdoc/>

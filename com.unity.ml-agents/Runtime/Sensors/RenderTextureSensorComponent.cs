@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -10,7 +11,8 @@ namespace Unity.MLAgents.Sensors
     [AddComponentMenu("ML Agents/Render Texture Sensor", (int)MenuGroup.Sensors)]
     public class RenderTextureSensorComponent : SensorComponent, IDisposable
     {
-        RenderTextureSensor m_Sensor;
+        // One sensor per Agent sharing this component.
+        readonly List<RenderTextureSensor> m_Sensors = new List<RenderTextureSensor>();
 
         /// <summary>
         /// The [RenderTexture](https://docs.unity3d.com/ScriptReference/RenderTexture.html) instance
@@ -85,13 +87,13 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
-            Dispose();
-            m_Sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
+            var sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
+            m_Sensors.Add(sensor);
             if (ObservationStacks != 1)
             {
-                return new ISensor[] { new StackingSensor(m_Sensor, ObservationStacks) };
+                return new ISensor[] { new StackingSensor(sensor, ObservationStacks) };
             }
-            return new ISensor[] { m_Sensor };
+            return new ISensor[] { sensor };
         }
 
         /// <summary>
@@ -99,22 +101,22 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         internal void UpdateSensor()
         {
-            if (m_Sensor != null)
+            foreach (var sensor in m_Sensors)
             {
-                m_Sensor.CompressionType = m_Compression;
+                sensor.CompressionType = m_Compression;
             }
         }
 
         /// <summary>
-        /// Clean up the sensor created by CreateSensors().
+        /// Clean up the sensors created by CreateSensors().
         /// </summary>
         public void Dispose()
         {
-            if (!ReferenceEquals(null, m_Sensor))
+            foreach (var sensor in m_Sensors)
             {
-                m_Sensor.Dispose();
-                m_Sensor = null;
+                sensor.Dispose();
             }
+            m_Sensors.Clear();
         }
     }
 }
