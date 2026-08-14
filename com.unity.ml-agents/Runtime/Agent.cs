@@ -1058,6 +1058,8 @@ namespace Unity.MLAgents
                     disposableSensor.Dispose();
                 }
             }
+
+            sensors.Clear();
         }
 
         void InitializeActuators()

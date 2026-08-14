@@ -87,6 +87,7 @@ namespace Unity.MLAgents.Sensors
         /// <inheritdoc/>
         public override ISensor[] CreateSensors()
         {
+            RemoveDisposedSensors();
             var sensor = new RenderTextureSensor(RenderTexture, Grayscale, SensorName, m_Compression);
             m_Sensors.Add(sensor);
             if (ObservationStacks != 1)
@@ -101,10 +102,16 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         internal void UpdateSensor()
         {
+            RemoveDisposedSensors();
             foreach (var sensor in m_Sensors)
             {
                 sensor.CompressionType = m_Compression;
             }
+        }
+
+        void RemoveDisposedSensors()
+        {
+            m_Sensors.RemoveAll(sensor => sensor.IsDisposed);
         }
 
         /// <summary>

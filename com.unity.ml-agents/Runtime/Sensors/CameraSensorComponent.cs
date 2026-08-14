@@ -143,6 +143,7 @@ namespace Unity.MLAgents.Sensors
         /// <returns>The created <see cref="CameraSensor"/> object for this component.</returns>
         public override ISensor[] CreateSensors()
         {
+            RemoveDisposedSensors();
             var sensor = new CameraSensor(m_Camera, m_Width, m_Height, Grayscale, m_SensorName, m_Compression, m_ObservationType);
             m_Sensors.Add(sensor);
 
@@ -158,12 +159,18 @@ namespace Unity.MLAgents.Sensors
         /// </summary>
         internal void UpdateSensor()
         {
+            RemoveDisposedSensors();
             foreach (var sensor in m_Sensors)
             {
                 sensor.Camera = m_Camera;
                 sensor.CompressionType = m_Compression;
                 sensor.Camera.enabled = m_RuntimeCameraEnable;
             }
+        }
+
+        void RemoveDisposedSensors()
+        {
+            m_Sensors.RemoveAll(sensor => sensor.IsDisposed);
         }
 
         /// <summary>
