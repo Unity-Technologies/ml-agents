@@ -126,16 +126,17 @@ namespace Unity.MLAgents.Editor
 
             var agentSensors = agent.sensors;
             var createdSensorsForInspector = false;
-            if (!EditorApplication.isPlaying || agent.sensors == null || agent.sensors.Count == 0)
-            {
-                agent.sensors = new List<ISensor>();
-                agent.InitializeSensors();
-                createdSensorsForInspector = true;
-            }
-            var sensors = agent.sensors.ToArray();
 
             try
             {
+                if (!EditorApplication.isPlaying || agent.sensors == null)
+                {
+                    agent.sensors = new List<ISensor>();
+                    createdSensorsForInspector = true;
+                    agent.InitializeSensors();
+                }
+                var sensors = agent.sensors.ToArray();
+
                 ActuatorComponent[] actuatorComponents;
                 if (behaviorParameters.UseChildActuators)
                 {
@@ -196,7 +197,7 @@ namespace Unity.MLAgents.Editor
             {
                 if (createdSensorsForInspector)
                 {
-                    foreach (var sensor in sensors)
+                    foreach (var sensor in agent.sensors)
                     {
                         (sensor as IDisposable)?.Dispose();
                     }
