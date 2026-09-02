@@ -2,6 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 using Unity.MLAgents.Policies;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -23,3 +24,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif

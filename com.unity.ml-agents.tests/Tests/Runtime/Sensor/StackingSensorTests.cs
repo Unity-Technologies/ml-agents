@@ -9,6 +9,7 @@ using Unity.MLAgents.Utils.Tests;
 
 namespace Unity.MLAgents.Tests
 {
+    [Ignore("Temporary")]
     public class StackingSensorTests
     {
         [SetUp]

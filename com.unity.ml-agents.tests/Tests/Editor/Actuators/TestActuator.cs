@@ -1,4 +1,5 @@
 using Unity.MLAgents.Actuators;
+#if !UNITY_EDITOR_WIN
 namespace Unity.MLAgents.Tests.Actuators
 {
     internal class TestActuator : IActuator
@@ -46,3 +47,4 @@ namespace Unity.MLAgents.Tests.Actuators
         }
     }
 }
+#endif

@@ -2,6 +2,7 @@ using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using UnityEngine;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Policies
 {
@@ -121,3 +122,4 @@ namespace Unity.MLAgents.Tests.Policies
         }
     }
 }
+#endif

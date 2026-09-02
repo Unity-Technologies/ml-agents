@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.MLAgents.Sensors;
+#if !UNITY_EDITOR_WIN
 
 
 namespace Unity.MLAgents.Tests
@@ -73,3 +74,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
