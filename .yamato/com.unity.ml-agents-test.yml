@@ -19,10 +19,10 @@ test_platforms:
     - name: mac
       type: Unity::VM::osx
       image: package-ci/macos-13:v4
-      flavor: b1.large
+      flavor: m1.mac
     - name: linux
       type: Unity::VM
-      image: ml-agents/ubuntu-ci:v1.0.1
+      image: package-ci/ubuntu-22.04:v4
       flavor: b1.large
 
 packages:
@@ -113,7 +113,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
     name : {{ package.name }} test {{ editor.version }} on {{ platform.name }} in {{ editor.testProject }}
     agent:
         type: {{ platform.type }}
-        image: {% if platform.name == "linux" %}package-ci/ubuntu-22.04:v4{% else %}{{ platform.image }}{% endif %}
+        image: {{ platform.image }}
         flavor: {{ platform.flavor}}
     commands:
         - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
