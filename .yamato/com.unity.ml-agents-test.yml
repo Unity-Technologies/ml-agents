@@ -18,8 +18,8 @@ test_platforms:
       flavor: b1.large
     - name: mac
       type: Unity::VM::osx
-      image: package-ci/macos-13:v4
-      flavor: m1.mac
+      image: package-ci/macos-14-arm64:default
+      flavor: i1.large
     - name: linux
       type: Unity::VM
       image: package-ci/ubuntu-22.04:v4
