@@ -21,6 +21,7 @@ test_platforms:
       image: package-ci/macos-14-arm64:default
       flavor: m1.mac
       model: M1
+      arch: arm64
     - name: linux
       type: Unity::VM
       image: package-ci/ubuntu-22.04:v4
@@ -123,7 +124,7 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
         model: {{ platform.model }}
 {% endif -%}
     commands:
-        - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
+        - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast {% if platform.arch %}-a {{ platform.arch }}{% endif %}
         - UnifiedTestRunner --suite=editor --suite=playmode --editor-location=.Editor --testproject={{ editor.testProject }} --artifacts-path=upm-ci~/test-results --reruncount=2
     artifacts:
         logs:
