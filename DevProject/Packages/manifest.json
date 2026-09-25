@@ -7,7 +7,7 @@
     "com.unity.ml-agents": "file:../../com.unity.ml-agents",
     "com.unity.ml-agents.tests": "file:../../com.unity.ml-agents.tests",
     "com.unity.multiplayer.center": "1.0.0",
-    "com.unity.package-validation-suite": "0.59.0-preview",
+    "com.unity.package-validation-suite": "0.86.0-preview",
     "com.unity.test-framework": "1.6.0",
     "com.unity.test-framework.performance": "3.5.0",
     "com.unity.testtools.codecoverage": "1.3.0",
