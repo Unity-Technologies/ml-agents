@@ -75,9 +75,14 @@ namespace Unity.MLAgents.Inference
 
         void Dispose()
         {
-            if (data.dataOnBackend.backendType != BackendType.CPU)
+            if (data == null)
             {
-                data?.Dispose();
+                return;
+            }
+
+            if (data.dataOnBackend == null || data.dataOnBackend.backendType != BackendType.CPU)
+            {
+                data.Dispose();
             }
         }
     }

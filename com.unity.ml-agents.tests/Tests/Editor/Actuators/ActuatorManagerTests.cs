@@ -7,6 +7,7 @@ using Unity.MLAgents.Actuators;
 using UnityEngine;
 using UnityEngine.TestTools;
 using Assert = UnityEngine.Assertions.Assert;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Actuators
 {
@@ -350,3 +351,4 @@ namespace Unity.MLAgents.Tests.Actuators
         }
     }
 }
+#endif

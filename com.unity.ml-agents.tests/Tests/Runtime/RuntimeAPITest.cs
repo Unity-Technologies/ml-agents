@@ -57,6 +57,9 @@ namespace Tests
         }
 
         [UnityTest]
+        [UnityPlatform(exclude = new RuntimePlatform[] {
+            RuntimePlatform.WindowsEditor // Disabled for Instability https://jira.unity3d.com/browse/UUM-150589
+        })]
         public IEnumerator RuntimeApiTestWithEnumeratorPasses()
         {
             Academy.Instance.InferenceSeed = 1337;

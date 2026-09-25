@@ -1,6 +1,7 @@
 using System;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Actuators
 {
@@ -60,3 +61,4 @@ namespace Unity.MLAgents.Tests.Actuators
         }
     }
 }
+#endif

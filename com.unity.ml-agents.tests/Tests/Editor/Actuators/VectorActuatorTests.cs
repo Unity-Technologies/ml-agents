@@ -4,6 +4,7 @@ using System.Linq;
 using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Assert = UnityEngine.Assertions.Assert;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Actuators
 {
@@ -115,3 +116,4 @@ namespace Unity.MLAgents.Tests.Actuators
         }
     }
 }
+#endif

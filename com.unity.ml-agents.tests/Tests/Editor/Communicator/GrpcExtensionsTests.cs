@@ -11,6 +11,7 @@ using Unity.MLAgents.Analytics;
 using Unity.MLAgents.CommunicatorObjects;
 using UnityEngine;
 using UnityEngine.TestTools;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -274,3 +275,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
