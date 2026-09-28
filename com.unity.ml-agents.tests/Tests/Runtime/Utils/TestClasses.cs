@@ -111,6 +111,23 @@ namespace Unity.MLAgents.Utils.Tests
             continuousActions[0] = (int)obs[0];
             heuristicCalls++;
         }
+
+        /// <summary>
+        /// Parents childGameObject under parentGameObject, adds an initialized Agent to each,
+        /// so that the parent Agent also picks up the child's SensorComponents.
+        /// </summary>
+        public static (TestAgent parent, TestAgent child) CreateNestedAgents(UnityEngine.GameObject parentGameObject, UnityEngine.GameObject childGameObject)
+        {
+            childGameObject.transform.parent = parentGameObject.transform;
+            parentGameObject.AddComponent<BehaviorParameters>();
+            var parentAgent = parentGameObject.AddComponent<TestAgent>();
+            childGameObject.AddComponent<BehaviorParameters>();
+            var childAgent = childGameObject.AddComponent<TestAgent>();
+
+            parentAgent.LazyInitialize();
+            childAgent.LazyInitialize();
+            return (parentAgent, childAgent);
+        }
     }
 
     public class TestSensor : ISensor

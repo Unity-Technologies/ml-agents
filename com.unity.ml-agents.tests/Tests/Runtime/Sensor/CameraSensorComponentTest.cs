@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using NUnit.Framework;
 using UnityEngine;
-using UnityEngine.TestTools;
-using Unity.MLAgents.Policies;
 using Unity.MLAgents.Sensors;
 using Unity.MLAgents.Utils.Tests;
 
@@ -17,9 +15,9 @@ namespace Unity.MLAgents.Tests
 
         readonly List<GameObject> m_GameObjects = new List<GameObject>();
 
-        static Texture2D GetTexture(ISensor sensor)
+        static bool IsDisposed(ISensor sensor)
         {
-            return (Texture2D)typeof(CameraSensor).GetField("m_Texture", k_Flags).GetValue(sensor);
+            return ((CameraSensor)sensor).IsDisposed;
         }
 
         GameObject NewGameObject(string name)
@@ -40,8 +38,6 @@ namespace Unity.MLAgents.Tests
                 }
             }
             m_GameObjects.Clear();
-
-            LogAssert.ignoreFailingMessages = false;
 
             if (Academy.IsInitialized)
             {
@@ -99,12 +95,12 @@ namespace Unity.MLAgents.Tests
             cameraComponent.RuntimeCameraEnable = true;
 
             var firstSensor = cameraComponent.CreateSensors()[0];
-            Assert.IsNotNull(GetTexture(firstSensor), "the first sensor should start out with a texture");
+            Assert.IsFalse(IsDisposed(firstSensor), "the first sensor should start out with a texture");
 
             var secondSensor = cameraComponent.CreateSensors()[0];
-            Assert.IsNotNull(GetTexture(secondSensor));
+            Assert.IsFalse(IsDisposed(secondSensor));
 
-            Assert.IsNotNull(GetTexture(firstSensor), "the second CreateSensors() destroyed the first sensor's Texture2D");
+            Assert.IsFalse(IsDisposed(firstSensor), "the second CreateSensors() destroyed the first sensor's Texture2D");
 
             Assert.DoesNotThrow(() => firstSensor.Update());
         }
@@ -115,7 +111,6 @@ namespace Unity.MLAgents.Tests
             var parentGameObject = NewGameObject("OuterAgent");
             var childGameObject = NewGameObject("ChildAgent");
             var cam = NewGameObject("SensorCam");
-            childGameObject.transform.parent = parentGameObject.transform;
             cam.transform.parent = childGameObject.transform;
 
             var camera = cam.AddComponent<Camera>();
@@ -123,13 +118,7 @@ namespace Unity.MLAgents.Tests
             cameraComponent.Camera = camera;
             cameraComponent.RuntimeCameraEnable = true;
 
-            parentGameObject.AddComponent<BehaviorParameters>();
-            var parentAgent = parentGameObject.AddComponent<TestAgent>();
-            childGameObject.AddComponent<BehaviorParameters>();
-            var childAgent = childGameObject.AddComponent<TestAgent>();
-
-            parentAgent.LazyInitialize();
-            childAgent.LazyInitialize();
+            var (parentAgent, childAgent) = TestAgent.CreateNestedAgents(parentGameObject, childGameObject);
 
             var parentSensor = parentAgent.sensors.Find(s => s is CameraSensor);
             var childSensor = childAgent.sensors.Find(s => s is CameraSensor);
@@ -138,9 +127,41 @@ namespace Unity.MLAgents.Tests
             Assert.IsNotNull(childSensor);
             Assert.AreNotSame(parentSensor, childSensor);
 
-            Assert.IsNotNull(GetTexture(parentSensor), "Parent Agent is holding a sensor whose texture was disposed by Child agent");
+            Assert.IsFalse(IsDisposed(parentSensor), "Parent Agent is holding a sensor whose texture was disposed by Child agent");
 
             Assert.DoesNotThrow(() => parentSensor.Update());
+        }
+
+        [Test]
+        public void DisableEnableAgent([Values(1, 3)] int observationStacks)
+        {
+            var parentGameObject = NewGameObject("OuterAgent");
+            var childGameObject = NewGameObject("ChildAgent");
+            var cam = NewGameObject("SensorCam");
+            cam.transform.parent = childGameObject.transform;
+
+            var camera = cam.AddComponent<Camera>();
+            var cameraComponent = cam.AddComponent<CameraSensorComponent>();
+            cameraComponent.Camera = camera;
+            cameraComponent.ObservationStacks = observationStacks;
+
+            var (_, childAgent) = TestAgent.CreateNestedAgents(parentGameObject, childGameObject);
+
+            var componentSensors = (List<CameraSensor>)typeof(CameraSensorComponent).GetField("m_Sensors", k_Flags).GetValue(cameraComponent);
+            Assert.AreEqual(2, componentSensors.Count);
+            var parentSensor = componentSensors[0];
+
+            for (var i = 0; i < 5; i++)
+            {
+                // Agent.OnDisable() disposes its sensors; Agent.OnEnable() re-initializes and calls CreateSensors() again.
+                childAgent.enabled = false;
+                childAgent.enabled = true;
+                cameraComponent.CompressionType = SensorCompressionType.None;
+                Assert.AreEqual(2, componentSensors.Count, "disposed sensors should be pruned, not retained");
+            }
+
+            Assert.IsFalse(componentSensors.Exists(s => s.IsDisposed));
+            Assert.Contains(parentSensor, componentSensors, "the parent Agent's sensor should not be disposed");
         }
     }
 }
