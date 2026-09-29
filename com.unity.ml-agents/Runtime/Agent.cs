@@ -1047,7 +1047,7 @@ namespace Unity.MLAgents
 #endif
         }
 
-        void CleanupSensors()
+        internal void CleanupSensors()
         {
             // Dispose all attached sensor
             for (var i = 0; i < sensors.Count; i++)
