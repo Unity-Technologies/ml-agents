@@ -7,6 +7,7 @@ from mlagents_envs.logging_util import WARNING
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer, PPOSettings
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer, SACSettings
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer, POCASettings
+from mlagents.trainers.mappo.optimizer_torch import TorchMAPPOOptimizer, MAPPOSettings
 from mlagents.trainers.model_saver.torch_model_saver import TorchModelSaver
 from mlagents.trainers.settings import (
     TrainerSettings,
@@ -33,8 +34,9 @@ DEMO_PATH = (
         (TorchPPOOptimizer, PPOSettings),
         (TorchSACOptimizer, SACSettings),
         (TorchPOCAOptimizer, POCASettings),
+        (TorchMAPPOOptimizer, MAPPOSettings),
     ],
-    ids=["ppo", "sac", "poca"],
+    ids=["ppo", "sac", "poca", "mappo"],
 )
 def test_reward_provider_save(tmp_path, optimizer):
     OptimizerClass, HyperparametersClass = optimizer
@@ -100,8 +102,9 @@ def test_reward_provider_save(tmp_path, optimizer):
         (TorchPPOOptimizer, PPOSettings),
         (TorchSACOptimizer, SACSettings),
         (TorchPOCAOptimizer, POCASettings),
+        (TorchMAPPOOptimizer, MAPPOSettings),
     ],
-    ids=["ppo", "sac", "poca"],
+    ids=["ppo", "sac", "poca", "mappo"],
 )
 def test_load_different_reward_provider(caplog, tmp_path, optimizer):
     OptimizerClass, HyperparametersClass = optimizer

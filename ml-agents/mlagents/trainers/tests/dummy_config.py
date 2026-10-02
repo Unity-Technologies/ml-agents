@@ -16,6 +16,7 @@ from mlagents.trainers.settings import (
 from mlagents.trainers.ppo.optimizer_torch import PPOSettings
 from mlagents.trainers.sac.optimizer_torch import SACSettings
 from mlagents.trainers.poca.optimizer_torch import POCASettings
+from mlagents.trainers.mappo.optimizer_torch import MAPPOSettings
 
 CONTINUOUS_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/test.demo"
 DISCRETE_DEMO_PATH = os.path.dirname(os.path.abspath(__file__)) + "/testdcvis.demo"
@@ -66,6 +67,21 @@ _POCA_CONFIG = TrainerSettings(
 )
 
 
+_MAPPO_CONFIG = TrainerSettings(
+    trainer_type="mappo",
+    hyperparameters=MAPPOSettings(
+        learning_rate=5.0e-3,
+        learning_rate_schedule=ScheduleType.CONSTANT,
+        batch_size=16,
+        buffer_size=64,
+    ),
+    network_settings=NetworkSettings(num_layers=1, hidden_units=32),
+    summary_freq=500,
+    max_steps=3000,
+    threaded=False,
+)
+
+
 def ppo_dummy_config():
     return copy.deepcopy(_PPO_CONFIG)
 
@@ -76,6 +92,10 @@ def sac_dummy_config():
 
 def poca_dummy_config():
     return copy.deepcopy(_POCA_CONFIG)
+
+
+def mappo_dummy_config():
+    return copy.deepcopy(_MAPPO_CONFIG)
 
 
 @pytest.fixture

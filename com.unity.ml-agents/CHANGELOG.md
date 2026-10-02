@@ -7,6 +7,12 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Major Changes
+#### ml-agents / ml-agents-envs
+- The MAPPO trainer has been added. It trains each Agent's policy like PPO, with a centralized critic that also sees
+  the observations of the Agent's group. Configure `mappo` as the trainer in the configuration YAML; example
+  configurations are in `config/mappo`. (#6328)
+
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
