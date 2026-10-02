@@ -33,6 +33,7 @@ from mlagents.trainers.tests.dummy_config import (
     ppo_dummy_config,
     sac_dummy_config,
     poca_dummy_config,
+    mappo_dummy_config,
 )
 from mlagents.trainers.tests.check_env_trains import (
     check_environment_trains,
@@ -44,6 +45,7 @@ BRAIN_NAME = "1D"
 PPO_TORCH_CONFIG = ppo_dummy_config()
 SAC_TORCH_CONFIG = sac_dummy_config()
 POCA_TORCH_CONFIG = poca_dummy_config()
+MAPPO_TORCH_CONFIG = mappo_dummy_config()
 
 # tests in this file won't be tested on GPU machine
 pytestmark = pytest.mark.slow
@@ -128,6 +130,71 @@ def test_recurrent_poca(action_sizes, is_multiagent):
     check_environment_trains(
         env, {BRAIN_NAME: config}, success_threshold=None if is_multiagent else 0.9
     )
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_mappo(action_sizes):
+    env = MultiAgentEnvironment([BRAIN_NAME], action_sizes=action_sizes, num_agents=2)
+    config = attr.evolve(MAPPO_TORCH_CONFIG)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
+@pytest.mark.parametrize("num_visual", [1, 2])
+def test_visual_mappo(num_visual):
+    env = MultiAgentEnvironment(
+        [BRAIN_NAME], action_sizes=(0, 1), num_agents=2, num_visual=num_visual
+    )
+    new_hyperparams = attr.evolve(
+        MAPPO_TORCH_CONFIG.hyperparameters, learning_rate=3.0e-4
+    )
+    config = attr.evolve(MAPPO_TORCH_CONFIG, hyperparameters=new_hyperparams)
+    check_environment_trains(env, {BRAIN_NAME: config})
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+@pytest.mark.parametrize("is_multiagent", [True, False])
+def test_recurrent_mappo(action_sizes, is_multiagent):
+    if is_multiagent:
+        # This is not a recurrent environment, just check if LSTM doesn't crash
+        env = MultiAgentEnvironment(
+            [BRAIN_NAME], action_sizes=action_sizes, num_agents=2
+        )
+    else:
+        # Actually test LSTM here
+        env = MemoryEnvironment([BRAIN_NAME], action_sizes=action_sizes)
+    new_network_settings = attr.evolve(
+        MAPPO_TORCH_CONFIG.network_settings,
+        memory=NetworkSettings.MemorySettings(memory_size=16),
+    )
+    new_hyperparams = attr.evolve(
+        MAPPO_TORCH_CONFIG.hyperparameters,
+        learning_rate=1.0e-3,
+        batch_size=64,
+        buffer_size=128,
+    )
+    config = attr.evolve(
+        MAPPO_TORCH_CONFIG,
+        hyperparameters=new_hyperparams,
+        network_settings=new_network_settings,
+        max_steps=500 if is_multiagent else 6000,
+    )
+    check_environment_trains(
+        env, {BRAIN_NAME: config}, success_threshold=None if is_multiagent else 0.9
+    )
+
+
+@pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])
+def test_simple_ghost_mappo(action_sizes):
+    env = SimpleEnvironment(
+        [BRAIN_NAME + "?team=0", BRAIN_NAME + "?team=1"], action_sizes=action_sizes
+    )
+    self_play_settings = SelfPlaySettings(
+        play_against_latest_model_ratio=1.0, save_steps=2000, swap_steps=2000
+    )
+    config = attr.evolve(
+        MAPPO_TORCH_CONFIG, self_play=self_play_settings, max_steps=2500
+    )
+    check_environment_trains(env, {BRAIN_NAME: config})
 
 
 @pytest.mark.parametrize("action_sizes", [(0, 1), (1, 0)])

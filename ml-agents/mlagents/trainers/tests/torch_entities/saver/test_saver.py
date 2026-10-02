@@ -9,6 +9,7 @@ from mlagents.trainers.policy.torch_policy import TorchPolicy
 from mlagents.trainers.ppo.optimizer_torch import TorchPPOOptimizer, PPOSettings
 from mlagents.trainers.sac.optimizer_torch import TorchSACOptimizer, SACSettings
 from mlagents.trainers.poca.optimizer_torch import TorchPOCAOptimizer, POCASettings
+from mlagents.trainers.mappo.optimizer_torch import TorchMAPPOOptimizer, MAPPOSettings
 from mlagents.trainers.model_saver.torch_model_saver import (
     TorchModelSaver,
     DEFAULT_CHECKPOINT_NAME,
@@ -122,8 +123,9 @@ def test_load_policy_different_hidden_units(tmp_path, vis_encode_type):
         (TorchPPOOptimizer, PPOSettings),
         (TorchSACOptimizer, SACSettings),
         (TorchPOCAOptimizer, POCASettings),
+        (TorchMAPPOOptimizer, MAPPOSettings),
     ],
-    ids=["ppo", "sac", "poca"],
+    ids=["ppo", "sac", "poca", "mappo"],
 )
 def test_load_save_optimizer(tmp_path, optimizer):
     OptimizerClass, HyperparametersClass = optimizer

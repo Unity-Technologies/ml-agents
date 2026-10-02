@@ -11,6 +11,7 @@ from mlagents.trainers.tests.dummy_config import (
     create_observation_specs_with_shapes,
     ppo_dummy_config,
     poca_dummy_config,
+    mappo_dummy_config,
     sac_dummy_config,
 )
 from mlagents.trainers.tests.mock_brain import make_fake_trajectory
@@ -30,6 +31,11 @@ def sac_config():
 @pytest.fixture
 def poca_config():
     return RunOptions(behaviors={"test_brain": poca_dummy_config()})
+
+
+@pytest.fixture
+def mappo_config():
+    return RunOptions(behaviors={"test_brain": mappo_dummy_config()})
 
 
 def test_ppo_trainer_update_normalization(ppo_config):
@@ -160,5 +166,49 @@ def test_poca_trainer_update_normalization(poca_config):
         "mlagents.trainers.torch_entities.networks.SimpleActor.update_normalization"
     ) as policy_update_normalization_mock:
         poca_trainer.advance()
+        optimizer_update_normalization_mock.assert_called_once()
+        policy_update_normalization_mock.assert_called_once()
+
+
+def test_mappo_trainer_update_normalization(mappo_config):
+    behavior_id_team0 = "test_brain?team=0"
+    brain_name = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0).brain_name
+    mock_specs = mb.setup_test_behavior_specs(
+        True, False, vector_action_space=[2], vector_obs_space=1
+    )
+    base_config = mappo_config.behaviors
+    output_path = "results_dir"
+    train_model = True
+    load_model = False
+    seed = 42
+    trainer_factory = TrainerFactory(
+        trainer_config=base_config,
+        output_path=output_path,
+        train_model=train_model,
+        load_model=load_model,
+        seed=seed,
+        param_manager=EnvironmentParameterManager(),
+    )
+    mappo_trainer = trainer_factory.generate(brain_name)
+    parsed_behavior_id0 = BehaviorIdentifiers.from_name_behavior_id(behavior_id_team0)
+    policy = mappo_trainer.create_policy(parsed_behavior_id0, mock_specs)
+    mappo_trainer.add_policy(parsed_behavior_id0, policy)
+    trajectory_queue0 = AgentManagerQueue(behavior_id_team0)
+    mappo_trainer.subscribe_trajectory_queue(trajectory_queue0)
+    time_horizon = 15
+    trajectory = make_fake_trajectory(
+        length=time_horizon,
+        max_step_complete=True,
+        observation_specs=create_observation_specs_with_shapes([(1,)]),
+        action_spec=mock_specs.action_spec,
+    )
+    trajectory_queue0.put(trajectory)
+    # mocking out update_normalization in both the policy and critic
+    with patch(
+        "mlagents.trainers.mappo.optimizer_torch.TorchMAPPOOptimizer.MAPPOValueNetwork.update_normalization"
+    ) as optimizer_update_normalization_mock, patch(
+        "mlagents.trainers.torch_entities.networks.SimpleActor.update_normalization"
+    ) as policy_update_normalization_mock:
+        mappo_trainer.advance()
         optimizer_update_normalization_mock.assert_called_once()
         policy_update_normalization_mock.assert_called_once()
