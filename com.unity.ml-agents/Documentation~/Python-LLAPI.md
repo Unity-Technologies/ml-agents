@@ -92,7 +92,7 @@ Similarly to `DecisionSteps` and `DecisionStep`, `TerminalSteps` (with `s`) cont
 
 A `TerminalSteps` has the following fields :
 
-- `obs` is a list of numpy arrays observations collected by the group of agent. The first dimension of the array corresponds to the batch size of the group (number of agents requesting a decision since the last call to `env.step()`).
+- `obs` is a list of numpy arrays observations collected by the group of agent. The first dimension of the array corresponds to the batch size of the group (number of agents whose episodes ended since the last call to `env.step()`, including interrupted episodes`).
 - `reward` is a float vector of length batch size. Corresponds to the rewards collected by each agent since the last simulation step.
 - `agent_id` is an int vector of length batch size containing unique identifier for the corresponding Agent. This is used to track Agents across simulation steps.
 - `interrupted` is an array of booleans of length batch size. Is true if the associated Agent was interrupted since the last decision step. For example, if the Agent reached the maximum number of steps for the episode.
