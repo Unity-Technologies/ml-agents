@@ -99,7 +99,7 @@ A `TerminalSteps` has the following fields :
 
 It also has the two following methods:
 
-- `len(TerminalSteps)` Returns the number of agents requesting a decision since the last call to `env.step()`.
+- `len(TerminalSteps)` Returns the number of agents whose episodes ended since the last call to `env.step()`, including interrupted episodes.
 - `TerminalSteps[agent_id]` Returns a `TerminalStep` for the Agent with the `agent_id` unique identifier.
 
 A `TerminalStep` has the following fields:
