@@ -7,7 +7,7 @@ metadata:
   name: com.unity.ml-agents
   description: "Unity ML-Agents Package"
   labels:
-    costcenter: "5160"
+    costcenter: "5053"
   tags:
     - planned-public
     - enterprise
@@ -18,4 +18,4 @@ metadata:
 spec:
   type: unity-package
   lifecycle: production
-  owner: unity/behavior-authoring
+  owner: default/UCW-5253615 # Sentis
