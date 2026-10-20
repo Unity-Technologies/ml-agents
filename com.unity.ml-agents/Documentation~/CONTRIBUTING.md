@@ -24,8 +24,8 @@ To run the static checks locally:
 1. Install `pre-commit` and its dependencies:
 
     ```bash
-    pip install pre-commit>=2.8.0
-    pip install identify>=2.1.3
+    pip install 'pre-commit>=2.8.0'
+    pip install 'identify>=2.1.3'
     ```
 
 2. To use the C# formatter, install [.NET](https://dotnet.microsoft.com/download). You don't need to install `dotnet-format` yourself, because `pre-commit` installs it for you.
