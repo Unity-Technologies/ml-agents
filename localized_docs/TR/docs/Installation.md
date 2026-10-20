@@ -44,7 +44,7 @@ git clone --branch release_8 https://github.com/Unity-Technologies/ml-agents.git
 
 #### Gelişmiş: Geliştirme için Yerel Kurulum
 
-Eğer, ML-Agent Toolkit'i amaçlarınız için değiştirmeyi veya genişletmeyi planlıyorsanız, depoyu klonlamanız gerekecektir. Bu değişikliklere tekrar katkıda bulunmayı planlıyorsanız, `master` dalını klonladığınızdan emin olun (yukarıdaki komuttan `--branch release_8` 'i çıkarın). ML-Agent Toolkit'e katkıda bulunma hakkında daha fazla bilgi için [Katkı Yönergelerimize](../com.unity.ml-agents/CONTRIBUTING.md) bakın.
+Eğer, ML-Agent Toolkit'i amaçlarınız için değiştirmeyi veya genişletmeyi planlıyorsanız, depoyu klonlamanız gerekecektir. Bu değişikliklere tekrar katkıda bulunmayı planlıyorsanız, `master` dalını klonladığınızdan emin olun (yukarıdaki komuttan `--branch release_8` 'i çıkarın). ML-Agent Toolkit'e katkıda bulunma hakkında daha fazla bilgi için [Katkı Yönergelerimize](../../../com.unity.ml-agents/Documentation~/CONTRIBUTING.md) bakın.
 
 ### `com.unity.ml-agent` Unity paketini kurun
 
