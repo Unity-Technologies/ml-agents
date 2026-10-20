@@ -141,7 +141,7 @@ https://github.com/Unity-Technologies/ml-agents.
 ## Community and Feedback
 
 ML-Agents Toolkit - open-source проект, поэтому мы рады любой помощи. Если вы хотите нам помочь,
-ознакомьтесь, для начала, пожалуйста, для с [гайдом, как сделать это правильно](com.unity.ml-agents/CONTRIBUTING.md),
+ознакомьтесь, для начала, пожалуйста, для с [гайдом, как сделать это правильно](../../com.unity.ml-agents/Documentation~/CONTRIBUTING.md),
 и [кодексом поведения](CODE_OF_CONDUCT.md).
 
 Если возникли проблемы с установкой и настройкой ML-Agents, если вы хотите обсудить как лучше всего
