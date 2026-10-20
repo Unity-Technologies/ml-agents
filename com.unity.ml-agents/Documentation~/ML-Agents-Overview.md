@@ -4,6 +4,24 @@ Depending on your background (i.e. researcher, game developer, hobbyist), you ma
 
 The remainder of this page contains a deep dive into ML-Agents, its key components, different training modes and scenarios. By the end of it, you should have a good sense of _what_ the ML-Agents Toolkit allows you to do. The subsequent documentation pages provide examples of _how_ to use ML-Agents. To get started, watch this [demo video of ML-Agents in action](https://www.youtube.com/watch?v=fiQsmdwEGT8&feature=youtu.be).
 
+## Features
+
+The ML-Agents Toolkit includes the following features:
+
+* 17+ [example Unity environments](Learning-Environment-Examples.md).
+* Support for multiple environment configurations and training scenarios.
+* Flexible Unity SDK that you can integrate into your application or custom Unity scene.
+* Support for training single-agent, multiagent cooperative, and multiagent competitive scenarios with several deep reinforcement learning algorithms (PPO, SAC, MA-POCA, self-play).
+* Support for learning from demonstrations with two imitation learning algorithms (BC and GAIL).
+* Support for adding your own [custom training algorithm](Python-Custom-Trainer-Plugin.md) and components.
+* Curriculum learning scenarios for complex tasks.
+* Environment randomization to train robust agents.
+* Flexible agent control with on-demand decision-making.
+* Training with multiple concurrent Unity environment instances.
+* Built-in cross-platform support through [Sentis](Inference-Engine.md).
+* Unity environment [control from Python](Python-LLAPI.md).
+* Wrappers for Unity learning environments as [Gym](Python-Gym-API.md) and [PettingZoo](Python-PettingZoo-API.md) environments.
+
 ## Running Example: Training NPC Behaviors
 
 To help explain the material and terminology in this page, we'll use a hypothetical, running example throughout. We will explore the problem of training the behavior of a non-playable character (NPC) in a game. (An NPC is a game character that is never controlled by a human player and its behavior is pre-defined by the game developer.) More specifically, let's assume we're building a multi-player, war-themed game in which players control the soldiers. In this game, we have a single NPC who serves as a medic, finding and reviving wounded players. Lastly, let us assume that there are two teams, each with five players and one NPC medic.
