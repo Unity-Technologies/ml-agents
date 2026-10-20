@@ -153,8 +153,6 @@ ML-Agents Toolkit - open-source проект, поэтому мы рады лю�
 Пожалуйста, уделите несколько минут и [поделитесь](https://github.com/Unity-Technologies/ml-agents/issues/1454)
 с нами тем, что могло бы улучшить наш проект.
 
-По всем остальным вопросам или отзыву, пишите сразу на адрес команды разработчиков ML-Agents - ml-agents@unity3d.com.
-
 ## Лицензия
 
 Apache License 2.0

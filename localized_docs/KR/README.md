@@ -125,8 +125,6 @@ ML-Agents 툴킷을 사용하여 다른 문제가 발생하거나 특정 기능 
 
 여러분의 의견은 저희에게 매우 중요합니다. 유니티 ML-Agents 툴킷에 관련된 여러분의 의견을 통해서 저희는 계속해서 발전하고 성장할 수 있습니다. 단 몇 분만 사용하여 [저희에게 알려주세요](https://github.com/Unity-Technologies/ml-agents/issues/1454).
 
-다른 의견과 피드백은 ML-Agents 팀과 직접 연락부탁드립니다. (ml-agents@unity3d.com)
-
 
 ## 개인정보
 

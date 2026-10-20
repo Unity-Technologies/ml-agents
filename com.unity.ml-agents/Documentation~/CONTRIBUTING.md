@@ -12,8 +12,8 @@ Before you contribute, make sure you have:
 
 * A GitHub account.
 * Read the [code of conduct](https://github.com/Unity-Technologies/ml-agents/blob/develop/CODE_OF_CONDUCT.md). All contributors must follow it.
-* (Recommended) Opened an issue on the [Issues page](https://github.com/Unity-Technologies/ml-agents/issues) that briefly outlines the changes you plan to make. The maintainers can then give you context, such as advice on how to implement the change, or reasons they might not accept it. To find something to work on, browse the GitHub issues labeled `Requests` or `Bug`, or contact the team at ml-agents@unity3d.com.
-* Reviewed the Contributor License Agreement (CLA). When you open a pull request, CLA assistant, an open-source tool, asks you to acknowledge the CLA. ML-Agents accepts both individual contributions and contributions made on behalf of companies. If you have questions about the CLA, [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues) or email ml-agents@unity3d.com.
+* (Recommended) Opened an issue on the [Issues page](https://github.com/Unity-Technologies/ml-agents/issues) that briefly outlines the changes you plan to make. The maintainers can then give you context, such as advice on how to implement the change, or reasons they might not accept it. To find something to work on, browse the GitHub issues labeled `Requests` or `Bug`.
+* Reviewed the Contributor License Agreement (CLA). When you open a pull request, CLA assistant, an open-source tool, asks you to acknowledge the CLA. ML-Agents accepts both individual contributions and contributions made on behalf of companies. If you have questions about the CLA, [submit an issue](https://github.com/Unity-Technologies/ml-agents/issues).
 
 ## Run static checks locally
 

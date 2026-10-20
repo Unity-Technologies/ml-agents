@@ -66,9 +66,6 @@ ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力�
 [提交问题](https://github.com/Unity-Technologies/ml-agents/issues)并
 确保提供尽可能多的详细信息。
 
-对于任何其他问题或反馈，请直接与 ML-Agents 团队联系，
-电子邮件地址为 ml-agents@unity3d.com。
-
 ## 许可证
 
 [Apache 许可证 2.0](LICENSE)
