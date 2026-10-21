@@ -18,11 +18,13 @@ test_platforms:
       flavor: b1.large
     - name: mac
       type: Unity::VM::osx
-      image: package-ci/macos-13:v4
-      flavor: b1.large
+      image: package-ci/macos-14-arm64:default
+      flavor: m1.mac
+      model: M1
+      arch: arm64
     - name: linux
       type: Unity::VM
-      image: ml-agents/ubuntu-ci:v1.0.1
+      image: package-ci/ubuntu-22.04:v4
       flavor: b1.large
 
 packages:
@@ -73,6 +75,9 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version }}_{{ editor.testP
         type: {{ platform.type }}
         image: {{ platform.image }}
         flavor: {{ platform.flavor}}
+{% if platform.model -%}
+        model: {{ platform.model }}
+{% endif -%}
     commands:
         - npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
         - upm-ci package test -u {{ editor.version }} --package-path {{ package.name }} {{ noDefaultPackagesOptions }} --warnings-as-errors --extra-utr-arg "reruncount=2"
@@ -113,10 +118,13 @@ test_{{ package.name }}_{{ platform.name }}_{{ editor.version}}_{{ editor.testPr
     name : {{ package.name }} test {{ editor.version }} on {{ platform.name }} in {{ editor.testProject }}
     agent:
         type: {{ platform.type }}
-        image: {% if platform.name == "linux" %}package-ci/ubuntu-22.04:v4{% else %}{{ platform.image }}{% endif %}
+        image: {{ platform.image }}
         flavor: {{ platform.flavor}}
+{% if platform.model -%}
+        model: {{ platform.model }}
+{% endif -%}
     commands:
-        - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast
+        - unity-downloader-cli -u {{ editor.version }} -c editor --wait --fast {% if platform.arch %}-a {{ platform.arch }}{% endif %}
         - UnifiedTestRunner --suite=editor --suite=playmode --editor-location=.Editor --testproject={{ editor.testProject }} --artifacts-path=upm-ci~/test-results --reruncount=2
     artifacts:
         logs:
