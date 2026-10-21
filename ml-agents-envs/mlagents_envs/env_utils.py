@@ -22,13 +22,13 @@ def validate_environment_path(env_path: str) -> Optional[str]:
     Strip out executable extensions of the env_path
     :param env_path: The path to the executable
     """
-    env_path = (
-        env_path.strip()
-        .replace(".app", "")
-        .replace(".exe", "")
-        .replace(".x86_64", "")
-        .replace(".x86", "")
-    )
+    env_path = env_path.strip()
+    # Only strip the extension at the end of the path, so that directories such
+    # as "jane.appleseed/" or "builds.x86/" are left untouched.
+    for extension in (".app", ".exe", ".x86_64", ".x86"):
+        if env_path.endswith(extension):
+            env_path = env_path[: -len(extension)]
+            break
     true_filename = os.path.basename(os.path.normpath(env_path))
     logger.debug(f"The true file name is {true_filename}")
 

@@ -62,3 +62,22 @@ def test_set_logging_level():
     for level in [INFO, ERROR, FATAL, CRITICAL, DEBUG]:
         set_log_level(level)
         assert get_logger("test").level == level
+
+
+@pytest.mark.parametrize(
+    "parent_dir", ["jane.appleseed", "builds.x86", "anna.exeter", "plain"]
+)
+@pytest.mark.parametrize("with_extension", [True, False])
+@mock.patch("mlagents_envs.env_utils.get_platform")
+def test_validate_path_extension_in_parent_dir(
+    platform_mock, tmp_path, parent_dir, with_extension
+):
+    # Executable extensions should only be stripped from the end of the path,
+    # not from directory names that happen to contain them.
+    platform_mock.return_value = "linux"
+    env_dir = tmp_path / parent_dir
+    env_dir.mkdir()
+    executable = env_dir / "3DBall.x86_64"
+    executable.touch()
+    env_path = str(executable) if with_extension else str(env_dir / "3DBall")
+    assert validate_environment_path(env_path) == str(executable)
