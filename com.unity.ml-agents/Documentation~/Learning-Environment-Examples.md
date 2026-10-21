@@ -8,7 +8,7 @@ You can access the example learning environments from `Project/Assets/ML-Agents/
 
 For the environments that highlight specific features of the toolkit, Unity provides the pre-trained model files and the training config file that enables you to train the scene yourself. Some environments are designed to serve as challenges for researchers and don't have accompanying pre-trained model files or training configs (marked as _Optional_ in the following sections).
 
-This page only overviews the example environments Unity provides. To learn more on how to design and build your own environments, refer to [Making a New Learning Environment](Learning-Environment-Create-New.md) page. To learn more about contributing your own environments, refer to the [Contribution guidelines](CONTRIBUTING.md).
+This page only overviews the example environments Unity provides. To learn more on how to design and build your own environments, refer to [Making a New Learning Environment](Learning-Environment-Create-New.md) page. ML-Agents doesn't accept environment contributions into the repository. To share an environment you've created, post it on the [Unity ML-Agents discussion forum](https://discussions.unity.com/tag/ml-agents).
 
 ## Basic
 

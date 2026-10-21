@@ -51,6 +51,8 @@
   * [Migrating](Migrating.md)
   * [versioning](Versioning.md)
   * [ML-Agents Glossary](Glossary.md)
+  * [Contribute to ML-Agents](CONTRIBUTING.md)
+  * [Cite the ML-Agents Toolkit](Cite-ML-Agents.md)
 * [Background](Background.md)
   * [Machine Learning](Background-Machine-Learning.md)
   * [Unity](Background-Unity.md)

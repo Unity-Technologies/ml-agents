@@ -24,6 +24,7 @@ namespace Unity.MLAgents.Sensors
             set { m_CompressionType = value; }
         }
 
+        internal bool IsDisposed => ReferenceEquals(null, m_Texture);
 
         /// <summary>
         /// Initializes the sensor.

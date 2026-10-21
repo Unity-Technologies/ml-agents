@@ -118,14 +118,12 @@ Juliani, A., Berges, V., Teng, E., Cohen, A., Harper, J., Elion, C., Goy, C., Ga
 ## 커뮤니티 그리고 피드백
 
 ML-Agents 툴킷은 오픈소스 프로젝트이며 컨트리뷰션을 환영합니다. 만약 컨트리뷰션을 원하시는 경우
-[컨트리뷰션 가이드라인](com.unity.ml-agents/CONTRIBUTING.md) 과 [행동 규칙](CODE_OF_CONDUCT.md) 을 검토해주십시오.
+[컨트리뷰션 가이드라인](../../com.unity.ml-agents/Documentation~/CONTRIBUTING.md) 과 [행동 규칙](CODE_OF_CONDUCT.md) 을 검토해주십시오.
 
 ML-Agents 툴킷 설치 및 설정과 관련된 문제 또는 에이전트를 가장 잘 설정하거나 교육하는 방법에 대한 논의는 [유니티 ML-Agents 포럼](https://forum.unity.com/forums/ml-agents.453/) 에 새 스레드를 작성하십시오. 가능한 많은 세부 정보를 포함해야 합니다.
 ML-Agents 툴킷을 사용하여 다른 문제가 발생하거나 특정 기능 요청이 있는 경우 [이슈 제출](https://github.com/Unity-Technologies/ml-agents/issues) 부탁합니다.
 
 여러분의 의견은 저희에게 매우 중요합니다. 유니티 ML-Agents 툴킷에 관련된 여러분의 의견을 통해서 저희는 계속해서 발전하고 성장할 수 있습니다. 단 몇 분만 사용하여 [저희에게 알려주세요](https://github.com/Unity-Technologies/ml-agents/issues/1454).
-
-다른 의견과 피드백은 ML-Agents 팀과 직접 연락부탁드립니다. (ml-agents@unity3d.com)
 
 
 ## 개인정보

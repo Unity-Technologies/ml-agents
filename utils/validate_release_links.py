@@ -27,7 +27,6 @@ ALLOW_LIST = {
     ),
     "com.unity.ml-agents/Documentation~/Versioning.md": MATCH_ANY,
     "com.unity.ml-agents/CHANGELOG.md": MATCH_ANY,
-    "utils/make_readme_table.py": MATCH_ANY,
     "utils/validate_release_links.py": MATCH_ANY,
 }
 

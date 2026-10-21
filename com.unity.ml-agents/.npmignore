@@ -8,8 +8,6 @@ Documentation~/ApiDocs/**
 .npmrc
 .npmignore
 .gitignore
-CONTRIBUTING.md
-CONTRIBUTING.md.meta
 QAReport.md
 QAReport.md.meta
 .gitlab-ci.yml
