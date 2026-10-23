@@ -16,18 +16,18 @@ all_preview_apv_jobs:
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_3_-_macos13
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_3_-_ubuntu2204
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_3_-_win10
-  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_4_-_macos13
-  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_4_-_ubuntu2204
-  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_4_-_win10
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_5_-_macos13
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_5_-_ubuntu2204
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_5_-_win10
-  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_6_-_macos13
+  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_6_-_macos13arm
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_6_-_ubuntu2204
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_6_-_win10
+  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_7_-_macos13arm
+  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_7_-_ubuntu2204
+  - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_7_-_win10
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (MacOS).
 preview_apv_-_6000_0_-_macos13:
@@ -82,10 +82,10 @@ preview_apv_-_6000_0_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Ubuntu).
 preview_apv_-_6000_0_-_ubuntu2204:
@@ -140,10 +140,10 @@ preview_apv_-_6000_0_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Windows).
 preview_apv_-_6000_0_-_win10:
@@ -199,10 +199,10 @@ preview_apv_-_6000_0_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (MacOS).
 preview_apv_-_6000_3_-_macos13:
@@ -257,10 +257,10 @@ preview_apv_-_6000_3_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (Ubuntu).
 preview_apv_-_6000_3_-_ubuntu2204:
@@ -315,10 +315,10 @@ preview_apv_-_6000_3_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (Windows).
 preview_apv_-_6000_3_-_win10:
@@ -374,185 +374,10 @@ preview_apv_-_6000_3_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-
-# Functional tests for dependents found in the latest 6000.4 manifest (MacOS).
-preview_apv_-_6000_4_-_macos13:
-  name: Preview APV - 6000.4 - macos13
-  agent:
-    image: package-ci/macos-13:v4
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    timeout: 20
-    retries: 10
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 10
-    retries: 3
-  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.4 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
-  - command: echo 'Skipping Editor Manifest Validator as it is only supported on Windows'
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    logs:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - upm-ci~/test-results/**/*
-      - upm-ci~/temp/*/Logs/**
-      - upm-ci~/temp/*/Library/*.log
-      - upm-ci~/temp/*/*.log
-      - upm-ci~/temp/Builds/*.log
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    PreviewAPVResults:
-      paths:
-      - PreviewApvArtifacts~/**
-      - APVTest/**/manifest.json
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-
-# Functional tests for dependents found in the latest 6000.4 manifest (Ubuntu).
-preview_apv_-_6000_4_-_ubuntu2204:
-  name: Preview APV - 6000.4 - ubuntu2204
-  agent:
-    image: package-ci/ubuntu-22.04:v4
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    timeout: 20
-    retries: 10
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 10
-    retries: 3
-  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.4 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
-  - command: echo 'Skipping Editor Manifest Validator as it is only supported on Windows'
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    logs:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - upm-ci~/test-results/**/*
-      - upm-ci~/temp/*/Logs/**
-      - upm-ci~/temp/*/Library/*.log
-      - upm-ci~/temp/*/*.log
-      - upm-ci~/temp/Builds/*.log
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    PreviewAPVResults:
-      paths:
-      - PreviewApvArtifacts~/**
-      - APVTest/**/manifest.json
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
-
-# Functional tests for dependents found in the latest 6000.4 manifest (Windows).
-preview_apv_-_6000_4_-_win10:
-  name: Preview APV - 6000.4 - win10
-  agent:
-    image: package-ci/win10:v4
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: gsudo reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-    timeout: 20
-    retries: 10
-  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
-    timeout: 10
-    retries: 3
-  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.4 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
-  - command: python PythonScripts/editor_manifest_validator.py --version=6000.4 --wrench-config=.yamato/wrench/wrench_config.json
-  after:
-  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    logs:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - upm-ci~/test-results/**/*
-      - upm-ci~/temp/*/Logs/**
-      - upm-ci~/temp/*/Library/*.log
-      - upm-ci~/temp/*/*.log
-      - upm-ci~/temp/Builds/*.log
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    PreviewAPVResults:
-      paths:
-      - PreviewApvArtifacts~/**
-      - APVTest/**/manifest.json
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
-  variables:
-    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
-    UNITY_LICENSING_SERVER_DELETE_NUL: 0
-    UNITY_LICENSING_SERVER_DELETE_ULF: 0
-    UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.5 manifest (MacOS).
 preview_apv_-_6000_5_-_macos13:
@@ -607,10 +432,10 @@ preview_apv_-_6000_5_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.5 manifest (Ubuntu).
 preview_apv_-_6000_5_-_ubuntu2204:
@@ -665,10 +490,10 @@ preview_apv_-_6000_5_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.5 manifest (Windows).
 preview_apv_-_6000_5_-_win10:
@@ -724,18 +549,19 @@ preview_apv_-_6000_5_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.6 manifest (MacOS).
-preview_apv_-_6000_6_-_macos13:
-  name: Preview APV - 6000.6 - macos13
+preview_apv_-_6000_6_-_macos13arm:
+  name: Preview APV - 6000.6 - macos13arm
   agent:
-    image: package-ci/macos-13:v4
+    image: package-ci/macos-13-arm64:v4
     type: Unity::VM::osx
-    flavor: b1.xlarge
+    flavor: m1.mac
+    model: M1
   commands:
   - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
   - command: 7z x -aoa wrench-localapv.zip
@@ -744,7 +570,7 @@ preview_apv_-_6000_6_-_macos13:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast --arch arm64
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.6 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -782,10 +608,10 @@ preview_apv_-_6000_6_-_macos13:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.6 manifest (Ubuntu).
 preview_apv_-_6000_6_-_ubuntu2204:
@@ -802,7 +628,7 @@ preview_apv_-_6000_6_-_ubuntu2204:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.6 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -840,10 +666,10 @@ preview_apv_-_6000_6_-_ubuntu2204:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Functional tests for dependents found in the latest 6000.6 manifest (Windows).
 preview_apv_-_6000_6_-_win10:
@@ -861,7 +687,7 @@ preview_apv_-_6000_6_-_win10:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+  - command: unity-downloader-cli -u 6000.6/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.6 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -899,8 +725,184 @@ preview_apv_-_6000_6_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
+
+# Functional tests for dependents found in the latest 6000.7 manifest (MacOS).
+preview_apv_-_6000_7_-_macos13arm:
+  name: Preview APV - 6000.7 - macos13arm
+  agent:
+    image: package-ci/macos-13-arm64:v4
+    type: Unity::VM::osx
+    flavor: m1.mac
+    model: M1
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    timeout: 20
+    retries: 10
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast --arch arm64
+    timeout: 10
+    retries: 3
+  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.7 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
+  - command: echo 'Skipping Editor Manifest Validator as it is only supported on Windows'
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    logs:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - upm-ci~/test-results/**/*
+      - upm-ci~/temp/*/Logs/**
+      - upm-ci~/temp/*/Library/*.log
+      - upm-ci~/temp/*/*.log
+      - upm-ci~/temp/Builds/*.log
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    PreviewAPVResults:
+      paths:
+      - PreviewApvArtifacts~/**
+      - APVTest/**/manifest.json
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
+
+# Functional tests for dependents found in the latest 6000.7 manifest (Ubuntu).
+preview_apv_-_6000_7_-_ubuntu2204:
+  name: Preview APV - 6000.7 - ubuntu2204
+  agent:
+    image: package-ci/ubuntu-22.04:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    timeout: 20
+    retries: 10
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.7 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
+  - command: echo 'Skipping Editor Manifest Validator as it is only supported on Windows'
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    logs:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - upm-ci~/test-results/**/*
+      - upm-ci~/temp/*/Logs/**
+      - upm-ci~/temp/*/Library/*.log
+      - upm-ci~/temp/*/*.log
+      - upm-ci~/temp/Builds/*.log
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    PreviewAPVResults:
+      paths:
+      - PreviewApvArtifacts~/**
+      - APVTest/**/manifest.json
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
+
+# Functional tests for dependents found in the latest 6000.7 manifest (Windows).
+preview_apv_-_6000_7_-_win10:
+  name: Preview APV - 6000.7 - win10
+  agent:
+    image: package-ci/win10:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: gsudo reg add "HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\FileSystem" /v LongPathsEnabled /t REG_DWORD /d 1 /f
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-3_51b4e6affb4c10b90f92db9551b9dc80c5520794983600cff4fa925111db116d.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
+    timeout: 20
+    retries: 10
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.7 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
+  - command: python PythonScripts/editor_manifest_validator.py --version=6000.7 --wrench-config=.yamato/wrench/wrench_config.json
+  after:
+  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    logs:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - upm-ci~/test-results/**/*
+      - upm-ci~/temp/*/Logs/**
+      - upm-ci~/temp/*/Library/*.log
+      - upm-ci~/temp/*/*.log
+      - upm-ci~/temp/Builds/*.log
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    PreviewAPVResults:
+      paths:
+      - PreviewApvArtifacts~/**
+      - APVTest/**/manifest.json
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_ml-agents
+  variables:
+    UNITY_LICENSING_SERVER_BASE_URL: http://unity-ci-licenses.hq.unity3d.com:8080/
+    UNITY_LICENSING_SERVER_DELETE_NUL: 0
+    UNITY_LICENSING_SERVER_DELETE_ULF: 0
+    UNITY_LICENSING_SERVER_TOOLSET: pro
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 3.4.0.0
 

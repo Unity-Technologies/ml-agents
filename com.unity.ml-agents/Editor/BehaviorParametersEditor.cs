@@ -111,8 +111,6 @@ namespace Unity.MLAgents.Editor
             }
             // Display all failed checks
             // D.logEnabled = false;
-            Model sentisModel = null;
-            var model = (ModelAsset)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
             var behaviorParameters = (BehaviorParameters)target;
 
             // Grab the sensor components, since we need them to determine the observation sizes.
@@ -122,9 +120,32 @@ namespace Unity.MLAgents.Editor
             {
                 return;
             }
+
+            if (EditorApplication.isPlaying && agent.sensors != null)
+            {
+                DisplayFailedModelChecks(behaviorParameters, agent, agent.sensors.ToArray());
+                return;
+            }
+
+            // Create temporary sensors for the checks, and dispose them afterwards so they don't leak.
+            var agentSensors = agent.sensors;
             agent.sensors = new List<ISensor>();
-            agent.InitializeSensors();
-            var sensors = agent.sensors.ToArray();
+            try
+            {
+                agent.InitializeSensors();
+                DisplayFailedModelChecks(behaviorParameters, agent, agent.sensors.ToArray());
+            }
+            finally
+            {
+                agent.CleanupSensors();
+                agent.sensors = agentSensors;
+            }
+        }
+
+        void DisplayFailedModelChecks(BehaviorParameters behaviorParameters, Agent agent, ISensor[] sensors)
+        {
+            Model sentisModel = null;
+            var model = (ModelAsset)serializedObject.FindProperty(k_ModelName).objectReferenceValue;
 
             ActuatorComponent[] actuatorComponents;
             if (behaviorParameters.UseChildActuators)

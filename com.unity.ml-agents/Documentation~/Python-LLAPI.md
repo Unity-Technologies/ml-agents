@@ -17,7 +17,7 @@ The key objects in the Python API include:
 - **TerminalSteps** — contains the data from Agents belonging to the same "Behavior" in the simulation, such as observations and rewards. Only Agents whose episode ended since the last call to `env.step()` are in the TerminalSteps object.
 - **BehaviorSpec** — describes the shape of the observation data inside DecisionSteps and TerminalSteps as well as the expected action shapes.
 
-These classes are all defined in the [base_env](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents-envs/mlagents_envs/base_env.py) script.
+These classes are all defined in the [base_env](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents-envs/mlagents_envs/base_env.py) script.
 
 An Agent "Behavior" is a group of Agents identified by a `BehaviorName` that share the same observations and action types (described in their `BehaviorSpec`). You can think about Agent Behavior as a group of agents that will share the same policy. All Agents with the same behavior have the same goal and reward signals.
 
@@ -27,7 +27,7 @@ _Notice: Currently communication between Unity and Python takes place over an op
 
 ## Loading a Unity Environment
 
-Python-side communication happens through `UnityEnvironment` which is located in [`environment.py`](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents-envs/mlagents_envs/environment.py). To load a Unity environment from a built binary file, put the file in the same directory as `envs`. For example, if the filename of your Unity environment is `3DBall`, in python, run:
+Python-side communication happens through `UnityEnvironment` which is located in [`environment.py`](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents-envs/mlagents_envs/environment.py). To load a Unity environment from a built binary file, put the file in the same directory as `envs`. For example, if the filename of your Unity environment is `3DBall`, in python, run:
 
 ```python
 from mlagents_envs.environment import UnityEnvironment
@@ -92,14 +92,14 @@ Similarly to `DecisionSteps` and `DecisionStep`, `TerminalSteps` (with `s`) cont
 
 A `TerminalSteps` has the following fields :
 
-- `obs` is a list of numpy arrays observations collected by the group of agent. The first dimension of the array corresponds to the batch size of the group (number of agents requesting a decision since the last call to `env.step()`).
+- `obs` is a list of numpy arrays observations collected by the group of agent. The first dimension of the array corresponds to the batch size of the group (number of agents whose episodes ended since the last call to `env.step()`, including interrupted episodes).
 - `reward` is a float vector of length batch size. Corresponds to the rewards collected by each agent since the last simulation step.
 - `agent_id` is an int vector of length batch size containing unique identifier for the corresponding Agent. This is used to track Agents across simulation steps.
 - `interrupted` is an array of booleans of length batch size. Is true if the associated Agent was interrupted since the last decision step. For example, if the Agent reached the maximum number of steps for the episode.
 
 It also has the two following methods:
 
-- `len(TerminalSteps)` Returns the number of agents requesting a decision since the last call to `env.step()`.
+- `len(TerminalSteps)` Returns the number of agents whose episodes ended since the last call to `env.step()`, including interrupted episodes.
 - `TerminalSteps[agent_id]` Returns a `TerminalStep` for the Agent with the `agent_id` unique identifier.
 
 A `TerminalStep` has the following fields:

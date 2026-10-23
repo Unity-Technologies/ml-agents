@@ -68,7 +68,7 @@ When you create a training environment in Unity, you must set up the scene so th
 
 Curriculum learning and environment parameter randomization are two training methods that control specific parameters in your environment. As such, it is important to ensure that your environment parameters are updated at each step to the correct values. To enable this, we expose a `EnvironmentParameters` C# class that you can use to retrieve the values of the parameters defined in the training configurations for both of those features. Please see our [documentation](Training-ML-Agents.md#environment-parameters) for curriculum learning and environment parameter randomization for details.
 
-We recommend modifying the environment from the Agent's `OnEpisodeBegin()` function by leveraging `Academy.Instance.EnvironmentParameters`. See the WallJump example environment for a sample usage (specifically, [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs) ).
+We recommend modifying the environment from the Agent's `OnEpisodeBegin()` function by leveraging `Academy.Instance.EnvironmentParameters`. See the WallJump example environment for a sample usage (specifically, [WallJumpAgent.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/Project/Assets/ML-Agents/Examples/WallJump/Scripts/WallJumpAgent.cs) ).
 
 ## Agent
 
@@ -89,4 +89,4 @@ See [Agents](Learning-Environment-Design-Agents.md) for detailed information abo
 
 We offer developers a mechanism to record statistics from within their Unity environments. These statistics are aggregated and generated during the training process. To record statistics, see the `StatsRecorder` C# class.
 
-See the FoodCollector example environment for a sample usage (specifically, [FoodCollectorSettings.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/Project/Assets/ML-Agents/Examples/FoodCollector/Scripts/FoodCollectorSettings.cs) ).
+See the FoodCollector example environment for a sample usage (specifically, [FoodCollectorSettings.cs](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/Project/Assets/ML-Agents/Examples/FoodCollector/Scripts/FoodCollectorSettings.cs) ).

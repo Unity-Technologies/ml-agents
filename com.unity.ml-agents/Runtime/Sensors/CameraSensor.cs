@@ -36,6 +36,8 @@ namespace Unity.MLAgents.Sensors
             set { m_CompressionType = value; }
         }
 
+        internal bool IsDisposed => ReferenceEquals(null, m_Texture);
+
         /// <summary>
         /// Creates and returns the camera sensor.
         /// </summary>

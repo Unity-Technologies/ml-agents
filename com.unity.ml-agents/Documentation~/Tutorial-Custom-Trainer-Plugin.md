@@ -11,7 +11,7 @@ conda activate trainer-env
 
 Users of the plug-in system are responsible for implementing the trainer class subject to the API standard. Let us follow an example by implementing a custom trainer named "YourCustomTrainer". You can either extend `OnPolicyTrainer` or `OffPolicyTrainer` classes depending on the training strategies you choose.
 
-Please refer to the internal [PPO implementation](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents/mlagents/trainers/ppo/trainer.py) for a complete code example. We will not provide a workable code in the document. The purpose of the tutorial is to introduce you to the core components and interfaces of our plugin framework. We use code snippets and patterns to demonstrate the control and data flow.
+Please refer to the internal [PPO implementation](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents/mlagents/trainers/ppo/trainer.py) for a complete code example. We will not provide a workable code in the document. The purpose of the tutorial is to introduce you to the core components and interfaces of our plugin framework. We use code snippets and patterns to demonstrate the control and data flow.
 
 Your custom trainers are responsible for collecting experiences and training the models. Your custom trainer class acts like a coordinator to the policy and optimizer. To start implementing methods in the class, create a policy class objects from method `create_policy`:
 

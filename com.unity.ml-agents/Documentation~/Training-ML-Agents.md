@@ -1,6 +1,6 @@
 # Training ML-Agents
 
-Once your learning environment has been created and is ready for training, the next step is to initiate a training run. Training in the ML-Agents Toolkit is powered by a dedicated Python package, `mlagents`. This package exposes a command `mlagents-learn` that is the single entry point for all training workflows (e.g. reinforcement leaning, imitation learning, curriculum learning). Its implementation can be found [here](https://github.com/Unity-Technologies/ml-agents/blob/release/4.0.0/ml-agents/mlagents/trainers/learn.py).
+Once your learning environment has been created and is ready for training, the next step is to initiate a training run. Training in the ML-Agents Toolkit is powered by a dedicated Python package, `mlagents`. This package exposes a command `mlagents-learn` that is the single entry point for all training workflows (e.g. reinforcement leaning, imitation learning, curriculum learning). Its implementation can be found [here](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents/mlagents/trainers/learn.py).
 
 ## Training with mlagents-learn
 
@@ -62,7 +62,7 @@ More specifically, this section offers a detailed guide on the command-line flag
 
 - `<trainer-config-file>`: defines the training hyperparameters for each Behavior in the scene, and the set-ups for the environment parameters (Curriculum Learning and Environment Parameter Randomization)
 
-It is important to highlight that successfully training a Behavior in the ML-Agents Toolkit involves tuning the training hyperparameters and configuration. This guide contains some best practices for tuning the training process when the default parameters don't seem to be giving the level of performance you would like. We provide sample configuration files for our example environments in the [config](https://github.com/Unity-Technologies/ml-agents/tree/release/4.0.0/config/) directory. The `config/ppo/3DBall.yaml` was used to train the 3D Balance Ball in the [Running an Example](Sample.md) guide. That configuration file uses the PPO trainer, but we also have configuration files for SAC and GAIL.
+It is important to highlight that successfully training a Behavior in the ML-Agents Toolkit involves tuning the training hyperparameters and configuration. This guide contains some best practices for tuning the training process when the default parameters don't seem to be giving the level of performance you would like. We provide sample configuration files for our example environments in the [config](https://github.com/Unity-Technologies/ml-agents/tree/release/4.1.0/config/) directory. The `config/ppo/3DBall.yaml` was used to train the 3D Balance Ball in the [Running an Example](Sample.md) guide. That configuration file uses the PPO trainer, but we also have configuration files for SAC and GAIL.
 
 Additionally, the set of configurations you provide depend on the training functionalities you use (see [ML-Agents Theory](ML-Agents-Overview.md) for a description of all the training functionalities). Each functionality you add typically has its own training configurations. For instance:
 

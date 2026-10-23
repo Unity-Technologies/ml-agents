@@ -60,8 +60,8 @@ api_validation_-_ml-agents_-_6000_0_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 

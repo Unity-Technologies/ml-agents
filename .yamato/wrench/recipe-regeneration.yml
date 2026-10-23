@@ -31,5 +31,5 @@ test_-_wrench_jobs_up_to_date:
     cancel_old_ci: true
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 

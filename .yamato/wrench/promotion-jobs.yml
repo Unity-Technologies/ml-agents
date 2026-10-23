@@ -91,36 +91,6 @@ publish_dry_run_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.3-win10
         unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_macos13
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-macos13
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-macos13
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_ubuntu2204
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-ubuntu2204
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-ubuntu2204
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_win10
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-win10
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-win10
-        unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_5_-_macos13
     specific_options:
       packages:
@@ -151,15 +121,15 @@ publish_dry_run_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.5-win10
         unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_macos13
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_macos13arm
     specific_options:
       packages:
         ignore_artifact: true
       pvp-results:
-        location: results/pvp/validate-ml-agents-6000.6-macos13
+        location: results/pvp/validate-ml-agents-6000.6-macos13arm
         unzip: true
       UTR:
-        location: results/UTR/validate-ml-agents-6000.6-macos13
+        location: results/UTR/validate-ml-agents-6000.6-macos13arm
         unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_ubuntu2204
     specific_options:
@@ -181,12 +151,42 @@ publish_dry_run_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.6-win10
         unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_macos13arm
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-macos13arm
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-macos13arm
+        unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_ubuntu2204
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-ubuntu2204
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-ubuntu2204
+        unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_win10
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-win10
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-win10
+        unzip: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Publish  for ml-agents to https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-npm
 publish_ml-agents:
@@ -273,36 +273,6 @@ publish_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.3-win10
         unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_macos13
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-macos13
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-macos13
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_ubuntu2204
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-ubuntu2204
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-ubuntu2204
-        unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_4_-_win10
-    specific_options:
-      packages:
-        ignore_artifact: true
-      pvp-results:
-        location: results/pvp/validate-ml-agents-6000.4-win10
-        unzip: true
-      UTR:
-        location: results/UTR/validate-ml-agents-6000.4-win10
-        unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_5_-_macos13
     specific_options:
       packages:
@@ -333,15 +303,15 @@ publish_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.5-win10
         unzip: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_macos13
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_macos13arm
     specific_options:
       packages:
         ignore_artifact: true
       pvp-results:
-        location: results/pvp/validate-ml-agents-6000.6-macos13
+        location: results/pvp/validate-ml-agents-6000.6-macos13arm
         unzip: true
       UTR:
-        location: results/UTR/validate-ml-agents-6000.6-macos13
+        location: results/UTR/validate-ml-agents-6000.6-macos13arm
         unzip: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_6_-_ubuntu2204
     specific_options:
@@ -363,10 +333,41 @@ publish_ml-agents:
       UTR:
         location: results/UTR/validate-ml-agents-6000.6-win10
         unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_macos13arm
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-macos13arm
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-macos13arm
+        unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_ubuntu2204
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-ubuntu2204
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-ubuntu2204
+        unzip: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_ml-agents_-_6000_7_-_win10
+    specific_options:
+      packages:
+        ignore_artifact: true
+      pvp-results:
+        location: results/pvp/validate-ml-agents-6000.7-win10
+        unzip: true
+      UTR:
+        location: results/UTR/validate-ml-agents-6000.7-win10
+        unzip: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 2.7.0.0
+    UPMPVP_CONTEXT_WRENCH: 3.4.0.0
+  allow_on: branch match "^release/.*"
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 

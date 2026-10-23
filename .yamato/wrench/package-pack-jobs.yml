@@ -44,7 +44,7 @@ package_pack_-_ml-agents:
     UPMCI_ACK_LARGE_PACKAGE: 1
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 
 # Pack ML Agents Tests
 package_pack_-_ml-agents_tests:
@@ -69,5 +69,5 @@ package_pack_-_ml-agents_tests:
     UPMCI_ACK_LARGE_PACKAGE: 1
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.7.0.0
+    Wrench: 3.4.0.0
 

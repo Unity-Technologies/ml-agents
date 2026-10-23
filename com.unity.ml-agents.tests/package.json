@@ -5,7 +5,7 @@
   "unity": "6000.0",
   "description": "Provides testing for ML Agents.",
   "dependencies": {
-    "com.unity.ml-agents": "4.0.3"
+    "com.unity.ml-agents": "4.1.0"
   },
   "type": "tests"
 }

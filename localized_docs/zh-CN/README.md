@@ -53,7 +53,7 @@ TensorFlow），让游戏开发者和业余爱好者能够轻松地
 
 ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力量。
 如果您想做出贡献，请务必查看我们的
-[贡献准则](/com.unity.ml-agents/CONTRIBUTING.md)和
+[贡献准则](../../com.unity.ml-agents/Documentation~/CONTRIBUTING.md)和
 [行为准则](/CODE_OF_CONDUCT.md)。
 
 您可以通过 Unity Connect 和 GitHub 与我们以及更广泛的社区进行交流：
@@ -65,9 +65,6 @@ ML-Agents 是一个开源项目，我们鼓励并欢迎大家贡献自己的力�
 * 如果您在使用 ML-Agents 时遇到任何问题，请
 [提交问题](https://github.com/Unity-Technologies/ml-agents/issues)并
 确保提供尽可能多的详细信息。
-
-对于任何其他问题或反馈，请直接与 ML-Agents 团队联系，
-电子邮件地址为 ml-agents@unity3d.com。
 
 ## 许可证
 
