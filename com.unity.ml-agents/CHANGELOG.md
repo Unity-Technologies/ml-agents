@@ -13,6 +13,9 @@ and this project adheres to
 - Fixed a `NullReferenceException` thrown from the `TensorProxy` finalizer, which is reported as an unhandled exception on CoreCLR. (#6335)
 - Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
 
+#### ml-agents / ml-agents-envs
+- Fixed PPO and POCA value estimates being overwritten by returns in the training buffer, preventing value loss clipping around the original predictions.
+
 ## [4.1.0] - 2026-07-27
 ### Major Changes
 #### ml-agents / ml-agents-envs
