@@ -1,5 +1,5 @@
 import atexit
-from distutils.version import StrictVersion
+from packaging.version import Version
 
 import numpy as np
 import os
@@ -91,16 +91,16 @@ class UnityEnvironment(BaseEnv):
     def _check_communication_compatibility(
         unity_com_ver: str, python_api_version: str, unity_package_version: str
     ) -> bool:
-        unity_communicator_version = StrictVersion(unity_com_ver)
-        api_version = StrictVersion(python_api_version)
-        if unity_communicator_version.version[0] == 0:
+        unity_communicator_version = Version(unity_com_ver)
+        api_version = Version(python_api_version)
+        if unity_communicator_version.major == 0:
             if (
-                unity_communicator_version.version[0] != api_version.version[0]
-                or unity_communicator_version.version[1] != api_version.version[1]
+                unity_communicator_version.major != api_version.major
+                or unity_communicator_version.minor != api_version.minor
             ):
                 # Minor beta versions differ.
                 return False
-        elif unity_communicator_version.version[0] != api_version.version[0]:
+        elif unity_communicator_version.major != api_version.major:
             # Major versions mismatch.
             return False
         else:

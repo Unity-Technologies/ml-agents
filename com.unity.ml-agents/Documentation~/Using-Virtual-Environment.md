@@ -12,7 +12,7 @@ A Virtual Environment keeps all dependencies for the Python project separate fro
 2. It enables using and testing of different library versions by quickly spinning up a new environment and verifying the compatibility of the code with the different version.
 
 ## Python Version Requirement (Required)
-This guide has been tested with Python 3.10.20, 3.11.15, and 3.12.13. Newer versions might not have support for the dependent libraries, so are not recommended.
+This guide has been tested with Python 3.10.20, 3.11.15, and 3.12.13. Newer versions might not have support for the dependent libraries, so are not recommended. Python 3.10 is deprecated and support for it will be removed in a future release.
 
 ## Use Conda (or Mamba)
 

@@ -63,6 +63,7 @@ setup(
         "gymnasium>=0.26.0",
         "pettingzoo>=1.24.0",
         "numpy>=1.23.5,<2.0",
+        "packaging>=20.0",
         "filelock>=3.4.0",
     ],
     python_requires=">=3.10.1,<=3.12.13",
