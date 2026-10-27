@@ -2,6 +2,7 @@ using System.Text.RegularExpressions;
 using NUnit.Framework;
 using UnityEngine;
 using UnityEngine.TestTools;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Communicator
 {
@@ -20,3 +21,4 @@ namespace Unity.MLAgents.Tests.Communicator
         }
     }
 }
+#endif

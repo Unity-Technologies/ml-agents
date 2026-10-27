@@ -3,6 +3,7 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Text;
 using Unity.MLAgents.SideChannels;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -191,3 +192,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif

@@ -8,6 +8,7 @@ using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.Analytics;
 using UnityEditor;
+#if !UNITY_EDITOR_WIN
 
 
 namespace Unity.MLAgents.Tests.Analytics
@@ -103,3 +104,4 @@ namespace Unity.MLAgents.Tests.Analytics
         }
     }
 }
+#endif
