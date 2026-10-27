@@ -66,7 +66,7 @@ setup(
         "packaging>=20.0",
         "filelock>=3.4.0",
     ],
-    python_requires=">=3.10.1,<=3.12.13",
+    python_requires=">=3.10.1,<=3.12.16",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
     cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )

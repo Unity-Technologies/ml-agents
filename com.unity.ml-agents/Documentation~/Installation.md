@@ -36,17 +36,17 @@ To install the package, follow these steps:
 If the package isn’t listed, follow the [Advanced Installation](#install-ml-agents-advanced-installation) method instead.
 
 
-## Install Python 3.10.20, 3.11.15, or 3.12.13 using Conda
+## Install Python 3.10.22, 3.11.18, or 3.12.16 using Conda
 
 Use Conda or Mamba to install and manage your Python environment. This ensures that ML-Agents dependencies are isolated and version-controlled.
 
 To install Python, follow these steps:
 
 1. Install [Conda](https://docs.conda.io/en/latest/) or [Mamba](https://github.com/mamba-org/mamba).
-2. Open a terminal and create a new Conda environment with Python 3.10.20, 3.11.15, or 3.12.13:
+2. Open a terminal and create a new Conda environment with Python 3.10.22, 3.11.18, or 3.12.16:
 
 ```shell
-conda create -n mlagents python=3.12.13 && conda activate mlagents
+conda create -n mlagents python=3.12.16 && conda activate mlagents
 ```
 
 > [!NOTE]
@@ -95,7 +95,7 @@ The following table lists the compatible versions of the ML-Agents Python packag
 
 | Unity package (`com.unity.ml-agents`) | Python packages (`mlagents`, `mlagents-envs`) | Python | PyTorch |
 | --- | --- | --- | --- |
-| 4.2.0 | 1.2.0 (PyPI) | 3.10.1 to 3.12.13 | 2.1.1 to 2.13.0 |
+| 4.2.0 | 1.2.0 (PyPI) | 3.10.1 to 3.12.16 | 2.1.1 to 2.13.0 |
 | 4.0.x and 4.1.0 | 1.1.0 (PyPI) | 3.10.1 to 3.10.12 | 2.1.1 to 2.8.0 |
 
 3. If you encounter an error while building the `grpcio` wheel, install it separately before reinstalling `mlagents`:

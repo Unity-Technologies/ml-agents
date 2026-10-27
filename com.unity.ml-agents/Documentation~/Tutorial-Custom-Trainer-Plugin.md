@@ -5,7 +5,7 @@
 ### Step 1: Write your custom trainer class
 Before you start writing your code, make sure to use your favorite environment management tool(e.g. `venv` or `conda`) to create and activate a Python virtual environment. The following command uses `conda`, but other tools work similarly:
 ```shell
-conda create -n trainer-env python=3.12.13
+conda create -n trainer-env python=3.12.16
 conda activate trainer-env
 ```
 
@@ -259,9 +259,9 @@ mlagents-learn ml-agents-trainer-plugin/mlagents_trainer_plugin/a2c/a2c_3DBall.y
 ```
 
 ### Validate your implementations:
-Create a clean Python environment with Python 3.10.20, 3.11.15, or 3.12.13 and activate it before you start, if you haven't done so already:
+Create a clean Python environment with Python 3.10.22, 3.11.18, or 3.12.16 and activate it before you start, if you haven't done so already:
 ```shell
-conda create -n trainer-env python=3.12.13
+conda create -n trainer-env python=3.12.16
 conda activate trainer-env
 ```
 

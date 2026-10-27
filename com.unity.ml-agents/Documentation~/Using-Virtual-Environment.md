@@ -12,7 +12,7 @@ A Virtual Environment keeps all dependencies for the Python project separate fro
 2. It enables using and testing of different library versions by quickly spinning up a new environment and verifying the compatibility of the code with the different version.
 
 ## Python Version Requirement (Required)
-This guide has been tested with Python 3.10.20, 3.11.15, and 3.12.13. Newer versions might not have support for the dependent libraries, so are not recommended. Python 3.10 is deprecated and support for it will be removed in a future release.
+This guide has been tested with Python 3.10.22, 3.11.18, and 3.12.16. Newer versions might not have support for the dependent libraries, so are not recommended. Python 3.10 is deprecated and support for it will be removed in a future release.
 
 ## Use Conda (or Mamba)
 
@@ -49,6 +49,6 @@ Note (for Ubuntu users): If the `ModuleNotFoundError: No module named 'distutils
 5. To deactivate the environment execute `deactivate` (you can reactivate the environment using the same `activate` command listed above)
 
 Note:
-- Verify that you are using Python version 3.10.20, 3.11.15, or version 3.12.13. Launch a command prompt using `cmd` and execute `python --version` to verify the version.
+- Verify that you are using Python version 3.10.22, 3.11.18, or version 3.12.16. Launch a command prompt using `cmd` and execute `python --version` to verify the version.
 - Python3 installation may require admin privileges on Windows.
 - This guide is for Windows 10 using a 64-bit architecture only.
