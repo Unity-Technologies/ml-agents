@@ -63,7 +63,7 @@ setup(
         "numpy>=1.23.5,<2.0",
         "packaging>=20.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.21",
+        "protobuf>=4.25.1",
         "pyyaml>=3.1.0",
         "torch>=2.1.1,<=2.13.0",
         "tensorboard>=2.14",
@@ -75,7 +75,7 @@ setup(
         "attrs>=19.3.0",
         "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
-        "onnx==1.16.2",
+        "onnx==1.22.0",
     ],
     python_requires=">=3.10.1,<=3.12.13",
     entry_points={

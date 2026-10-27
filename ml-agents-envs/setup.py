@@ -58,7 +58,7 @@ setup(
         "cloudpickle",
         "grpcio>=1.11.0,<=1.62.2",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.21",
+        "protobuf>=4.25.1",
         "pyyaml>=3.1.0",
         "gymnasium>=0.26.0",
         "pettingzoo>=1.24.0",

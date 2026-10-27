@@ -21,7 +21,7 @@ mkdir -p $DST_DIR_P/$PYTHON_PACKAGE
 # generate proto objects in python and C#
 
 $COMPILER/protoc --proto_path=proto --csharp_opt=internal_access --csharp_out $DST_DIR_C $SRC_DIR/*.proto
-$COMPILER/protoc --proto_path=proto --python_out=$DST_DIR_P --mypy_out=$DST_DIR_P $SRC_DIR/*.proto
+python3 -m grpc_tools.protoc --proto_path=proto --python_out=$DST_DIR_P --mypy_out=$DST_DIR_P $SRC_DIR/*.proto
 
 # grpc
 
