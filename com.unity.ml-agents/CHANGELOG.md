@@ -22,6 +22,7 @@ and this project adheres to
 - Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
 - Fixed a `NullReferenceException` thrown from the `TensorProxy` finalizer, which is reported as an unhandled exception on CoreCLR. (#6335)
 - Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
+- Fixed Linux players and editors on CoreCLR failing to connect to the trainer because gRPC could not load `libdl.so`.
 
 ## [4.1.0] - 2026-07-27
 ### Major Changes

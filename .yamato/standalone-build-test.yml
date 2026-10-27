@@ -40,4 +40,5 @@ test_linux_standalone_{{ editor.version }}_{{ editor.extra_test }}:
       paths:
         - "artifacts/testPlayer*/**"
         - "artifacts/**/UnityPlayer.so"
+        - "artifacts/CoreCLR/**"
 {% endfor %}

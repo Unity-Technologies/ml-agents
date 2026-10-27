@@ -229,6 +229,7 @@ namespace Unity.MLAgents
         UnityInputProto Initialize(int port, UnityOutputProto unityOutput, out UnityInputProto unityInput)
         {
             m_IsOpen = true;
+            GrpcNativeLoader.EnsureInstalled();
             m_Channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(m_Channel);
