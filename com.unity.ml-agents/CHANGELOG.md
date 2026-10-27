@@ -13,6 +13,7 @@ and this project adheres to
 - Fixed a `NullReferenceException` thrown from the `TensorProxy` finalizer, which is reported as an unhandled exception on CoreCLR. (#6335)
 - Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
 - Fixed Linux players and editors on CoreCLR failing to connect to the trainer because gRPC could not load `libdl.so`.
+- Removed the AAA Certificate Services root from the TLS root list embedded in `Grpc.Core.dll`, following the eMudhra intermediate CA compromise.
 
 ## [4.1.0] - 2026-07-27
 ### Major Changes
