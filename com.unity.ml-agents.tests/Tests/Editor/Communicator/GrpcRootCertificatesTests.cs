@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text.RegularExpressions;
@@ -35,8 +34,7 @@ namespace Unity.MLAgents.Tests.Communicator
 
         static List<X509Certificate2> LoadEmbeddedRoots()
         {
-            var grpcAssembly = AppDomain.CurrentDomain.GetAssemblies()
-                .FirstOrDefault(a => a.GetName().Name == "Grpc.Core") ?? Assembly.Load("Grpc.Core");
+            var grpcAssembly = typeof(Grpc.Core.Channel).Assembly;
             using (var stream = grpcAssembly.GetManifestResourceStream(k_RootsResourceName))
             {
                 Assert.IsNotNull(stream, $"{k_RootsResourceName} not found in {grpcAssembly.FullName}");
