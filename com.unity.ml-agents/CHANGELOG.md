@@ -6,14 +6,16 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [4.1.1] - 2026-10-30
 ### Minor Changes
 #### com.unity.ml-agents (C#)
-- Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
+- Made `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)
 - Fixed a `NullReferenceException` thrown from the `TensorProxy` finalizer, which is reported as an unhandled exception on CoreCLR. (#6335)
-- Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
-- Fixed Linux players and editors on CoreCLR failing to connect to the trainer because gRPC could not load `libdl.so`.
-- Removed the AAA Certificate Services root from the TLS root list embedded in `Grpc.Core.dll`, following the eMudhra intermediate CA compromise.
+- Fixed sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
+- Fixed Linux players and editors on CoreCLR failing to connect to the trainer because gRPC could not load `libdl.so`. (#6339)
+- Removed the AAA Certificate Services root from the TLS root list embedded in `Grpc.Core.dll`, following the eMudhra intermediate CA compromise. (#6339)
+- Updated Codeowner and catalog info (#6325)
+- Some documentation improvements were made (#6334, #6330, #6329, #3281)
 
 #### ml-agents / ml-agents-envs
 - Fixed PPO and POCA value estimates being overwritten by returns in the training buffer, preventing value loss clipping around the original predictions. (#6281, #6337)

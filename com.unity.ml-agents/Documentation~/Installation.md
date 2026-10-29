@@ -92,7 +92,7 @@ The following table lists the compatible versions of the ML-Agents Python packag
 
 | Unity package (`com.unity.ml-agents`) | Python packages (`mlagents`, `mlagents-envs`) | Python | PyTorch |
 | --- | --- | --- | --- |
-| 4.0.x and 4.1.0 | 1.1.0 (PyPI) | 3.10.1 to 3.10.12 | 2.1.1 to 2.8.0 |
+| 4.0.x and 4.1.x | 1.1.0 (PyPI) | 3.10.1 to 3.10.12 | 2.1.1 to 2.8.0 |
 
 > [!NOTE]
 > The `mlagents` 1.1.0 package on PyPI predates the Unity package 4.x releases. It's compatible with them, but doesn't include Python-side changes made in those releases, such as the PyTorch 2.8 version limit, CUDA and CPU device fixes, and the migration from `gym` to `gymnasium`. To use these changes, install the Python packages from source as described in [Advanced installation](#install-the-ml-agents-python-package-advanced-installation).
@@ -104,7 +104,7 @@ conda install "grpcio=1.48.2" -c conda-forge
 ```
 This step resolves dependency conflicts that can occur with older versions of `grpcio`.
 
-4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
+4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.1/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
 
 
 ## Install ML-Agents (Advanced Installation)
@@ -118,10 +118,10 @@ Clone the ML-Agents repository to access the source code, sample environments, a
 To clone the latest stable release, run:
 
 ```sh
-git clone --branch release/4.1.0 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release/4.1.1 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release/4.1.0` flag checks out the latest stable release.
+The `--branch release/4.1.1` flag checks out the latest stable release.
 If you omit this option, the `develop` branch is cloned instead, which may contain experimental or unstable changes.
 If the release branch does not work as expected, switch to the develop branch. It may include fixes for dependency or compatibility issues.
 To clone the bleeding-edge development version (optional), run:
