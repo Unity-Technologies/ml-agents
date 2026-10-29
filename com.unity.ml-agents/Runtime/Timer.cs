@@ -7,7 +7,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using UnityEngine.Profiling;
+using Unity.Profiling;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 using UnityEngine.SceneManagement;
@@ -35,7 +35,7 @@ namespace Unity.MLAgents
         /// <summary>
         /// Custom sampler used to add timings to the profiler.
         /// </summary>
-        CustomSampler m_Sampler;
+        ProfilerMarker? m_Marker;
 
         /// <summary>
         /// Number of total ticks elapsed for this node.
@@ -128,7 +128,7 @@ namespace Unity.MLAgents
             }
             else
             {
-                m_Sampler = CustomSampler.Create(m_FullName);
+                m_Marker = new ProfilerMarker(m_FullName);
             }
         }
 
@@ -137,7 +137,7 @@ namespace Unity.MLAgents
         /// </summary>
         public void Begin()
         {
-            m_Sampler?.Begin();
+            m_Marker?.Begin();
             m_TickStart = DateTime.Now.Ticks;
         }
 
@@ -150,7 +150,7 @@ namespace Unity.MLAgents
             m_TotalTicks += elapsed;
             m_TickStart = 0;
             m_NumCalls++;
-            m_Sampler?.End();
+            m_Marker?.End();
         }
 
         /// <summary>
