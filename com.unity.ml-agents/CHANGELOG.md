@@ -7,6 +7,16 @@ and this project adheres to
 [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Major Changes
+#### ml-agents / ml-agents-envs
+- Added support for Python 3.11.x and 3.12.x. Deprecated support for Python 3.10.x. (#6338)
+- Upgraded to PyTorch >=2.1.1,<=2.13.0. (#6338)
+- Bumped numpy version to >=1.23.5,<2.0 (#6338)
+- Bumped onnx version to 1.22.0 (#6338)
+- Bumped protobuf version to >=4.25.1 and regenerated protobuf files (#6338)
+- Bumped grpcio version to >=1.11.0,<=1.62.2 (#6338)
+- Added packaging version >= 20.0 to ml-agents-envs (#6338)
+
 ### Minor Changes
 #### com.unity.ml-agents (C#)
 - Make `BehaviorParametersEditor` create new sensors only when needed. (#6318, #6323)

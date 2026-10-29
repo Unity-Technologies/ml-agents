@@ -49,21 +49,23 @@ setup(
         "Topic :: Scientific/Engineering :: Artificial Intelligence",
         "License :: OSI Approved :: Apache Software License",
         "Programming Language :: Python :: 3.10",
+        "Programming Language :: Python :: 3.11",
+        "Programming Language :: Python :: 3.12",
     ],
     # find_namespace_packages will recurse through the directories and find all the packages
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     zip_safe=False,
     install_requires=[
         # Test-only dependencies should go in test_requirements.txt, not here.
-        "grpcio>=1.11.0,<=1.53.2",
+        "grpcio>=1.11.0,<=1.62.2",
         "h5py>=2.9.0",
         f"mlagents_envs=={VERSION}",
-        "numpy>=1.23.5,<1.24.0",
+        "numpy>=1.23.5,<2.0",
         "packaging>=20.0",
         "Pillow>=4.2.1",
-        "protobuf>=3.6,<3.21",
+        "protobuf>=4.25.1",
         "pyyaml>=3.1.0",
-        "torch>=2.1.1,<=2.8.0",
+        "torch>=2.1.1,<=2.13.0",
         "tensorboard>=2.14",
         # adding six explicit dependency since tensorboard needs it but doesn't declare it as a dep
         "six>=1.16",
@@ -73,9 +75,9 @@ setup(
         "attrs>=19.3.0",
         "huggingface_hub>=0.14",
         'pypiwin32==223;platform_system=="Windows"',
-        "onnx==1.15.0",
+        "onnx==1.22.0",
     ],
-    python_requires=">=3.10.1,<=3.10.12",
+    python_requires=">=3.10.1,<=3.12.16",
     entry_points={
         "console_scripts": [
             "mlagents-learn=mlagents.trainers.learn:main",
