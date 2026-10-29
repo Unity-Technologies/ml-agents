@@ -14,6 +14,9 @@ and this project adheres to
 - Fix sensor management of CameraSensorComponent and RenderTextureSensorComponent (#6320, #6324)
 - Fixed Linux players and editors on CoreCLR failing to connect to the trainer because gRPC could not load `libdl.so`.
 
+#### ml-agents / ml-agents-envs
+- Fixed PPO and POCA value estimates being overwritten by returns in the training buffer, preventing value loss clipping around the original predictions. (#6281, #6337)
+
 ## [4.1.0] - 2026-07-27
 ### Major Changes
 #### ml-agents / ml-agents-envs
