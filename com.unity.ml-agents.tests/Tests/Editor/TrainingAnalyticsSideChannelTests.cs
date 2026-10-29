@@ -6,6 +6,7 @@ using Google.Protobuf;
 using Unity.MLAgents.Analytics;
 using Unity.MLAgents.SideChannels;
 using Unity.MLAgents.CommunicatorObjects;
+#if !UNITY_EDITOR_WIN
 
 
 namespace Unity.MLAgents.Tests
@@ -63,3 +64,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif

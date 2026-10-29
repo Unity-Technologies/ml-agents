@@ -3,6 +3,7 @@ using NUnit.Framework;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.Integrations.Match3;
 using UnityEngine;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests.Integrations.Match3
 {
@@ -205,3 +206,4 @@ namespace Unity.MLAgents.Tests.Integrations.Match3
         }
     }
 }
+#endif

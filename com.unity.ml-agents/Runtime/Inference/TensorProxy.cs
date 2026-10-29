@@ -75,10 +75,12 @@ namespace Unity.MLAgents.Inference
 
         void Dispose()
         {
-            // Runs on the finalizer thread, where an exception is reported as unhandled (CoreCLR).
-            // data is null until ResizeTensor allocates it, and dataOnBackend is null once disposed.
-            var backendData = data?.dataOnBackend;
-            if (backendData != null && backendData.backendType != BackendType.CPU)
+            if (data == null)
+            {
+                return;
+            }
+
+            if (data.dataOnBackend == null || data.dataOnBackend.backendType != BackendType.CPU)
             {
                 data.Dispose();
             }

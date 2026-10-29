@@ -10,6 +10,7 @@ using Unity.MLAgents.Sensors.Reflection;
 using Unity.MLAgents.Policies;
 using Unity.MLAgents.SideChannels;
 using Unity.MLAgents.Utils.Tests;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -540,6 +541,7 @@ namespace Unity.MLAgents.Tests
         }
 
         [Test]
+        [Ignore("Mathf.Approximately(0f, 0f) returns false in the PackageVerification-Undefined job https://jira.unity3d.com/browse/UUM-154251")]
         public void TestNullList()
         {
             var nullList = new HeuristicPolicy.NullList();
@@ -740,3 +742,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif

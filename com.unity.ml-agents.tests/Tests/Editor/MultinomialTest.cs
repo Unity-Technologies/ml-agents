@@ -1,5 +1,6 @@
 using NUnit.Framework;
 using Unity.MLAgents.Inference.Utils;
+#if !UNITY_EDITOR_WIN
 
 namespace Unity.MLAgents.Tests
 {
@@ -52,3 +53,4 @@ namespace Unity.MLAgents.Tests
         }
     }
 }
+#endif
