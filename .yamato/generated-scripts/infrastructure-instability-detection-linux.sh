@@ -3,6 +3,7 @@
 set -x
 
 set -e
+if [ "$YAMATO_COMMAND_BLOCK_SUCCESS" != "1" ]; then
 if [ -f "infrastructure_instability_detection_standalone.zip" ]; then
   echo "removed existing archive infrastructure_instability_detection_standalone.zip"
   rm "infrastructure_instability_detection_standalone.zip" || true
@@ -35,3 +36,4 @@ unzip -q patterns.zip && rm patterns.zip || true
 
 echo "running '$(pwd)/infrastructure_instability_detection'"
 ./infrastructure_instability_detection || true
+fi
