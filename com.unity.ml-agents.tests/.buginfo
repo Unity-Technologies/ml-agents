@@ -1,5 +1,1 @@
-system: jira
-server: jira.unity3d.com
-issuetype: Bug
-project: UUM
 package: ML Agents
