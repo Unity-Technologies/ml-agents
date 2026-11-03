@@ -157,13 +157,13 @@ class UnityPettingzooBaseEnv:
                     f"Invalid action, got {action} but was expecting action from {self.action_space}"
                 )
             if isinstance(current_action_space, spaces.Tuple):
-                action = ActionTuple(action[0], action[1])
+                action = ActionTuple(action[0].reshape(1, -1), action[1].reshape(1, -1))
             elif isinstance(current_action_space, spaces.MultiDiscrete):
-                action = ActionTuple(None, action)
+                action = ActionTuple(None, action.reshape(1, -1))
             elif isinstance(current_action_space, spaces.Discrete):
                 action = ActionTuple(None, np.array(action).reshape(1, 1))
             else:
-                action = ActionTuple(action, None)
+                action = ActionTuple(action.reshape(1, -1), None)
 
         if not (self._terminations[current_agent] or self._truncations[current_agent]):
             current_behavior = _agent_id_to_behavior(current_agent)
