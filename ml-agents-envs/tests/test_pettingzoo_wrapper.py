@@ -84,3 +84,31 @@ def test_reset_seed_reseeds_action_spaces():
     second = env.action_space(agent).sample()
 
     assert np.array_equal(first, second)
+
+
+@pytest.mark.parametrize(
+    "action_sizes", [(2, 0), (0, 2), (2, 2)], ids=["continuous", "discrete", "hybrid"]
+)
+def test_step_forwards_every_action_component(action_sizes):
+    # Every component of a multi-dimensional action must reach the environment,
+    # not only the first one.
+    unity_env = SimpleEnvironment(["test_single"], action_sizes=action_sizes)
+    env = UnityParallelEnv(unity_env)
+    env.reset()
+    agent = env.agents[0]
+    continuous = np.array([0.1, -0.2], dtype=np.float32)
+    discrete = np.array([0, 1], dtype=np.int32)
+    if action_sizes == (2, 0):
+        action = continuous
+    elif action_sizes == (0, 2):
+        action = discrete
+    else:
+        action = (continuous, discrete)
+
+    env.step({agent: action})
+
+    sent = unity_env.action["test_single"]
+    if action_sizes[0] > 0:
+        np.testing.assert_array_equal(sent.continuous, [continuous])
+    if action_sizes[1] > 0:
+        np.testing.assert_array_equal(sent.discrete, [discrete])

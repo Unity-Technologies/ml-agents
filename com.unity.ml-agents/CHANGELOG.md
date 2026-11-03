@@ -17,6 +17,7 @@ and this project adheres to
 
 #### ml-agents / ml-agents-envs
 - Fixed PPO and POCA value estimates being overwritten by returns in the training buffer, preventing value loss clipping around the original predictions. (#6281, #6337)
+- Fixed the PettingZoo wrappers sending only the first component of a continuous, multi-discrete or hybrid action to every action dimension.
 
 ## [4.1.0] - 2026-07-27
 ### Major Changes
