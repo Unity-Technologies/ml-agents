@@ -84,3 +84,26 @@ def test_reset_seed_reseeds_action_spaces():
     second = env.action_space(agent).sample()
 
     assert np.array_equal(first, second)
+
+
+def test_invalid_action_error_message():
+    unity_env = SimpleEnvironment(["test_single"])
+    env = UnityAECEnv(unity_env)
+    env.reset()
+    agent = env.possible_agents[0]
+    with pytest.raises(Exception) as exc_info:
+        env.step(9999)
+    assert "bound method" not in str(exc_info.value)
+    assert "Discrete" in str(exc_info.value) or "Box" in str(exc_info.value) or "MultiDiscrete" in str(exc_info.value)
+
+
+def test_cleanup_agents_safe_when_already_removed():
+    unity_env = SimpleEnvironment(["test_single"])
+    env = UnityParallelEnv(unity_env)
+    env.reset()
+    agent = env.possible_agents[0]
+    env._terminations[agent] = True
+    env._live_agents.clear()  # simulate already removed
+    # Must not raise ValueError
+    env._cleanup_agents()
+    assert len(env._live_agents) == 0
