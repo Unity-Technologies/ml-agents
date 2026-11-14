@@ -119,6 +119,7 @@ class UnityPettingzooBaseEnv:
                     and len(act_spec.discrete_branches) == 0
                 ):
                     raise error.Error("No actions found")
+                d_space = None
                 if act_spec.discrete_size == 1:
                     d_space = spaces.Discrete(act_spec.discrete_branches[0])
                     if self._seed is not None:
@@ -126,7 +127,7 @@ class UnityPettingzooBaseEnv:
                     if act_spec.continuous_size == 0:
                         self._action_spaces[behavior_name] = d_space
                         continue
-                if act_spec.discrete_size > 0:
+                elif act_spec.discrete_size > 1:
                     d_space = spaces.MultiDiscrete(act_spec.discrete_branches)
                     if self._seed is not None:
                         d_space.seed(self._seed)
@@ -154,7 +155,7 @@ class UnityPettingzooBaseEnv:
                 action = self._action_to_np(current_action_space, action)
             if not current_action_space.contains(action):  # type: ignore
                 raise error.Error(
-                    f"Invalid action, got {action} but was expecting action from {self.action_space}"
+                    f"Invalid action, got {action} but was expecting action from {current_action_space}"
                 )
             if isinstance(current_action_space, spaces.Tuple):
                 action = ActionTuple(action[0], action[1])
@@ -202,7 +203,7 @@ class UnityPettingzooBaseEnv:
 
     def _cleanup_agents(self):
         for current_agent in self._agents:
-            if self._terminations[current_agent] or self._truncations[current_agent]:
+            if (self._terminations.get(current_agent, False) or self._truncations.get(current_agent, False)) and current_agent in self._live_agents:
                 self._live_agents.remove(current_agent)
 
     @property
