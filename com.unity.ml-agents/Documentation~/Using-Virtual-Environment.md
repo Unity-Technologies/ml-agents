@@ -24,8 +24,6 @@ While there are many options for setting up virtual environments for python, by 
 2. Run the following `python3 get-pip.py`
 3. Check pip version using `pip3 -V`
 
-Note (for Ubuntu users): If the `ModuleNotFoundError: No module named 'distutils.util'` error is encountered, then python3-distutils needs to be installed. Install python3-distutils using `sudo apt-get install python3-distutils`
-
 ## Mac OS X Setup
 
 1. Create a folder where the virtual environments will reside `$ mkdir ~/python-envs`
