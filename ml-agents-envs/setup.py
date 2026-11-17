@@ -58,7 +58,7 @@ setup(
         "cloudpickle",
         "grpcio>=1.11.0,<=1.62.2",
         "Pillow>=4.2.1",
-        "protobuf>=4.25.1",
+        "protobuf>=4.25.1,<6.0",
         "pyyaml>=3.1.0",
         "gymnasium>=0.26.0",
         "pettingzoo>=1.24.0",
@@ -66,7 +66,7 @@ setup(
         "packaging>=20.0",
         "filelock>=3.4.0",
     ],
-    python_requires=">=3.10.1,<=3.12.16",
+    python_requires=">=3.10.1,<3.13",
     # TODO: Remove this once mypy stops having spurious setuptools issues.
     cmdclass={"verify": VerifyVersionCommand},  # type: ignore
 )
