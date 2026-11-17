@@ -235,6 +235,7 @@ namespace Unity.MLAgents.Tests
             // Deterministic action selection should output same action everytime
             Assert.IsTrue(Enumerable.SequenceEqual(deterministicAction1, deterministicAction2, new FloatThresholdComparer(0.001f)));
             modelRunner.Dispose();
+            deterministicModelRunner.Dispose();
         }
     }
 }

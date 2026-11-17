@@ -46,6 +46,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(actionDict[1].ContinuousActions[0], 4);
             Assert.AreEqual(actionDict[1].ContinuousActions[1], 5);
             Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -74,6 +75,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
             Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -103,6 +105,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
             Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -144,6 +147,8 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
             Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
             Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            continuousInputTensor.data.Dispose();
+            discreteInputTensor.data.Dispose();
         }
 
         [Test]
@@ -187,6 +192,8 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(actionDict[1].ContinuousActions[2], 6);
             Assert.AreEqual(actionDict[1].DiscreteActions[0], 1);
             Assert.AreEqual(actionDict[1].DiscreteActions[1], 2);
+            continuousInputTensor.data.Dispose();
+            discreteInputTensor.data.Dispose();
         }
     }
 }
