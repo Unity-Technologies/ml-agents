@@ -99,7 +99,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.inputsystem": {
-      "version": "1.19.0",
+      "version": "1.20.1",
       "depth": 0,
       "source": "registry",
       "dependencies": {

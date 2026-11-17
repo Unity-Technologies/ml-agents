@@ -1,4 +1,6 @@
 -warnaserror+
 -warnaserror-:618
+-warnaserror-:108
+-warnaserror-:UAC2017
 -nowarn:UAC1005
 -nowarn:UAC1015

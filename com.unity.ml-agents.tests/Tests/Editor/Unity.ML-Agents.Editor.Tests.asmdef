@@ -19,6 +19,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
+        "Grpc.Core.dll",
         "System.IO.Abstractions.dll",
         "System.IO.Abstractions.TestingHelpers.dll",
         "nunit.framework.dll",

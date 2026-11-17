@@ -79,7 +79,7 @@ class RewardSignalUtil:
 
     @staticmethod
     def value_estimates_key(name: str) -> AgentBufferKey:
-        return RewardSignalKeyPrefix.RETURNS, name
+        return RewardSignalKeyPrefix.VALUE_ESTIMATES, name
 
     @staticmethod
     def returns_key(name: str) -> AgentBufferKey:
