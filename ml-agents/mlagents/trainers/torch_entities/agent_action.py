@@ -1,6 +1,5 @@
 from typing import List, Optional, NamedTuple
 import itertools
-import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey

@@ -26,7 +26,7 @@ repos:
         args: [--ignore-missing-imports, --disallow-incomplete-defs, --no-strict-optional]
         additional_dependencies: [types-PyYAML, types-attrs, types-protobuf, types-setuptools, types-filelock]
 -   repo: https://github.com/PyCQA/flake8
-    rev: 3.9.2
+    rev: 7.1.1
     hooks:
     -   id: flake8
         exclude: >
@@ -35,7 +35,7 @@ repos:
                 .*_pb2_grpc.py
             )$
         # flake8-tidy-imports is used for banned-modules, not actually tidying
-        additional_dependencies: [flake8-comprehensions==3.2.2, flake8-tidy-imports==4.1.0, flake8-bugbear==20.1.4]
+        additional_dependencies: [flake8-comprehensions==3.15.0, flake8-tidy-imports==4.10.0, flake8-bugbear==24.8.19]
 
 -   repo: https://github.com/asottile/pyupgrade
     rev: v2.31.0
@@ -124,8 +124,9 @@ repos:
         files: ".*/__init__.py"
     -   id: validate-init-py
         name: validate __init__.py files
-        language: script
-        entry: utils/validate_inits.py
+        language: python
+        entry: python utils/validate_inits.py
+        additional_dependencies: [setuptools<81]
         types: [python]
     -   id: validate-release-links-py
         name: validate release links
