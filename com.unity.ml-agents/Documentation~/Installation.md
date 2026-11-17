@@ -57,7 +57,7 @@ conda create -n mlagents python=3.12 && conda activate mlagents
 On **Windows**, install PyTorch from the CUDA index to ensure CUDA support:
 
 ```shell
-pip3 install "torch>=2.2.0,,<2.14" --index-url https://download.pytorch.org/whl/cu126
+pip3 install "torch>=2.2.0,<2.14" --index-url https://download.pytorch.org/whl/cu126
 ```
 
 If prompted, install Microsoft Visual C++ Redistributable.
@@ -65,7 +65,7 @@ If prompted, install Microsoft Visual C++ Redistributable.
 On **macOS** and **Linux**, run:
 
 ```shell
-pip3 install "torch>=2.2.0,,<2.14"
+pip3 install "torch>=2.2.0,<2.14"
 ```
 
 For more installation options and versions, refer to the [PyTorch installation guide](https://pytorch.org/get-started/locally/).

@@ -14,7 +14,7 @@ and this project adheres to
 - Bumped numpy version to >=1.23.5,<2.0 (#6338)
 - Bumped onnx version to 1.22.0 (#6338)
 - Bumped protobuf version to >=4.25.1 and regenerated protobuf files (#6338)
-- Bumped grpcio version to >=1.11.0,<=1.62.2 (#6338)
+- Bumped grpcio version to >=1.59.0,<=1.62.2 (#6338)
 - Added packaging version >= 20.0 to ml-agents-envs (#6338)
 
 ## [4.2.0] - 2026-10-29
