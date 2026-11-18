@@ -11,6 +11,7 @@ test_linux_protobuf_generation:
     - |
       sudo apt-get update && sudo apt-get install -y nuget
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+      conda env list | grep -q '^python3.11 ' || conda create -y -q -n python3.11 python=3.11
       conda activate python3.11
       nuget install Grpc.Tools -Version $GRPC_VERSION -OutputDirectory protobuf-definitions/
       python3 -m pip install --upgrade pip --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple

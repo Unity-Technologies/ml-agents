@@ -12,6 +12,7 @@ test_linux_standalone_{{ editor.version }}_{{ editor.extra_test }}:
   commands:
     - |
       eval "$($HOME/anaconda/bin/conda shell.bash hook)"
+      conda env list | grep -q '^python3.11 ' || conda create -y -q -n python3.11 python=3.11
       conda activate python3.11
       python3 -m pip install pyyaml --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple
       python3 -m pip install unity-downloader-cli --index-url https://artifactory.prd.it.unity3d.com/artifactory/api/pypi/pypi/simple --upgrade
