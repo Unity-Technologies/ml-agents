@@ -36,25 +36,28 @@ To install the package, follow these steps:
 If the package isn’t listed, follow the [Advanced Installation](#install-ml-agents-advanced-installation) method instead.
 
 
-## Install Python 3.10.12 using Conda
+## Install Python 3.10, 3.11, or 3.12 using Conda
 
 Use Conda or Mamba to install and manage your Python environment. This ensures that ML-Agents dependencies are isolated and version-controlled.
 
 To install Python, follow these steps:
 
 1. Install [Conda](https://docs.conda.io/en/latest/) or [Mamba](https://github.com/mamba-org/mamba).
-2. Open a terminal and create a new Conda environment with Python 3.10.12:
+2. Open a terminal and create a new Conda environment with Python 3.10, 3.11, or 3.12:
 
 ```shell
-conda create -n mlagents python=3.10.12 && conda activate mlagents
+conda create -n mlagents python=3.12 && conda activate mlagents
 ```
 
-3. Install a supported version of PyTorch (2.1.1 to 2.8.0) before you install ML-Agents. The `mlagents` 1.1.0 package on PyPI doesn't set an upper limit on the PyTorch version, so if you skip this step, pip might install a newer, unsupported version. PyTorch 2.9 and later include ONNX changes that break ML-Agents model export.
+> [!NOTE]
+> Python 3.10 reached end of life in October 2026 and is deprecated. Support for it will be removed in a future release.
+
+3. Install a supported version of PyTorch (2.2.0 to 2.13.x) before you install ML-Agents.
 
 On **Windows**, install PyTorch from the CUDA index to ensure CUDA support:
 
 ```shell
-pip3 install "torch>=2.1.1,<=2.8.0" --index-url https://download.pytorch.org/whl/cu121
+pip3 install "torch>=2.2.0,<2.14" --index-url https://download.pytorch.org/whl/cu126
 ```
 
 If prompted, install Microsoft Visual C++ Redistributable.
@@ -62,7 +65,7 @@ If prompted, install Microsoft Visual C++ Redistributable.
 On **macOS** and **Linux**, run:
 
 ```shell
-pip3 install "torch>=2.1.1,<=2.8.0"
+pip3 install "torch>=2.2.0,<2.14"
 ```
 
 For more installation options and versions, refer to the [PyTorch installation guide](https://pytorch.org/get-started/locally/).
@@ -85,26 +88,25 @@ Using a Python virtual environment helps isolate project dependencies and preven
 2. Install the ML-Agents Python package from the Python Package Index (PyPI):
 
 ```shell
-python -m pip install mlagents==1.1.0
+python -m pip install mlagents==1.2.0
 ```
 
 The following table lists the compatible versions of the ML-Agents Python packages and their dependencies:
 
 | Unity package (`com.unity.ml-agents`) | Python packages (`mlagents`, `mlagents-envs`) | Python | PyTorch |
 | --- | --- | --- | --- |
-| 4.0.x and 4.1.0 | 1.1.0 (PyPI) | 3.10.1 to 3.10.12 | 2.1.1 to 2.8.0 |
-
-> [!NOTE]
-> The `mlagents` 1.1.0 package on PyPI predates the Unity package 4.x releases. It's compatible with them, but doesn't include Python-side changes made in those releases, such as the PyTorch 2.8 version limit, CUDA and CPU device fixes, and the migration from `gym` to `gymnasium`. To use these changes, install the Python packages from source as described in [Advanced installation](#install-the-ml-agents-python-package-advanced-installation).
+| 4.3.0 | 1.2.0 (PyPI) | 3.10.1 to 3.12.x | 2.2.0 to 2.13.x |
+| 4.2.0 | 1.1.0 (PyPI) | 3.10.1 to 3.10.x | 2.1.1 to 2.8.0 |
+| 4.0.x and 4.1.0 | 1.1.0 (PyPI) | 3.10.1 to 3.10.x | 2.1.1 to 2.8.0 |
 
 3. If you encounter an error while building the `grpcio` wheel, install it separately before reinstalling `mlagents`:
 
 ```shell
-conda install "grpcio=1.48.2" -c conda-forge
+conda install "grpcio=1.62.2" -c conda-forge
 ```
 This step resolves dependency conflicts that can occur with older versions of `grpcio`.
 
-4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.1.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
+4. When the installation completes successfully, all the required Python dependencies listed in the [setup.py file](https://github.com/Unity-Technologies/ml-agents/blob/release/4.3.0/ml-agents/setup.py), including [PyTorch](Background-PyTorch.md) are automatically configured.
 
 
 ## Install ML-Agents (Advanced Installation)
@@ -118,10 +120,10 @@ Clone the ML-Agents repository to access the source code, sample environments, a
 To clone the latest stable release, run:
 
 ```sh
-git clone --branch release/4.1.0 https://github.com/Unity-Technologies/ml-agents.git
+git clone --branch release/4.3.0 https://github.com/Unity-Technologies/ml-agents.git
 ```
 
-The `--branch release/4.1.0` flag checks out the latest stable release.
+The `--branch release/4.3.0` flag checks out the latest stable release.
 If you omit this option, the `develop` branch is cloned instead, which may contain experimental or unstable changes.
 If the release branch does not work as expected, switch to the develop branch. It may include fixes for dependency or compatibility issues.
 To clone the bleeding-edge development version (optional), run:
@@ -177,7 +179,7 @@ Editable installs let you make live changes to the Python files and test them im
 From the repository’s root directory, run:
 
 ```sh
-pip3 install "torch>=2.1.1,<=2.8.0"
+pip3 install "torch>=2.2.0,<2.14"
 pip3 install -e ./ml-agents-envs
 pip3 install -e ./ml-agents
 ```

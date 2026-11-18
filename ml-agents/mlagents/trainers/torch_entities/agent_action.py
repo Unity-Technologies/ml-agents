@@ -1,6 +1,5 @@
 from typing import List, Optional, NamedTuple
 import itertools
-import numpy as np
 from mlagents.torch_utils import torch
 
 from mlagents.trainers.buffer import AgentBuffer, BufferKey
@@ -97,7 +96,7 @@ class AgentAction(NamedTuple):
                 ModelUtils.list_to_tensor(arr) for arr in padded_batch
             ]
         if disc_action_key in buff:
-            padded_batch = buff[disc_action_key].padded_to_batch(dtype=np.long)
+            padded_batch = buff[disc_action_key].padded_to_batch(dtype=int)
             discrete_tensors = [
                 ModelUtils.list_to_tensor(arr, dtype=torch.long) for arr in padded_batch
             ]

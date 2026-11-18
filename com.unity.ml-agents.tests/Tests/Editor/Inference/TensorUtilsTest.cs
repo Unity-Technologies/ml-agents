@@ -55,6 +55,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(height, tensorProxy.data.shape.Height());
             Assert.AreEqual(width, tensorProxy.data.shape.Width());
             Assert.AreEqual(channels, tensorProxy.data.shape.Channels());
+            tensorProxy.data.Dispose();
         }
 
         [Test]
@@ -127,6 +128,7 @@ namespace Unity.MLAgents.Tests
             {
                 Assert.AreEqual(((Tensor<float>)t.data)[i], reference[i], 0.0001);
             }
+            t.data.Dispose();
         }
     }
 }

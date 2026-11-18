@@ -124,8 +124,8 @@ class OnPolicyTrainer(RLTrainer):
         """
         if self.policy:
             logger.warning(
-                "Your environment contains multiple teams, but {} doesn't support adversarial games. Enable self-play to \
-                    train adversarial games.".format(
+                "Your environment contains multiple teams, but {} doesn't support adversarial games. Enable self-play \
+                    to train adversarial games.".format(
                     self.__class__.__name__
                 )
             )

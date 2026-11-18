@@ -40,6 +40,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[0]);
             Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[1]);
+            actionTensor.data.Dispose();
         }
     }
 
@@ -78,6 +79,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[0]);
             Assert.AreEqual(0, actionBuffers[1337].DiscreteActions[1]);
+            logProbs.data.Dispose();
         }
     }
 }

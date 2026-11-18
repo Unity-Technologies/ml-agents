@@ -12,7 +12,7 @@ A Virtual Environment keeps all dependencies for the Python project separate fro
 2. It enables using and testing of different library versions by quickly spinning up a new environment and verifying the compatibility of the code with the different version.
 
 ## Python Version Requirement (Required)
-This guide has been tested with Python 3.10.12. Newer versions might not have support for the dependent libraries, so are not recommended.
+This guide has been tested with Python 3.10.x, 3.11.x, and 3.12.x. Newer versions might not have support for the dependent libraries, so are not recommended. Python 3.10 is deprecated and support for it will be removed in a future release.
 
 ## Use Conda (or Mamba)
 
@@ -23,8 +23,6 @@ While there are many options for setting up virtual environments for python, by 
 1. Download the `get-pip.py` file using the command `curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py`
 2. Run the following `python3 get-pip.py`
 3. Check pip version using `pip3 -V`
-
-Note (for Ubuntu users): If the `ModuleNotFoundError: No module named 'distutils.util'` error is encountered, then python3-distutils needs to be installed. Install python3-distutils using `sudo apt-get install python3-distutils`
 
 ## Mac OS X Setup
 
@@ -49,6 +47,6 @@ Note (for Ubuntu users): If the `ModuleNotFoundError: No module named 'distutils
 5. To deactivate the environment execute `deactivate` (you can reactivate the environment using the same `activate` command listed above)
 
 Note:
-- Verify that you are using Python version 3.10.12. Launch a command prompt using `cmd` and execute `python --version` to verify the version.
+- Verify that you are using Python version 3.10.x, 3.11.x, or 3.12.x. Launch a command prompt using `cmd` and execute `python --version` to verify the version.
 - Python3 installation may require admin privileges on Windows.
 - This guide is for Windows 10 using a 64-bit architecture only.

@@ -83,6 +83,7 @@ namespace Unity.MLAgents.Inference
                 {
                     if (failedCheck.CheckType == SentisModelParamLoader.FailedCheck.CheckTypeEnum.Error)
                     {
+                        sentisModelInfo.Dispose();
                         throw new UnityAgentsException(failedCheck.Message);
                     }
                 }

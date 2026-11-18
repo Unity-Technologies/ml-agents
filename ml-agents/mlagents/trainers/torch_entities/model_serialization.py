@@ -1,4 +1,5 @@
 from typing import Tuple
+import inspect
 import threading
 from mlagents.torch_utils import torch
 
@@ -160,14 +161,23 @@ class ModelSerializer:
         onnx_output_path = f"{output_filepath}.onnx"
         logger.debug(f"Converting to {onnx_output_path}")
 
+        export_kwargs = dict(
+            opset_version=SerializationSettings.onnx_opset,
+            input_names=self.input_names,
+            output_names=self.output_names,
+            dynamic_axes=self.dynamic_axes,
+        )
+        # Torch >=2.9 defaults torch.onnx.export to dynamo=True, which
+        # produces a different graph. Force the legacy TorchScript
+        # exporter when the option is available.
+        if "dynamo" in inspect.signature(torch.onnx.export).parameters:
+            export_kwargs["dynamo"] = False
+
         with exporting_to_onnx():
             torch.onnx.export(
                 self.policy.actor,
                 self.dummy_input,
                 onnx_output_path,
-                opset_version=SerializationSettings.onnx_opset,
-                input_names=self.input_names,
-                output_names=self.output_names,
-                dynamic_axes=self.dynamic_axes,
+                **export_kwargs,
             )
         logger.info(f"Exported {onnx_output_path}")

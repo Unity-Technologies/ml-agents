@@ -99,9 +99,9 @@ class GhostTrainer(Trainer):
         self.steps_to_train_team = self_play_parameters.team_change
         if self.steps_to_train_team > self.get_max_steps:
             logger.warning(
-                "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not face \
-                opposition that has been trained if the opposition is managed by a different GhostTrainer as in an \
-                asymmetric game.".format(
+                "The max steps of the GhostTrainer for behavior name {} is less than team change. This team will not \
+                face opposition that has been trained if the opposition is managed by a different \
+                GhostTrainer as in an asymmetric game.".format(
                     self.brain_name
                 )
             )

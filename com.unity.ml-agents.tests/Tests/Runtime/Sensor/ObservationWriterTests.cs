@@ -68,6 +68,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[1, 1]);
             Assert.AreEqual(3f, ((Tensor<float>)t.data)[1, 2]);
+            t.data.Dispose();
 
             // AddList
             t = new TensorProxy
@@ -84,6 +85,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[1, 0]);
             Assert.AreEqual(-1f, ((Tensor<float>)t.data)[1, 1]);
             Assert.AreEqual(-2f, ((Tensor<float>)t.data)[1, 2]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -103,6 +105,7 @@ namespace Unity.MLAgents.Tests
             writer.SetTarget(t, 0, 1);
             writer[0, 1, 0] = 2f;
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[0, 1, 1, 0]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -122,6 +125,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(3f, ((Tensor<float>)t.data)[0, 2]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -140,6 +144,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(10f, ((Tensor<float>)t.data)[0, 2]);
             Assert.AreEqual(11f, ((Tensor<float>)t.data)[0, 3]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -155,6 +160,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(10f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(20f, ((Tensor<float>)t.data)[0, 2]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -171,6 +177,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 2]);
             Assert.AreEqual(10f, ((Tensor<float>)t.data)[0, 3]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -186,6 +193,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[0, 1]);
             // Third component silently dropped
+            t.data.Dispose();
         }
 
         [Test]
@@ -202,6 +210,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(0f, ((Tensor<float>)t.data)[0, 2]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -216,6 +225,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[0, 1]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -231,6 +241,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)t.data)[0, 1]);
             Assert.AreEqual(3f, ((Tensor<float>)t.data)[0, 2]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -261,6 +272,7 @@ namespace Unity.MLAgents.Tests
 
             // Original value unchanged
             Assert.AreEqual(1f, ((Tensor<float>)t.data)[0, 0, 0, 0]);
+            t.data.Dispose();
         }
 
         [Test]
@@ -286,6 +298,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(30f, ((Tensor<float>)t.data)[1, 2]);
             Assert.AreEqual(40f, ((Tensor<float>)t.data)[1, 3]);
             Assert.AreEqual(50f, ((Tensor<float>)t.data)[1, 4]);
+            t.data.Dispose();
         }
     }
 }

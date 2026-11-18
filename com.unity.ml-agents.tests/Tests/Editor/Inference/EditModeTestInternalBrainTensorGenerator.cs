@@ -112,6 +112,7 @@ namespace Unity.MLAgents.Tests
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(((Tensor<int>)inputTensor.data)[0], batchSize);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -123,6 +124,7 @@ namespace Unity.MLAgents.Tests
             generator.Generate(inputTensor, batchSize, null);
             Assert.IsNotNull(inputTensor.data);
             Assert.AreEqual(((Tensor<int>)inputTensor.data)[0], 1);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -153,6 +155,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[0, 3], 3);
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[1, 1], 4);
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[1, 3], 6);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -179,6 +182,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(((Tensor<int>)inputTensor.data)[0, 1], 2);
             Assert.AreEqual(((Tensor<int>)inputTensor.data)[1, 0], 3);
             Assert.AreEqual(((Tensor<int>)inputTensor.data)[1, 1], 4);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -207,6 +211,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[0, 4], 1);
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[1, 0], 0);
             Assert.AreEqual((int)((Tensor<float>)inputTensor.data)[1, 4], 1);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -244,6 +249,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)inputTensor.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)inputTensor.data)[0, 1]);
             Assert.AreEqual(3f, ((Tensor<float>)inputTensor.data)[0, 2]);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -276,6 +282,7 @@ namespace Unity.MLAgents.Tests
 
             Assert.AreEqual(1f, ((Tensor<float>)inputTensor.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)inputTensor.data)[0, 1]);
+            inputTensor.data.Dispose();
         }
 
         [Test]
@@ -308,6 +315,7 @@ namespace Unity.MLAgents.Tests
             Assert.AreEqual(1f, ((Tensor<float>)inputTensor.data)[0, 0]);
             Assert.AreEqual(2f, ((Tensor<float>)inputTensor.data)[0, 1]);
             Assert.AreEqual(3f, ((Tensor<float>)inputTensor.data)[0, 2]);
+            inputTensor.data.Dispose();
         }
     }
 }
