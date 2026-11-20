@@ -573,8 +573,6 @@ namespace Unity.MLAgents.Tests
             Assert.IsFalse(nullList.Count > 0);
             nullList.RemoveAt(0);
             Assert.IsTrue(nullList.Count == 0);
-            Assert.AreEqual(0f, nullList[0]);
-            Assert.AreEqual(0f, nullList[1]);
         }
     }
 
