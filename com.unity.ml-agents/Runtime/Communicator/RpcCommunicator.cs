@@ -10,6 +10,9 @@ using UnityEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+#if UNITY_EDITOR
+using System.Reflection;
+#endif
 using UnityEngine;
 using Unity.MLAgents.Actuators;
 using Unity.MLAgents.CommunicatorObjects;
@@ -230,6 +233,10 @@ namespace Unity.MLAgents
         {
             m_IsOpen = true;
             GrpcNativeLoader.EnsureInstalled();
+#if UNITY_EDITOR
+            AssemblyReloadEvents.beforeAssemblyReload -= RemoveGrpcShutdownHooks;
+            AssemblyReloadEvents.beforeAssemblyReload += RemoveGrpcShutdownHooks;
+#endif
             m_Channel = new Channel($"localhost:{port}", ChannelCredentials.Insecure);
 
             m_Client = new UnityToExternalProto.UnityToExternalProtoClient(m_Channel);
@@ -599,6 +606,36 @@ namespace Unity.MLAgents
             if (state == PlayModeStateChange.ExitingPlayMode)
             {
                 Dispose();
+            }
+        }
+
+        // Grpc.Core adds AppDomain.ProcessExit and DomainUnload handlers that it never removes.
+        // On CoreCLR they keep the old scripts loaded after a reload, so run its shutdown and remove them first.
+        static void RemoveGrpcShutdownHooks()
+        {
+            AssemblyReloadEvents.beforeAssemblyReload -= RemoveGrpcShutdownHooks;
+            try
+            {
+                GrpcEnvironment.ShutdownChannelsAsync().Wait();
+                GrpcEnvironment.KillServersAsync().Wait();
+            }
+            catch (Exception)
+            {
+                // do nothing
+            }
+
+            var hooks = typeof(GrpcEnvironment).Assembly.GetType("Grpc.Core.GrpcEnvironment+ShutdownHooks+<>c");
+            if (hooks == null)
+            {
+                return;
+            }
+            foreach (var field in hooks.GetFields(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            {
+                if (field.GetValue(null) is EventHandler handler)
+                {
+                    AppDomain.CurrentDomain.ProcessExit -= handler;
+                    AppDomain.CurrentDomain.DomainUnload -= handler;
+                }
             }
         }
 
