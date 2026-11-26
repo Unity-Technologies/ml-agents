@@ -17,6 +17,7 @@ and this project adheres to
 
 #### ml-agents / ml-agents-envs
 - Fixed PPO and POCA value estimates being overwritten by returns in the training buffer, preventing value loss clipping around the original predictions. (#6281, #6337)
+- Fixed Gymnasium and PettingZoo wrapper imports failing when the remote example environment registry is unavailable.
 
 ## [4.1.0] - 2026-07-27
 ### Major Changes
